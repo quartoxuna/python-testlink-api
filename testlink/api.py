@@ -23,7 +23,6 @@
 
 """
 @author: Kai Borowiak
-@version: 1.0
 @summary: Raw API Wrapper for Testlink
 """
 

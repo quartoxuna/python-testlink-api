@@ -23,7 +23,6 @@
 
 """
 @author: Kai Borowiak
-@version: 1.0
 @summary: Testlink conform automation server.
 """
 
