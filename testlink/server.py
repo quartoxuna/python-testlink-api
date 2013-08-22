@@ -37,17 +37,21 @@ import SimpleXMLRPCServer
 #
 try:
 	logging.getLogger(__name__).addHandler(logging.NullHandler())
-except AttributeError: pass # Workaround for Python < 2.7
+except AttributeError:
+	# Workaround for Python < 2.7
+	# Since there was not NullHandler()
+	pass
 
-class XMLRPCServer(object):
-	"""Automation Server"""
-
+class TestlinkXMLRPCServer(object):
+	"""Testlink conform XML-RPC automation server"""
 	def __init__(self,addr="127.0.0.1",port=8000,callback=None):
 		"""Initializes the Server
 		@param addr: The address of the Server
 		@type addr: str
 		@param port: The port of the Server
 		@type port: int
+		@param callback: Method to be executed if server is triggerd
+		@type callback: method
 		"""
 		logging.getLogger(__name__).info("Starting Testlink XML-RPC Server at http://%s:%d" % (str(addr),int(port)) )
 		self.__server = SimpleXMLRPCServer.SimpleXMLRPCServer((addr,port),logRequests=False)

@@ -382,7 +382,7 @@ class TestlinkAPI(object):
 				raise NotSupported()
 
 	def getBuildsForTestPlan(self, devkey, testplanid):
-			"""Returns all Builds for the specified TestPlan
+		"""Returns all Builds for the specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param testplanid: The internal ID of the TestPlan
