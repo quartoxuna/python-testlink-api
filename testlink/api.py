@@ -4,16 +4,16 @@
 #         -+ydNMM....``         /\__  _\              /\ \__/\_ \    __        /\ \ 
 #      `+mMMMMMMM........`      \/_/\ \/    __    ____\ \ ,_\//\ \  /\_\    ___\ \ \/'\ 
 #     /mMMMMMMMMM..........`       \ \ \  /'__`\ /',__\\ \ \/ \ \ \ \/\ \ /' _ `\ \ , <
-#    oMMMMMMMMMMM...........`       \ \ \/\  __//\__, `\\ \ \_ \_\ \_\ \ \/\ \/\ \ \ \\`\ 
+#    oMMMMMMMMMMM...........`       \ \ \/\  __//\__, `\\ \ \_ \_\ \_\ \ \/\ \/\ \ \ \ \`\ 
 #   :MMMMMMMMMMMM............        \ \_\ \____\/\____/ \ \__\/\____\\ \_\ \_\ \_\ \_\ \_\ 
 #   hMMMMMMMMMMMM............`        \/_/\/____/\/___/   \/__/\/____/ \/_/\/_/\/_/\/_/\/_/ 
 # ..::::::::::::oMMMMMMMMMMMMo..   ______  ____    ______      __      __
-#   ............+MMMMMMMMMMMM-    /\  _  \/\  _`\ /\__  _\    /\ \  __/\ \ 
+#   ............+MMMMMMMMMMMM-    /\  _  \/\  _ `\/\__  _\    /\ \  __/\ \ 
 #    ...........+MMMMMMMMMMMs     \ \ \_\ \ \ \_\ \/_/\ \/    \ \ \/\ \ \ \  _ __    __     _____   _____      __   _ __
 #     ..........+MMMMMMMMMMy       \ \  __ \ \ ,__/  \ \ \     \ \ \ \ \ \ \/\`'__\/'__`\  /\ '__`\/\ '__`\  /'__`\/\`'__\ 
 #      `........+MMMMMMMMm:         \ \ \/\ \ \ \/    \_\ \__   \ \ \_/ \_\ \ \ \//\ \_\.\_\ \ \_\ \ \ \_\ \/\  __/\ \ \/
 #        `......+MMMMMNy:            \ \_\ \_\ \_\    /\_____\   \ `\___x___/\ \_\\ \__/.\_\\ \ ,__/\ \ ,__/\ \____\\ \_\ 
-#            ```/ss+/.                \/_/\/_/\/_/    \/_____/    '\/__//__/  \/_/ \/__/\/_/ \ \ \/  \ \ \/  \/____/ \/_/
+#            ```/ss+/.                \/_/\/_/\/_/    \/_____/    '\ __//__/  \/_/ \/__/\/_/ \ \ \/  \ \ \/  \/____/ \/_/
 #               /                                                                             \ \_\   \ \_\ 
 #                                                                                              \/_/    \/_/
 
@@ -31,6 +31,7 @@
 #
 import logging
 import xmlrpclib
+import inspect # For disabling invalid calls
 
 #
 # ENABLES LOGGING
@@ -38,6 +39,8 @@ import xmlrpclib
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 class InvalidProxy(TypeError): pass
+
+class NotSupported(NotImplementedError): pass
 
 class TestlinkAPI(object):
 	"""Raw Testlink API"""
@@ -77,21 +80,36 @@ class TestlinkAPI(object):
 		@returns: 'Testlink API Version: x.x initially written by Asial Brumfield with contributions by Testlink development Team'
 		@rtype: str
 		"""
-		return self.__server.tl.about()
+		try:
+			return self.__server.tl.about()
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.about",repr(self.__server)))
+				raise NotSupported()
 
 	def sayHello(self):
 		"""Returns the string 'Hello!'
 		@returns: 'Hello!'
 		@rtype: str
 		"""
-		return self.__server.tl.sayHello()
+		try:
+			return self.__server.tl.sayHello()
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.sayHello",repr(self.__server)))
+				raise NotSupported()
 
 	def ping(self):
 		"""Alias for 'sayHello'
 		@returns: 'Hello!'
 		@rtype: str
 		"""
-		return self.__server.tl.ping()
+		try:
+			return self.__server.tl.ping()
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.ping",repr(self.__server)))
+				raise NotSupported()
 
 	def repeat(self,value):
 		"""Repeats the given value
@@ -100,7 +118,12 @@ class TestlinkAPI(object):
 		@returns: The given value
 		@rtype: mixed
 		"""
-		return self.__server.tl.repeat(value)
+		try:
+			return self.__server.tl.repeat(value)
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.repeat",repr(self.__server)))
+				raise NotSupported()
 
 	def checkDevKey(self,devkey):
 		"""Checks if the specified developer key is valid
@@ -109,9 +132,12 @@ class TestlinkAPI(object):
 		@returns: True/False
 		@rtype: bool
 		"""
-		return self.__server.tl.checkDevKey({
-				'devKey': devkey
-			})
+		try:
+			return self.__server.tl.checkDevKey({'devKey': devkey})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.checkDevKey",repr(self.__server)))
+				raise NotSupported()
 		
 	def doesUserExist(self, devkey, user):
 		"""Checks, if a specified user exists
@@ -122,10 +148,15 @@ class TestlinkAPI(object):
 		@returns: True/False
 		@rtype: bool
 		"""
-		return self.__server.tl.doesUserExist({
-				'devKey': devkey,
-				'user': user
-			})
+		try:
+			return self.__server.tl.doesUserExist({
+					'devKey': devkey,
+					'user': user
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.doesUserExist",repr(self.__server)))
+				raise NotSupported()
 
 	def getFullPath(self, devkey, nodeid):
 		"""Returns the full path of an object
@@ -136,10 +167,15 @@ class TestlinkAPI(object):
 		@returns: Hierarchical path of the object
 		@rtype: str
 		"""
-		return self.__server.tl.getFullPath({
-				'devKey': devkey,
-				'nodeID': nodeid
-			})
+		try:
+			return self.__server.tl.getFullPath({
+					'devKey': devkey,
+					'nodeID': nodeid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getFullPath",repr(self.__server)))
+				raise NotSupported()
 
 	def createTestProject(self, devkey, name, prefix, notes='', active=True, public=True, requirementsEnabled=False, testPriorityEnabled=False, automationEnabled=False, inventoryEnabled=False):
 		"""Creates a new TestProject
@@ -176,15 +212,20 @@ class TestlinkAPI(object):
 			'automationEnabled': automationEnabled,
 			'inventoryEnabled': inventoryEnabled
 			}
-		return self.__server.tl.createTestProject({
-				'devKey': devkey,
-				'name': name,
-				'prefix': prefix,
-				'notes': notes,
-				'active': active,
-				'public': public,
-				'options': opts
-			})
+		try:
+			return self.__server.tl.createTestProject({
+					'devKey': devkey,
+					'name': name,
+					'prefix': prefix,
+					'notes': notes,
+					'active': active,
+					'public': public,
+					'options': opts
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.createTestProject",repr(self.__server)))
+				raise NotSupported()
 
 	def getProjects(self, devkey):
 		"""Returns all available TestProjects
@@ -193,7 +234,12 @@ class TestlinkAPI(object):
 		@returns: TestProjects as list of dicts
 		@rtype: list
 		"""
-		return self.__server.tl.getProjects({'devKey': devkey})
+		try:
+			return self.__server.tl.getProjects({'devKey': devkey})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getProjects",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestProjectByName(self, devkey, name):
 		"""Returns a single TestProject specified by its name
@@ -204,10 +250,15 @@ class TestlinkAPI(object):
 		@returns: Matching TestProject
 		@rtype: dict
 		"""
-		return self.__server.tl.getTestProjectByName({
-				'devKey': devkey,
-				'testprojectname': name
-			})
+		try:
+			return self.__server.tl.getTestProjectByName({
+					'devKey': devkey,
+					'testprojectname': name
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestProjectByName",repr(self.__server)))
+				raise NotSupported()
 
 	def createTestPlan(self, devkey, name, projectname, notes='', active=True, public=True):
 		"""Creates a new TestPlan
@@ -229,14 +280,19 @@ class TestlinkAPI(object):
 		@todo: Refactor optional arguments -> static values?
 		@todo: Specify return value
 		"""
-		return self.__server.tl.createTestPlan({
-				'devKey': devkey,
-				'testplanname': name,
-				'testprojectname': projectname,
-				'notes': notes,
-				'active': active,
-				'public': public
-			})
+		try:
+			return self.__server.tl.createTestPlan({
+					'devKey': devkey,
+					'testplanname': name,
+					'testprojectname': projectname,
+					'notes': notes,
+					'active': active,
+					'public': public
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.createTestPlan",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestPlanByName(self, devkey, name, projectname):
 		"""Returns a single TestPlan specified by its name
@@ -249,11 +305,16 @@ class TestlinkAPI(object):
 		@returns: Matching TestPlan
 		@rtype: dict
 		"""
-		return self.__server.tl.getTestPlanByName({
-				'devKey': devkey,
-				'testplanname': name,
-				'testprojectname': projectname
-			})
+		try:
+			return self.__server.tl.getTestPlanByName({
+					'devKey': devkey,
+					'testplanname': name,
+					'testprojectname': projectname
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestPlanByName",repr(self.__server)))
+				raise NotSupported()
 
 	def getProjectTestPlans(self, devkey, projectid):
 		"""Returns all TestPlans for a specified TestProject
@@ -264,10 +325,15 @@ class TestlinkAPI(object):
 		@returns: Matching TestPlans
 		@rtype: list
 		"""
-		return self.__server.tl.getProjectTestPlans({
-				'devKey': devkey,
-				'testprojectid': projectid
-			})
+		try:
+			return self.__server.tl.getProjectTestPlans({
+					'devKey': devkey,
+					'testprojectid': projectid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getProjectTestPlans",repr(self.__server)))
+				raise NotSupported()
 
 	def createBuild(self, devkey, testplanid, name, notes=''):
 		"""Creates a new Build for the specified TestPlan
@@ -284,12 +350,17 @@ class TestlinkAPI(object):
 
 		@todo: Specify return value type
 		"""
-		return self.__server.tl.createBuild({
-				'devKey': devkey,
-				'testplanid': testplanid,
-				'buildname': name,
-				'buildnotes': notes
-			})
+		try:
+			return self.__server.tl.createBuild({
+					'devKey': devkey,
+					'testplanid': testplanid,
+					'buildname': name,
+					'buildnotes': notes
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.createBuild",repr(self.__server)))
+				raise NotSupported()
 
 	def getLatestBuildForTestPlan(self, devkey, testplanid):
 		"""Returns the latest Build for the specified TestPlan
@@ -300,13 +371,18 @@ class TestlinkAPI(object):
 		@returns: Matching Build
 		@rtype: list
 		"""
-		return self.__server.tl.getLatestBuildForTestPlan({
-				'devKey': devkey,
-				'testplanid': testplanid
-			})
+		try:
+			return self.__server.tl.getLatestBuildForTestPlan({
+					'devKey': devkey,
+					'testplanid': testplanid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getLatestBuildForTestPlan",repr(self.__server)))
+				raise NotSupported()
 
 	def getBuildsForTestPlan(self, devkey, testplanid):
-		"""Returns all Builds for the specified TestPlan
+			"""Returns all Builds for the specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param testplanid: The internal ID of the TestPlan
@@ -314,10 +390,15 @@ class TestlinkAPI(object):
 		@returns: Matching Builds
 		@rtype: list
 		"""
-		return self.__server.tl.getBuildsForTestplan({
-				'devKey': devkey,
-				'testplanid': testplanid
-			})
+		try:
+			return self.__server.tl.getBuildsForTestplan({
+					'devKey': devkey,
+					'testplanid': testplanid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getBuildsForTestPlan",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestPlanPlatforms(self, devkey, testplanid):
 		"""Returns all Platforms fot the specified TestPlan
@@ -328,10 +409,15 @@ class TestlinkAPI(object):
 		@returns: Matching Platforms
 		@rtype: list
 		"""
-		return self.__server.tl.getTestPlanPlatforms({
-				'devKey': devkey,
-				'testplanid': testplanid
-			})
+		try:
+			return self.__server.tl.getTestPlanPlatforms({
+					'devKey': devkey,
+					'testplanid': testplanid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestPlanPlatforms",repr(self.__server)))
+				raise NotSupported()
 
 	def reportTCResult(self, devkey, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False):
 		"""Sets the execution result for a specified TestCase
@@ -365,22 +451,27 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.reportTCResult({
-				'devKey': devkey,
-				'testplanid': testplanid,
-				'status': status,
-				'testcaseid': testcaseid,
-				'testcaseexternalid': testcaseexternalid,
-				'buildid': buildid,
-				'buildname': buildname,
-				'notes': notes,
-				'guess': guess,
-				'bugid': bugid,
-				'platformid': platformid,
-				'platformname': platformname,
-				'customfields': customfields,
-				'ovwerwrite': overwrite
-			})
+		try:
+			return self.__server.tl.reportTCResult({
+					'devKey': devkey,
+					'testplanid': testplanid,
+					'status': status,
+					'testcaseid': testcaseid,
+					'testcaseexternalid': testcaseexternalid,
+					'buildid': buildid,
+					'buildname': buildname,
+					'notes': notes,
+					'guess': guess,
+					'bugid': bugid,
+					'platformid': platformid,
+					'platformname': platformname,
+					'customfields': customfields,
+					'ovwerwrite': overwrite
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.reportTCResult",repr(self.__server)))
+				raise NotSupported()
 
 	def getLastExecutionResult(self, devkey, testplanid, testcaseid=None, testcaseexternalid=None):
 		"""Returns the execution result for a specified TestCase and TestPlan
@@ -395,12 +486,17 @@ class TestlinkAPI(object):
 		@returns: Matching result
 		@rtype: dict
 		"""
-		return self.__server.getLastExecutionResult({
-				'devKey': devkey,
-				'testplanid': testplanid,
-				'testcaseid': testcaseid,
-				'testcaseexternalid': testcaseexternalid
-			})
+		try:
+			return self.__server.getLastExecutionResult({
+					'devKey': devkey,
+					'testplanid': testplanid,
+					'testcaseid': testcaseid,
+					'testcaseexternalid': testcaseexternalid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getLastExecutionResult",repr(self.__server)))
+				raise NotSupported()
 
 	def deleteExecution(self, devkey, executionid):
 		"""Deletes a specific exexution result
@@ -411,10 +507,15 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.deleteExecution({
-				'devKey': devkey,
-				'executionid': executionid
-			})
+		try:
+			return self.__server.deleteExecution({
+					'devKey': devkey,
+					'executionid': executionid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.deleteExecution",repr(self.__server)))
+				raise NotSupported()
 
 	def createTestSuite(self, devkey, name, testprojectid, details=None, parentid=None, order=None, checkduplicates=True, actiononduplicate='block'):
 		"""Creates a new TestSuite
@@ -437,16 +538,21 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.createTestSuite({
-				'devKey': devkey,
-				'testsuitename': name,
-				'testprojectid': testprojectid,
-				'details': details,
-				'parentid': parentid,
-				'order': order,
-				'checkduplicatedname': checkduplicates,
-				'actiononduplicatedname': actiononduplicate
-			})
+		try:
+			return self.__server.tl.createTestSuite({
+					'devKey': devkey,
+					'testsuitename': name,
+					'testprojectid': testprojectid,
+					'details': details,
+					'parentid': parentid,
+					'order': order,
+					'checkduplicatedname': checkduplicates,
+					'actiononduplicatedname': actiononduplicate
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.createTestSuites",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestSuiteById(self, devkey, suiteid):
 		"""Returns a single TestSuite specified by the internal ID
@@ -457,10 +563,15 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuite
 		@rtype: dict
 		"""
-		return self.__server.tl.getTestSuiteById({
-				'devKey': devkey,
-				'testsuiteid': suiteid
-			})
+		try:
+			return self.__server.tl.getTestSuiteById({
+					'devKey': devkey,
+					'testsuiteid': suiteid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestSuiteById",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestSuitesForTestSuite(self, devkey, suiteid):
 		"""Returns all TestSuites within the specified TestSuite
@@ -471,10 +582,15 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.__server.tl.getTestSuitesForTestSuite({
-				'devKey': devkey,
-				'testsuiteid': suiteid
-			})
+		try:
+			return self.__server.tl.getTestSuitesForTestSuite({
+					'devKey': devkey,
+					'testsuiteid': suiteid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestSuitesForTestSuite",repr(self.__server)))
+				raise NotSupported()
 
 	def getFirstLevelTestSuitesForTestProject(self, devkey, projectid):
 		"""Returns the first level TestSuites for a specified TestProject
@@ -485,10 +601,15 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.__server.tl.getFirstLevelTestSuitesForTestProject({
-				'devKey': devkey,
-				'testprojectid': testprojectid
-			})
+		try:
+			return self.__server.tl.getFirstLevelTestSuitesForTestProject({
+					'devKey': devkey,
+					'testprojectid': testprojectid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getFirstLevelTestSuitesForTestProject",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestSuitesForTestPlan(self, devkey, planid):
 		"""Returns all TestSuites for a specified TestPlan
@@ -499,10 +620,15 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.__server.tl.getTestSuitesForTestPlan({
-				'devKey': devkey,
-				'testplanid': planid
-			})
+		try:
+			return self.__server.tl.getTestSuitesForTestPlan({
+					'devKey': devkey,
+					'testplanid': planid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestSuitesForTestPlan",repr(self.__server)))
+				raise NotSupported()
 
 	def createTestCase(self, devkey, name, suiteid, projectid, author, summary, steps=[], preconditions=None, importance=0, execution=0, order=None, checkduplicates=True, actiononduplicate='block'):
 		"""Creates a new TestCase
@@ -535,21 +661,26 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self.__server.tl.createTestCase({
-				'devKey': devkey,
-				'testcasename': name,
-				'testsuiteid': suiteid,
-				'testprojectid': projectid,
-				'authorlogin': author,
-				'summary': summary,
-				'steps': steps,
-				'preconditions': preconditions,
-				'importance': importance,
-				'exexution': execution,
-				'order': order,
-				'checkduplicatedname': checkduplicates,
-				'actiononduplicatedname': actiononduplicate
-			})
+		try:
+			return self.__server.tl.createTestCase({
+					'devKey': devkey,
+					'testcasename': name,
+					'testsuiteid': suiteid,
+					'testprojectid': projectid,
+					'authorlogin': author,
+					'summary': summary,
+					'steps': steps,
+					'preconditions': preconditions,
+					'importance': importance,
+					'exexution': execution,
+					'order': order,
+					'checkduplicatedname': checkduplicates,
+					'actiononduplicatedname': actiononduplicate
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.createTestCase",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestCase(self, devkey, testcaseid=None, testcaseexternalid=None, version=None):
 		"""Returns a single TestCase specified by its ID
@@ -564,12 +695,17 @@ class TestlinkAPI(object):
 		@returns: Matching TestCase
 		@rtype: list/dict/???
 		"""
-		return self.__server.tl.getTestCase({
-				'devKey': devkey,
-				'testcaseid': testcaseid,
-				'testcaseexternalid': testcaseexternalid,
-				'version': version
-			})
+		try:
+			return self.__server.tl.getTestCase({
+					'devKey': devkey,
+					'testcaseid': testcaseid,
+					'testcaseexternalid': testcaseexternalid,
+					'version': version
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestCase",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestCaseIdByName(self, devkey, name, suite=None, project=None, path=None):
 		"""Returns the internal ID of a specified TestCase
@@ -586,13 +722,18 @@ class TestlinkAPI(object):
 		@returns: Matching TestCase ID
 		@rtype: int?
 		"""
-		return self.__server.tl.getTestCaseIDByName({
-				'devKey': devkey,
-				'testcasename': name,
-				'testsuitename': suite,
-				'testprojectname': project,
-				'testcasepathname': path
-			})
+		try:
+			return self.__server.tl.getTestCaseIDByName({
+					'devKey': devkey,
+					'testcasename': name,
+					'testsuitename': suite,
+					'testprojectname': project,
+					'testcasepathname': path
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestCaseIdByName",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestCasesForTestSuite(self, devkey, suiteid, deep=False, details='simple'):
 		"""Returns all TestCases for a specified TestSuite
@@ -607,12 +748,17 @@ class TestlinkAPI(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self.__server.tl.getTestCasesForTestSuite({
-				'devKey': devkey,
-				'testsuiteid': suiteid,
-				'deep': deep,
-				'details': details
-			})
+		try:
+			return self.__server.tl.getTestCasesForTestSuite({
+					'devKey': devkey,
+					'testsuiteid': suiteid,
+					'deep': deep,
+					'details': details
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestCasesForTestSuite",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestCasesForTestPlan(self, devkey, planid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executionstatus=None, executiontype=None, steps=False):
 		"""Returns all TestCases for a specified TestPlan
@@ -641,19 +787,24 @@ class TestlinkAPI(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self.__server.tl.getTestCasesForTestPlan({
-				'devKey': devkey,
-				'testplanid': planid,
-				'tcid': testcaseid, # Correct?
-				'buildid': buildid,
-				'keywordid': keywprdid,
-				'keywords': keywords,
-				'executed': executed,
-				'assignedto': assignedto,
-				'executestatus': executionstatus,
-				'executiontype': executiontype,
-				'getstepinfo': steps
-			})
+		try:
+			return self.__server.tl.getTestCasesForTestPlan({
+					'devKey': devkey,
+					'testplanid': planid,
+					'tcid': testcaseid, # Correct?
+					'buildid': buildid,
+					'keywordid': keywprdid,
+					'keywords': keywords,
+					'executed': executed,
+					'assignedto': assignedto,
+					'executestatus': executionstatus,
+					'executiontype': executiontype,
+					'getstepinfo': steps
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestCasesForTestPlan",repr(self.__server)))
+				raise NotSupported()
 
 	def addTestCaseToTestPlan(self, devkey, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None):
 		"""Adds a specified TestCase to a specified TestPlan
@@ -678,16 +829,21 @@ class TestlinkAPI(object):
 
 		@todo: Set valid values for urgency
 		"""
-		return self.__server.tl.addTestCaseToTestPlan({
-				'devKey': devkey,
-				'testprojectid': projectid,
-				'testplanid': planid,
-				'testcaseexternalid': testcaseexternalid,
-				'version': version,
-				'platformid': platformid,
-				'executionorder': executionorder,
-				'urgency': urgency
-			})
+		try:
+			return self.__server.tl.addTestCaseToTestPlan({
+					'devKey': devkey,
+					'testprojectid': projectid,
+					'testplanid': planid,
+					'testcaseexternalid': testcaseexternalid,
+					'version': version,
+					'platformid': platformid,
+					'executionorder': executionorder,
+					'urgency': urgency
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.addTestCaseToTestPlan",repr(self.__server)))
+				raise NotSupported()
 
 	def assignRequirements(self, devkey, testcaseexternalid, projectid, requirements):
 		""""Assigns specified Requirements to a specified TestCase
@@ -702,12 +858,17 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.assignRequirements({
-				'devKey': devkey,
-				'testcaseexternalid': testcaseexternalid,
-				'testprojectid': projectid,
-				'requirements': requirements
-			})
+		try:
+			return self.__server.tl.assignRequirements({
+					'devKey': devkey,
+					'testcaseexternalid': testcaseexternalid,
+					'testprojectid': projectid,
+					'requirements': requirements
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.assignRequirements",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestCaseCustomFieldDesignValue(self, devkey, testcaseexternalid, version, projectid, fieldname, details='value'):
 		"""Returns the value of a specified CustomField for a specified TestCase
@@ -726,14 +887,19 @@ class TestlinkAPI(object):
 		@returns: Single value, information about specified field, information about all fields
 		@rtype: mixed
 		"""
-		return self.__server.tl.getTestCaseCustomFieldDesignValue({
-				'devKey': devkey,
-				'testcaseexternalid': testcaseexternalid,
-				'version': version,
-				'testprojectid': projectid,
-				'customfieldname': fieldname,
-				'details': details
-			})
+		try:
+			return self.__server.tl.getTestCaseCustomFieldDesignValue({
+					'devKey': devkey,
+					'testcaseexternalid': testcaseexternalid,
+					'version': version,
+					'testprojectid': projectid,
+					'customfieldname': fieldname,
+					'details': details
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestCaseCustomFieldDesignValue",repr(self.__server)))
+				raise NotSupported()
 
 	def uploadAttachment(self, devkey, objectid, objecttable, name, mime, content, title=None, description=None):
 		"""Uploads the specified Attachment for the specified object
@@ -756,16 +922,21 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.uploadAttachment({
-				'devKey': devkey,
-				'fkid': objectid,
-				'fktable': objecttable,
-				'filename': name,
-				'filetype': mime,
-				'content': content,
-				'title': title,
-				'description': description
-			})
+		try:
+			return self.__server.tl.uploadAttachment({
+					'devKey': devkey,
+					'fkid': objectid,
+					'fktable': objecttable,
+					'filename': name,
+					'filetype': mime,
+					'content': content,
+					'title': title,
+					'description': description
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.uploadAttachment",repr(self.__server)))
+				raise NotSupported()
 
 	def uploadRequirementSpecificationAttachment(self, devkey, reqspecid, name, mime, content, title=None, description=None):
 		"""Uploads the specified Attachment for the specified Requirement Specification
@@ -786,15 +957,20 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.uploadRequirementSpecificationAttachment({
-				'devKey': devkey,
-				'reqspecid': reqspecid,
-				'filename': name,
-				'filetype': mime,
-				'content': content,
-				'title': title,
-				'description': description
-			})
+		try:
+			return self.__server.tl.uploadRequirementSpecificationAttachment({
+					'devKey': devkey,
+					'reqspecid': reqspecid,
+					'filename': name,
+					'filetype': mime,
+					'content': content,
+					'title': title,
+					'description': description
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.uploadRequirementSpecificationAttachment",repr(self.__server)))
+				raise NotSupported()
 
 	def uploadRequirementAttachment(self, devkey, reqid, name, mime, content, title=None, description=None):
 		"""Uploads the specified Attachment for the specified Requirement
@@ -815,15 +991,20 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.uploadRequirementSpecificationAttachment({
-				'devKey': devkey,
-				'requirementsid': reqid,
-				'filename': name,
-				'filetype': mime,
-				'content': content,
-				'title': title,
-				'description': description
-			})
+		try:
+			return self.__server.tl.uploadRequirementAttachment({
+					'devKey': devkey,
+					'requirementsid': reqid,
+					'filename': name,
+					'filetype': mime,
+					'content': content,
+					'title': title,
+					'description': description
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.uploadRequirementAttachment",repr(self.__server)))
+				raise NotSupported()
 
 	def uploadTestProjectAttachment(self, devkey, projectid, name, mime, content, title=None, description=None):
 		"""Uploads the specified Attachment for the specified TestProject
@@ -844,15 +1025,20 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.uploadRequirementSpecificationAttachment({
-				'devKey': devkey,
-				'testprojectid': projectid,
-				'filename': name,
-				'filetype': mime,
-				'content': content,
-				'title': title,
-				'description': description
-			})
+		try:
+			return self.__server.tl.uploadTestProjectAttachment({
+					'devKey': devkey,
+					'testprojectid': projectid,
+					'filename': name,
+					'filetype': mime,
+					'content': content,
+					'title': title,
+					'description': description
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.uploadTestProjectAttachment",repr(self.__server)))
+				raise NotSupported()
 
 	def uploadTestSuiteAttachment(self, devkey, suiteid, name, mime, content, title=None, description=None):
 		"""Uploads the specified Attachment for the specified TestSuite
@@ -873,15 +1059,20 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.uploadRequirementSpecificationAttachment({
-				'devKey': devkey,
-				'testsuiteid': suiteid,
-				'filename': name,
-				'filetype': mime,
-				'content': content,
-				'title': title,
-				'description': description
-			})
+		try:
+			return self.__server.tl.uploadTestSuiteAttachment({
+					'devKey': devkey,
+					'testsuiteid': suiteid,
+					'filename': name,
+					'filetype': mime,
+					'content': content,
+					'title': title,
+					'description': description
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.uploadTestSuiteAttachment",repr(self.__server)))
+				raise NotSupported()
 
 	def uploadTestCaseAttachment(self, devkey, testcaseid, name, mime, content, title=None, description=None):
 		"""Uploads the specified Attachment for the specified TestCase
@@ -902,17 +1093,22 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.uploadRequirementSpecificationAttachment({
-				'devKey': devkey,
-				'testcaseid': testcaseid,
-				'filename': name,
-				'filetype': mime,
-				'content': content,
-				'title': title,
-				'description': description
-			})
+		try:
+			return self.__server.tl.uploadTestCaseAttachment({
+					'devKey': devkey,
+					'testcaseid': testcaseid,
+					'filename': name,
+					'filetype': mime,
+					'content': content,
+					'title': title,
+					'description': description
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.uploadTestCaseAttachment",repr(self.__server)))
+				raise NotSupported()
 	
-	def uploadExecutionnAttachment(self, devkey, executionid, name, mime, content, title=None, description=None):
+	def uploadExecutionAttachment(self, devkey, executionid, name, mime, content, title=None, description=None):
 		"""Uploads the specified Attachment for the specified Execution
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -931,15 +1127,20 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__server.tl.uploadRequirementSpecificationAttachment({
-				'devKey': devkey,
-				'executionid': executionid,
-				'filename': name,
-				'filetype': mime,
-				'content': content,
-				'title': title,
-				'description': description
-			})
+		try:
+			return self.__server.tl.uploadExecutionAttachment({
+					'devKey': devkey,
+					'executionid': executionid,
+					'filename': name,
+					'filetype': mime,
+					'content': content,
+					'title': title,
+					'description': description
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.uploadExecutionAttachment",repr(self.__server)))
+				raise NotSupported()
 
 	def getTestCaseAttachments(self, devkey, testcaseid=None, testcaseexternalid=None):
 		"""Returns all available Attachments for the specified TestCase
@@ -952,8 +1153,13 @@ class TestlinkAPI(object):
 		@returns: Matching attachments
 		@rtype: list/dict/???
 		"""
-		return self.__server.tl.getTestCaseAttachmnts({
-				'devKey': devkey,
-				'testcaseid': testcaseid,
-				'testcaseexternalid': testcaseexternalid
-			})
+		try:
+			return self.__server.tl.getTestCaseAttachmnts({
+					'devKey': devkey,
+					'testcaseid': testcaseid,
+					'testcaseexternalid': testcaseexternalid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestCaseAttachments",repr(self.__server)))
+				raise NotSupported()
