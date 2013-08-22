@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
 	name="testlink_api",
-	version="0.1",
+	version="0.2",
 	description="Testlink API Wrapper library",
 	author="Kai Borowiak",
 	author_email="kai.borowiak@secunet.com",

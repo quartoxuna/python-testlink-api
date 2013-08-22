@@ -1163,3 +1163,44 @@ class TestlinkAPI(object):
 			if f.faultCode==-32601:
 				logging.getLogger(__name__).exception("Method '%s' not supported @ %s " % ("tl.getTestCaseAttachments",repr(self.__server)))
 				raise NotSupported()
+
+	def getRequirementSpecifications(self, devkey, testprojectid):
+		"""Returns all available Requirement Specifications for the specified TestProject
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testprojectid: The internal ID of the parent TestProject.
+		@type testprojectid: int
+		@returns: Matching Requirement Specifications
+		@rtype: list/dict/???
+		"""
+		try:
+			return self.__server.tl.getRequirementSpecifications({
+					'devKey' : devkey,
+					'testprojectid' : testprojectid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s" % ("tl.getRequirementSpecifications",repr(self.__server)))
+				raise NotSupported()
+
+	def getRequirementsForRequirementSpecification(self, devkey, testprojectid, reqspecid):
+		"""Returns all available Requirements for the specified Requirement Specification
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testprojectid: The internal ID of the parent TestProject.
+		@type testprojectid: int
+		@param reqspecid: The internal ID of the parent Requirement Specification
+		@type reqspecid: int
+		@returns: Matching Requirements
+		@rtype: list/dict/???
+		"""
+		try:
+			return self.__server.tl.getRequirementsForRequirementSpecification({
+					'devKey' : devkey,
+					'testprojectid' : testprojectid,
+					'reqspecid': reqspecid
+				})
+		except xmlrpclib.Fault,f:
+			if f.faultCode==-32601:
+				logging.getLogger(__name__).exception("Method '%s' not supported @ %s" % ("tl.getRequirementSpecifications",repr(self.__server)))
+				raise NotSupported()
