@@ -140,7 +140,9 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#about" class="summary-sig-name">about</a>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#about" class="summary-sig-name">about</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns informations about the current Testlink API</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.about">source&nbsp;code</a></span>
@@ -157,7 +159,9 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#sayHello" class="summary-sig-name">sayHello</a>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#sayHello" class="summary-sig-name">sayHello</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns the string 'Hello!'</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.sayHello">source&nbsp;code</a></span>
@@ -174,7 +178,9 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#ping" class="summary-sig-name">ping</a>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#ping" class="summary-sig-name">ping</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Alias for 'sayHello'</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.ping">source&nbsp;code</a></span>
@@ -192,7 +198,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#repeat" class="summary-sig-name">repeat</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">value</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Repeats the given value</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.repeat">source&nbsp;code</a></span>
@@ -210,7 +217,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#checkDevKey" class="summary-sig-name">checkDevKey</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Checks if the specified developer key is valid</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.checkDevKey">source&nbsp;code</a></span>
@@ -228,8 +236,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#doesUserExist" class="summary-sig-name">doesUserExist</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">user</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Checks, if a specified user exists</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.doesUserExist">source&nbsp;code</a></span>
@@ -247,8 +255,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getFullPath" class="summary-sig-name">getFullPath</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">nodeid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns the full path of an object</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getFullPath">source&nbsp;code</a></span>
@@ -266,16 +274,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#createTestProject" class="summary-sig-name">createTestProject</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">prefix</span>,
-        <span class="summary-sig-arg">notes</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
-        <span class="summary-sig-arg">active</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">public</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">requirementsEnabled</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">testPriorityEnabled</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">automationEnabled</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">inventoryEnabled</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Creates a new TestProject</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createTestProject">source&nbsp;code</a></span>
@@ -293,7 +293,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getProjects" class="summary-sig-name">getProjects</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all available TestProjects</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getProjects">source&nbsp;code</a></span>
@@ -311,8 +312,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestProjectByName" class="summary-sig-name">getTestProjectByName</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">name</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns a single TestProject specified by its name</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestProjectByName">source&nbsp;code</a></span>
@@ -330,12 +331,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#createTestPlan" class="summary-sig-name">createTestPlan</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">projectname</span>,
-        <span class="summary-sig-arg">notes</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
-        <span class="summary-sig-arg">active</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">public</span>=<span class="summary-sig-default">True</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Creates a new TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createTestPlan">source&nbsp;code</a></span>
@@ -353,9 +350,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestPlanByName" class="summary-sig-name">getTestPlanByName</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">projectname</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns a single TestPlan specified by its name</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestPlanByName">source&nbsp;code</a></span>
@@ -373,8 +369,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getProjectTestPlans" class="summary-sig-name">getProjectTestPlans</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">projectid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all TestPlans for a specified TestProject</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getProjectTestPlans">source&nbsp;code</a></span>
@@ -392,10 +388,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#createBuild" class="summary-sig-name">createBuild</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testplanid</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">notes</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Creates a new Build for the specified TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createBuild">source&nbsp;code</a></span>
@@ -413,8 +407,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getLatestBuildForTestPlan" class="summary-sig-name">getLatestBuildForTestPlan</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testplanid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns the latest Build for the specified TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getLatestBuildForTestPlan">source&nbsp;code</a></span>
@@ -432,8 +426,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getBuildsForTestPlan" class="summary-sig-name">getBuildsForTestPlan</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testplanid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all Builds for the specified TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getBuildsForTestPlan">source&nbsp;code</a></span>
@@ -451,8 +445,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestPlanPlatforms" class="summary-sig-name">getTestPlanPlatforms</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testplanid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all Platforms fot the specified TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestPlanPlatforms">source&nbsp;code</a></span>
@@ -470,20 +464,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#reportTCResult" class="summary-sig-name">reportTCResult</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testplanid</span>,
-        <span class="summary-sig-arg">status</span>,
-        <span class="summary-sig-arg">testcaseid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">testcaseexternalid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">buildid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">buildname</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">notes</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">guess</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">bugid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">platformid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">platformname</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">customfields</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">overwrite</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Sets the execution result for a specified TestCase</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.reportTCResult">source&nbsp;code</a></span>
@@ -501,10 +483,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getLastExecutionResult" class="summary-sig-name">getLastExecutionResult</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testplanid</span>,
-        <span class="summary-sig-arg">testcaseid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">testcaseexternalid</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns the execution result for a specified TestCase and TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getLastExecutionResult">source&nbsp;code</a></span>
@@ -522,8 +502,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#deleteExecution" class="summary-sig-name">deleteExecution</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">executionid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Deletes a specific exexution result</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.deleteExecution">source&nbsp;code</a></span>
@@ -541,14 +521,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#createTestSuite" class="summary-sig-name">createTestSuite</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">testprojectid</span>,
-        <span class="summary-sig-arg">details</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">parentid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">order</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">checkduplicates</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">actiononduplicate</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">block</code><code class="variable-quote">'</code></span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Creates a new TestSuite</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createTestSuite">source&nbsp;code</a></span>
@@ -566,8 +540,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestSuiteById" class="summary-sig-name">getTestSuiteById</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">suiteid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns a single TestSuite specified by the internal ID</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestSuiteById">source&nbsp;code</a></span>
@@ -585,8 +559,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestSuitesForTestSuite" class="summary-sig-name">getTestSuitesForTestSuite</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">suiteid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all TestSuites within the specified TestSuite</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestSuitesForTestSuite">source&nbsp;code</a></span>
@@ -604,8 +578,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getFirstLevelTestSuitesForTestProject" class="summary-sig-name">getFirstLevelTestSuitesForTestProject</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">projectid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns the first level TestSuites for a specified TestProject</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getFirstLevelTestSuitesForTestProject">source&nbsp;code</a></span>
@@ -623,8 +597,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestSuitesForTestPlan" class="summary-sig-name">getTestSuitesForTestPlan</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">planid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all TestSuites for a specified TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestSuitesForTestPlan">source&nbsp;code</a></span>
@@ -642,19 +616,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#createTestCase" class="summary-sig-name">createTestCase</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">suiteid</span>,
-        <span class="summary-sig-arg">projectid</span>,
-        <span class="summary-sig-arg">author</span>,
-        <span class="summary-sig-arg">summary</span>,
-        <span class="summary-sig-arg">steps</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
-        <span class="summary-sig-arg">preconditions</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">importance</span>=<span class="summary-sig-default">0</span>,
-        <span class="summary-sig-arg">execution</span>=<span class="summary-sig-default">0</span>,
-        <span class="summary-sig-arg">order</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">checkduplicates</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">actiononduplicate</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">block</code><code class="variable-quote">'</code></span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Creates a new TestCase</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createTestCase">source&nbsp;code</a></span>
@@ -672,10 +635,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestCase" class="summary-sig-name">getTestCase</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testcaseid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">testcaseexternalid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">version</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns a single TestCase specified by its ID</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCase">source&nbsp;code</a></span>
@@ -693,11 +654,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestCaseIdByName" class="summary-sig-name">getTestCaseIdByName</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">suite</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">project</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">path</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns the internal ID of a specified TestCase</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCaseIdByName">source&nbsp;code</a></span>
@@ -715,10 +673,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestCasesForTestSuite" class="summary-sig-name">getTestCasesForTestSuite</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">suiteid</span>,
-        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">details</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">simple</code><code class="variable-quote">'</code></span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all TestCases for a specified TestSuite</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCasesForTestSuite">source&nbsp;code</a></span>
@@ -736,17 +692,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestCasesForTestPlan" class="summary-sig-name">getTestCasesForTestPlan</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">planid</span>,
-        <span class="summary-sig-arg">testcaseid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">buildid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">keywordid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">keywords</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">executed</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">assignedto</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">executionstatus</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">executiontype</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">steps</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all TestCases for a specified TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCasesForTestPlan">source&nbsp;code</a></span>
@@ -764,14 +711,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#addTestCaseToTestPlan" class="summary-sig-name">addTestCaseToTestPlan</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">projectid</span>,
-        <span class="summary-sig-arg">planid</span>,
-        <span class="summary-sig-arg">testcaseexternalid</span>,
-        <span class="summary-sig-arg">version</span>,
-        <span class="summary-sig-arg">platformid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">executionorder</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">urgency</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Adds a specified TestCase to a specified TestPlan</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.addTestCaseToTestPlan">source&nbsp;code</a></span>
@@ -789,10 +730,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#assignRequirements" class="summary-sig-name">assignRequirements</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testcaseexternalid</span>,
-        <span class="summary-sig-arg">projectid</span>,
-        <span class="summary-sig-arg">requirements</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       &quot;Assigns specified Requirements to a specified TestCase</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.assignRequirements">source&nbsp;code</a></span>
@@ -810,12 +749,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestCaseCustomFieldDesignValue" class="summary-sig-name">getTestCaseCustomFieldDesignValue</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testcaseexternalid</span>,
-        <span class="summary-sig-arg">version</span>,
-        <span class="summary-sig-arg">projectid</span>,
-        <span class="summary-sig-arg">fieldname</span>,
-        <span class="summary-sig-arg">details</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">value</code><code class="variable-quote">'</code></span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns the value of a specified CustomField for a specified TestCase</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCaseCustomFieldDesignValue">source&nbsp;code</a></span>
@@ -833,14 +768,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadAttachment" class="summary-sig-name">uploadAttachment</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">objectid</span>,
-        <span class="summary-sig-arg">objecttable</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">mime</span>,
-        <span class="summary-sig-arg">content</span>,
-        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Uploads the specified Attachment for the specified object</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadAttachment">source&nbsp;code</a></span>
@@ -858,13 +787,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadRequirementSpecificationAttachment" class="summary-sig-name">uploadRequirementSpecificationAttachment</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">reqspecid</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">mime</span>,
-        <span class="summary-sig-arg">content</span>,
-        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Uploads the specified Attachment for the specified Requirement 
       Specification</td>
           <td align="right" valign="top">
@@ -883,13 +807,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadRequirementAttachment" class="summary-sig-name">uploadRequirementAttachment</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">reqid</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">mime</span>,
-        <span class="summary-sig-arg">content</span>,
-        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Uploads the specified Attachment for the specified Requirement</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadRequirementAttachment">source&nbsp;code</a></span>
@@ -907,13 +826,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadTestProjectAttachment" class="summary-sig-name">uploadTestProjectAttachment</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">projectid</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">mime</span>,
-        <span class="summary-sig-arg">content</span>,
-        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Uploads the specified Attachment for the specified TestProject</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadTestProjectAttachment">source&nbsp;code</a></span>
@@ -931,13 +845,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadTestSuiteAttachment" class="summary-sig-name">uploadTestSuiteAttachment</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">suiteid</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">mime</span>,
-        <span class="summary-sig-arg">content</span>,
-        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Uploads the specified Attachment for the specified TestSuite</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadTestSuiteAttachment">source&nbsp;code</a></span>
@@ -955,13 +864,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadTestCaseAttachment" class="summary-sig-name">uploadTestCaseAttachment</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testcaseid</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">mime</span>,
-        <span class="summary-sig-arg">content</span>,
-        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Uploads the specified Attachment for the specified TestCase</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadTestCaseAttachment">source&nbsp;code</a></span>
@@ -978,17 +882,12 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadExecutionnAttachment" class="summary-sig-name">uploadExecutionnAttachment</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">executionid</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">mime</span>,
-        <span class="summary-sig-arg">content</span>,
-        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default">None</span>)</span><br />
+          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadExecutionAttachment" class="summary-sig-name">uploadExecutionAttachment</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Uploads the specified Attachment for the specified Execution</td>
           <td align="right" valign="top">
-            
+            <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadExecutionAttachment">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1003,9 +902,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getTestCaseAttachments" class="summary-sig-name">getTestCaseAttachments</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testcaseid</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">testcaseexternalid</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all available Attachments for the specified TestCase</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCaseAttachments">source&nbsp;code</a></span>
@@ -1023,8 +921,8 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getRequirementSpecifications" class="summary-sig-name">getRequirementSpecifications</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testprojectid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all available Requirement Specifications for the specified 
       TestProject</td>
           <td align="right" valign="top">
@@ -1043,37 +941,12 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#getRequirementsForRequirementSpecification" class="summary-sig-name">getRequirementsForRequirementSpecification</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">testprojectid</span>,
-        <span class="summary-sig-arg">reqspecid</span>)</span><br />
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Returns all available Requirements for the specified Requirement 
       Specification</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getRequirementsForRequirementSpecification">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">dict</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="testlink.api.TestlinkAPI-class.html#uploadExecutionAttachment" class="summary-sig-name">uploadExecutionAttachment</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">devkey</span>,
-        <span class="summary-sig-arg">executionid</span>,
-        <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">mime</span>,
-        <span class="summary-sig-arg">content</span>,
-        <span class="summary-sig-arg">title</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Uploads the specified Attachment for the specified Execution</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadExecutionAttachment">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1167,7 +1040,7 @@ object --+
     </ul></dd>
     <dt>Raises:</dt>
     <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'>EmptyProxy</strong></code> - The given proxy is empty</li>
+        <li><code><strong class='fraise'><a href="testlink.api.InvalidProxy-class.html">InvalidProxy</a></strong></code> - The given proxy is empty</li>
     </ul></dd>
     <dt>Overrides:
         object.__init__
@@ -1182,7 +1055,9 @@ object --+
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">about</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">about</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.about">source&nbsp;code</a></span>&nbsp;
@@ -1194,6 +1069,11 @@ object --+
     <dt>Returns: str</dt>
         <dd>'Testlink API Version: x.x initially written by Asial Brumfield 
           with contributions by Testlink development Team'</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1204,7 +1084,9 @@ object --+
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">sayHello</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sayHello</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.sayHello">source&nbsp;code</a></span>&nbsp;
@@ -1215,6 +1097,11 @@ object --+
   <dl class="fields">
     <dt>Returns: str</dt>
         <dd>'Hello!'</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1225,7 +1112,9 @@ object --+
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">ping</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ping</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.ping">source&nbsp;code</a></span>&nbsp;
@@ -1236,6 +1125,11 @@ object --+
   <dl class="fields">
     <dt>Returns: str</dt>
         <dd>'Hello!'</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1247,7 +1141,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">repeat</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">value</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.repeat">source&nbsp;code</a></span>&nbsp;
@@ -1262,6 +1157,11 @@ object --+
     </ul></dd>
     <dt>Returns: mixed</dt>
         <dd>The given value</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1273,7 +1173,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">checkDevKey</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.checkDevKey">source&nbsp;code</a></span>&nbsp;
@@ -1288,6 +1189,11 @@ object --+
     </ul></dd>
     <dt>Returns: bool</dt>
         <dd>True/False</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1299,8 +1205,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">doesUserExist</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">user</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.doesUserExist">source&nbsp;code</a></span>&nbsp;
@@ -1316,6 +1222,11 @@ object --+
     </ul></dd>
     <dt>Returns: bool</dt>
         <dd>True/False</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1327,8 +1238,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getFullPath</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">nodeid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getFullPath">source&nbsp;code</a></span>&nbsp;
@@ -1344,6 +1255,11 @@ object --+
     </ul></dd>
     <dt>Returns: str</dt>
         <dd>Hierarchical path of the object</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1355,16 +1271,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">createTestProject</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">prefix</span>,
-        <span class="sig-arg">notes</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
-        <span class="sig-arg">active</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">public</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">requirementsEnabled</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">testPriorityEnabled</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">automationEnabled</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">inventoryEnabled</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createTestProject">source&nbsp;code</a></span>&nbsp;
@@ -1395,6 +1303,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict/list/???</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 <div class="fields">      <strong>To Do:</strong>
       <ul class="nomargin-top">
@@ -1415,7 +1328,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getProjects</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getProjects">source&nbsp;code</a></span>&nbsp;
@@ -1430,6 +1344,11 @@ object --+
     </ul></dd>
     <dt>Returns: list</dt>
         <dd>TestProjects as list of dicts</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1441,8 +1360,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestProjectByName</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">name</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestProjectByName">source&nbsp;code</a></span>&nbsp;
@@ -1458,6 +1377,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Matching TestProject</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1469,12 +1393,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">createTestPlan</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">projectname</span>,
-        <span class="sig-arg">notes</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
-        <span class="sig-arg">active</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">public</span>=<span class="sig-default">True</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createTestPlan">source&nbsp;code</a></span>&nbsp;
@@ -1497,6 +1417,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict/list/???</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 <div class="fields">      <strong>To Do:</strong>
       <ul class="nomargin-top">
@@ -1517,9 +1442,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestPlanByName</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">projectname</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestPlanByName">source&nbsp;code</a></span>&nbsp;
@@ -1536,6 +1460,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Matching TestPlan</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1547,8 +1476,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getProjectTestPlans</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">projectid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getProjectTestPlans">source&nbsp;code</a></span>&nbsp;
@@ -1564,6 +1493,11 @@ object --+
     </ul></dd>
     <dt>Returns: list</dt>
         <dd>Matching TestPlans</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1575,10 +1509,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">createBuild</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testplanid</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">notes</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createBuild">source&nbsp;code</a></span>&nbsp;
@@ -1596,6 +1528,11 @@ object --+
     </ul></dd>
     <dt>Returns: list/dict/???</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 <div class="fields">      <p><strong>To Do:</strong>
         Specify return value type
@@ -1610,8 +1547,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getLatestBuildForTestPlan</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testplanid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getLatestBuildForTestPlan">source&nbsp;code</a></span>&nbsp;
@@ -1627,6 +1564,11 @@ object --+
     </ul></dd>
     <dt>Returns: list</dt>
         <dd>Matching Build</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1638,8 +1580,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getBuildsForTestPlan</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testplanid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getBuildsForTestPlan">source&nbsp;code</a></span>&nbsp;
@@ -1655,6 +1597,11 @@ object --+
     </ul></dd>
     <dt>Returns: list</dt>
         <dd>Matching Builds</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1666,8 +1613,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestPlanPlatforms</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testplanid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestPlanPlatforms">source&nbsp;code</a></span>&nbsp;
@@ -1683,6 +1630,11 @@ object --+
     </ul></dd>
     <dt>Returns: list</dt>
         <dd>Matching Platforms</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1694,20 +1646,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">reportTCResult</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testplanid</span>,
-        <span class="sig-arg">status</span>,
-        <span class="sig-arg">testcaseid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">testcaseexternalid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">buildid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">buildname</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">notes</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">guess</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">bugid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">platformid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">platformname</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">customfields</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">overwrite</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.reportTCResult">source&nbsp;code</a></span>&nbsp;
@@ -1742,6 +1682,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1753,10 +1698,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getLastExecutionResult</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testplanid</span>,
-        <span class="sig-arg">testcaseid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">testcaseexternalid</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getLastExecutionResult">source&nbsp;code</a></span>&nbsp;
@@ -1776,6 +1719,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Matching result</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1787,8 +1735,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">deleteExecution</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">executionid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.deleteExecution">source&nbsp;code</a></span>&nbsp;
@@ -1804,6 +1752,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1815,14 +1768,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">createTestSuite</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">testprojectid</span>,
-        <span class="sig-arg">details</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">parentid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">order</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">checkduplicates</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">actiononduplicate</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">block</code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createTestSuite">source&nbsp;code</a></span>&nbsp;
@@ -1845,6 +1792,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1856,8 +1808,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestSuiteById</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">suiteid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestSuiteById">source&nbsp;code</a></span>&nbsp;
@@ -1873,6 +1825,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Matching TestSuite</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1884,8 +1841,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestSuitesForTestSuite</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">suiteid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestSuitesForTestSuite">source&nbsp;code</a></span>&nbsp;
@@ -1901,6 +1858,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict/list/???</dt>
         <dd>Matching TestSuites</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1912,8 +1874,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getFirstLevelTestSuitesForTestProject</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">projectid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getFirstLevelTestSuitesForTestProject">source&nbsp;code</a></span>&nbsp;
@@ -1929,6 +1891,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict/list/???</dt>
         <dd>Matching TestSuites</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1940,8 +1907,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestSuitesForTestPlan</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">planid</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestSuitesForTestPlan">source&nbsp;code</a></span>&nbsp;
@@ -1957,6 +1924,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict/list/???</dt>
         <dd>Matching TestSuites</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1968,19 +1940,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">createTestCase</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">suiteid</span>,
-        <span class="sig-arg">projectid</span>,
-        <span class="sig-arg">author</span>,
-        <span class="sig-arg">summary</span>,
-        <span class="sig-arg">steps</span>=<span class="sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
-        <span class="sig-arg">preconditions</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">importance</span>=<span class="sig-default">0</span>,
-        <span class="sig-arg">execution</span>=<span class="sig-default">0</span>,
-        <span class="sig-arg">order</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">checkduplicates</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">actiononduplicate</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">block</code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.createTestCase">source&nbsp;code</a></span>&nbsp;
@@ -2009,6 +1970,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict/list/???</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2020,10 +1986,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestCase</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testcaseid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">testcaseexternalid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">version</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCase">source&nbsp;code</a></span>&nbsp;
@@ -2043,6 +2007,11 @@ object --+
     </ul></dd>
     <dt>Returns: list/dict/???</dt>
         <dd>Matching TestCase</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2054,11 +2023,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestCaseIdByName</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">suite</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">project</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">path</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCaseIdByName">source&nbsp;code</a></span>&nbsp;
@@ -2077,6 +2043,11 @@ object --+
     </ul></dd>
     <dt>Returns: int?</dt>
         <dd>Matching TestCase ID</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2088,10 +2059,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestCasesForTestSuite</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">suiteid</span>,
-        <span class="sig-arg">deep</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">details</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">simple</code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCasesForTestSuite">source&nbsp;code</a></span>&nbsp;
@@ -2110,6 +2079,11 @@ object --+
     </ul></dd>
     <dt>Returns: list/dict/???</dt>
         <dd>Matching TestCases</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2121,17 +2095,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestCasesForTestPlan</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">planid</span>,
-        <span class="sig-arg">testcaseid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">buildid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">keywordid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">keywords</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">executed</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">assignedto</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">executionstatus</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">executiontype</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">steps</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCasesForTestPlan">source&nbsp;code</a></span>&nbsp;
@@ -2156,6 +2121,11 @@ object --+
     </ul></dd>
     <dt>Returns: list/dict/???</dt>
         <dd>Matching TestCases</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2167,14 +2137,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">addTestCaseToTestPlan</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">projectid</span>,
-        <span class="sig-arg">planid</span>,
-        <span class="sig-arg">testcaseexternalid</span>,
-        <span class="sig-arg">version</span>,
-        <span class="sig-arg">platformid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">executionorder</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">urgency</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.addTestCaseToTestPlan">source&nbsp;code</a></span>&nbsp;
@@ -2197,6 +2161,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 <div class="fields">      <p><strong>To Do:</strong>
         Set valid values for urgency
@@ -2211,10 +2180,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">assignRequirements</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testcaseexternalid</span>,
-        <span class="sig-arg">projectid</span>,
-        <span class="sig-arg">requirements</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.assignRequirements">source&nbsp;code</a></span>&nbsp;
@@ -2232,6 +2199,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2243,12 +2215,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestCaseCustomFieldDesignValue</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testcaseexternalid</span>,
-        <span class="sig-arg">version</span>,
-        <span class="sig-arg">projectid</span>,
-        <span class="sig-arg">fieldname</span>,
-        <span class="sig-arg">details</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">value</code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCaseCustomFieldDesignValue">source&nbsp;code</a></span>&nbsp;
@@ -2271,6 +2239,11 @@ object --+
     <dt>Returns: mixed</dt>
         <dd>Single value, information about specified field, information 
           about all fields</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2282,14 +2255,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">uploadAttachment</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">objectid</span>,
-        <span class="sig-arg">objecttable</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">mime</span>,
-        <span class="sig-arg">content</span>,
-        <span class="sig-arg">title</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">description</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadAttachment">source&nbsp;code</a></span>&nbsp;
@@ -2311,6 +2278,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2322,13 +2294,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">uploadRequirementSpecificationAttachment</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">reqspecid</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">mime</span>,
-        <span class="sig-arg">content</span>,
-        <span class="sig-arg">title</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">description</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadRequirementSpecificationAttachment">source&nbsp;code</a></span>&nbsp;
@@ -2350,6 +2317,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2361,13 +2333,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">uploadRequirementAttachment</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">reqid</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">mime</span>,
-        <span class="sig-arg">content</span>,
-        <span class="sig-arg">title</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">description</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadRequirementAttachment">source&nbsp;code</a></span>&nbsp;
@@ -2388,6 +2355,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2399,13 +2371,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">uploadTestProjectAttachment</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">projectid</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">mime</span>,
-        <span class="sig-arg">content</span>,
-        <span class="sig-arg">title</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">description</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadTestProjectAttachment">source&nbsp;code</a></span>&nbsp;
@@ -2426,6 +2393,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2437,13 +2409,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">uploadTestSuiteAttachment</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">suiteid</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">mime</span>,
-        <span class="sig-arg">content</span>,
-        <span class="sig-arg">title</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">description</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadTestSuiteAttachment">source&nbsp;code</a></span>&nbsp;
@@ -2464,6 +2431,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2475,13 +2447,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">uploadTestCaseAttachment</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testcaseid</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">mime</span>,
-        <span class="sig-arg">content</span>,
-        <span class="sig-arg">title</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">description</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadTestCaseAttachment">source&nbsp;code</a></span>&nbsp;
@@ -2502,136 +2469,11 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="uploadExecutionnAttachment"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">uploadExecutionnAttachment</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">executionid</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">mime</span>,
-        <span class="sig-arg">content</span>,
-        <span class="sig-arg">title</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">description</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Uploads the specified Attachment for the specified Execution</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
+    <dt>Decorators:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>devkey</code></strong> (str) - Testlink developer key</li>
-        <li><strong class="pname"><code>executionid</code></strong> (int) - The internal ID of the Execution</li>
-        <li><strong class="pname"><code>name</code></strong> (str) - The file name of the Attachment</li>
-        <li><strong class="pname"><code>mime</code></strong> (str) - The MIME-Type of the Attachment</li>
-        <li><strong class="pname"><code>content</code></strong> (str) - Base64 encoded dump of Attachment</li>
-        <li><strong class="pname"><code>title</code></strong> (str) - &lt;OPTIONAL&gt; Title for the Attachment</li>
-        <li><strong class="pname"><code>description</code></strong> (str) - &lt;OPTIONAL&gt; Additional description for the Attachment</li>
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
     </ul></dd>
-    <dt>Returns: dict</dt>
-        <dd>Server response</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getTestCaseAttachments"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestCaseAttachments</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testcaseid</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">testcaseexternalid</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCaseAttachments">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Returns all available Attachments for the specified TestCase</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>devkey</code></strong> (str) - Testlink developer key</li>
-        <li><strong class="pname"><code>testcaseid</code></strong> (int) - &lt;OPTIONAL&gt; The internal ID of the TestCase. If not given, 
-          external ID must be set</li>
-        <li><strong class="pname"><code>testcaseexternalid</code></strong> (int) - &lt;OPTIONAL&gt; The external ID of the TestCase. If not given, 
-          the internal ID must be set</li>
-    </ul></dd>
-    <dt>Returns: list/dict/???</dt>
-        <dd>Matching attachments</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getRequirementSpecifications"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRequirementSpecifications</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testprojectid</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getRequirementSpecifications">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Returns all available Requirement Specifications for the specified 
-  TestProject</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>devkey</code></strong> (str) - Testlink developer key</li>
-        <li><strong class="pname"><code>testprojectid</code></strong> (int) - The internal ID of the parent TestProject.</li>
-    </ul></dd>
-    <dt>Returns: list/dict/???</dt>
-        <dd>Matching Requirement Specifications</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getRequirementsForRequirementSpecification"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRequirementsForRequirementSpecification</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">testprojectid</span>,
-        <span class="sig-arg">reqspecid</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getRequirementsForRequirementSpecification">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Returns all available Requirements for the specified Requirement 
-  Specification</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>devkey</code></strong> (str) - Testlink developer key</li>
-        <li><strong class="pname"><code>testprojectid</code></strong> (int) - The internal ID of the parent TestProject.</li>
-        <li><strong class="pname"><code>reqspecid</code></strong> (int) - The internal ID of the parent Requirement Specification</li>
-    </ul></dd>
-    <dt>Returns: list/dict/???</dt>
-        <dd>Matching Requirements</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2643,13 +2485,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">uploadExecutionAttachment</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">devkey</span>,
-        <span class="sig-arg">executionid</span>,
-        <span class="sig-arg">name</span>,
-        <span class="sig-arg">mime</span>,
-        <span class="sig-arg">content</span>,
-        <span class="sig-arg">title</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">description</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.uploadExecutionAttachment">source&nbsp;code</a></span>&nbsp;
@@ -2670,6 +2507,116 @@ object --+
     </ul></dd>
     <dt>Returns: dict</dt>
         <dd>Server response</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getTestCaseAttachments"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getTestCaseAttachments</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getTestCaseAttachments">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns all available Attachments for the specified TestCase</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>devkey</code></strong> (str) - Testlink developer key</li>
+        <li><strong class="pname"><code>testcaseid</code></strong> (int) - &lt;OPTIONAL&gt; The internal ID of the TestCase. If not given, 
+          external ID must be set</li>
+        <li><strong class="pname"><code>testcaseexternalid</code></strong> (int) - &lt;OPTIONAL&gt; The external ID of the TestCase. If not given, 
+          the internal ID must be set</li>
+    </ul></dd>
+    <dt>Returns: list/dict/???</dt>
+        <dd>Matching attachments</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getRequirementSpecifications"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRequirementSpecifications</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getRequirementSpecifications">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns all available Requirement Specifications for the specified 
+  TestProject</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>devkey</code></strong> (str) - Testlink developer key</li>
+        <li><strong class="pname"><code>testprojectid</code></strong> (int) - The internal ID of the parent TestProject.</li>
+    </ul></dd>
+    <dt>Returns: list/dict/???</dt>
+        <dd>Matching Requirement Specifications</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getRequirementsForRequirementSpecification"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRequirementsForRequirementSpecification</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="testlink.api-pysrc.html#TestlinkAPI.getRequirementsForRequirementSpecification">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns all available Requirements for the specified Requirement 
+  Specification</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>devkey</code></strong> (str) - Testlink developer key</li>
+        <li><strong class="pname"><code>testprojectid</code></strong> (int) - The internal ID of the parent TestProject.</li>
+        <li><strong class="pname"><code>reqspecid</code></strong> (int) - The internal ID of the parent Requirement Specification</li>
+    </ul></dd>
+    <dt>Returns: list/dict/???</dt>
+        <dd>Matching Requirements</dd>
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@handleNotSupported</code></li>
+        <li><code>@handleAPIError</code></li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2700,7 +2647,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Aug 22 14:47:33 2013
+    Generated by Epydoc 3.0.1 on Fri Aug 23 13:39:58 2013
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

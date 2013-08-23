@@ -1,11 +1,14 @@
 testlink	testlink-module.html
 testlink.__package__	testlink-module.html#__package__
 testlink.api	testlink.api-module.html
+testlink.api.handleAPIError	testlink.api-module.html#handleAPIError
 testlink.api.__package__	testlink.api-module.html#__package__
+testlink.api.handleNotSupported	testlink.api-module.html#handleNotSupported
 testlink.objects	testlink.objects-module.html
 testlink.objects.__package__	testlink.objects-module.html#__package__
 testlink.server	testlink.server-module.html
 testlink.server.__package__	testlink.server-module.html#__package__
+testlink.api.APIError	testlink.api.APIError-class.html
 testlink.api.InvalidProxy	testlink.api.InvalidProxy-class.html
 testlink.api.NotSupported	testlink.api.NotSupported-class.html
 testlink.api.TestlinkAPI	testlink.api.TestlinkAPI-class.html
@@ -19,7 +22,6 @@ testlink.api.TestlinkAPI.doesUserExist	testlink.api.TestlinkAPI-class.html#doesU
 testlink.api.TestlinkAPI.getProjects	testlink.api.TestlinkAPI-class.html#getProjects
 testlink.api.TestlinkAPI.createTestPlan	testlink.api.TestlinkAPI-class.html#createTestPlan
 testlink.api.TestlinkAPI.__init__	testlink.api.TestlinkAPI-class.html#__init__
-testlink.api.TestlinkAPI.uploadExecutionnAttachment	testlink.api.TestlinkAPI-class.html#uploadExecutionnAttachment
 testlink.api.TestlinkAPI.getTestCase	testlink.api.TestlinkAPI-class.html#getTestCase
 testlink.api.TestlinkAPI.getTestProjectByName	testlink.api.TestlinkAPI-class.html#getTestProjectByName
 testlink.api.TestlinkAPI.ping	testlink.api.TestlinkAPI-class.html#ping
@@ -96,7 +98,6 @@ testlink.api.TestlinkAPI.getTestCase	testlink.api.TestlinkAPI-class.html#getTest
 testlink.api.TestlinkAPI.getTestProjectByName	testlink.api.TestlinkAPI-class.html#getTestProjectByName
 testlink.api.TestlinkAPI.ping	testlink.api.TestlinkAPI-class.html#ping
 testlink.api.TestlinkAPI.sayHello	testlink.api.TestlinkAPI-class.html#sayHello
-testlink.api.TestlinkAPI.about	testlink.api.TestlinkAPI-class.html#about
 testlink.api.TestlinkAPI.createTestProject	testlink.api.TestlinkAPI-class.html#createTestProject
 testlink.api.TestlinkAPI.getTestSuitesForTestSuite	testlink.api.TestlinkAPI-class.html#getTestSuitesForTestSuite
 testlink.api.TestlinkAPI.uploadTestCaseAttachment	testlink.api.TestlinkAPI-class.html#uploadTestCaseAttachment
@@ -108,13 +109,13 @@ testlink.api.TestlinkAPI.repeat	testlink.api.TestlinkAPI-class.html#repeat
 testlink.api.TestlinkAPI.assignRequirements	testlink.api.TestlinkAPI-class.html#assignRequirements
 testlink.api.TestlinkAPI.uploadRequirementSpecificationAttachment	testlink.api.TestlinkAPI-class.html#uploadRequirementSpecificationAttachment
 testlink.api.TestlinkAPI.getLastExecutionResult	testlink.api.TestlinkAPI-class.html#getLastExecutionResult
-testlink.api.TestlinkAPI.getFirstLevelTestSuitesForTestProject	testlink.api.TestlinkAPI-class.html#getFirstLevelTestSuitesForTestProject
+testlink.api.TestlinkAPI.about	testlink.api.TestlinkAPI-class.html#about
 testlink.api.TestlinkAPI.uploadRequirementAttachment	testlink.api.TestlinkAPI-class.html#uploadRequirementAttachment
 testlink.api.TestlinkAPI.deleteExecution	testlink.api.TestlinkAPI-class.html#deleteExecution
 testlink.api.TestlinkAPI.checkDevKey	testlink.api.TestlinkAPI-class.html#checkDevKey
 testlink.objects.Testlink.getVersion	testlink.objects.Testlink-class.html#getVersion
 testlink.objects.Testlink.getTestProject	testlink.objects.Testlink-class.html#getTestProject
-testlink.api.TestlinkAPI.uploadExecutionnAttachment	testlink.api.TestlinkAPI-class.html#uploadExecutionnAttachment
+testlink.api.TestlinkAPI.getFirstLevelTestSuitesForTestProject	testlink.api.TestlinkAPI-class.html#getFirstLevelTestSuitesForTestProject
 testlink.api.TestlinkAPI.createTestSuite	testlink.api.TestlinkAPI-class.html#createTestSuite
 testlink.api.TestlinkAPI.getFullPath	testlink.api.TestlinkAPI-class.html#getFullPath
 testlink.api.TestlinkAPI.getTestPlanByName	testlink.api.TestlinkAPI-class.html#getTestPlanByName
