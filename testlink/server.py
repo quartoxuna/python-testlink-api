@@ -1,64 +1,34 @@
 #!/usr/bin/env python
 
-#               /                ______                __    ___                __
-#         -+ydNMM....``         /\__  _\              /\ \__/\_ \    __        /\ \ 
-#      `+mMMMMMMM........`      \/_/\ \/    __    ____\ \ ,_\//\ \  /\_\    ___\ \ \/'\ 
-#     /mMMMMMMMMM..........`       \ \ \  /'__`\ /',__\\ \ \/ \ \ \ \/\ \ /' _ `\ \ , <
-#    oMMMMMMMMMMM...........`       \ \ \/\  __//\__, `\\ \ \_ \_\ \_\ \ \/\ \/\ \ \ \\`\ 
-#   :MMMMMMMMMMMM............        \ \_\ \____\/\____/ \ \__\/\____\\ \_\ \_\ \_\ \_\ \_\ 
-#   hMMMMMMMMMMMM............`        \/_/\/____/\/___/   \/__/\/____/ \/_/\/_/\/_/\/_/\/_/ 
-# ..::::::::::::oMMMMMMMMMMMMo..   ______  ____    ______      __      __
-#   ............+MMMMMMMMMMMM-    /\  _  \/\  _`\ /\__  _\    /\ \  __/\ \ 
-#    ...........+MMMMMMMMMMMs     \ \ \_\ \ \ \_\ \/_/\ \/    \ \ \/\ \ \ \  _ __    __     _____   _____      __   _ __
-#     ..........+MMMMMMMMMMy       \ \  __ \ \ ,__/  \ \ \     \ \ \ \ \ \ \/\`'__\/'__`\  /\ '__`\/\ '__`\  /'__`\/\`'__\ 
-#      `........+MMMMMMMMm:         \ \ \/\ \ \ \/    \_\ \__   \ \ \_/ \_\ \ \ \//\ \_\.\_\ \ \_\ \ \ \_\ \/\  __/\ \ \/
-#        `......+MMMMMNy:            \ \_\ \_\ \_\    /\_____\   \ `\___x___/\ \_\\ \__/.\_\\ \ ,__/\ \ ,__/\ \____\\ \_\ 
-#            ```/ss+/.                \/_/\/_/\/_/    \/_____/    '\/__//__/  \/_/ \/__/\/_/ \ \ \/  \ \ \/  \/____/ \/_/
-#               /                                                                             \ \_\   \ \_\ 
-#                                                                                              \/_/    \/_/
-
-#
-# Epydoc documentation
-#
-
 """
 @author: Kai Borowiak
 @summary: Testlink conform automation server.
 """
 
-#
-# IMPORTS
-#
+import time
 import logging
-import SimpleXMLRPCServer
+from SimpleXMLRPCServer import SimpleXMLRPCServer
 
-#
-# ENABLES LOGGING
-#
-try:
-	logging.getLogger(__name__).addHandler(logging.NullHandler())
-except AttributeError:
-	# Workaround for Python < 2.7
-	# Since there was not NullHandler()
-	pass
-
-class TestlinkXMLRPCServer(object):
+class TestlinkXMLRPCServer(SimpleXMLRPCServer):
 	"""Testlink conform XML-RPC automation server"""
-	def __init__(self,addr="127.0.0.1",port=8000,callback=None):
+
+	def __init__(self,callback,host='127.0.0.1',port=8080,verbose=False):
 		"""Initializes the Server
+		@param callback: Method to be executed if server is triggerd
+		@type callback: method
 		@param addr: The address of the Server
 		@type addr: str
 		@param port: The port of the Server
 		@type port: int
-		@param callback: Method to be executed if server is triggerd
-		@type callback: method
+		@param verbose: Log HTTP requests
+		@type verbose: bool
 		"""
-		logging.getLogger(__name__).info("Starting Testlink XML-RPC Server at http://%s:%d" % (str(addr),int(port)) )
-		self.__server = SimpleXMLRPCServer.SimpleXMLRPCServer((addr,port),logRequests=False)
-		logging.getLogger(__name__).info("Registering method '%s'" % callback.__name__)
-		self.__server.register_function(callback,"executeTestCase")
-		logging.getLogger(__name__).info("...idle")
+		SimpleXMLRPCServer.__init__(self,(host,port),logRequests=verbose)
+		self.register_introspection_functions()
+		logging.getLogger('testlink').info("Starting Testlink compatible XML-RPC Server at http://%s:%d/" % (str(host),int(port)) )
+		logging.getLogger('testlink').info("Registering '%s' as callback" % str(callback.__name__))
+		self.register_function(callback,"executeTestCase")
 		try:
-			self.__server.serve_forever()
+			self.serve_forever()
 		except KeyboardInterrupt:
-			logging.getLogger(__name__).info("Exiting.")
+			logging.getLogger('testlink').warning("Exiting Testlink compatible XML-RPC Server at http://%s:%d/" % (str(host),int(port)) )
