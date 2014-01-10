@@ -34,7 +34,7 @@ class TestlinkAPI(object):
 		try:
 			# Call the actual method
 			fn = getattr(self.__server,method)
-			resp = fn(args,kwargs)
+			resp = fn(*args,**kwargs)
 		except xmlrpclib.Fault,f:
 			if (f.faultCode == NotSupported.code):
 				raise NotSupported(f.faultString)
@@ -91,7 +91,7 @@ class TestlinkAPI(object):
 		@returns: True/False
 		@rtype: bool
 		"""
-		return self.__query("tl.checkDevKey", devKey=devkey)
+		return self.__query("tl.checkDevKey", devkey)
 
 
 	def doesUserExist(self, devkey, user):
