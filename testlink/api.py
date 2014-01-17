@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """
 @author: Kai Borowiak
@@ -7,43 +8,107 @@
 
 # IMPORTS
 import xmlrpclib
+from testlink import log
 
-# EXCEPTIONS
-class InvalidURI(Exception): pass
-class APIError(Exception): pass
+class InvalidURI(Exception):
+	"""To be raised, if the given endpoint URI is not correct"""
+	pass
+
+
 class NotSupported(Exception):
-	code = -32601
+	"""To be raised, if Testlink does not support the requested method
+	@cvar errorName: Method, that is not supported
+	@type errorName: str
+	@cvar errorCode: Default xmlrpclib.Fault code -32601
+	@type errorCode: int
+	"""
+	errorCode = -32601
+	def __init__(self,fn_name):
+		"""Initializes the Exception
+		@param fn_name: Name of function causing the error
+		@type: fn_name: str
+		"""
+		Exception.__init__(self,fn_name)
+		self.errorName = fn_name
+
+
+class APIError(Exception):
+	"""To be raised, if the Testlink API returns an error struct
+	@note: Default error struct {'code':'123','message':'foo'}
+	@ivar errorCode: Testlink API Error Code
+	@type errorCode: int
+	@ivar errorString: Testlink API Error String
+	@type errorString: str
+	"""
+	def __init__(self,code,message):
+		"""Initializes the Exception
+		@param code: Testlink API Error Code
+		@type code: int
+		@param message: Testlink API Error String
+		@type message: str
+		"""
+		Exception.__init__(self,message)
+		self.errorCode = code
+		self.errorString = message
 
 
 class TestlinkAPI(object):
-	"""Raw Testlink API"""
+	"""Raw Testlink API
+	Documented wrapper around Testlink API
+	Raises user friendly exceptions"""
 
-	def __init__(self,uri):
-		"""Initializes the TestlinkAPI
+	devkey = None
+
+	def __init__(self,uri,short=True):
+		"""Initialize the TestlinkAPI
 		@param uri: URI of Testlink XML-RPC server implementation
 		@type uri: str
-		@raises InvalidProxy: The given proxy is empty
+		@param short_uri: Appending API path to default Testlink path (Default: True)
+		@type short: bool
+		@raises InvalidProxy: The given proxy is not valid
 		"""
+		# URI modification
+		if short:
+			if not uri.endswith('/'):
+				uri += '/'
+			uri += 'lib/api/xmlrpc.php'
+
 		try:
-			self.__server = xmlrpclib.ServerProxy(uri,encoding='UTF-8',allow_none=True)
+			self.__proxy = xmlrpclib.ServerProxy(uri,encoding='UTF-8',allow_none=True )
 		except IOError:
 			raise InvalidURI(uri)
 
-	def __query(self,method,*args,**kwargs):
-		"""Calls a remote method"""
+	def query(self,method,**kwargs):
+		"""Remote calls a method on the server
+		@param method: Method to call
+		@type method: str
+		@raise NotSupported: Called method is not supported by Testlink
+		@raise APIError: Testlink API server side error
+		"""
+
+		# Add devkey if available
+		# otherwiese an API error will be thrown
+		# if Testlink requires the key
+		if self.devkey and not kwargs['devKey']:
+			kwargs['devKey'] = self.devkey
+
+		log.debug("Query: %s(%s)" % (str(method),str(kwargs)) )
 		try:
 			# Call the actual method
-			fn = getattr(self.__server,method)
-			resp = fn(*args,**kwargs)
+			fn = getattr(self.__proxy,method)
+			resp = fn(kwargs)
 		except xmlrpclib.Fault,f:
-			if (f.faultCode == NotSupported.code):
-				raise NotSupported(f.faultString)
+			if (f.faultCode == NotSupported.errorCode):
+				raise NotSupported(method)
+		except xmlrpclib.ProtocolError,pe:
+			raise InvalidURI(self.__proxy)
 		else:
 			# Check for API error {{'code': 123, 'message': foo}}
 			if len(resp) == 1:
 				resp = resp[0]
 				if (('code' in resp) and ('message' in resp)):
-					raise APIError("%s - %s" % (resp['code'],resp['message']) )
+					raise APIError(resp['code'],resp['message'])
+			log.debug("Response: '%s'" % str(resp))
 			return resp
 
 	#
@@ -55,7 +120,7 @@ class TestlinkAPI(object):
 		@returns: 'Testlink API Version: x.x initially written by Asial Brumfield with contributions by Testlink development Team'
 		@rtype: str
 		"""
-		return self.__query("tl.about")
+		return self.query("tl.about")
 
 
 	def sayHello(self):
@@ -63,7 +128,7 @@ class TestlinkAPI(object):
 		@returns: 'Hello!'
 		@rtype: str
 		"""
-		return self.__query("tl.sayHello")
+		return self.query("tl.sayHello")
 
 
 	def ping(self):
@@ -71,7 +136,7 @@ class TestlinkAPI(object):
 		@returns: 'Hello!'
 		@rtype: str
 		"""
-		return self.__query("tl.ping")
+		return self.query("tl.ping")
 
 
 	def repeat(self,value):
@@ -81,20 +146,20 @@ class TestlinkAPI(object):
 		@returns: String 'You said: ' and the given value
 		@rtype: mixed
 		"""
-		return self.__query("tl.repeat", value)
+		return self.query("tl.repeat", v=value)
 
 
-	def checkDevKey(self,devkey):
+	def checkDevKey(self,devkey=None):
 		"""Checks if the specified developer key is valid
 		@param devkey: The developer key to be tested
 		@type devkey: str
 		@returns: True/False
 		@rtype: bool
 		"""
-		return self.__query("tl.checkDevKey", devkey)
+		return self.query("tl.checkDevKey", devKey=devkey)
 
 
-	def doesUserExist(self, devkey, user):
+	def doesUserExist(self, user, devkey=None):
 		"""Checks, if a specified user exists
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -103,10 +168,10 @@ class TestlinkAPI(object):
 		@returns: True/False
 		@rtype: bool
 		"""
-		return self.__query("tl.doesUserExist", devKey=devkey, user=user)
+		return self.query("tl.doesUserExist", devKey=devkey, user=user)
 
 
-	def getFullPath(self, devkey, nodeid):
+	def getFullPath(self, nodeid, devkey=None):
 		"""Returns the full path of an object
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -115,10 +180,10 @@ class TestlinkAPI(object):
 		@returns: Hierarchical path of the object
 		@rtype: str
 		"""
-		return self.__query("tl.getFullPath", devKey=devkey, nodeID=nodeid)
+		return self.query("tl.getFullPath", devKey=devkey, nodeID=nodeid)
 
 
-	def createTestProject(self, devkey, name, prefix, notes='', active=True, public=True, requirements=False, priority=False, automation=False, inventory=False):
+	def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False, priority=False, automation=False, inventory=False, devkey=None):
 		"""Creates a new TestProject
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -154,7 +219,7 @@ class TestlinkAPI(object):
 			'inventoryEnabled': inventory
 			}
 
-		return self.__query("tl.createTestProject", \
+		return self.query("tl.createTestProject", \
 					devKey  = devkey,   \
 					name    = name,     \
 					prefix  = prefix,   \
@@ -164,17 +229,17 @@ class TestlinkAPI(object):
 					options = opts )
 
 
-	def getProjects(self, devkey):
+	def getProjects(self, devkey=None):
 		"""Returns all available TestProjects
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@returns: TestProjects as list of dicts
 		@rtype: list
 		"""
-		return self.__query("tl.getProjects", devKey=devkey)
+		return self.query("tl.getProjects", devKey=devkey)
 
 
-	def getTestProjectByName(self, devkey, name):
+	def getTestProjectByName(self, name, devkey=None):
 		"""Returns a single TestProject specified by its name
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -183,10 +248,10 @@ class TestlinkAPI(object):
 		@returns: Matching TestProject
 		@rtype: dict
 		"""
-		return self.__query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
+		return self.query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
 
 
-	def createTestPlan(self, devkey, name, projectname, notes='', active=True, public=True):
+	def createTestPlan(self, name, projectname, notes='', active=True, public=True, devkey=None):
 		"""Creates a new TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -206,7 +271,7 @@ class TestlinkAPI(object):
 		@todo: Refactor optional arguments -> static values?
 		@todo: Specify return value
 		"""
-		return self.__query("tl.createTestPlan",              \
+		return self.query("tl.createTestPlan",              \
 					devKey          = devkey,     \
 					testplanname    = name,       \
 					testprojectname = projectname,\
@@ -215,7 +280,7 @@ class TestlinkAPI(object):
 					public          = public )
 
 
-	def getTestPlanByName(self, devkey, name, projectname):
+	def getTestPlanByName(self, name, projectname, devkey=None):
 		"""Returns a single TestPlan specified by its name
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -226,13 +291,13 @@ class TestlinkAPI(object):
 		@returns: Matching TestPlan
 		@rtype: dict
 		"""
-		return self.__query("tl.getTestPlanByName",       \
+		return self.query("tl.getTestPlanByName",       \
 					devKey          = devkey, \
 					testplanname    = name,   \
-					testprojectname = project )
+					testprojectname = projectname )
 
 
-	def getProjectTestPlans(self, devkey, projectid):
+	def getProjectTestPlans(self, projectid, devkey=None):
 		"""Returns all TestPlans for a specified TestProject
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -241,12 +306,12 @@ class TestlinkAPI(object):
 		@returns: Matching TestPlans
 		@rtype: list
 		"""
-		return self.__query("tl.getProjectTestPlans",  \
+		return self.query("tl.getProjectTestPlans",  \
 					devKey       = devkey, \
 					testprojectid = projectid )
 
 
-	def createBuild(self, devkey, testplanid, name, notes=''):
+	def createBuild(self, testplanid, name, notes='', devkey=None):
 		"""Creates a new Build for the specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -261,14 +326,14 @@ class TestlinkAPI(object):
 
 		@todo: Specify return value type
 		"""
-		return self.__query("tl.createBuild",            \
+		return self.query("tl.createBuild",            \
 					devKey     = devkey,     \
 					testplanid = testplanid, \
 					buildname  = name,       \
 					buildnotes = notes )
 
 
-	def getLatestBuildForTestPlan(self, devkey, testplanid):
+	def getLatestBuildForTestPlan(self, testplanid, devkey=None):
 		"""Returns the latest Build for the specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -277,12 +342,12 @@ class TestlinkAPI(object):
 		@returns: Matching Build
 		@rtype: list
 		"""
-		return self.__query("tl.getLatestBuildForTestPlan", \
+		return self.query("tl.getLatestBuildForTestPlan", \
 					devKey     = devkey,        \
 					testplanid = testplanid )
 	
 	
-	def getBuildsForTestPlan(self, devkey, testplanid):
+	def getBuildsForTestPlan(self, testplanid, devkey=None):
 		"""Returns all Builds for the specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -291,12 +356,12 @@ class TestlinkAPI(object):
 		@returns: Matching Builds
 		@rtype: list
 		"""
-		return self.__query("tl.getBuildsForTestplan", \
+		return self.query("tl.getBuildsForTestplan", \
 					devKey     = devkey,   \
 					testplanid = testplanid )
 	
 	
-	def getTestPlanPlatforms(self, devkey, testplanid):
+	def getTestPlanPlatforms(self, testplanid, devkey=None):
 		"""Returns all Platforms fot the specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -310,7 +375,7 @@ class TestlinkAPI(object):
 					testplanid = testplanid )
 	
 	
-	def reportTCResult(self, devkey, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False):
+	def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False, devkey=None):
 		"""Sets the execution result for a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -342,7 +407,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.reportTCResult",                         \
+		return self.query("tl.reportTCResult",                         \
 					devKey             = devkey,             \
 					testplanid         = testplanid,         \
 					status             = status,             \
@@ -359,7 +424,7 @@ class TestlinkAPI(object):
 					overwrite          = overwrite )
 
 	
-	def getLastExecutionResult(self, devkey, testplanid, testcaseid=None, testcaseexternalid=None):
+	def getLastExecutionResult(self, testplanid, testcaseid=None, testcaseexternalid=None, devkey=None):
 		"""Returns the execution result for a specified TestCase and TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -372,14 +437,14 @@ class TestlinkAPI(object):
 		@returns: Matching result
 		@rtype: dict
 		"""
-		return self.__query("tl.getLastExecutionResult",         \
+		return self.query("tl.getLastExecutionResult",         \
 					devKey             = devkey,     \
 					testplanid         = testplanid, \
 					testcaseid         = testcaseid, \
 					testcaseexternalid = testcaseexternalid )
 	
 	
-	def deleteExecution(self, devkey, executionid):
+	def deleteExecution(self, executionid, devkey=None):
 		"""Deletes a specific exexution result
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -388,12 +453,12 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.deleteExecution",     \
+		return self.query("tl.deleteExecution",     \
 					devKey      = devkey, \
 					executionid = executionid )
 	
 	
-	def createTestSuite(self, devkey, name, testprojectid, details=None, parentid=None, order=None, checkduplicates=True, actiononduplicate='block'):
+	def createTestSuite(self, name, testprojectid, details=None, parentid=None, order=None, checkduplicates=True, actiononduplicate='block', devkey=None):
 		"""Creates a new TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -414,7 +479,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.createTestSuite",                         \
+		return self.query("tl.createTestSuite",                         \
 					devKey                 = devkey,          \
 					testsuitename          = name,            \
 					testprojectid          = testprojectid,   \
@@ -425,7 +490,7 @@ class TestlinkAPI(object):
 					actiononduplicatedname = actiononduplicate )
 	
 	
-	def getTestSuiteById(self, devkey, suiteid):
+	def getTestSuiteById(self, suiteid, devkey=None):
 		"""Returns a single TestSuite specified by the internal ID
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -434,12 +499,12 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuite
 		@rtype: dict
 		"""
-		return self.__query("tl.getTestSuiteById",    \
+		return self.query("tl.getTestSuiteById",    \
 					devKey      = devkey, \
 					testsuiteid = suiteid )
 	
 	
-	def getTestSuitesForTestSuite(self, devkey, suiteid):
+	def getTestSuitesForTestSuite(self, suiteid, devkey=None):
 		"""Returns all TestSuites within the specified TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -448,12 +513,12 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.__query("tl.getTestSuitesForTestSuite", \
+		return self.query("tl.getTestSuitesForTestSuite", \
 					devKey      = devkey,       \
 					testsuiteid = suiteid )
 	
 	
-	def getFirstLevelTestSuitesForTestProject(self, devkey, projectid):
+	def getFirstLevelTestSuitesForTestProject(self, projectid, devkey=None):
 		"""Returns the first level TestSuites for a specified TestProject
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -462,12 +527,12 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.__query("tl.getFirstLevelTestSuitesForTestProject", \
+		return self.query("tl.getFirstLevelTestSuitesForTestProject", \
 					devKey        = devkey,                 \
-					testprojectid = testprojectid )
+					testprojectid = projectid )
 	
 	
-	def getTestSuitesForTestPlan(self, devkey, planid):
+	def getTestSuitesForTestPlan(self, planid, devkey=None):
 		"""Returns all TestSuites for a specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -476,12 +541,12 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.__query("tl.getTestSuitesForTestPlan", \
+		return self.query("tl.getTestSuitesForTestPlan", \
 					devKey     = devkey,       \
 					testplanid = planid )
 	
 	
-	def createTestCase(self, devkey, name, suiteid, projectid, author, summary, steps=[], preconditions=None, importance=0, execution=0, order=None, checkduplicates=True, actiononduplicate='block'):
+	def createTestCase(self, name, suiteid, projectid, author, summary, steps=[], preconditions=None, importance=0, execution=0, order=None, checkduplicates=True, actiononduplicate='block', devkey=None):
 		"""Creates a new TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -512,7 +577,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self.__query("tl.createTestCase",                          \
+		return self.query("tl.createTestCase",                          \
 					devKey                 = devkey,          \
 					testcasename           = name,            \
 					testsuiteid            = suiteid,         \
@@ -528,7 +593,7 @@ class TestlinkAPI(object):
 					actiononduplicatedname = actiononduplicate )
 	
 	
-	def getTestCase(self, devkey, testcaseid=None, testcaseexternalid=None, version=None):
+	def getTestCase(self, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
 		"""Returns a single TestCase specified by its ID
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -541,14 +606,14 @@ class TestlinkAPI(object):
 		@returns: Matching TestCase
 		@rtype: list/dict/???
 		"""
-		return self.__query("tl.getTestCase",                            \
+		return self.query("tl.getTestCase",                            \
 					devKey             = devkey,             \
 					testcaseid         = testcaseid,         \
 					testcaseexternalid = testcaseexternalid, \
 					version            = version )
 	
 	
-	def getTestCaseIdByName(self, devkey, name, suite=None, project=None, path=None):
+	def getTestCaseIdByName(self, name, suite=None, project=None, path=None, devkey=None):
 		"""Returns the internal ID of a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -563,7 +628,7 @@ class TestlinkAPI(object):
 		@returns: Matching TestCase ID
 		@rtype: int?
 		"""
-		return self.__query("tl.getTestCaseIDByName",       \
+		return self.query("tl.getTestCaseIDByName",       \
 					devKey           = devkey,  \
 					testcasename     = name,    \
 					testsuitename    = suite,   \
@@ -571,7 +636,7 @@ class TestlinkAPI(object):
 					testcasepathname = path )
 	
 	
-	def getTestCasesForTestSuite(self, devkey, suiteid, deep=False, details='simple'):
+	def getTestCasesForTestSuite(self, suiteid, deep=False, details='simple', devkey=None):
 		"""Returns all TestCases for a specified TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -584,14 +649,14 @@ class TestlinkAPI(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self.__query("tl.getTestCasesForTestSuite", \
+		return self.query("tl.getTestCasesForTestSuite", \
 					devKey      = devkey,      \
 					testsuiteid = suiteid,     \
 					deep        = deep,        \
 					details     = details )
 	
 	
-	def getTestCasesForTestPlan(self, devkey, planid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executionstatus=None, executiontype=None, steps=False):
+	def getTestCasesForTestPlan(self, planid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executionstatus=None, executiontype=None, steps=False, devkey=None):
 		"""Returns all TestCases for a specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -618,7 +683,7 @@ class TestlinkAPI(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self.__query("tl.getTestCasesForTestPlan",        \
+		return self.query("tl.getTestCasesForTestPlan",        \
 					devKey        = devkey,          \
 					testplanid    = planid,          \
 					tcid          = testcaseid,      \
@@ -632,7 +697,7 @@ class TestlinkAPI(object):
 					getstepinfo   = steps )
 	
 	
-	def addTestCaseToTestPlan(self, devkey, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None):
+	def addTestCaseToTestPlan(self, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
 		"""Adds a specified TestCase to a specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -655,7 +720,7 @@ class TestlinkAPI(object):
 
 		@todo: Set valid values for urgency
 		"""
-		return self.__query("tl.addTestCaseToTestPlan",                  \
+		return self.query("tl.addTestCaseToTestPlan",                  \
 					devKey             = devkey,             \
 					testprojectid      = projectid,          \
 					testplanid         = planid,             \
@@ -666,7 +731,7 @@ class TestlinkAPI(object):
 					urgency            = urgency )
 	
 	
-	def assignRequirements(self, devkey, testcaseexternalid, projectid, requirements):
+	def assignRequirements(self, testcaseexternalid, projectid, requirements, devkey=None):
 		""""Assigns specified Requirements to a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -679,14 +744,14 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.assignRequirements",                     \
+		return self.query("tl.assignRequirements",                     \
 					devKey             = devkey,             \
 					testcaseexternalid = testcaseexternalid, \
 					testprojectid      = projectid,          \
 					requirements       = requirements )
 	
 	
-	def getTestCaseCustomFieldDesignValue(self, devkey, testcaseexternalid, version, projectid, fieldname, details='value'):
+	def getTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, projectid, fieldname, details='value', devkey=None):
 		"""Returns the value of a specified CustomField for a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -703,7 +768,7 @@ class TestlinkAPI(object):
 		@returns: Single value, information about specified field, information about all fields
 		@rtype: mixed
 		"""
-		return self.__query("tl.getTestCaseCustomFieldDesignValue",      \
+		return self.query("tl.getTestCaseCustomFieldDesignValue",      \
 					devKey             = devkey,             \
 					testcaseexternalid = testcaseexternalid, \
 					version            = version,            \
@@ -712,7 +777,7 @@ class TestlinkAPI(object):
 					details            = details )
 	
 	
-	def uploadAttachment(self, devkey, objectid, objecttable, name, mime, content, title=None, description=None):
+	def uploadAttachment(self, objectid, objecttable, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified object
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -733,7 +798,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.uploadAttachment",         \
+		return self.query("tl.uploadAttachment",         \
 					devKey      = devkey,      \
 					fkid        = objectid,    \
 					fktable     = objecttable, \
@@ -744,7 +809,7 @@ class TestlinkAPI(object):
 					description = description )
 	
 	
-	def uploadRequirementSpecificationAttachment(self, devkey, reqspecid, name, mime, content, title=None, description=None):
+	def uploadRequirementSpecificationAttachment(self, reqspecid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Requirement Specification
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -763,7 +828,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.uploadRequirementSpecificationAttachment", \
+		return self.query("tl.uploadRequirementSpecificationAttachment", \
 					devKey      = devkey,                      \
 					reqspecid   = reqspecid,                   \
 					filename    = name,                        \
@@ -773,7 +838,7 @@ class TestlinkAPI(object):
 					description = description )
 	
 	
-	def uploadRequirementAttachment(self, devkey, reqid, name, mime, content, title=None, description=None):
+	def uploadRequirementAttachment(self, reqid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Requirement
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -792,7 +857,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.uploadRequirementAttachment", \
+		return self.query("tl.uploadRequirementAttachment", \
 					devKey         = devkey,      \
 					requirementsid = reqid,       \
 					filename       = name,        \
@@ -802,7 +867,7 @@ class TestlinkAPI(object):
 					description    = description )
 	
 	
-	def uploadTestProjectAttachment(self, devkey, projectid, name, mime, content, title=None, description=None):
+	def uploadTestProjectAttachment(self, projectid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestProject
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -821,7 +886,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.uploadTestProjectAttachment", \
+		return self.query("tl.uploadTestProjectAttachment", \
 					devKey        = devkey,       \
 					testprojectid = projectid,    \
 					filename      = name,         \
@@ -831,7 +896,7 @@ class TestlinkAPI(object):
 					description   = description )
 	
 	
-	def uploadTestSuiteAttachment(self, devkey, suiteid, name, mime, content, title=None, description=None):
+	def uploadTestSuiteAttachment(self, suiteid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -850,7 +915,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.uploadTestSuiteAttachment", \
+		return self.query("tl.uploadTestSuiteAttachment", \
 					devKey      = devkey,       \
 					testsuiteid = suiteid,      \
 					filename    = name,         \
@@ -860,7 +925,7 @@ class TestlinkAPI(object):
 					description = description )
 	
 	
-	def uploadTestCaseAttachment(self, devkey, testcaseid, name, mime, content, title=None, description=None):
+	def uploadTestCaseAttachment(self, testcaseid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -879,7 +944,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.uploadTestCaseAttachment", \
+		return self.query("tl.uploadTestCaseAttachment", \
 					devKey      = devkey,      \
 					testcaseid  = testcaseid,  \
 					filename    = name,        \
@@ -889,7 +954,7 @@ class TestlinkAPI(object):
 					description = description )
 	
 	
-	def uploadExecutionAttachment(self, devkey, executionid, name, mime, content, title=None, description=None):
+	def uploadExecutionAttachment(self, executionid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Execution
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -908,7 +973,7 @@ class TestlinkAPI(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.__query("tl.uploadExecutionAttachment", \
+		return self.query("tl.uploadExecutionAttachment", \
 					devKey      = devkey,       \
 					executionid = executionid,  \
 					filename    = name,         \
@@ -918,7 +983,7 @@ class TestlinkAPI(object):
 					description = description )
 	
 	
-	def getTestCaseAttachments(self, devkey, testcaseid=None, testcaseexternalid=None):
+	def getTestCaseAttachments(self, testcaseid=None, testcaseexternalid=None, devkey=None):
 		"""Returns all available Attachments for the specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -929,38 +994,7 @@ class TestlinkAPI(object):
 		@returns: Matching attachments
 		@rtype: list/dict/???
 		"""
-		return self.__query("tl.getTestCaseAttachmnts",          \
+		return self.query("tl.getTestCaseAttachmnts",          \
 					devKey             = devkey,     \
 					testcaseid         = testcaseid, \
 					testcaseexternalid = testcaseexternalid )
-	
-	
-	def getRequirementSpecifications(self, devkey, testprojectid):
-		"""Returns all available Requirement Specifications for the specified TestProject
-		@param devkey: Testlink developer key
-		@type devkey: str
-		@param testprojectid: The internal ID of the parent TestProject.
-		@type testprojectid: int
-		@returns: Matching Requirement Specifications
-		@rtype: list/dict/???
-		"""
-		return self.__query("tl.getRequirementSpecifications", \
-					devKey        = devkey,        \
-					testprojectid = testprojectid )
-	
-	
-	def getRequirementsForRequirementSpecification(self, devkey, testprojectid, reqspecid):
-		"""Returns all available Requirements for the specified Requirement Specification
-		@param devkey: Testlink developer key
-		@type devkey: str
-		@param testprojectid: The internal ID of the parent TestProject.
-		@type testprojectid: int
-		@param reqspecid: The internal ID of the parent Requirement Specification
-		@type reqspecid: int
-		@returns: Matching Requirements
-		@rtype: list/dict/???
-		"""
-		return self.__query("tl.getRequirementsForRequirementSpecification", \
-					devKey        = devkey,                      \
-					testprojectid = testprojectid,               \
-					reqspecid     = reqspecid )

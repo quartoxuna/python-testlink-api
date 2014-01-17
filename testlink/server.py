@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """
 @author: Kai Borowiak
@@ -8,6 +9,7 @@
 import time
 import logging
 from SimpleXMLRPCServer import SimpleXMLRPCServer
+from testlink import log
 
 class TestlinkXMLRPCServer(SimpleXMLRPCServer):
 	"""Testlink conform XML-RPC automation server"""
@@ -25,10 +27,10 @@ class TestlinkXMLRPCServer(SimpleXMLRPCServer):
 		"""
 		SimpleXMLRPCServer.__init__(self,(host,port),logRequests=verbose)
 		self.register_introspection_functions()
-		logging.getLogger('testlink').info("Starting Testlink compatible XML-RPC Server at http://%s:%d/" % (str(host),int(port)) )
-		logging.getLogger('testlink').info("Registering '%s' as callback" % str(callback.__name__))
+		log.info("Starting Testlink compatible XML-RPC Server at http://%s:%d/" % (str(host),int(port)) )
+		log.info("Registering '%s' as callback" % str(callback.__name__))
 		self.register_function(callback,"executeTestCase")
 		try:
 			self.serve_forever()
 		except KeyboardInterrupt:
-			logging.getLogger('testlink').warning("Exiting Testlink compatible XML-RPC Server at http://%s:%d/" % (str(host),int(port)) )
+			log.warning("Exiting Testlink compatible XML-RPC Server at http://%s:%d/" % (str(host),int(port)) )
