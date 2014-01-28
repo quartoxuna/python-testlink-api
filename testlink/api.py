@@ -686,7 +686,7 @@ class TestlinkAPI(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getTestCasesForTestPlan",        \
+		resp = self.query("tl.getTestCasesForTestPlan",        \
 					devKey        = devkey,          \
 					testplanid    = planid,          \
 					tcid          = testcaseid,      \
@@ -698,6 +698,15 @@ class TestlinkAPI(object):
 					executestatus = executionstatus, \
 					executiontype = executiontype,   \
 					getstepinfo   = steps )
+		# Normalize response to list
+		result = []
+		if isinstance(resp,dict):
+			for key,value in resp.items():
+				if isinstance(value,list) and len(value)==1:					
+					result.append(value[0])
+				elif isinstance(value,dict):
+					result.append(value)
+		return result
 	
 	
 	def addTestCaseToTestPlan(self, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
