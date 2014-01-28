@@ -120,7 +120,7 @@ class TestProject(TestlinkObject):
 	@type color: str"""
 
 	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
-		super(TestProject,self).__init__(api,id,name)
+		TestlinkObject.__init__(self,api,id,name)
 		self.notes = str(notes)
 		self.prefix = str(prefix)
 		self.is_active = bool(active)
@@ -176,7 +176,7 @@ class TestPlan(TestlinkObject):
 	"""Testlink TestPlan representation"""
 
 	def __init__(self,api,id,name,notes,is_public,is_open,active,**kwargs):
-		super(TestPlan,self).__init__(api,id,name)
+		TestlinkObject.__init__(self,api,id,name)
 		self.notes = str(notes)
 		self.is_open = bool(is_open)
 		self.is_active = bool(active)
@@ -222,7 +222,7 @@ class Build(TestlinkObject):
 	"""Testlink Build representation"""
 
 	def __init__(self,api,id,name,notes):
-		super(Build,self).__init__(api,id,name)
+		TestlinkObject.__init__(self,api,id,name)
 		self.notes = str(notes)
 
 
@@ -230,7 +230,7 @@ class Platform(TestlinkObject):
 	"""Testlink Platform representation"""
 
 	def __init__(self,api,id,name,notes):
-		super(Platform,self).__init__(api,id,name)
+		TestlinkObject.__init__(self,api,id,name)
 		self.notes = str(notes)
 
 
@@ -238,7 +238,7 @@ class TestSuite(TestlinkObject):
 	"""Testlink TestSuite representation"""
 
 	def __init__(self,api,id,name,notes,**kwargs):
-		super(TestSuite,self).__init__(api,id,name)
+		TestlinkObject.__init__(self,api,id,name)
 		self.notes = str(notes)
 
 	def getTestSuite(self,name=None,**params):
@@ -261,5 +261,5 @@ class TestCase(TestlinkObject):
 	"""Testlink TestCase representation"""
 
 	def __init__(self,api,id,name,notes,**kwargs):
-		super(TestCase,self).__init__(api,id,name)
+		TestlinkObject.__init__(self,api,id,name)
 		self.notes = str(notes)
