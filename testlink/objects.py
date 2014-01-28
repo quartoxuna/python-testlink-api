@@ -7,7 +7,6 @@
 """
 
 # IMPORTS
-import abc
 import re
 import xmlrpclib
 from api import TestlinkAPI
@@ -59,7 +58,7 @@ class Testlink(object):
 				resp=resp[0]
 			return TestProject(api=self.api,**resp)
 	
-		projects = self.getProjects(self.devkey)
+		projects = self.api.getProjects()
 		if len(params)>0:
 			# Search by params
 			for key,value in params.items():
@@ -79,8 +78,6 @@ class TestlinkObject:
 	@ivar name: Internal Testlink name of the object
 	@type name: str
 	"""
-
-	__metaclass__ = abc.ABCMeta
 
 	def __init__(self,api,id,name,parent=None):
 		"""Initialises base Testlink object
@@ -140,12 +137,12 @@ class TestProject(TestlinkObject):
 		"""Returns TestPlans specified by parameters"""
 		if name:
 			# Search by Name
-			resp = self.api.getTestPlanByName(self.api.devkey,name,self.name)
+			resp = self.api.getTestPlanByName(name,self.name)
 			if isinstance(resp,list) and len(resp)==1:
 				resp=resp[0]
 			return TestPlan(api=self.api,parent=self,**resp)
 
-		plans = self.api.getProjectTestPlans(self.api.devkey,self.id)
+		plans = self.api.getProjectTestPlans(self.id)
 		if len(params)>0:
 			# Search by params
 			for key,value in params.items():
@@ -159,12 +156,12 @@ class TestProject(TestlinkObject):
 		"""Returns TestSuites specified by parameters"""
 		if 'id' in params:
 			# Search by ID
-			resp = self.api.getTestSuiteById(self.api.devkey,id)
+			resp = self.api.getTestSuiteById(params['id'])
 			if isinstance(resp,list) and len(resp)==1:
 				resp=resp[0]
 			return TestSuite(api=self.api,parent=self,**resp)
 		
-		suites = self.api.getFirstLevelTestSuitesForTestProject(self.api.devkey,self.id)
+		suites = self.api.getFirstLevelTestSuitesForTestProject(self.id)
 		if len(params)>0:
 			# Search by params
 			for key,value in params.items():
@@ -187,7 +184,7 @@ class TestPlan(TestlinkObject):
 		
 	def getBuild(self,name=None,**params):
 		"""Returns Builds specified by parameters"""
-		builds = self.api.getBuildsForTestPlan(self.api.devkey,self.id)
+		builds = self.api.getBuildsForTestPlan(self.id)
 		if len(params)>0:
 			for key,value in params.items():
 				for b in builds:
@@ -196,7 +193,7 @@ class TestPlan(TestlinkObject):
 
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
-		platforms = self.api.getTestPlanPlatforms(self.api.devkey,self.id)
+		platforms = self.api.getTestPlanPlatforms(self.id)
 		if len(params)>0:
 			for key,value in params.items():
 				for p in platforms:
@@ -205,7 +202,7 @@ class TestPlan(TestlinkObject):
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
-		suites = self.api.getTestSuitesForTestPlan(self.api.devkey,self.id)
+		suites = self.api.getTestSuitesForTestPlan(self.id)
 		if len(params)>0:
 			for key,value in params.items():
 				for s in suites:
@@ -213,7 +210,7 @@ class TestPlan(TestlinkObject):
 		else: return [TestSuite(api=self.api,parent=self,**s) for s in suites]
 
 	def getTestCase(self,name=None,**params):
-		cases = self.api.getTestCasesForTestPlan(self.api.devkey,self.id)
+		cases = self.api.getTestCasesForTestPlan(self.id)
 		if len(params)>0:
 			for key,value in params.items():
 				for c in cases:
@@ -245,7 +242,7 @@ class TestSuite(TestlinkObject):
 		self.notes = str(notes)
 
 	def getTestSuite(self,name=None,**params):
-		suites = self.api.getTestSuitesForTestSuite(self.api.devkey,self.id)
+		suites = self.api.getTestSuitesForTestSuite(self.id)
 		if len(params)>0:
 			for key,value in params.items():
 				for s in suites:
@@ -253,7 +250,7 @@ class TestSuite(TestlinkObject):
 		else: return [TestSuite(api=self.api,parent=self,**s) for s in suites]
 
 	def getTestCase(self,name=None,**params):
-		cases = self.api.getTestCasesForTestSuite(self.api.devkey,self.id,details='full')
+		cases = self.api.getTestCasesForTestSuite(self.id,details='full')
 		if len(params)>0:
 			for key,value in params.items():
 				for c in cases:

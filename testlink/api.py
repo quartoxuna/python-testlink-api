@@ -67,6 +67,9 @@ class TestlinkAPI(object):
 		@type short: bool
 		@raises InvalidProxy: The given proxy is not valid
 		"""
+		if not uri:
+			raise InvalidURI()
+
 		# URI modification
 		if short:
 			if not uri.endswith('/'):
