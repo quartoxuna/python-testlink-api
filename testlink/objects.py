@@ -13,31 +13,43 @@ from api import TestlinkAPI
 from testlink import log
 
 
-class Testlink(object):
+class Testlink(TestlinkAPI):
 	"""Testlink Server implementation
 	@ivar devkey: Valid Testlink developer key
 	@type devkey: str
 	"""
 
-	def __init__(self,uri,devkey):
+	def __init__(self,uri,devkey,short=True):
 		"""Initializes the Testlink Server object
 		@param uri: Testlink URL
 		@type uri: str
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param short_uri: If enabled, just path to Testlink directory is needed, else whole path to api (Default: True)
-		@type short_uri: bool
-		@raise InvalidURI: The given URI is not valid
+		@param short: Just the path to Testlink directory is needed, else whole path to api (Default: True)
+		@type short: bool
+		@raises InvalidURI: The given URI is not valid
 		"""
-		self.api = TestlinkAPI(uri)
-		self.api.devkey = str(devkey)
+		self.__uri = uri
+
+		# URI modification
+		if short:
+			if not uri.endswith('/'):
+				uri += '/'
+			uri += 'lib/api/xmlrpc.php'
+
+		# Init raw API
+		super(Testlink,self).__init__(uri)		
+		self.devkey = devkey
+
+	def __str__(self):
+		return "<Testlink@%s>" % self.__uri
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
 		@return: Version in list format [x,y,z]
 		@rtype: list
 		"""
-		about_str = self.api.about()
+		about_str = self.about()
 		version_str = re.search(r"(?P<version>\d+(\.{0,1}\d+)+)",about_str).group('version')
 		version = version_str.split('.')
 		# Get Alphas and Betas
@@ -51,22 +63,38 @@ class Testlink(object):
 		return version
 
 	def getTestProject(self,name=None,**params):
-		"""Returns TestProject specified by parameters"""
-		if name:
-			resp = self.api.getTestProjectByName(name)
-			if isinstance(resp,list) and len(resp)==1:
-				resp=resp[0]
-			return TestProject(api=self.api,**resp)
-	
-		projects = self.api.getProjects()
-		if len(params)>0:
-			# Search by params
+		"""Returns TestProject specified by parameters
+		@param name: The name of the TestProject
+		@type name: str
+		@param **params: Other params for TestProject
+		@type **params: mixed
+		@returns: Matching TestProjects
+		@rtype: mixed
+		"""
+		# Check if simple API call can be done
+		if name and len(params)==0:
+			response = self.getTestProjectByName(name)
+			return TestProject(self,**response)
+
+		# Get all available Projects
+		response = self.getProjects()
+
+		# Add name to search parameters
+		params['name'] = name
+
+		# Check for every project if all params
+		# match and return this project
+		for project in response:
+			match = True
 			for key,value in params.items():
-				for p in projects:
-					if p[key]==value:
-						return TestProject(api=self.api,**p)
-		else:
-			return [TestProject(api=self.api,**p) for p in projects]
+				if not (project[key] == value):
+					match = False
+					break
+			if match:
+				return TestProject(self,**project)
+
+		# Otherwise, return all available projects
+		return [TestProject(self,**project) for project in response]
 
 
 class TestlinkObject:
@@ -123,8 +151,8 @@ class TestProject(TestlinkObject):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = str(notes)
 		self.prefix = str(prefix)
-		self.is_active = bool(active)
-		self.is_public = bool(is_public)
+		self.active = bool(active)
+		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
 		self.priority = bool(opt['testPriorityEnabled'])
 		self.automation = bool(opt['automationEnabled'])
@@ -133,24 +161,44 @@ class TestProject(TestlinkObject):
 		self.color = str(color)
 
 
-	def getTestPlan(self,name=None,**params):
-		"""Returns TestPlans specified by parameters"""
-		if name:
-			# Search by Name
-			resp = self.api.getTestPlanByName(name,self.name)
-			if isinstance(resp,list) and len(resp)==1:
-				resp=resp[0]
-			return TestPlan(api=self.api,parent=self,**resp)
+	def __str__(self):
+		return "TestProject '%s'" % self.name
 
-		plans = self.api.getProjectTestPlans(self.id)
-		if len(params)>0:
-			# Search by params
+
+	def getTestPlan(self,name=None,**params):
+		"""Returns TestPlans specified by parameters
+		@param name: The name of the TestPlan
+		@type name: str
+		@param **params: Other params for TestPlan
+		@type **params: mixed
+		@returns: Matching TestPlans
+		@rtype: list
+		"""
+		# Check if simple API call can be done
+		if name and len(params)==0:
+			response = self.api.getTestPlanByName(name,projectname=self.name)
+			return TestPlan(api = self.api, parent = self,	**response)
+
+		# Get all TestPlans for the project
+		response = self.api.getProjectTestPlans(self.id)
+
+		# Add name to search parameters
+		params['name'] = name
+
+		# Check for every plan if all params
+		# match abd return this testplan
+		for plan in response:
+			match = True
 			for key,value in params.items():
-				for p in plans:
-					if p[key]==value:
-						return TestPlan(api=self.api,parent=self,**p)
-		else:
-			return [TestPlan(api=self.api,parent=self,**p) for p in plans]
+				if not (plan[key] == value):
+					match = False
+					break
+			if match:
+				return TestPlan(api = self.api, parent = self,	**plan)
+
+		# Otherwise, return all available testplans
+		return [TestPlan(api = self.api, parent = self, **plan) for plan in response]
+			
 
 	def getTestSuite(self,name=None,**params):
 		"""Returns TestSuites specified by parameters"""
@@ -173,23 +221,37 @@ class TestProject(TestlinkObject):
 
 
 class TestPlan(TestlinkObject):
-	"""Testlink TestPlan representation"""
+	"""Testlink TestPlan representation
+	Additional member to TestlinkObject
+	@ivar notes: TestPlan notes
+	@type notes: str
+	@ivar active: TestPlan active flag
+	@type active: bool
+	@ivar public: TestPlan public flag
+	@type public: bool
+	"""
 
-	def __init__(self,api,id,name,notes,is_public,is_open,active,**kwargs):
+	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = str(notes)
-		self.is_open = bool(is_open)
 		self.is_active = bool(active)
 		self.is_public = bool(is_public)
-		
+	
+
+	def __str__(self):
+		return "TestPlan '%s'" % self.name
+
+
 	def getBuild(self,name=None,**params):
 		"""Returns Builds specified by parameters"""
 		builds = self.api.getBuildsForTestPlan(self.id)
 		if len(params)>0:
 			for key,value in params.items():
 				for b in builds:
-					if b[key]==value: return Build(api=self.api,parent=self,**b)
-		else: return [Build(api=self.api,parent=self,**b) for b in builds]
+					if b[key]==value:
+						return Build(api=self.api,parent=self,**b)
+		else:
+			return [Build(api=self.api,parent=self,**b) for b in builds]
 
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
@@ -197,8 +259,10 @@ class TestPlan(TestlinkObject):
 		if len(params)>0:
 			for key,value in params.items():
 				for p in platforms:
-					if p[key]==value: return Platform(api=self.api,parent=self,**p)
-		else: return [Platform(api=self.api,parent=self,**p)]
+					if p[key]==value:
+						return Platform(api=self.api,parent=self,**p)
+		else:
+			return [Platform(api=self.api,parent=self,**p)]
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
@@ -206,17 +270,36 @@ class TestPlan(TestlinkObject):
 		if len(params)>0:
 			for key,value in params.items():
 				for s in suites:
-					if s[key]==value: return TestSuite(api=self.api,parent=self,**s)
-		else: return [TestSuite(api=self.api,parent=self,**s) for s in suites]
+					if s[key]==value:
+						return TestSuite(api=self.api,parent=self,**s)
+		else:
+			return [TestSuite(api=self.api,parent=self,**s) for s in suites]
 
-	def getTestCase(self,name=None,**params):
-		cases = self.api.getTestCasesForTestPlan(self.id)
+	def getTestCase(self,**params):
+		"""Returns testcases specified by parameters
+		@param **params: Params for TestCase
+		@type **params: mixed
+		@returns: Matching TestCases
+		@rtype: mixed
+		"""
+		# Get all available TestCases
+		testcases = self.api.getTestCasesForTestPlan(self.id,steps=True)
+
 		if len(params)>0:
-			for key,value in params.items():
-				for c in cases:
-					if c[key]==value: return TestCase(api=self.api,parent=self,**c)
-		else: return [TestCase(api=self.api,parent=self,**c) for c in cases]
-
+			# Check for every project if all params
+			# match and return this testcase
+			for case in testcases:
+				match = True
+				for key,value in params.items():
+					if not(case[key] == value):
+						match = False
+						break
+				if match:
+					return TestCase(api = self.api, parent = self, **case)
+		else:
+			# Otherwise, return all available testcases
+			return [TestCase(api = self.api, parent = self, **case) for case in testcases]
+						
 
 class Build(TestlinkObject):
 	"""Testlink Build representation"""
@@ -246,20 +329,95 @@ class TestSuite(TestlinkObject):
 		if len(params)>0:
 			for key,value in params.items():
 				for s in suites:
-					if s[key]==value: return TestSuite(api=self.api,parent=self,**s)
-		else: return [TestSuite(api=self.api,parent=self,**s) for s in suites]
+					if s[key]==value:
+						return TestSuite(api=self.api,parent=self,**s)
+		else:
+			return [TestSuite(api=self.api,parent=self,**s) for s in suites]
 
 	def getTestCase(self,name=None,**params):
 		cases = self.api.getTestCasesForTestSuite(self.id,details='full')
 		if len(params)>0:
 			for key,value in params.items():
 				for c in cases:
-					if c[key]==value: return TestCase(api=self.api,parent=self,**c)
-		else: return [TestCase(api=self.api,parent=self,**c) for c in cases]
+					if c[key]==value:
+						return TestCase(api=self.api,parent=self,**c)
+		else:
+			return [TestCase(api=self.api,parent=self,**c) for c in cases]
 
 class TestCase(TestlinkObject):
-	"""Testlink TestCase representation"""
+	"""Testlink TestCase representation
+	Additional members to TestlinkObject
+	@ivar executed: Flag if TestCase has been executed yet
+	@type executed
+	"""
 
-	def __init__(self,api,id,name,notes,**kwargs):
-		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
+	class Step(object):
+		"""Testlink TestCase Step representation
+		@ivar step_number: Number of the step
+		@type step_number: int
+		@ivar actions: Actions of the step
+		@type actions: str
+		@ivar result: Expected result of the step
+		@type result: str
+		"""
+		def __init__(self,step_number,actions,execution_type,active,id,expected_results):
+			self.step_number = int(step_number)
+			self.actions = str(actions)
+			self.execution_type = int(execution_type)
+			self.active = bool(active)
+			self.id = int(id)
+			self.result = str(expected_results)
+
+		def __str__(self):
+			return "Step %d: %s - %s" % (self.step_number,self.actions,self.result)
+
+
+	def __init__(
+			self,			\
+			api,			\
+			executed,		\
+			execution_notes,	\
+			tcversion_number,	\
+			tc_id,			\
+			assigner_id,		\
+			execution_order,	\
+			platform_name,		\
+			linked_ts,		\
+			tsuite_name,		\
+			assigned_build_id,	\
+			exec_on_tplan,		\
+			execution_run_type,	\
+			feature_id,		\
+			version,		\
+			exec_on_build,		\
+			testsuite_id,		\
+			exec_status,		\
+			status,importance,	\
+			execution_type,		\
+			execution_ts,		\
+			active,			\
+			user_id,		\
+			tester_id,		\
+			exec_id,		\
+			tcversion_id,		\
+			name,			\
+			linked_by,		\
+			type,			\
+			summary,		\
+			platform_id,		\
+			z,			\
+			external_id,		\
+			urgency,		\
+			priority,		\
+			steps=[],		\
+			**kwargs		\
+		):
+		"""
+		@note: ID param name changed!
+		"""
+		TestlinkObject.__init__(self,api,tc_id,name)
+		self.executed = bool(executed)
+		self.steps = [TestCase.Step(**s) for s in steps]
+		
+	def __str__(self):
+		return "TestCase '%s'" % self.name

@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
 	name="testlink_api",
-	version="0.8",
+	version="0.9",
 	description="Testlink API Wrapper library",
 	author="Kai Borowiak",
 	author_email="kai.borowiak@secunet.com",

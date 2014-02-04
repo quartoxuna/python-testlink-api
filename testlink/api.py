@@ -57,29 +57,20 @@ class TestlinkAPI(object):
 	Documented wrapper around Testlink API
 	Raises user friendly exceptions"""
 
-	devkey = None
-
-	def __init__(self,uri,short=True):
+	def __init__(self,uri):
 		"""Initialize the TestlinkAPI
 		@param uri: URI of Testlink XML-RPC server implementation
 		@type uri: str
-		@param short_uri: Appending API path to default Testlink path (Default: True)
-		@type short: bool
 		@raises InvalidProxy: The given proxy is not valid
 		"""
-		if not uri:
-			raise InvalidURI()
-
-		# URI modification
-		if short:
-			if not uri.endswith('/'):
-				uri += '/'
-			uri += 'lib/api/xmlrpc.php'
-
 		try:
 			self.__proxy = xmlrpclib.ServerProxy(uri,encoding='UTF-8',allow_none=True )
 		except IOError:
 			raise InvalidURI(uri)
+		self.devkey = None
+
+	def __str__(self):
+		return str(self.__proxy)
 
 	def query(self,method,**kwargs):
 		"""Remote calls a method on the server
@@ -89,10 +80,8 @@ class TestlinkAPI(object):
 		@raise APIError: Testlink API server side error
 		"""
 
-		# Add devkey if available
-		# otherwiese an API error will be thrown
-		# if Testlink requires the key
-		if self.devkey and not kwargs['devKey']:
+		# Add class wide devkey if available
+		if self.devkey:
 			kwargs['devKey'] = self.devkey
 
 		log.debug("Query: %s(%s)" % (str(method),str(kwargs)) )
@@ -239,7 +228,12 @@ class TestlinkAPI(object):
 		@returns: TestProjects as list of dicts
 		@rtype: list
 		"""
-		return self.query("tl.getProjects", devKey=devkey)
+		resp = self.query("tl.getProjects", devKey=devkey)
+		# Ensure, that it is a list, even if only one project exists
+		if isinstance(resp,dict):
+			return [resp]
+		else:
+			return resp
 
 
 	def getTestProjectByName(self, name, devkey=None):
@@ -300,6 +294,7 @@ class TestlinkAPI(object):
 					testprojectname = projectname )
 
 
+
 	def getProjectTestPlans(self, projectid, devkey=None):
 		"""Returns all TestPlans for a specified TestProject
 		@param devkey: Testlink developer key
@@ -309,9 +304,14 @@ class TestlinkAPI(object):
 		@returns: Matching TestPlans
 		@rtype: list
 		"""
-		return self.query("tl.getProjectTestPlans",  \
+		resp = self.query("tl.getProjectTestPlans",  \
 					devKey       = devkey, \
 					testprojectid = projectid )
+		# Ensure that it is a list, even if only one plan exists
+		if isinstance(resp,dict):
+			return [resp]
+		else:
+			return resp
 
 
 	def createBuild(self, testplanid, name, notes='', devkey=None):
@@ -697,15 +697,11 @@ class TestlinkAPI(object):
 					assignedto    = assignedto,      \
 					executestatus = executionstatus, \
 					executiontype = executiontype,   \
-					getstepinfo   = steps )
+					getstepsinfo   = steps )
 		# Normalize response to list
 		result = []
-		if isinstance(resp,dict):
-			for key,value in resp.items():
-				if isinstance(value,list) and len(value)==1:					
-					result.append(value[0])
-				elif isinstance(value,dict):
-					result.append(value)
+		for key,value in resp.items():
+			result.extend(value)
 		return result
 	
 	
