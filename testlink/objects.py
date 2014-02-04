@@ -412,7 +412,8 @@ class TestCase(TestlinkObject):
 			exec_on_build,		\
 			testsuite_id,		\
 			exec_status,		\
-			status,importance,	\
+			status,			\
+			importance,		\
 			execution_type,		\
 			execution_ts,		\
 			active,			\
@@ -437,6 +438,38 @@ class TestCase(TestlinkObject):
 		"""
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
+		self.execution_notes = str(execution_notes)
+		self.tcversion_number = int(tcversion_number)
+		self.assigner_id = int(assigner_id)
+		self.execution_oder = int(execution_order)
+		self.platform_name = str(platform_name)
+		self.linked_ts = str(linked_ts)
+		self.tsuite_name = str(tsuite_name)
+		self.assigned_build_id = int(assigned_build_id)
+		self.exec_on_tplan = bool(exec_on_tplan)
+		self.execution_run_type = int(execution_run_type)
+		self.feature_id = int(feature_id)
+		self.version = int(version)
+		self.exec_on_build = bool(exec_on_build)
+		self.testsuite_id = int(testsuite_id)
+		self.exec_status = str(exec_status)
+		self.status = str(status)
+		self.importance = int(importance)
+		self.execution_type = int(execution_type)
+		self.execution_ts = str(execution_ts)
+		self.active = bool(active)
+		self.user_id = int(user_id)
+		self.tester_id = int(tester_id)
+		self.exec_id = int(exec_id)
+		self.tcversion_id = int(tcversion_id)
+		self.linked_by = str(linked_by)
+		self.type = int(type)
+		self.summary = str(summary)
+		self.platform_id = int(platform_id)
+		self.z = str(z)
+		self.external_id = int(external_id)
+		self.urgency = int(urgency)
+		self.priority = int(priority)
 		self.steps = [TestCase.Step(**s) for s in steps]
 		
 	def __str__(self):
