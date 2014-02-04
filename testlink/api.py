@@ -89,6 +89,7 @@ class TestlinkAPI(object):
 			# Call the actual method
 			fn = getattr(self.__proxy,method)
 			resp = fn(kwargs)
+			log.debug("Response: '%s'" % str(resp))
 		except xmlrpclib.Fault,f:
 			if (f.faultCode == NotSupported.errorCode):
 				raise NotSupported(method)
@@ -96,11 +97,10 @@ class TestlinkAPI(object):
 			raise InvalidURI(self.__proxy)
 		else:
 			# Check for API error {{'code': 123, 'message': foo}}
-			if len(resp) == 1:
+			if isinstance(resp,list) and len(resp)==1:
 				resp = resp[0]
 				if (('code' in resp) and ('message' in resp)):
 					raise APIError(resp['code'],resp['message'])
-			log.debug("Response: '%s'" % str(resp))
 			return resp
 
 	#
