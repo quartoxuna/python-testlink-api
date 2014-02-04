@@ -79,22 +79,25 @@ class Testlink(TestlinkAPI):
 		# Get all available Projects
 		response = self.getProjects()
 
-		# Add name to search parameters
-		params['name'] = name
-
-		# Check for every project if all params
-		# match and return this project
-		for project in response:
-			match = True
-			for key,value in params.items():
-				if not (project[key] == value):
-					match = False
-					break
-			if match:
-				return TestProject(self,**project)
-
-		# Otherwise, return all available projects
-		return [TestProject(self,**project) for project in response]
+		if len(params)>0:
+			# Add name to search parameters
+			params['name'] = name
+	
+			# Check for every project if all params
+			# match and return this project
+			matches = []
+			for project in response:
+				match = True
+				for key,value in params.items():
+					if not (project[key] == str(value)):
+						match = False
+						break
+				if match:
+					matches.append(TestProject(self,**project))
+			return matches
+		else:
+			# Otherwise, return all available projects
+			return [TestProject(self,**project) for project in response]
 
 
 class TestlinkObject:
@@ -182,26 +185,31 @@ class TestProject(TestlinkObject):
 		# Get all TestPlans for the project
 		response = self.api.getProjectTestPlans(self.id)
 
-		# Add name to search parameters
-		params['name'] = name
-
-		# Check for every plan if all params
-		# match abd return this testplan
-		for plan in response:
-			match = True
-			for key,value in params.items():
-				if not (plan[key] == value):
-					match = False
-					break
-			if match:
-				return TestPlan(api = self.api, parent = self,	**plan)
-
-		# Otherwise, return all available testplans
-		return [TestPlan(api = self.api, parent = self, **plan) for plan in response]
+		if len(params)>0:
+			# Add name to search parameters
+			params['name'] = name
+	
+			# Check for every plan if all params
+			# match abd return this testplan
+			matches = []
+			for plan in response:
+				match = True
+				for key,value in params.items():
+					if not (plan[key] == str(value)):
+						match = False
+						break
+				if match:
+					matched.append(TestPlan(api = self.api, parent = self,	**plan))
+			return matches
+		else:
+			# Otherwise, return all available testplans
+			return [TestPlan(api = self.api, parent = self, **plan) for plan in response]
 			
 
 	def getTestSuite(self,name=None,**params):
 		"""Returns TestSuites specified by parameters"""
+		raise NotImplementedError()
+		"""
 		if 'id' in params:
 			# Search by ID
 			resp = self.api.getTestSuiteById(params['id'])
@@ -218,6 +226,7 @@ class TestProject(TestlinkObject):
 						return TestSuite(api=self.api,parent=self,**s)
 		else:
 			return [TestSuite(api=self.api,parent=self,**s) for s in suites]
+		"""
 
 
 class TestPlan(TestlinkObject):
@@ -244,6 +253,8 @@ class TestPlan(TestlinkObject):
 
 	def getBuild(self,name=None,**params):
 		"""Returns Builds specified by parameters"""
+		raise NotImplementedError()
+		"""
 		builds = self.api.getBuildsForTestPlan(self.id)
 		if len(params)>0:
 			for key,value in params.items():
@@ -252,9 +263,12 @@ class TestPlan(TestlinkObject):
 						return Build(api=self.api,parent=self,**b)
 		else:
 			return [Build(api=self.api,parent=self,**b) for b in builds]
+		"""
 
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
+		raise NotImplementedError()
+		"""
 		platforms = self.api.getTestPlanPlatforms(self.id)
 		if len(params)>0:
 			for key,value in params.items():
@@ -263,9 +277,12 @@ class TestPlan(TestlinkObject):
 						return Platform(api=self.api,parent=self,**p)
 		else:
 			return [Platform(api=self.api,parent=self,**p)]
+		"""
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
+		raise NotImplementedError()
+		"""
 		suites = self.api.getTestSuitesForTestPlan(self.id)
 		if len(params)>0:
 			for key,value in params.items():
@@ -274,6 +291,7 @@ class TestPlan(TestlinkObject):
 						return TestSuite(api=self.api,parent=self,**s)
 		else:
 			return [TestSuite(api=self.api,parent=self,**s) for s in suites]
+		"""
 
 	def getTestCase(self,**params):
 		"""Returns testcases specified by parameters
@@ -288,14 +306,16 @@ class TestPlan(TestlinkObject):
 		if len(params)>0:
 			# Check for every project if all params
 			# match and return this testcase
+			matches = []
 			for case in testcases:
 				match = True
 				for key,value in params.items():
-					if not(case[key] == value):
+					if not(case[key] == str(value)):
 						match = False
 						break
 				if match:
-					return TestCase(api = self.api, parent = self, **case)
+					matches.append(TestCase(api = self.api, parent = self, **case))
+			return matches
 		else:
 			# Otherwise, return all available testcases
 			return [TestCase(api = self.api, parent = self, **case) for case in testcases]
