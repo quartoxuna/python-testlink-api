@@ -7,14 +7,11 @@
 """
 
 import logging
-log = logging.getLogger('testlink-api')
+log = logging.getLogger('testlink')
 
-# Add NullHandler if available to avoid
-# warnings if user has not configured logging
 try:
-	from logging import NullHandler
-	log.addHandler(NullHandler())
-except ImportError:
+	log.addHandler(logging.NullHandler())
+except Exception:
 	pass
 
 from api import TestlinkAPI

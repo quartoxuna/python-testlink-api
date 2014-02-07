@@ -7,7 +7,6 @@
 """
 
 import time
-import logging
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from testlink import log
 
