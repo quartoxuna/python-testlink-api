@@ -437,6 +437,7 @@ class TestCase(TestlinkObject):
 			linked_by,		\
 			type,			\
 			summary,		\
+			preconditions,		\
 			platform_id,		\
 			z,			\
 			external_id,		\
@@ -459,6 +460,7 @@ class TestCase(TestlinkObject):
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
 		self.summary = self.api.html_parser.feed(str(summary))
+		self.preconditions = self.api.html_parser.feed(str(preconditions))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
 		self.steps = [TestCase.Step(api,**s) for s in steps]
