@@ -9,6 +9,7 @@
 # IMPORTS
 import re
 import xmlrpclib
+from HTMLParser import HTMLParser
 from api import TestlinkAPI
 from testlink import log
 
@@ -19,7 +20,15 @@ class Testlink(TestlinkAPI):
 	@type devkey: str
 	"""
 
-	def __init__(self,uri,devkey,short=True):
+	class DefaultHTMLParser(HTMLParser):
+		"""Default HTMLParser.
+		This parser just returns the given input. If you need to extract special
+		informations, implement an own HTMLParser and add it to the Testlink class
+		"""
+		def feed(self,data):
+			return data
+
+	def __init__(self,uri,devkey,short=True,parser=DefaultHTMLParser()):
 		"""Initializes the Testlink Server object
 		@param uri: Testlink URL
 		@type uri: str
@@ -27,9 +36,12 @@ class Testlink(TestlinkAPI):
 		@type devkey: str
 		@param short: Just the path to Testlink directory is needed, else whole path to api (Default: True)
 		@type short: bool
+		@param parser: Used HTMLParser (Uses default parser otherwise)
+		@type parser: HTMLParser
 		@raises InvalidURI: The given URI is not valid
 		"""
 		self.__uri = uri
+		self.html_parser = parser
 
 		# URI modification
 		if short:
@@ -122,7 +134,7 @@ class TestlinkObject:
 		"""
 		self.api = api
 		self.id = int(id)
-		self.name = str(name)
+		self.name = self.api.html_parser.feed(str(name))
 		self.parent = parent
 
 
@@ -152,8 +164,8 @@ class TestProject(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
-		self.prefix = str(prefix)
+		self.notes = self.api.html_parser.feed(str(notes))
+		self.prefix = self.api.html_parser.feed(str(prefix))
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -242,7 +254,7 @@ class TestPlan(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
+		self.notes = self.api.html_parser.feed(str(notes))
 		self.is_active = bool(active)
 		self.is_public = bool(is_public)
 	
@@ -326,7 +338,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,api,id,name,notes):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
+		self.notes = self.api.html_parser.feed(str(notes))
 
 
 class Platform(TestlinkObject):
@@ -334,7 +346,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,api,id,name,notes):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
+		self.notes = self.api.html_parser.feed(str(notes))
 
 
 class TestSuite(TestlinkObject):
@@ -342,7 +354,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
+		self.notes = self.api.html_parser.feed(str(notes))
 
 	def getTestSuite(self,name=None,**params):
 		suites = self.api.getTestSuitesForTestSuite(self.id)
@@ -380,13 +392,13 @@ class TestCase(TestlinkObject):
 		@ivar result: Expected result of the step
 		@type result: str
 		"""
-		def __init__(self,step_number,actions,execution_type,active,id,expected_results):
+		def __init__(self,api,step_number,actions,execution_type,active,id,expected_results):
 			self.step_number = int(step_number)
-			self.actions = str(actions)
+			self.actions = api.html_parser.feed(str(actions))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
 			self.id = int(id)
-			self.result = str(expected_results)
+			self.result = api.html_parser.feed(str(expected_results))
 
 		def __str__(self):
 			return "Step %d: %s - %s" % (self.step_number,self.actions,self.result)
@@ -438,7 +450,7 @@ class TestCase(TestlinkObject):
 		"""
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = str(execution_notes)
+		self.execution_notes = self.api.html_parser.feed(str(execution_notes))
 		self.execution_oder = int(execution_order)
 		self.version = int(version)
 		self.exec_status = str(exec_status)
@@ -446,10 +458,10 @@ class TestCase(TestlinkObject):
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = str(summary)
+		self.summary = self.api.html_parser.feed(str(summary))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
-		self.steps = [TestCase.Step(**s) for s in steps]
+		self.steps = [TestCase.Step(api,**s) for s in steps]
 		
 	def __str__(self):
 		return "TestCase '%s'" % self.name
