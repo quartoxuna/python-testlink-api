@@ -12,7 +12,7 @@ import xmlrpclib
 from HTMLParser import HTMLParser
 from api import TestlinkAPI
 from testlink import log
-from testlink.parsers import NullParser
+from testlink.parsers import DefaultParser
 
 
 class Testlink(TestlinkAPI):
@@ -21,23 +21,25 @@ class Testlink(TestlinkAPI):
 	@type devkey: str
 	"""
 
-	def __init__(self,uri,devkey,short=True,parsers=[NullParser()]):
+	def __init__(self,uri,devkey,parser=DefaultParser(),*parsers):
 		"""Initializes the Testlink Server object
 		@param uri: Testlink URL
 		@type uri: str
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param short: Just the path to Testlink directory is needed, else whole path to api (Default: True)
-		@type short: bool
 		@param raw: Do not convert HTML entities, disabled by default
 		@type raw: bool
 		@raises InvalidURI: The given URI is not valid
 		"""
-		self.__uri = uri
-		self.__parsers = parsers
+
+		# Set active parsers
+		parsers += (parser,)
+		self.setParser(*parsers)
+		log.debug("Active parsers: %s" % str(self.getParser()))
 
 		# URI modification for API initiation
-		if short:
+		self.__uri = uri
+		if not uri.endswith('/lib/api/xmlrpc.php'):
 			if not uri.endswith('/'):
 				uri += '/'
 			uri += 'lib/api/xmlrpc.php'
@@ -62,7 +64,7 @@ class Testlink(TestlinkAPI):
 		"""Returns the current active parsers
 		@rtype: list
 		"""
-		return self.__parser
+		return self.__parsers
 
 	def parse(self,data):
 		"""Parses given data with all given parsers
@@ -70,7 +72,10 @@ class Testlink(TestlinkAPI):
 		@type data: mixed
 		"""
 		for p in self.__parsers:
-			data = p.feed(data)
+			p.reset()
+			p.feed(data)
+			p.close()
+			data = p.result
 		return data
 
 
