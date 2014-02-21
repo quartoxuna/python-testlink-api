@@ -12,6 +12,7 @@ import xmlrpclib
 from HTMLParser import HTMLParser
 from api import TestlinkAPI
 from testlink import log
+from testlink.parsers import NullParser
 
 
 class Testlink(TestlinkAPI):
@@ -20,15 +21,7 @@ class Testlink(TestlinkAPI):
 	@type devkey: str
 	"""
 
-	class DefaultHTMLParser(HTMLParser):
-		"""Default HTMLParser.
-		This parser just returns the given input. If you need to extract special
-		informations, implement an own HTMLParser and add it to the Testlink class
-		"""
-		def feed(self,data):
-			return data
-
-	def __init__(self,uri,devkey,short=True,parser=DefaultHTMLParser()):
+	def __init__(self,uri,devkey,short=True,parsers=[NullParser()]):
 		"""Initializes the Testlink Server object
 		@param uri: Testlink URL
 		@type uri: str
@@ -36,14 +29,14 @@ class Testlink(TestlinkAPI):
 		@type devkey: str
 		@param short: Just the path to Testlink directory is needed, else whole path to api (Default: True)
 		@type short: bool
-		@param parser: Used HTMLParser (Uses default parser otherwise)
-		@type parser: HTMLParser
+		@param raw: Do not convert HTML entities, disabled by default
+		@type raw: bool
 		@raises InvalidURI: The given URI is not valid
 		"""
 		self.__uri = uri
-		self.html_parser = parser
+		self.__parsers = parsers
 
-		# URI modification
+		# URI modification for API initiation
 		if short:
 			if not uri.endswith('/'):
 				uri += '/'
@@ -55,6 +48,31 @@ class Testlink(TestlinkAPI):
 
 	def __str__(self):
 		return "<Testlink@%s>" % self.__uri
+	__repr__ = __str__
+
+
+	def setParser(self,*parsers):
+		"""Changes the set of active parsers
+		@param *parsers: Parsers to use
+		@type *parsers: Instance of HTMLParser
+		"""
+		self.__parsers = parsers	
+
+	def getParser(self):
+		"""Returns the current active parsers
+		@rtype: list
+		"""
+		return self.__parser
+
+	def parse(self,data):
+		"""Parses given data with all given parsers
+		@param data: Data to parse
+		@type data: mixed
+		"""
+		for p in self.__parsers:
+			data = p.feed(data)
+		return data
+
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
@@ -134,8 +152,16 @@ class TestlinkObject:
 		"""
 		self.api = api
 		self.id = int(id)
-		self.name = self.api.html_parser.feed(str(name))
+		self.name = str(name)
 		self.parent = parent
+
+	def __str__(self):
+		result = {}
+		for k,v in self.__dict__.items():
+			if not str(k).startswith('_'):
+				result.update({k:v})
+		return str(result)
+	__repr__ = __str__
 
 
 class TestProject(TestlinkObject):
@@ -164,8 +190,8 @@ class TestProject(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = self.api.html_parser.feed(str(notes))
-		self.prefix = self.api.html_parser.feed(str(prefix))
+		self.notes = self.api.parse(str(notes))
+		self.prefix = str(prefix)
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -174,10 +200,6 @@ class TestProject(TestlinkObject):
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
 		self.color = str(color)
-
-
-	def __str__(self):
-		return "TestProject '%s'" % self.name
 
 
 	def getTestPlan(self,name=None,**params):
@@ -254,14 +276,10 @@ class TestPlan(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = self.api.html_parser.feed(str(notes))
+		self.notes = self.api.parse(str(notes))
 		self.is_active = bool(active)
 		self.is_public = bool(is_public)
 	
-
-	def __str__(self):
-		return "TestPlan '%s'" % self.name
-
 
 	def getBuild(self,name=None,**params):
 		"""Returns Builds specified by parameters"""
@@ -338,7 +356,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,api,id,name,notes):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = self.api.html_parser.feed(str(notes))
+		self.notes = str(notes)
 
 
 class Platform(TestlinkObject):
@@ -346,7 +364,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,api,id,name,notes):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = self.api.html_parser.feed(str(notes))
+		self.notes = str(notes)
 
 
 class TestSuite(TestlinkObject):
@@ -354,7 +372,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = self.api.html_parser.feed(str(notes))
+		self.notes = str(notes)
 
 	def getTestSuite(self,name=None,**params):
 		suites = self.api.getTestSuitesForTestSuite(self.id)
@@ -394,14 +412,19 @@ class TestCase(TestlinkObject):
 		"""
 		def __init__(self,api,step_number,actions,execution_type,active,id,expected_results):
 			self.step_number = int(step_number)
-			self.actions = api.html_parser.feed(str(actions))
+			self.actions = api.parse(str(actions))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
 			self.id = int(id)
-			self.result = api.html_parser.feed(str(expected_results))
+			self.result = api.parse(str(expected_results))
 
 		def __str__(self):
-			return "Step %d: %s - %s" % (self.step_number,self.actions,self.result)
+			result = {}
+			for k,v in self.__dict__.items():
+				if not str(k).startswith('_'):
+					result.update({k:v})
+			return str(result)
+		__repr__ = __str__
 
 
 	def __init__(
@@ -451,7 +474,7 @@ class TestCase(TestlinkObject):
 		"""
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = self.api.html_parser.feed(str(execution_notes))
+		self.execution_notes = self.api.parse(str(execution_notes))
 		self.execution_oder = int(execution_order)
 		self.version = int(version)
 		self.exec_status = str(exec_status)
@@ -459,11 +482,8 @@ class TestCase(TestlinkObject):
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = self.api.html_parser.feed(str(summary))
-		self.preconditions = self.api.html_parser.feed(str(preconditions))
+		self.summary = self.api.parse(str(summary))
+		self.preconditions = self.api.parse(str(preconditions))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
 		self.steps = [TestCase.Step(api,**s) for s in steps]
-		
-	def __str__(self):
-		return "TestCase '%s'" % self.name
