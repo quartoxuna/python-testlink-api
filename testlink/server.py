@@ -6,6 +6,7 @@
 @summary: Testlink conform automation server.
 """
 
+# IMPORTS
 import time
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from testlink import log
