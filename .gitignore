@@ -2,7 +2,7 @@
 *.pyc
 *.swp
 
-*.egg-info/
-build/
-dist/
-apidoc/
+*.egg-info/*
+build/*
+dist/*
+apidoc/*
