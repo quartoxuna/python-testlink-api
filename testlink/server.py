@@ -18,8 +18,8 @@ class TestlinkXMLRPCServer(SimpleXMLRPCServer):
 		"""Initializes the Server
 		@param callback: Method to be executed if server is triggerd
 		@type callback: method
-		@param addr: The address of the Server
-		@type addr: str
+		@param host: The address of the Server
+		@type host: str
 		@param port: The port of the Server
 		@type port: int
 		@param verbose: Log HTTP requests

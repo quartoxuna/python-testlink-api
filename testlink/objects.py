@@ -27,8 +27,6 @@ class Testlink(TestlinkAPI):
 		@type uri: str
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param raw: Do not convert HTML entities, disabled by default
-		@type raw: bool
 		@raises InvalidURI: The given URI is not valid
 		"""
 
@@ -55,8 +53,8 @@ class Testlink(TestlinkAPI):
 
 	def setParser(self,*parsers):
 		"""Changes the set of active parsers
-		@param *parsers: Parsers to use
-		@type *parsers: Instance of HTMLParser
+		@param parsers: Parsers to use
+		@type parsers: Instances of HTMLParser
 		"""
 		self.__parsers = parsers	
 
@@ -101,8 +99,8 @@ class Testlink(TestlinkAPI):
 		"""Returns TestProject specified by parameters
 		@param name: The name of the TestProject
 		@type name: str
-		@param **params: Other params for TestProject
-		@type **params: mixed
+		@param params: Other params for TestProject
+		@type params: Keyword arguments
 		@returns: Matching TestProjects
 		@rtype: mixed
 		"""
@@ -149,8 +147,8 @@ class TestlinkObject:
 		"""Initialises base Testlink object
 		@param api: TestlinkAPI instance
 		@type api: testlink.api.TestlinkAPI
-		@param Id: Internal Testlink Id of the object
-		@type Id: int
+		@param id: Internal Testlink Id of the object
+		@type id: int
 		@param name: Internal Testlink name of the object
 		@type name: str
 		@keyword kwargs: Additonal attributes
@@ -175,7 +173,7 @@ class TestProject(TestlinkObject):
 	@ivar notes: TestProject notes
 	@type notes: str
 	@ivar prefix: TestCase prefix within TestProject
-	@str prefix: str
+	@type prefix: str
 	@ivar active: TestProject active flag
 	@type active: bool
 	@ivar public: TestProject public flag
@@ -211,8 +209,8 @@ class TestProject(TestlinkObject):
 		"""Returns TestPlans specified by parameters
 		@param name: The name of the TestPlan
 		@type name: str
-		@param **params: Other params for TestPlan
-		@type **params: mixed
+		@param params: Other params for TestPlan
+		@type params: list
 		@returns: Matching TestPlans
 		@rtype: list
 		"""
@@ -330,8 +328,8 @@ class TestPlan(TestlinkObject):
 
 	def getTestCase(self,**params):
 		"""Returns testcases specified by parameters
-		@param **params: Params for TestCase
-		@type **params: mixed
+		@param params: Params for TestCase
+		@type params: mixed
 		@returns: Matching TestCases
 		@rtype: mixed
 		"""

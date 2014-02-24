@@ -26,7 +26,7 @@ class NotSupported(Exception):
 	def __init__(self,fn_name):
 		"""Initializes the Exception
 		@param fn_name: Name of function causing the error
-		@type: fn_name: str
+		@type fn_name: str
 		"""
 		Exception.__init__(self,fn_name)
 		self.errorName = fn_name
@@ -189,14 +189,14 @@ class TestlinkAPI(object):
 		@type active: bool
 		@param public: <OPTIONAL> The TestProject is marked as public (Default is: True)
 		@type public: bool
-		@param requirementsEnabled: <OPTIONAL> The TestProject supports requirements (Default is: False)
-		@type requirementsEnabled: bool
-		@param testPriorityEnabled: <OPTIONAL> The TestProject supports test case priority (Default is: False)
-		@type testPriorityEnabled: bool
-		@param automationEnabled: <OPTIONAL> The TestProject supports test automation (Default is: False)
-		@type automationEnabled: bool
-		@param inventoryEnabled: <OPTIONAL> The TestProject supports inventory features (Default is: False)
-		@type inventoryEnabled: bool
+		@param requirements: <OPTIONAL> The TestProject supports requirements (Default is: False)
+		@type requirements: bool
+		@param priority: <OPTIONAL> The TestProject supports test case priority (Default is: False)
+		@type priority: bool
+		@param automation: <OPTIONAL> The TestProject supports test automation (Default is: False)
+		@type automation: bool
+		@param inventory: <OPTIONAL> The TestProject supports inventory features (Default is: False)
+		@type inventory: bool
 		@returns: Server response
 		@rtype: dict/list/???
 
