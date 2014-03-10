@@ -1000,9 +1000,13 @@ class TestlinkAPI(object):
 		@param testcaseexternalid: <OPTIONAL> The external ID of the TestCase. If not given, the internal ID must be set
 		@type testcaseexternalid: int
 		@returns: Matching attachments
-		@rtype: list/dict/???
+		@rtype: dict
 		"""
-		return self.query("tl.getTestCaseAttachmnts",          \
+		resp = self.query("tl.getTestCaseAttachments",          \
 					devKey             = devkey,     \
 					testcaseid         = testcaseid, \
 					testcaseexternalid = testcaseexternalid )
+		# Normalize response to single dict
+		if len(resp.keys())>0:
+			return resp[resp.keys()[0]]
+
