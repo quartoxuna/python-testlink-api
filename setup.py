@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(
-	name="testlink_api",
-	version="0.9",
-	description="Testlink API Wrapper library",
-	author="Kai Borowiak",
-	author_email="kai.borowiak@secunet.com",
-	packages=['testlink'],
-	keywords='testlink api xmlrpc python',
+	name='TestlinkAPI',
+	version='0.9',
+	description='Testlink API Wrapper library',
+	author='Kai Borowiak',
+	author_email='kai.borowiak@secunet.com',
 	license='GPL',
+	url='http://sinaqs.secunet.de/pypi/simple/TestlinkAPI',
+	packages=['testlink'],
+	keywords='testlink api xmlrpc python'
 )
