@@ -429,6 +429,19 @@ class TestCase(TestlinkObject):
 			return str(result)
 		__repr__ = __str__
 
+	class Execution(object):
+		"""Testlink TestCase Execution representation"""
+		def __init__(self,api,**kwargs):
+			self.__dict__.update(kwargs) # Dirty!
+
+		def __str__(self):
+			result = {}
+			for k,v in self.__dict__.items():
+				if not str(k).startswith('_'):
+					result.update({k:v})
+			return str(result)
+		__repr__ = __str__
+
 
 	def __init__(
 			self,			\
@@ -490,3 +503,24 @@ class TestCase(TestlinkObject):
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
 		self.steps = [TestCase.Step(api,**s) for s in steps]
+
+	def getLastExecutionResult(self,testplanid):
+		resp = self.getLastExecutionResult(testplanid,self.id,self.external_id)
+		self.last_execution = TestCase.Execution(api,**resp)
+		return last_execution
+
+	def deleteLastExecution(self,testplanid):
+		# Update last execution
+		last = self.getLastExecutionResult(testplanid)
+		self.api.deleteExecution(last.id)
+
+	def reportResult(self,testplanid,status,notes=None,overwrite=False):
+		self.api.reportTCResult(
+			testplanid = testplanid,		\
+			status = status,			\
+			testcaseid = self.id,			\
+			testcaseexternalid = self.external_id,	\
+			notes = notes,				\
+			platformid = self.platform_id,		\
+			overwrite = overwrite
+		)
