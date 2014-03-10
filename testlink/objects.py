@@ -430,9 +430,47 @@ class TestCase(TestlinkObject):
 		__repr__ = __str__
 
 	class Execution(object):
-		"""Testlink TestCase Execution representation"""
-		def __init__(self,api,**kwargs):
-			self.__dict__.update(kwargs) # Dirty!
+		"""Testlink TestCase Execution representation
+		@cvar EXEC_TYPE: Possible execution types
+		@type EXEC_TYPE: dict
+
+		@ivar id: The internal ID of the Execution
+		@type id: int
+		@ivar testplan_id: The internal ID of the parent TestPlan
+		@type testplan_id: int
+		@ivar build_id: The internal ID of the parent Build
+		@type build_id: int
+		@ivar tcversion_id: The internal ID of the parent TestCase Version
+		@type tcversion_id: int
+		@ivar tcversion_number: The version of the parent TestCase
+		@type tcversion_number: int
+		@ivar status: The status of the Execution
+		@type status: str
+		@ivar notes: Notes of the Execution
+		@type notes: str
+		@ivar execution_type: Execution Type
+		@type execution_type: int
+		@ivar execution_ts: Timestamp of execution
+		@type execution_ts: str
+		@ivar tester_id: The internal ID of the tester
+		@type tester_id: int
+		"""
+
+		EXEC_TYPE = {'MANUAL': 1, 'AUTOMATIC': 2}
+
+		def __init__(self,api,id,testplan_id,platform_id,build_id,tcversion_id,tcversion_number,status,notes,execution_type,execution_ts,tester_id):
+			self.api = api
+			self.id = int(id)
+			self.testplan_id = int(testplan_id)
+			self.platform_id = int(platform_id)
+			self.build_id = int(build_id)
+			self.tcversion_id = int(tcversion_id)
+			self.tcversion_number = int(tcversion_number)
+			self.status = str(status)
+			self.notes = str(notes)
+			self.execution_type = int(execution_type)
+			self.execution_ts = str(execution_ts)
+			self.tester_id = int(tester_id)
 
 		def __str__(self):
 			result = {}
@@ -441,6 +479,9 @@ class TestCase(TestlinkObject):
 					result.update({k:v})
 			return str(result)
 		__repr__ = __str__
+
+		def delete(self):
+			self.api.deleteExecution(self.id)
 
 
 	def __init__(
@@ -505,9 +546,8 @@ class TestCase(TestlinkObject):
 		self.steps = [TestCase.Step(api,**s) for s in steps]
 
 	def getLastExecutionResult(self,testplanid):
-		resp = self.getLastExecutionResult(testplanid,self.id,self.external_id)
-		self.last_execution = TestCase.Execution(api,**resp)
-		return last_execution
+		resp = self.api.getLastExecutionResult(testplanid,self.id,self.external_id)
+		return TestCase.Execution(self.api,**resp)
 
 	def deleteLastExecution(self,testplanid):
 		# Update last execution
@@ -524,3 +564,6 @@ class TestCase(TestlinkObject):
 			platformid = self.platform_id,		\
 			overwrite = overwrite
 		)
+
+	def getAttachments(self):
+		return self.api.getTestCaseAttachments(self.id,self.external_id)
