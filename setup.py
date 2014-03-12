@@ -8,8 +8,8 @@ setup(
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
 	author_email='kai.borowiak@secunet.com',
-	license='GPL',
 	url='http://sinaqs.secunet.de/pypi/simple/TestlinkAPI',
 	packages=['testlink'],
-	keywords='testlink api xmlrpc python'
+	keywords='testlink api xmlrpc python',
+	license='GPL',
 )
