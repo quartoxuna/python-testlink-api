@@ -155,7 +155,7 @@ class TestlinkObject:
 		"""
 		self.api = api
 		self.id = int(id)
-		self.name = str(name)
+		self.name = unicode(name)
 		self.parent = parent
 
 	def __str__(self):
@@ -279,7 +279,7 @@ class TestPlan(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = self.api.parse(str(notes))
+		self.notes = self.api.parse(unicode(notes))
 		self.is_active = bool(active)
 		self.is_public = bool(is_public)
 	
@@ -359,7 +359,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,api,id,name,notes):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
+		self.notes = unicode(notes)
 
 
 class Platform(TestlinkObject):
@@ -367,7 +367,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,api,id,name,notes):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
+		self.notes = unicode(notes)
 
 
 class TestSuite(TestlinkObject):
@@ -375,7 +375,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = str(notes)
+		self.notes = unicode(notes)
 
 	def getTestSuite(self,name=None,**params):
 		suites = self.api.getTestSuitesForTestSuite(self.id)
@@ -415,11 +415,11 @@ class TestCase(TestlinkObject):
 		"""
 		def __init__(self,api,step_number,actions,execution_type,active,id,expected_results):
 			self.step_number = int(step_number)
-			self.actions = api.parse(str(actions))
+			self.actions = api.parse(unicode(actions))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
 			self.id = int(id)
-			self.result = api.parse(str(expected_results))
+			self.result = api.parse(unicode(expected_results))
 
 		def __str__(self):
 			result = {}
@@ -467,7 +467,7 @@ class TestCase(TestlinkObject):
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
 			self.status = str(status)
-			self.notes = str(notes)
+			self.notes = unicode(notes)
 			self.execution_type = int(execution_type)
 			self.execution_ts = str(execution_ts)
 			self.tester_id = int(tester_id)
@@ -531,7 +531,7 @@ class TestCase(TestlinkObject):
 		"""
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = self.api.parse(str(execution_notes))
+		self.execution_notes = self.api.parse(unicode(execution_notes))
 		self.execution_oder = int(execution_order)
 		self.version = int(version)
 		self.exec_status = str(exec_status)
@@ -539,8 +539,8 @@ class TestCase(TestlinkObject):
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = self.api.parse(str(summary))
-		self.preconditions = self.api.parse(str(preconditions))
+		self.summary = self.api.parse(unicode(summary))
+		self.preconditions = self.api.parse(unicode(preconditions))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
 		self.steps = [TestCase.Step(api,**s) for s in steps]
