@@ -18,8 +18,8 @@ except ImportError:
 # EXPORTS
 from api import TestlinkAPI
 from api import InvalidURI, NotSupported, APIError
-from objects import Testlink
+from objects import Testlink, TestCase
 from server import TestlinkXMLRPCServer
 
-__all__ = ['TestlinkAPI','Testlink','TestlinkXMLRPCServer',\
+__all__ = ['TestlinkAPI','Testlink','TestCase','TestlinkXMLRPCServer',\
 		'InvalidURI','NotSupported','APIError']
