@@ -373,7 +373,7 @@ class TestlinkAPI(object):
 		@returns: Matching Platforms
 		@rtype: list
 		"""
-		return self._query("tl.getTestPlanPlatforms", \
+		return self.query("tl.getTestPlanPlatforms", \
 					devKey     = devkey,  \
 					testplanid = testplanid )
 	
