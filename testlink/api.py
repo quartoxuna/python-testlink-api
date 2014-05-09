@@ -359,7 +359,7 @@ class TestlinkAPI(object):
 		@returns: Matching Builds
 		@rtype: list
 		"""
-		return self.query("tl.getBuildsForTestplan", \
+		return self.query("tl.getBuildsForTestPlan", \
 					devKey     = devkey,   \
 					testplanid = testplanid )
 	
