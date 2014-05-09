@@ -287,7 +287,12 @@ class TestPlan(TestlinkObject):
 	def getBuild(self,name=None,**params):
 		"""Returns Builds specified by parameters"""
 		builds = self.api.getBuildsForTestPlan(self.id)
+		# Add name to params
+		params['name'] = name
 		for key,value in params.items():
+			# Check for single result
+			if isinstance(builds,dict):
+				return Build(api=self,**builds)
 			for b in builds:
 				if b[key]==value:
 					return Build(api=self.api,**b)
@@ -295,7 +300,12 @@ class TestPlan(TestlinkObject):
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
 		platforms = self.api.getTestPlanPlatforms(self.id)
+		# Add name to params
+		params['name'] = name		
 		for key,value in params.items():
+			# Check for single results
+			if isinstance(platforms,dict):
+				return Platform(api=self,**platforms)
 			for p in platforms:
 				if p[key]==value:
 					return Platform(api=self.api,**p)
