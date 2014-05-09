@@ -89,7 +89,7 @@ class TestlinkAPI(object):
 			# Call the actual method
 			fn = getattr(self.__proxy,method)
 			resp = fn(kwargs)
-			log.debug("Response: '%s'" % str(resp))
+			log.debug("Response: %s" % str(resp))
 		except xmlrpclib.Fault,f:
 			if (f.faultCode == NotSupported.errorCode):
 				raise NotSupported(method)
