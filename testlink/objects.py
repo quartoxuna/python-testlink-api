@@ -355,7 +355,7 @@ class TestPlan(TestlinkObject):
 class Build(TestlinkObject):
 	"""Testlink Build representation"""
 
-	def __init__(self,api,id,name,notes):
+	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = unicode(notes)
 
@@ -363,7 +363,7 @@ class Build(TestlinkObject):
 class Platform(TestlinkObject):
 	"""Testlink Platform representation"""
 
-	def __init__(self,api,id,name,notes):
+	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = unicode(notes)
 
@@ -411,7 +411,7 @@ class TestCase(TestlinkObject):
 		@ivar result: Expected result of the step
 		@type result: str
 		"""
-		def __init__(self,api,step_number,actions,execution_type,active,id,expected_results):
+		def __init__(self,api,step_number,actions,execution_type,active,id,expected_results,**kwargs):
 			self.step_number = int(step_number)
 			self.actions = api.parse(unicode(actions))
 			self.execution_type = int(execution_type)
@@ -456,7 +456,7 @@ class TestCase(TestlinkObject):
 
 		EXEC_TYPE = {'MANUAL': 1, 'AUTOMATIC': 2}
 
-		def __init__(self,api,id,testplan_id,platform_id,build_id,tcversion_id,tcversion_number,status,notes,execution_type,execution_ts,tester_id):
+		def __init__(self,api,id,testplan_id,platform_id,build_id,tcversion_id,tcversion_number,status,notes,execution_type,execution_ts,tester_id,**kwargs):
 			self.api = api
 			self.id = int(id)
 			self.testplan_id = int(testplan_id)
