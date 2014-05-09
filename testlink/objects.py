@@ -324,7 +324,7 @@ class TestPlan(TestlinkObject):
 			return [TestSuite(api=self.api,parent=self,**s) for s in suites]
 		"""
 
-	def getTestCase(self,**params):
+	def getTestCase(self,testcaseid=None,buildid=None,keywordid=None,keywords=None,executed=None,assignedto=None,executionstatus=None,executiontype=None,**params):
 		"""Returns testcases specified by parameters
 		@param params: Params for TestCase
 		@type params: mixed
@@ -332,24 +332,32 @@ class TestPlan(TestlinkObject):
 		@rtype: mixed
 		"""
 		# Get all available TestCases
-		testcases = self.api.getTestCasesForTestPlan(self.id,steps=True)
-
-		if len(params)>0:
-			# Check for every project if all params
-			# match and return this testcase
-			matches = []
-			for case in testcases:
-				match = True
-				for key,value in params.items():
-					if not(case[key] == str(value)):
-						match = False
-						break
-				if match:
-					matches.append(TestCase(api = self.api, parent = self, **case))
-			return matches
-		else:
-			# Otherwise, return all available testcases
-			return [TestCase(api = self.api, parent = self, **case) for case in testcases]
+		# Use all possible API params to speed up API call
+		testcases = self.api.getTestCasesForTestPlan(\
+												self.id,\
+												testcaseid,\
+												buildid,\
+												keywordid,\
+												keywords,\
+												executed,\
+												assignedto,\
+												executionstatus,\
+												executiontype,\
+												steps = True\
+											)
+										
+		# Check for every project if all other params
+		# match and return this testcase
+		matches = []
+		for case in testcases:
+			match = True
+			for key,value in params.items():
+				if not(case[key] == str(value)):
+					match = False
+					break
+			if match:
+				matches.append(TestCase(api = self.api, parent = self, **case))
+		return matches
 						
 
 class Build(TestlinkObject):
