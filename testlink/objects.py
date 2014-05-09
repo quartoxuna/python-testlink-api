@@ -532,7 +532,7 @@ class TestCase(TestlinkObject):
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
 		self.execution_notes = self.api.parse(unicode(execution_notes))
-		self.execution_oder = int(execution_order)
+		self.execution_order = int(execution_order)
 		self.version = int(version)
 		self.exec_status = str(exec_status)
 		self.status = str(status)
