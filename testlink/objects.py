@@ -286,17 +286,11 @@ class TestPlan(TestlinkObject):
 
 	def getBuild(self,name=None,**params):
 		"""Returns Builds specified by parameters"""
-		raise NotImplementedError()
-		"""
 		builds = self.api.getBuildsForTestPlan(self.id)
-		if len(params)>0:
-			for key,value in params.items():
-				for b in builds:
-					if b[key]==value:
-						return Build(api=self.api,parent=self,**b)
-		else:
-			return [Build(api=self.api,parent=self,**b) for b in builds]
-		"""
+		for key,value in params.items():
+			for b in builds:
+				if b[key]==value:
+					return Build(api=self.api,**b)
 
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
