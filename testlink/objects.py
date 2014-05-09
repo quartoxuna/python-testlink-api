@@ -300,17 +300,11 @@ class TestPlan(TestlinkObject):
 
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
-		raise NotImplementedError()
-		"""
 		platforms = self.api.getTestPlanPlatforms(self.id)
-		if len(params)>0:
-			for key,value in params.items():
-				for p in platforms:
-					if p[key]==value:
-						return Platform(api=self.api,parent=self,**p)
-		else:
-			return [Platform(api=self.api,parent=self,**p)]
-		"""
+		for key,value in params.items():
+			for p in platforms:
+				if p[key]==value:
+					return Platform(api=self.api,**p)
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
