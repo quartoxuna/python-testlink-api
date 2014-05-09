@@ -698,11 +698,22 @@ class TestlinkAPI(object):
 					executestatus = executionstatus, \
 					executiontype = executiontype,   \
 					getstepsinfo   = steps )
-		# Normalize response to list
-		result = []
-		for key,value in resp.items():
-			result.extend(value)
-		return result
+					
+		# The worst case scenario would be a testcase within multiple platforms.
+		# In this case we would get something like:
+		#
+		# { <TCID>: { <PLATFORM_ID>: { ... } } , <TCID> : { ... } }
+		#
+		testcases = []
+		for tcid,platforms in resp.items():
+			# Check if there are platforms
+			# In that case, there would be a dict as value			
+			for platform_id,testcase in platforms.items():
+				if not isinstance(testcase,dict):
+					testcases = platforms
+					break
+				testcases.append(testcase)
+			return testcases
 	
 	
 	def addTestCaseToTestPlan(self, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
