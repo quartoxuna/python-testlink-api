@@ -98,9 +98,9 @@ class TestlinkAPI(object):
 		else:
 			# Check for API error {{'code': 123, 'message': foo}}
 			if isinstance(resp,list) and len(resp)==1:
-				resp = resp[0]
-				if (('code' in resp) and ('message' in resp)):
-					raise APIError(resp['code'],resp['message'])
+				tmp = resp[0]
+				if (('code' in tmp) and ('message' in tmp)):
+					raise APIError(tmp['code'],tmp['message'])
 			return resp
 
 	#
