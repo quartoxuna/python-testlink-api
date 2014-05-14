@@ -6,20 +6,7 @@
 @summary: Testlink API Wrapper
 """
 
-# ENABLE MODULE WIDE LOGGING
-import logging
-log = logging.getLogger('testlink')
-try:
-	from logging import NullHandler
-	log.addHandler(NullHandler())
-except ImportError:
-	pass
-
-# EXPORTS
-from api import TestlinkAPI
-from api import InvalidURI, NotSupported, APIError
-from objects import Testlink, TestCase
+from api import TestlinkAPI, InvalidURI, APIError
+from objects import Testlink
 from server import TestlinkXMLRPCServer
-
-__all__ = ['TestlinkAPI','Testlink','TestCase','TestlinkXMLRPCServer',\
-		'InvalidURI','NotSupported','APIError']
+from log import tl_log as TESTLINK_LOG

@@ -8,7 +8,7 @@
 
 # IMPORTS
 
-from testlink import log
+from .log import tl_log as log
 from HTMLParser import HTMLParser
 from HTMLParser import HTMLParseError
 

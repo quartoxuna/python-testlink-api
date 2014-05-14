@@ -8,7 +8,7 @@
 
 # IMPORTS
 import xmlrpclib
-from testlink import log
+from .log import tl_log as log
 
 class NotSupported(Exception):
 	"""To be raised, if Testlink does not support the requested method

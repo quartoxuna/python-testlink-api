@@ -10,9 +10,9 @@
 import re
 import xmlrpclib
 from HTMLParser import HTMLParser
-from api import TestlinkAPI
-from testlink import log
-from testlink.parsers import DefaultParser
+from .api import TestlinkAPI
+from .log import tl_log as log
+from .parsers import DefaultParser
 
 
 class Testlink(TestlinkAPI):
