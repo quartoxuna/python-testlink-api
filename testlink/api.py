@@ -223,12 +223,7 @@ class TestlinkAPI(object):
 		@returns: TestProjects as list of dicts
 		@rtype: list
 		"""
-		resp = self.query("tl.getProjects", devKey=devkey)
-		# Ensure, that it is a list, even if only one project exists
-		if isinstance(resp,dict):
-			return [resp]
-		else:
-			return resp
+		return self.query("tl.getProjects", devKey=devkey)
 
 
 	def getTestProjectByName(self, name, devkey=None):
@@ -298,14 +293,9 @@ class TestlinkAPI(object):
 		@returns: Matching TestPlans
 		@rtype: list
 		"""
-		resp = self.query("tl.getProjectTestPlans",  \
+		return self.query("tl.getProjectTestPlans",  \
 					devKey       = devkey, \
 					testprojectid = projectid )
-		# Ensure that it is a list, even if only one plan exists
-		if isinstance(resp,dict):
-			return [resp]
-		else:
-			return resp
 
 
 	def createBuild(self, testplanid, name, notes='', devkey=None):
@@ -680,7 +670,7 @@ class TestlinkAPI(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		resp = self.query("tl.getTestCasesForTestPlan",        \
+		return self.query("tl.getTestCasesForTestPlan",        \
 					devKey        = devkey,          \
 					testplanid    = planid,          \
 					tcid          = testcaseid,      \
@@ -692,22 +682,6 @@ class TestlinkAPI(object):
 					executestatus = executionstatus, \
 					executiontype = executiontype,   \
 					getstepsinfo   = steps )
-					
-		# The worst case scenario would be a testcase within multiple platforms.
-		# In this case we would get something like:
-		#
-		# { <TCID>: { <PLATFORM_ID>: { ... } } , <TCID> : { ... } }
-		#
-		testcases = []
-		for tcid,platforms in resp.items():
-			# Check if there are platforms
-			# In that case, there would be a dict as value			
-			for platform_id,testcase in platforms.items():
-				if not isinstance(testcase,dict):
-					testcases = platforms
-					break
-				testcases.append(testcase)
-			return testcases
 	
 	
 	def addTestCaseToTestPlan(self, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
@@ -1007,11 +981,7 @@ class TestlinkAPI(object):
 		@returns: Matching attachments
 		@rtype: dict
 		"""
-		resp = self.query("tl.getTestCaseAttachments",          \
+		return self.query("tl.getTestCaseAttachments",          \
 					devKey             = devkey,     \
 					testcaseid         = testcaseid, \
 					testcaseexternalid = testcaseexternalid )
-		# Normalize response to single dict
-		if len(resp.keys())>0:
-			return resp[resp.keys()[0]]
-
