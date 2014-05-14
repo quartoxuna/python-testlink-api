@@ -67,6 +67,9 @@ class TestlinkAPI(object):
 	def __str__(self):
 		return str(self.__proxy)
 
+	def __repr__(self):
+		return str(self.__proxy)
+
 	def query(self,method,**kwargs):
 		"""Remote calls a method on the server
 		@param method: Method to call
