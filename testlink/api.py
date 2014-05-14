@@ -10,11 +10,6 @@
 import xmlrpclib
 from testlink import log
 
-class InvalidURI(Exception):
-	"""To be raised, if the given endpoint URI is not correct"""
-	pass
-
-
 class NotSupported(Exception):
 	"""To be raised, if Testlink does not support the requested method
 	@cvar errorName: Method, that is not supported
@@ -61,12 +56,12 @@ class TestlinkAPI(object):
 		"""Initialize the TestlinkAPI
 		@param uri: URI of Testlink XML-RPC server implementation
 		@type uri: str
-		@raises InvalidProxy: The given proxy is not valid
+		@raises ProtocolError: The given proxy is not valid
 		"""
 		try:
 			self.__proxy = xmlrpclib.ServerProxy(uri,encoding='UTF-8',allow_none=True )
 		except IOError:
-			raise InvalidURI(uri)
+			raise xmlrpclib.ProtocolError(uri)
 		self.devkey = None
 
 	def __str__(self):
@@ -292,7 +287,6 @@ class TestlinkAPI(object):
 					devKey          = devkey, \
 					testplanname    = name,   \
 					testprojectname = projectname )
-
 
 
 	def getProjectTestPlans(self, projectid, devkey=None):
