@@ -131,7 +131,7 @@ class TestlinkAPI(object):
 		@returns: String 'You said: ' and the given value
 		@rtype: mixed
 		"""
-		return self.query("tl.repeat", v=value)
+		return self.query("tl.repeat", str=str(value))
 
 
 	def checkDevKey(self,devkey=None):
