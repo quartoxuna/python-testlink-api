@@ -56,12 +56,12 @@ class TestlinkAPI(object):
 		"""Initialize the TestlinkAPI
 		@param uri: URI of Testlink XML-RPC server implementation
 		@type uri: str
-		@raises ProtocolError: The given proxy is not valid
+		@raises xmlrpclib.Error: The given proxy is not valid
 		"""
 		try:
 			self.__proxy = xmlrpclib.ServerProxy(uri,encoding='UTF-8',allow_none=True )
 		except IOError:
-			raise xmlrpclib.ProtocolError(uri)
+			raise xmlrpclib.Error(uri)
 		self.devkey = None
 
 	def __str__(self):
@@ -88,8 +88,6 @@ class TestlinkAPI(object):
 		except xmlrpclib.Fault,f:
 			if (f.faultCode == NotSupported.errorCode):
 				raise NotSupported(method)
-		except xmlrpclib.ProtocolError,pe:
-			raise InvalidURI(self.__proxy)
 		else:
 			# Check for API error {{'code': 123, 'message': foo}}
 			if isinstance(resp,list) and len(resp)==1:
