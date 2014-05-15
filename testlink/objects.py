@@ -9,11 +9,11 @@
 # IMPORTS
 import re
 import xmlrpclib
-from HTMLParser import HTMLParser
+import HTMLParser
 from .api import TestlinkAPI
 from .log import tl_log as log
-from .parsers import DefaultParser
 
+parser = HTMLParser.HTMLParser()
 
 class Testlink(object):
 	"""Testlink Server implementation
@@ -21,9 +21,7 @@ class Testlink(object):
 	@type devkey: str
 	"""
 
-	parsers = [DefaultParser()]
-
-	def __init__(self,url,devkey,*parsers):
+	def __init__(self,url,devkey):
 		"""Initializes the Testlink Server object
 		@param url: Testlink URL
 		@type url: str
@@ -31,10 +29,6 @@ class Testlink(object):
 		@type devkey: str
 		@raises InvalidURI: The given URI is not valid
 		"""
-
-		# Set active parsers
-		self.addParser(*parsers)
-		log.debug("Active parsers: %s" % str(self.getParser()))
 
 		# URI modification for API initiation
 		if not url:
@@ -56,33 +50,6 @@ class Testlink(object):
 	def __str__(self):
 		return "<Testlink@%s>" % self.__uri
 	__repr__ = __str__
-
-
-	def addParser(self,*parsers):
-		"""Changes the set of active parsers
-		@param parsers: Parsers to use
-		@type parsers: Instances of HTMLParser
-		"""
-		self.parsers.extend(parsers)
-
-	def getParser(self):
-		"""Returns the current active parsers
-		@rtype: list
-		"""
-		return self.parsers
-
-	@staticmethod
-	def parse(data):
-		"""Parses given data with all given parsers
-		@param data: Data to parse
-		@type data: mixed
-		"""
-		for p in Testlink.parsers:
-			p.reset()
-			p.feed(data)
-			p.close()
-			data = p.result
-		return data
 
 
 	def getVersion(self):
@@ -201,7 +168,7 @@ class TestProject(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = self.api.parse(str(notes))
+		self.notes = parser.unescape(str(notes))
 		self.prefix = str(prefix)
 		self.active = bool(active)
 		self.public = bool(is_public)
@@ -287,7 +254,7 @@ class TestPlan(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = self.api.parse(unicode(notes))
+		self.notes = parser.unescape(unicode(notes))
 		self.is_active = bool(active)
 		self.is_public = bool(is_public)
 	
@@ -429,18 +396,14 @@ class TestCase(TestlinkObject):
 		"""
 		def __init__(self,api,step_number,actions,execution_type,active,id,expected_results,**kwargs):
 			self.step_number = int(step_number)
-			self.actions = api.parse(unicode(actions))
+			self.actions = parser.unescape(unicode(actions))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
 			self.id = int(id)
-			self.result = api.parse(unicode(expected_results))
+			self.result = parser.unescape(unicode(expected_results))
 
 		def __str__(self):
-			result = {}
-			for k,v in self.__dict__.items():
-				if not str(k).startswith('_'):
-					result.update({k:v})
-			return str(result)
+			return "<Step (%d): %s - %s>" % (self.step_number,self.actions,self.result)
 		__repr__ = __str__
 
 	class Execution(object):
@@ -545,7 +508,7 @@ class TestCase(TestlinkObject):
 		"""
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = self.api.parse(unicode(execution_notes))
+		self.execution_notes = parser.unescape(unicode(execution_notes))
 		self.execution_order = int(execution_order)
 		self.version = int(version)
 		self.exec_status = str(exec_status)
@@ -553,8 +516,8 @@ class TestCase(TestlinkObject):
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = self.api.parse(unicode(summary))
-		self.preconditions = self.api.parse(unicode(preconditions))
+		self.summary = parser.unescape(unicode(summary))
+		self.preconditions = parser.unescape(unicode(preconditions))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
 		self.steps = [TestCase.Step(api,**s) for s in steps]
