@@ -10,7 +10,7 @@ from api import TestlinkAPI
 from api import APIError
 from api import NotSupported
 
-from server import TestlinkXMPRPCServer
+from server import TestlinkXMLRPCServer
 
 from log import tl_log as TESTLINK_LOG
 
