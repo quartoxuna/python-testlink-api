@@ -57,7 +57,7 @@ class Testlink(object):
 		@return: Version in list format [x,y,z]
 		@rtype: list
 		"""
-		about_str = self.about()
+		about_str = self.api.about()
 		version_str = re.search(r"(?P<version>\d+(\.{0,1}\d+)+)",about_str).group('version')
 		version = version_str.split('.')
 		# Get Alphas and Betas
@@ -81,11 +81,12 @@ class Testlink(object):
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
-			response = self.getTestProjectByName(name)
-			return TestProject(self,**response)
+			response = self.api.getTestProjectByName(name)
+			# Response is a list
+			return TestProject(self.api,**response[0])
 
 		# Get all available Projects
-		response = self.getProjects()
+		response = self.api.getProjects()
 
 		if len(params)>0:
 			# Add name to search parameters
@@ -101,11 +102,11 @@ class Testlink(object):
 						match = False
 						break
 				if match:
-					matches.append(TestProject(self,**project))
+					matches.append(TestProject(self.api,parent=self,**project))
 			return matches
 		else:
 			# Otherwise, return all available projects
-			return [TestProject(self,**project) for project in response]
+			return [TestProject(api=self.api,parent=self,**project) for project in response]
 
 
 class TestlinkObject:
@@ -192,7 +193,8 @@ class TestProject(TestlinkObject):
 		# Check if simple API call can be done
 		if name and len(params)==0:
 			response = self.api.getTestPlanByName(name,projectname=self.name)
-			return TestPlan(api = self.api, parent = self,	**response)
+			# Response is a list
+			return TestPlan(api=self.api,parent=self,**response[0])
 
 		# Get all TestPlans for the project
 		response = self.api.getProjectTestPlans(self.id)
@@ -211,11 +213,11 @@ class TestProject(TestlinkObject):
 						match = False
 						break
 				if match:
-					matched.append(TestPlan(api = self.api, parent = self,	**plan))
+					matched.append(TestPlan(api=self.api,parent=self,**plan))
 			return matches
 		else:
 			# Otherwise, return all available testplans
-			return [TestPlan(api = self.api, parent = self, **plan) for plan in response]
+			return [TestPlan(api=self.api,parent=self,**plan) for plan in response]
 			
 
 	def getTestSuite(self,name=None,**params):
@@ -267,10 +269,10 @@ class TestPlan(TestlinkObject):
 		for key,value in params.items():
 			# Check for single result
 			if isinstance(builds,dict):
-				return Build(api=self,**builds)
+				return Build(api=self,parent=self,**builds)
 			for b in builds:
 				if b[key]==value:
-					return Build(api=self.api,**b)
+					return Build(api=self.api,parent=self,**b)
 
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
@@ -280,10 +282,10 @@ class TestPlan(TestlinkObject):
 		for key,value in params.items():
 			# Check for single results
 			if isinstance(platforms,dict):
-				return Platform(api=self,**platforms)
+				return Platform(api=self,parent=self,**platforms)
 			for p in platforms:
 				if p[key]==value:
-					return Platform(api=self.api,**p)
+					return Platform(api=self.api,parent=self,**p)
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
@@ -308,7 +310,7 @@ class TestPlan(TestlinkObject):
 		"""
 		# Get all available TestCases
 		# Use all possible API params to speed up API call
-		testcases = self.api.getTestCasesForTestPlan(\
+		response = self.api.getTestCasesForTestPlan(\
 												self.id,\
 												testcaseid,\
 												buildid,\
@@ -321,6 +323,17 @@ class TestPlan(TestlinkObject):
 												steps = True\
 											)
 										
+		# Normalize result
+		testcases = []
+		for tcid,platforms in response.items():
+			# Check if the platform is really one
+			for platform_id,tc in platforms.items():
+				if not isinstance(tc,dict):
+					# No platforms, first nested items are testcases
+					testcases = platforms
+					break
+				testcases.append(tc)
+
 		# Check for every project if all other params
 		# match and return this testcase
 		matches = []
@@ -331,7 +344,7 @@ class TestPlan(TestlinkObject):
 					match = False
 					break
 			if match:
-				matches.append(TestCase(api = self.api, parent = self, **case))
+				matches.append(TestCase(api=self.api,parent=self,**case))
 		return matches
 						
 
