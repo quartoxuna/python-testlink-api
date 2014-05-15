@@ -15,61 +15,69 @@ from .log import tl_log as log
 from .parsers import DefaultParser
 
 
-class Testlink(TestlinkAPI):
+class Testlink(object):
 	"""Testlink Server implementation
 	@ivar devkey: Valid Testlink developer key
 	@type devkey: str
 	"""
 
-	def __init__(self,uri,devkey,parser=DefaultParser(),*parsers):
+	parsers = [DefaultParser()]
+
+	def __init__(self,url,devkey,*parsers):
 		"""Initializes the Testlink Server object
-		@param uri: Testlink URL
-		@type uri: str
+		@param url: Testlink URL
+		@type url: str
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@raises InvalidURI: The given URI is not valid
 		"""
 
 		# Set active parsers
-		parsers += (parser,)
-		self.setParser(*parsers)
+		self.addParser(*parsers)
 		log.debug("Active parsers: %s" % str(self.getParser()))
 
 		# URI modification for API initiation
-		self.__uri = uri
-		if not uri.endswith('/lib/api/xmlrpc.php'):
-			if not uri.endswith('/'):
-				uri += '/'
-			uri += 'lib/api/xmlrpc.php'
+		if not url:
+			raise KeyError("URL not given")
+		self.__url = url
+		if not url.endswith('/lib/api/xmlrpc.php'):
+			if not url.endswith('/'):
+				url += '/'
+			url += 'lib/api/xmlrpc.php'
 
 		# Init raw API
-		super(Testlink,self).__init__(uri)		
-		self.devkey = devkey
+		self.api = TestlinkAPI(url)
+
+		# Set devkey globally
+		if not devkey:
+			raise KeyError("DevKey not given")
+		self.api.devkey = devkey
 
 	def __str__(self):
 		return "<Testlink@%s>" % self.__uri
 	__repr__ = __str__
 
 
-	def setParser(self,*parsers):
+	def addParser(self,*parsers):
 		"""Changes the set of active parsers
 		@param parsers: Parsers to use
 		@type parsers: Instances of HTMLParser
 		"""
-		self.__parsers = parsers	
+		self.parsers.extend(parsers)
 
 	def getParser(self):
 		"""Returns the current active parsers
 		@rtype: list
 		"""
-		return self.__parsers
+		return self.parsers
 
-	def parse(self,data):
+	@staticmethod
+	def parse(data):
 		"""Parses given data with all given parsers
 		@param data: Data to parse
 		@type data: mixed
 		"""
-		for p in self.__parsers:
+		for p in Testlink.parsers:
 			p.reset()
 			p.feed(data)
 			p.close()
