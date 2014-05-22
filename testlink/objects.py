@@ -330,22 +330,38 @@ class TestPlan(TestlinkObject):
 			for platform_id,tc in platforms.items():
 				if not isinstance(tc,dict):
 					# No platforms, first nested items are testcases
+					log.debug("No Platforms within this testplan")
 					testcases = platforms
 					break
 				testcases.append(tc)
+		log.debug("Got %d testcases total" % len(testcases))
 
 		# Check for every project if all other params
 		# match and return this testcase
 		matches = []
-		for case in testcases:
-			match = True
-			for key,value in params.items():
-				if not(case[key] == str(value)):
-					match = False
-					break
-			if match:
-				matches.append(TestCase(api=self.api,parent=self,**case))
-		return matches
+
+		# Remove None flagged additional params
+		# Otherwise, there will be checks if the none string '' returned
+		# by Testlink API matches the given None
+		for key,value in params.items():
+			if value is None:
+				del params[key]
+
+		# Check additional params
+		if len(params)>0:
+			log.debug("Checking for additional params: %s" % str(params))
+			for case in testcases:
+				match = True
+				for key,value in params.items():
+					if not(case[key] == str(value)):
+						match = False
+						break
+				if match:
+					matches.append(TestCase(api=self.api,parent=self,**case))
+			log.debug("Got %d matching testcases" % len(matches))
+			return matches
+		else:
+			return [TestCase(api=self.api,parent=self,**case) for case in testcases]
 						
 
 class Build(TestlinkObject):
