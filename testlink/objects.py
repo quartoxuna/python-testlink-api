@@ -96,7 +96,7 @@ class Testlink(object):
 			for project in response:
 				match = True
 				for key,value in params.items():
-					if not (project[key] == str(value)):
+					if not (project[key] == value):
 						match = False
 						break
 				if match:
@@ -176,7 +176,7 @@ class TestProject(TestlinkObject):
 		self.automation = bool(opt['automationEnabled'])
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
-		self.color = str(color)
+		self.color = color
 
 
 	def getTestPlan(self,name=None,**params):
@@ -207,7 +207,7 @@ class TestProject(TestlinkObject):
 			for plan in response:
 				match = True
 				for key,value in params.items():
-					if not (plan[key] == str(value)):
+					if not (plan[key] == value):
 						match = False
 						break
 				if match:
@@ -347,11 +347,11 @@ class TestPlan(TestlinkObject):
 
 		# Check additional params
 		if len(params)>0:
-			log.debug("Checking for additional params: %s" % str(params))
+			log.debug("Checking for additional params: %s" % unicode(params))
 			for case in testcases:
 				match = True
 				for key,value in params.items():
-					if not(case[key] == str(value)):
+					if not(case[key] == value):
 						match = False
 						break
 				if match:
@@ -469,10 +469,10 @@ class TestCase(TestlinkObject):
 			self.build_id = int(build_id)
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
-			self.status = str(status)
+			self.status = status
 			self.notes = unicode(notes)
 			self.execution_type = int(execution_type)
-			self.execution_ts = str(execution_ts)
+			self.execution_ts = execution_ts
 			self.tester_id = int(tester_id)
 
 		def __str__(self):
@@ -537,8 +537,8 @@ class TestCase(TestlinkObject):
 		self.execution_notes = DefaultParser().unescape(unicode(execution_notes))
 		self.execution_order = int(execution_order)
 		self.version = int(version)
-		self.exec_status = str(exec_status)
-		self.status = str(status)
+		self.exec_status = exec_status
+		self.status = status
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
