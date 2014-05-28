@@ -167,8 +167,8 @@ class TestProject(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = DefaultParser().unescape(str(notes))
-		self.prefix = str(prefix)
+		self.notes = DefaultParser().feed(notes)
+		self.prefix = prefix
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -254,7 +254,7 @@ class TestPlan(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = DefaultParser().unescape(unicode(notes))
+		self.notes = DefaultParser().feed(unicode(notes))
 		self.is_active = bool(active)
 		self.is_public = bool(is_public)
 	
@@ -423,11 +423,11 @@ class TestCase(TestlinkObject):
 		"""
 		def __init__(self,step_number,actions,execution_type,active,id,expected_results,**kwargs):
 			self.step_number = int(step_number)
-			self.actions = DefaultParser().unescape(unicode(actions))
+			self.actions = DefaultParser().feed(unicode(actions))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
 			self.id = int(id)
-			self.result = DefaultParser().unescape(unicode(expected_results))
+			self.result = DefaultParser().feed(unicode(expected_results))
 
 		def __str__(self):
 			return "<Step (%d): %s - %s>" % (self.step_number,self.actions,self.result)
@@ -534,7 +534,7 @@ class TestCase(TestlinkObject):
 		"""
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = DefaultParser().unescape(unicode(execution_notes))
+		self.execution_notes = DefaultParser().feed(unicode(execution_notes))
 		self.execution_order = int(execution_order)
 		self.version = int(version)
 		self.exec_status = exec_status
@@ -542,7 +542,7 @@ class TestCase(TestlinkObject):
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = DefaultParser().unescape(unicode(summary))
+		self.summary = DefaultParser().feed(unicode(summary))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
 
@@ -550,7 +550,7 @@ class TestCase(TestlinkObject):
 		self.steps = [TestCase.Step(**s) for s in steps]
 
 		# TestCase Preconditions
-		self.preconditions = DefaultParser().unescape(unicode(preconditions))
+		self.preconditions = DefaultParser().feed(unicode(preconditions))
 
 	def getLastExecutionResult(self,testplanid):
 		resp = self.api.getLastExecutionResult(testplanid,self.id,self.external_id)
