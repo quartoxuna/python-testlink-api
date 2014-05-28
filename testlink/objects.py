@@ -133,11 +133,7 @@ class TestlinkObject:
 		self.parent = parent
 
 	def __str__(self):
-		result = {}
-		for k,v in self.__dict__.items():
-			if not str(k).startswith('_'):
-				result.update({k:v})
-		return str(result)
+		return "<Testlink Object (%d): %s>" % (self.id,self.name)
 	__repr__ = __str__
 
 
