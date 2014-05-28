@@ -423,7 +423,7 @@ class TestCase(TestlinkObject):
 		@ivar result: Expected result of the step
 		@type result: str
 		"""
-		def __init__(self,api,step_number,actions,execution_type,active,id,expected_results,**kwargs):
+		def __init__(self,step_number,actions,execution_type,active,id,expected_results,**kwargs):
 			self.step_number = int(step_number)
 			self.actions = parser.unescape(unicode(actions))
 			self.execution_type = int(execution_type)
@@ -464,8 +464,7 @@ class TestCase(TestlinkObject):
 
 		EXEC_TYPE = {'MANUAL': 1, 'AUTOMATIC': 2}
 
-		def __init__(self,api,id,testplan_id,platform_id,build_id,tcversion_id,tcversion_number,status,notes,execution_type,execution_ts,tester_id,**kwargs):
-			self.api = api
+		def __init__(self,id,testplan_id,platform_id,build_id,tcversion_id,tcversion_number,status,notes,execution_type,execution_ts,tester_id,**kwargs):
 			self.id = int(id)
 			self.testplan_id = int(testplan_id)
 			self.platform_id = int(platform_id)
@@ -549,11 +548,11 @@ class TestCase(TestlinkObject):
 		self.preconditions = parser.unescape(unicode(preconditions))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
-		self.steps = [TestCase.Step(api,**s) for s in steps]
+		self.steps = [TestCase.Step(**s) for s in steps]
 
 	def getLastExecutionResult(self,testplanid):
 		resp = self.api.getLastExecutionResult(testplanid,self.id,self.external_id)
-		return TestCase.Execution(self.api,**resp)
+		return TestCase.Execution(**resp)
 
 	def deleteLastExecution(self,testplanid):
 		# Update last execution
