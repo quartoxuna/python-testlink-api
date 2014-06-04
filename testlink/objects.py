@@ -467,7 +467,7 @@ class TestCase(TestlinkObject):
 		@type result: str
 		"""
 		def __init__(self,step_number,actions,execution_type,active,id,expected_results,**kwargs):
-			self.step_number = int(step_number)
+			self.number = int(step_number)
 			self.actions = Testlink.parse(unicode(actions))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
