@@ -9,6 +9,7 @@
 # IMPORTS
 import re
 import xmlrpclib
+import datetime
 from .api import TestlinkAPI
 from .log import tl_log as log
 from .parsers import DefaultParser
@@ -466,7 +467,7 @@ class TestCase(TestlinkObject):
 		@type tester_id: int
 		"""
 
-		EXEC_TYPE = {'MANUAL': 1, 'AUTOMATIC': 2}
+		DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 		def __init__(self,id,testplan_id,platform_id,build_id,tcversion_id,tcversion_number,status,notes,execution_type,execution_ts,tester_id,**kwargs):
 			self.id = int(id)
@@ -478,7 +479,7 @@ class TestCase(TestlinkObject):
 			self.status = status
 			self.notes = unicode(notes)
 			self.execution_type = int(execution_type)
-			self.execution_ts = execution_ts
+			self.execution_ts = date.strptime(str(execution_ts),Execution.DATETIME_FORMAT)
 			self.tester_id = int(tester_id)
 
 		def __str__(self):
