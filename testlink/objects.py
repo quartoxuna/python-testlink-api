@@ -13,6 +13,16 @@ from .api import TestlinkAPI
 from .log import tl_log as log
 from .parsers import DefaultParser
 
+# Common enumerations
+class EXECUTION_TYPE:
+	MANUAL = 1
+	AUTOMATIC = 2
+
+class IMPORTANCE:
+	HIGH = 3
+	MEDIUM = 2
+	LOW = 1
+
 class Testlink(object):
 	"""Testlink Server implementation
 	@ivar devkey: Valid Testlink developer key
