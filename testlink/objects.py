@@ -94,7 +94,6 @@ class Testlink(object):
 		@rtype: mixed
 		"""
 		result = data
-		print("Type is: " + str(type(Testlink.parsers)))
 		for p in Testlink.parsers:
 			result = p().feed(result)
 		return result
