@@ -14,9 +14,6 @@ from .log import tl_log as log
 class DefaultParser(HTMLParser.HTMLParser):
 	"""Default parser, just unescape fed data"""
 
-	def __init___(self):
-		HTMLParser.HTMLParser(self)
-
 	def feed(self,data):
 		return HTMLParser.HTMLParser.unescape(self,data)
 
@@ -46,3 +43,24 @@ class ListParser(object):
 			except StopIteration:
 				break
 		return result
+
+
+class SectionParser(object):
+	"""Splits <p> sections to a list"""
+
+	def feed(self,data):
+		soup = BeautifulSoup(data)
+		if soup.p:
+			result = []
+			for p in soup.find_all('p',recursive=False):
+				try:
+					elem = next(p.stripped_strings)
+					result.append(elem)
+				except StopIteration:
+					break
+			if len(result)==1:
+				return result[0]
+			else:
+				return tuple(result)
+		else:
+			return data
