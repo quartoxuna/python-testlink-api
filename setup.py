@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(
-	name='testlink',
+	name='python-testlink_api_wrapper',
 	version='0.9',
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
