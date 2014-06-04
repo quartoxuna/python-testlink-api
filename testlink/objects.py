@@ -316,17 +316,17 @@ class TestPlan(TestlinkObject):
 		# Get all available TestCases
 		# Use all possible API params to speed up API call
 		response = self.api.getTestCasesForTestPlan(\
-												self.id,\
-												testcaseid,\
-												buildid,\
-												keywordid,\
-												keywords,\
-												executed,\
-												assignedto,\
-												executionstatus,\
-												executiontype,\
-												steps = True\
-											)
+								self.id,\
+								testcaseid,\
+								buildid,\
+								keywordid,\
+								keywords,\
+								executed,\
+								assignedto,\
+								executionstatus,\
+								executiontype,\
+								steps = True\
+							)
 										
 		# Normalize result
 		testcases = []
@@ -358,7 +358,7 @@ class TestPlan(TestlinkObject):
 			for case in testcases:
 				match = True
 				for key,value in params.items():
-					if not(case[key] == value):
+					if not(str(case[key]) == str(value)):
 						match = False
 						break
 				if match:
