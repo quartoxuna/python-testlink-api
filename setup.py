@@ -11,4 +11,5 @@ setup(
 	packages=['testlink'],
 	keywords='testlink api xmlrpc python',
 	license='GPL',
+	requires=['bs4'],
 )
