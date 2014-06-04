@@ -12,7 +12,7 @@ import xmlrpclib
 import datetime
 from .api import TestlinkAPI
 from .log import tl_log as log
-from .parsers import DefaultParser
+from .parsers import *
 
 # Common enumerations
 class EXECUTION_TYPE:
@@ -140,7 +140,7 @@ class TestlinkObject:
 		"""
 		self.api = api
 		self.id = int(id)
-		self.name = unicode(name)
+		self.name = DefaultParser().feed(unicode(name))
 		self.parent = parent
 
 	def __str__(self):
@@ -175,7 +175,7 @@ class TestProject(TestlinkObject):
 	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = DefaultParser().feed(notes)
-		self.prefix = prefix
+		self.prefix = DefaultParser().feed(unicode(prefix))
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -183,7 +183,7 @@ class TestProject(TestlinkObject):
 		self.automation = bool(opt['automationEnabled'])
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
-		self.color = color
+		self.color = DefaultParser().feed(unicode(color))
 
 
 	def getTestPlan(self,name=None,**params):
@@ -374,7 +374,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = unicode(notes)
+		self.notes = DefaultParser().feed(unicode(notes))
 
 
 class Platform(TestlinkObject):
@@ -382,7 +382,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = unicode(notes)
+		self.notes = DefaultParser().feed(unicode(notes))
 
 
 class TestSuite(TestlinkObject):
@@ -390,7 +390,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = unicode(notes)
+		self.notes = DefaultParser().feed(unicode(notes))
 
 	def getTestSuite(self,name=None,**params):
 		suites = self.api.getTestSuitesForTestSuite(self.id)
@@ -430,11 +430,11 @@ class TestCase(TestlinkObject):
 		"""
 		def __init__(self,step_number,actions,execution_type,active,id,expected_results,**kwargs):
 			self.step_number = int(step_number)
-			self.actions = DefaultParser().feed(unicode(actions))
+			self.actions = SectionParser().feed(DefaultParser().feed(unicode(actions)))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
 			self.id = int(id)
-			self.result = DefaultParser().feed(unicode(expected_results))
+			self.result = SectionParser().feed(DefaultParser().feed(unicode(expected_results)))
 
 		def __str__(self):
 			return "<Step (%d): %s - %s>" % (self.step_number,self.actions,self.result)
@@ -476,8 +476,8 @@ class TestCase(TestlinkObject):
 			self.build_id = int(build_id)
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
-			self.status = status
-			self.notes = unicode(notes)
+			self.status = unicode(status)
+			self.notes = DefaultParser().feed(unicode(notes))
 			self.execution_type = int(execution_type)
 			self.execution_ts = date.strptime(str(execution_ts),Execution.DATETIME_FORMAT)
 			self.tester_id = int(tester_id)
@@ -544,8 +544,8 @@ class TestCase(TestlinkObject):
 		self.execution_notes = DefaultParser().feed(unicode(execution_notes))
 		self.execution_order = int(execution_order)
 		self.version = int(version)
-		self.exec_status = exec_status
-		self.status = status
+		self.exec_status = unicode(exec_status)
+		self.status = unicode(status)
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
@@ -557,7 +557,7 @@ class TestCase(TestlinkObject):
 		self.steps = [TestCase.Step(**s) for s in steps]
 
 		# TestCase Preconditions
-		self.preconditions = DefaultParser().feed(unicode(preconditions))
+		self.preconditions = ListParser().feed(DefaultParser().feed(unicode(preconditions)))
 
 	def getLastExecutionResult(self,testplanid):
 		resp = self.api.getLastExecutionResult(testplanid,self.id,self.external_id)
