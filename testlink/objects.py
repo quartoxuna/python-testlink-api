@@ -26,13 +26,11 @@ class IMPORTANCE:
 
 class Testlink(object):
 	"""Testlink Server implementation
-	@cvar parsers: Active parsers
-	@type parsers: list
+	@ivar devkey: Valid Testlink developer key
+	@type devkey: str
 	"""
 
-	parsers = [DefaultParser]
-
-	def __init__(self,url,devkey,*parsers):
+	def __init__(self,url,devkey):
 		"""Initializes the Testlink Server object
 		@param url: Testlink URL
 		@type url: str
@@ -58,45 +56,10 @@ class Testlink(object):
 			raise KeyError("DevKey not given")
 		self.api.devkey = devkey
 
-		# Set parsers if given
-		if len(parsers)>0:
-			Testlink.setParser(*parsers)
-
 	def __str__(self):
 		return "<Testlink@%s>" % self.__uri
 	__repr__ = __str__
 
-	@staticmethod
-	def setParser(*parsers):
-		"""Sets the global parsers for server responses
-		@param parsers: Classes of parsers
-		@type parsers: list
-		"""
-		Testlink.parsers = list(parsers)
-
-	@staticmethod
-	def getParser():
-		"""Returns a list of active parsers
-		@returns: Active parsers
-		@rtype: list
-		"""
-		result = []
-		for p in Testlink.parsers:
-			result.append(p.__name__)
-		return result
-
-	@staticmethod
-	def parse(data):
-		"""Parses given data with active parsers
-		@param data: Data to be parsed
-		@type data: mixed
-		@returns: Parsed data
-		@rtype: mixed
-		"""
-		result = data
-		for p in Testlink.parsers:
-			result = p().feed(result)
-		return result
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
@@ -177,7 +140,7 @@ class TestlinkObject:
 		"""
 		self.api = api
 		self.id = int(id)
-		self.name = Testlink.parse(unicode(name))
+		self.name = unicode(name)
 		self.parent = parent
 
 	def __str__(self):
@@ -211,8 +174,8 @@ class TestProject(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = Testlink.parse(unicode(notes))
-		self.prefix = unicode(prefix)
+		self.notes = DefaultParser().feed(notes)
+		self.prefix = prefix
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -220,7 +183,7 @@ class TestProject(TestlinkObject):
 		self.automation = bool(opt['automationEnabled'])
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
-		self.color = str(color)
+		self.color = color
 
 
 	def getTestPlan(self,name=None,**params):
@@ -298,7 +261,7 @@ class TestPlan(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = Testlink.parse(unicode(notes))
+		self.notes = DefaultParser().feed(unicode(notes))
 		self.is_active = bool(active)
 		self.is_public = bool(is_public)
 	
@@ -411,7 +374,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = Testlink.parse(unicode(notes))
+		self.notes = unicode(notes)
 
 
 class Platform(TestlinkObject):
@@ -419,7 +382,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = Testlink.parse(unicode(notes))
+		self.notes = unicode(notes)
 
 
 class TestSuite(TestlinkObject):
@@ -427,7 +390,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = Testlink.parse(unicode(notes))
+		self.notes = unicode(notes)
 
 	def getTestSuite(self,name=None,**params):
 		suites = self.api.getTestSuitesForTestSuite(self.id)
@@ -466,12 +429,12 @@ class TestCase(TestlinkObject):
 		@type result: str
 		"""
 		def __init__(self,step_number,actions,execution_type,active,id,expected_results,**kwargs):
-			self.number = int(step_number)
-			self.actions = Testlink.parse(unicode(actions))
+			self.step_number = int(step_number)
+			self.actions = DefaultParser().feed(unicode(actions))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
 			self.id = int(id)
-			self.result = Testlink.parse(unicode(expected_results))
+			self.result = DefaultParser().feed(unicode(expected_results))
 
 		def __str__(self):
 			return "<Step (%d): %s - %s>" % (self.step_number,self.actions,self.result)
@@ -479,6 +442,9 @@ class TestCase(TestlinkObject):
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
+		@cvar EXEC_TYPE: Possible execution types
+		@type EXEC_TYPE: dict
+
 		@ivar id: The internal ID of the Execution
 		@type id: int
 		@ivar testplan_id: The internal ID of the parent TestPlan
@@ -510,8 +476,8 @@ class TestCase(TestlinkObject):
 			self.build_id = int(build_id)
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
-			self.status = str(status)
-			self.notes = Testlink.parse(unicode(notes))
+			self.status = status
+			self.notes = unicode(notes)
 			self.execution_type = int(execution_type)
 			self.execution_ts = date.strptime(str(execution_ts),Execution.DATETIME_FORMAT)
 			self.tester_id = int(tester_id)
@@ -575,15 +541,15 @@ class TestCase(TestlinkObject):
 		"""
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = Testlink.parse(unicode(execution_notes))
+		self.execution_notes = DefaultParser().feed(unicode(execution_notes))
 		self.execution_order = int(execution_order)
 		self.version = int(version)
-		self.exec_status = str(exec_status)
-		self.status = str(status)
+		self.exec_status = exec_status
+		self.status = status
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = Testlink.parse(unicode(summary))
+		self.summary = DefaultParser().feed(unicode(summary))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
 
@@ -591,7 +557,7 @@ class TestCase(TestlinkObject):
 		self.steps = [TestCase.Step(**s) for s in steps]
 
 		# TestCase Preconditions
-		self.preconditions = Testlink.parse(unicode(preconditions))
+		self.preconditions = DefaultParser().feed(unicode(preconditions))
 
 	def getLastExecutionResult(self,testplanid):
 		resp = self.api.getLastExecutionResult(testplanid,self.id,self.external_id)
