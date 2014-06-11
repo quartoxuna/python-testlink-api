@@ -674,7 +674,7 @@ class TestlinkAPI(object):
 		return self.query("tl.getTestCasesForTestPlan",        \
 					devKey        = devkey,          \
 					testplanid    = planid,          \
-					tcid          = testcaseid,      \
+					testcaseid    = testcaseid,      \
 					buidlid       = buildid,         \
 					keywordid     = keywordid,       \
 					keywords      = keywords,        \
