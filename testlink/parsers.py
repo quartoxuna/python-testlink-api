@@ -61,6 +61,6 @@ class SectionParser(object):
 			if len(result)==1:
 				return result[0]
 			else:
-				return tuple(result)
+				return list(result)
 		else:
 			return data
