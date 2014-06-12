@@ -26,8 +26,12 @@ class IMPORTANCE:
 
 class Testlink(object):
 	"""Testlink Server implementation
-	@ivar devkey: Valid Testlink developer key
-	@type devkey: str
+	@ivar _url: URL of connected Testlink
+	@type _url: str
+	@ivar _devkey: Valid Testlink developer key
+	@type _devkey: str
+	@ivar _api: Used API instance
+	@type _api: TestlinkAPI
 	"""
 
 	def __init__(self,url,devkey):
@@ -42,7 +46,7 @@ class Testlink(object):
 		# URI modification for API initiation
 		if not url:
 			raise KeyError("URL not given")
-		self.__url = url
+		self._url = url
 		if not url.endswith('/lib/api/xmlrpc.php'):
 			if not url.endswith('/'):
 				url += '/'
