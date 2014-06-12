@@ -487,7 +487,7 @@ class TestlinkAPI(object):
 		@returns: Matching TestSuite
 		@rtype: dict
 		"""
-		return self.query("tl.getTestSuiteById",    \
+		return self.query("tl.getTestSuiteByID",    \
 					devKey      = devkey, \
 					testsuiteid = suiteid )
 	
