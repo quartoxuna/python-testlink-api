@@ -117,8 +117,8 @@ class TestlinkObject:
 	"""Abstract Testlink Object
 	@ivar api: TestlinkAPI instance
 	@type api: testlink.api.TestlinkAPI
-	@ivar Id: Internal Testlink Id of the object
-	@type Id: int
+	@ivar id: Internal Testlink Id of the object
+	@type id: int
 	@ivar name: Internal Testlink name of the object
 	@type name: str
 	"""
@@ -143,7 +143,6 @@ class TestlinkObject:
 
 class TestProject(TestlinkObject):
 	"""Testlink TestProject representation
-	Additional members to TestlinkObject
 	@ivar notes: TestProject notes
 	@type notes: str
 	@ivar prefix: TestCase prefix within TestProject
@@ -152,14 +151,14 @@ class TestProject(TestlinkObject):
 	@type active: bool
 	@ivar public: TestProject public flag
 	@type public: bool
-	@ivar requirements: Requirement Feature flag
-	@type requirements: bool
-	@ivar priority: Test Priority feature flag
-	@type priority: bool
-	@ivar automation: Automation Feature flag
-	@type automation: bool
-	@ivar inventory: Inventory Feature flag
-	@type inventory: bool
+	@ivar requirements_enabled: Requirement Feature flag
+	@type requirements_enabled: bool
+	@ivar priority_enabled: Test Priority feature flag
+	@type priority_enabled: bool
+	@ivar automation_enabled: Automation Feature flag
+	@type automation_enabled: bool
+	@ivar inventory_enabled: Inventory Feature flag
+	@type inventory_enabled: bool
 	@ivar tc_count: Current amount of TestCases in TestProject
 	@type tc_count: int
 	@ivar color: Assigned color of TestProject
@@ -171,10 +170,10 @@ class TestProject(TestlinkObject):
 		self.prefix = DefaultParser().feed(unicode(prefix))
 		self.active = bool(active)
 		self.public = bool(is_public)
-		self.requirements = bool(opt['requirementsEnabled'])
-		self.priority = bool(opt['testPriorityEnabled'])
-		self.automation = bool(opt['automationEnabled'])
-		self.inventory = bool(opt['inventoryEnabled'])
+		self.requirements_enabled = bool(opt['requirementsEnabled'])
+		self.priority_enabled = bool(opt['testPriorityEnabled'])
+		self.automation_enabled = bool(opt['automationEnabled'])
+		self.inventory_enabled = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
 		self.color = DefaultParser().feed(unicode(color))
 
@@ -243,13 +242,12 @@ class TestProject(TestlinkObject):
 
 class TestPlan(TestlinkObject):
 	"""Testlink TestPlan representation
-	Additional member to TestlinkObject
 	@ivar notes: TestPlan notes
 	@type notes: str
-	@ivar active: TestPlan active flag
-	@type active: bool
-	@ivar public: TestPlan public flag
-	@type public: bool
+	@ivar is_active: TestPlan active flag
+	@type is_active: bool
+	@ivar is_public: TestPlan public flag
+	@type is_public: bool
 	"""
 
 	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
@@ -363,7 +361,11 @@ class TestPlan(TestlinkObject):
 						
 
 class Build(TestlinkObject):
-	"""Testlink Build representation"""
+	"""Testlink Build representation
+	@ivar notes: Build notes
+	@type notes: str
+	"""
+
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
@@ -371,7 +373,11 @@ class Build(TestlinkObject):
 
 
 class Platform(TestlinkObject):
-	"""Testlink Platform representation"""
+	"""Testlink Platform representation
+	@ivar notes: Platform notes
+	@type notes: str
+	"""
+
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
@@ -379,7 +385,11 @@ class Platform(TestlinkObject):
 
 
 class TestSuite(TestlinkObject):
-	"""Testlink TestSuite representation"""
+	"""Testlink TestSuite representation
+	@ivar notes: TestSuite notes
+	@type notes: str
+	"""
+
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
@@ -405,34 +415,62 @@ class TestSuite(TestlinkObject):
 		else:
 			return [TestCase(api=self._api,**c) for c in cases]
 
+
 class TestCase(TestlinkObject):
 	"""Testlink TestCase representation
-	Additional members to TestlinkObject
 	@ivar executed: Flag if TestCase has been executed yet
-	@type executed
+	@type executed: bool
+	@ivar execution_notes: Notes for the last execution
+	@type execution_notes: unicode
+	@ivar execution_order: Order of execution
+	@type execution_order: int
+	@ivar version: Version number
+	@type version: int
+	@ivar exec_status: Execution status
+	@type exec_status: str
+	@ivar status: Status
+	@type status: ???
+	@ivar importance: Importance
+	@type importance: IMPORTANCE
+	@ivar execution_type: Execution Type
+	@type execution_type: EXECUTION_TYPE
+	@ivar is_active: Active flag
+	@type is_active: bool
+	@ivar summary: Summary of the TestCase
+	@type summary: unicode
+	@ivar platform_id: Internal ID of platform
+	@type platform_id: int
+	@ivar external_id: External ID of the TestCase
+	@type external_id: int
 	"""
 
 	class Step(object):
 		"""Testlink TestCase Step representation
-		@ivar step_number: Number of the step
-		@type step_number: int
+		@ivar id: Internal ID of the Step
+		@type id: int
+		@ivar number: Number of the step
+		@type number: int
 		@ivar actions: Actions of the step
 		@type actions: str
-		@ivar result: Expected result of the step
-		@type result: str
+		@ivar execution_type: Type of Execution
+		@type execution_type: EXECUTION_TYPE
+		@ivar is_active: Active flag
+		@type is_active: bool
+		@ivar results: Expected result of the step
+		@type results: str
 		"""
 		def __init__(self,step_number,actions,execution_type,active,id,expected_results,**kwargs):
+			self.id = int(id)
 			self.number = int(step_number)
 			self.actions = SectionParser().feed(DefaultParser().feed(unicode(actions)))
 			self.execution_type = int(execution_type)
-			self.active = bool(active)
-			self.id = int(id)
-			self.result = SectionParser().feed(DefaultParser().feed(unicode(expected_results)))
+			self.is_active = bool(active)
+			self.results = SectionParser().feed(DefaultParser().feed(unicode(expected_results)))
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
-		@cvar EXEC_TYPE: Possible execution types
-		@type EXEC_TYPE: dict
+		@cvar DATETIME_FORMAT: Format of execution timestamp
+		@type DATETIME_FORMAT: str
 
 		@ivar id: The internal ID of the Execution
 		@type id: int
@@ -449,9 +487,9 @@ class TestCase(TestlinkObject):
 		@ivar notes: Notes of the Execution
 		@type notes: str
 		@ivar execution_type: Execution Type
-		@type execution_type: int
+		@type execution_type: EXECUTION_TYPE
 		@ivar execution_ts: Timestamp of execution
-		@type execution_ts: str
+		@type execution_ts: datetime
 		@ivar tester_id: The internal ID of the tester
 		@type tester_id: int
 		"""
@@ -517,9 +555,6 @@ class TestCase(TestlinkObject):
 			steps=[],		\
 			**kwargs		\
 		):
-		"""
-		@note: ID param name changed!
-		"""
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
 		self.execution_notes = DefaultParser().feed(unicode(execution_notes))
@@ -529,7 +564,7 @@ class TestCase(TestlinkObject):
 		self.status = unicode(status)
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
-		self.active = bool(active)
+		self.is_active = bool(active)
 		self.summary = DefaultParser().feed(unicode(summary))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
