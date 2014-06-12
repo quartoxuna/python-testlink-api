@@ -49,12 +49,12 @@ class Testlink(object):
 			url += 'lib/api/xmlrpc.php'
 
 		# Init raw API
-		self.api = TestlinkAPI(url)
+		self._api = TestlinkAPI(url)
 
 		# Set devkey globally
 		if not devkey:
 			raise KeyError("DevKey not given")
-		self.api.devkey = devkey
+		self._api.devkey = devkey
 
 
 	def getVersion(self):
@@ -62,7 +62,7 @@ class Testlink(object):
 		@return: Version in list format [x,y,z]
 		@rtype: list
 		"""
-		about_str = self.api.about()
+		about_str = self._api.about()
 		version_str = re.search(r"(?P<version>\d+(\.{0,1}\d+)+)",about_str).group('version')
 		version = version_str.split('.')
 		# Get Alphas and Betas
@@ -86,12 +86,12 @@ class Testlink(object):
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
-			response = self.api.getTestProjectByName(name)
+			response = self._api.getTestProjectByName(name)
 			# Response is a list
-			return TestProject(self.api,**response[0])
+			return TestProject(self._api,**response[0])
 
 		# Get all available Projects
-		response = self.api.getProjects()
+		response = self._api.getProjects()
 
 		if len(params)>0:
 			# Add name to search parameters
@@ -107,11 +107,11 @@ class Testlink(object):
 						match = False
 						break
 				if match:
-					matches.append(TestProject(self.api,**project))
+					matches.append(TestProject(self._api,**project))
 			return matches
 		else:
 			# Otherwise, return all available projects
-			return [TestProject(api=self.api,**project) for project in response]
+			return [TestProject(api=self._api,**project) for project in response]
 
 
 class TestlinkObject:
@@ -134,7 +134,7 @@ class TestlinkObject:
 		@type name: str
 		@keyword kwargs: Additonal attributes
 		"""
-		self.api = api
+		self._api = api
 		self.id = int(id)
 		self.name = DefaultParser().feed(unicode(name))
 
@@ -191,12 +191,12 @@ class TestProject(TestlinkObject):
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
-			response = self.api.getTestPlanByName(name,projectname=self.name)
+			response = self._api.getTestPlanByName(name,projectname=self.name)
 			# Response is a list
-			return TestPlan(api=self.api,**response[0])
+			return TestPlan(api=self._api,**response[0])
 
 		# Get all TestPlans for the project
-		response = self.api.getProjectTestPlans(self.id)
+		response = self._api.getProjectTestPlans(self.id)
 
 		if len(params)>0:
 			# Add name to search parameters
@@ -212,11 +212,11 @@ class TestProject(TestlinkObject):
 						match = False
 						break
 				if match:
-					matched.append(TestPlan(api=self.api**plan))
+					matched.append(TestPlan(api=self._api**plan))
 			return matches
 		else:
 			# Otherwise, return all available testplans
-			return [TestPlan(api=self.api,**plan) for plan in response]
+			return [TestPlan(api=self._api,**plan) for plan in response]
 			
 
 	def getTestSuite(self,name=None,**params):
@@ -225,20 +225,20 @@ class TestProject(TestlinkObject):
 		"""
 		if 'id' in params:
 			# Search by ID
-			resp = self.api.getTestSuiteById(params['id'])
+			resp = self._api.getTestSuiteById(params['id'])
 			if isinstance(resp,list) and len(resp)==1:
 				resp=resp[0]
-			return TestSuite(api=self.api,**resp)
+			return TestSuite(api=self._api,**resp)
 		
-		suites = self.api.getFirstLevelTestSuitesForTestProject(self.id)
+		suites = self._api.getFirstLevelTestSuitesForTestProject(self.id)
 		if len(params)>0:
 			# Search by params
 			for key,value in params.items():
 				for s in suites:
 					if s[key]==value:
-						return TestSuite(api=self.api,**s)
+						return TestSuite(api=self._api,**s)
 		else:
-			return [TestSuite(api=self.api,**s) for s in suites]
+			return [TestSuite(api=self._api,**s) for s in suites]
 		"""
 
 
@@ -262,7 +262,7 @@ class TestPlan(TestlinkObject):
 
 	def getBuild(self,name=None,**params):
 		"""Returns Builds specified by parameters"""
-		builds = self.api.getBuildsForTestPlan(self.id)
+		builds = self._api.getBuildsForTestPlan(self.id)
 		# Add name to params
 		params['name'] = name
 		for key,value in params.items():
@@ -271,11 +271,11 @@ class TestPlan(TestlinkObject):
 				return Build(api=self,**builds)
 			for b in builds:
 				if b[key]==value:
-					return Build(api=self.api,**b)
+					return Build(api=self._api,**b)
 
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
-		platforms = self.api.getTestPlanPlatforms(self.id)
+		platforms = self._api.getTestPlanPlatforms(self.id)
 		# Add name to params
 		params['name'] = name		
 		for key,value in params.items():
@@ -284,20 +284,20 @@ class TestPlan(TestlinkObject):
 				return Platform(api=self,**platforms)
 			for p in platforms:
 				if p[key]==value:
-					return Platform(api=self.api,**p)
+					return Platform(api=self._api,**p)
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
 		raise NotImplementedError()
 		"""
-		suites = self.api.getTestSuitesForTestPlan(self.id)
+		suites = self._api.getTestSuitesForTestPlan(self.id)
 		if len(params)>0:
 			for key,value in params.items():
 				for s in suites:
 					if s[key]==value:
-						return TestSuite(api=self.api,**s)
+						return TestSuite(api=self._api,**s)
 		else:
-			return [TestSuite(api=self.api,**s) for s in suites]
+			return [TestSuite(api=self._api,**s) for s in suites]
 		"""
 
 	def getTestCase(self,testcaseid=None,buildid=None,keywordid=None,keywords=None,executed=None,assignedto=None,executionstatus=None,executiontype=None,**params):
@@ -309,7 +309,7 @@ class TestPlan(TestlinkObject):
 		"""
 		# Get all available TestCases
 		# Use all possible API params to speed up API call
-		response = self.api.getTestCasesForTestPlan(\
+		response = self._api.getTestCasesForTestPlan(\
 								self.id,\
 								testcaseid,\
 								buildid,\
@@ -356,11 +356,11 @@ class TestPlan(TestlinkObject):
 						match = False
 						break
 				if match:
-					matches.append(TestCase(api=self.api,**case))
+					matches.append(TestCase(api=self._api,**case))
 			log.debug("Got %d matching testcases" % len(matches))
 			return matches
 		else:
-			return [TestCase(api=self.api,**case) for case in testcases]
+			return [TestCase(api=self._api,**case) for case in testcases]
 						
 
 class Build(TestlinkObject):
@@ -387,24 +387,24 @@ class TestSuite(TestlinkObject):
 		self.notes = DefaultParser().feed(unicode(notes))
 
 	def getTestSuite(self,name=None,**params):
-		suites = self.api.getTestSuitesForTestSuite(self.id)
+		suites = self._api.getTestSuitesForTestSuite(self.id)
 		if len(params)>0:
 			for key,value in params.items():
 				for s in suites:
 					if s[key]==value:
-						return TestSuite(api=self.api,**s)
+						return TestSuite(api=self._api,**s)
 		else:
-			return [TestSuite(api=self.api,**s) for s in suites]
+			return [TestSuite(api=self._api,**s) for s in suites]
 
 	def getTestCase(self,name=None,**params):
-		cases = self.api.getTestCasesForTestSuite(self.id,details='full')
+		cases = self._api.getTestCasesForTestSuite(self.id,details='full')
 		if len(params)>0:
 			for key,value in params.items():
 				for c in cases:
 					if c[key]==value:
-						return TestCase(api=self.api,**c)
+						return TestCase(api=self._api,**c)
 		else:
-			return [TestCase(api=self.api,**c) for c in cases]
+			return [TestCase(api=self._api,**c) for c in cases]
 
 class TestCase(TestlinkObject):
 	"""Testlink TestCase representation
@@ -473,7 +473,7 @@ class TestCase(TestlinkObject):
 			self.tester_id = int(tester_id)
 
 		def delete(self):
-			self.api.deleteExecution(self.id)
+			self._api.deleteExecution(self.id)
 
 
 	def __init__(
@@ -542,16 +542,16 @@ class TestCase(TestlinkObject):
 		self.preconditions = ListParser().feed(DefaultParser().feed(unicode(preconditions)))
 
 	def getLastExecutionResult(self,testplanid):
-		resp = self.api.getLastExecutionResult(testplanid,self.id,self.external_id)
+		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id)
 		return TestCase.Execution(**resp)
 
 	def deleteLastExecution(self,testplanid):
 		# Update last execution
 		last = self.getLastExecutionResult(testplanid)
-		self.api.deleteExecution(last.id)
+		self._api.deleteExecution(last.id)
 
 	def reportResult(self,testplanid,status,notes=None,overwrite=False):
-		self.api.reportTCResult(
+		self._api.reportTCResult(
 			testplanid = testplanid,		\
 			status = status,			\
 			testcaseid = self.id,			\
@@ -562,4 +562,4 @@ class TestCase(TestlinkObject):
 		)
 
 	def getAttachments(self):
-		return self.api.getTestCaseAttachments(self.id,self.external_id)
+		return self._api.getTestCaseAttachments(self.id,self.external_id)
