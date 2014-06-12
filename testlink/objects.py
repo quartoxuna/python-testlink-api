@@ -56,10 +56,6 @@ class Testlink(object):
 			raise KeyError("DevKey not given")
 		self.api.devkey = devkey
 
-	def __str__(self):
-		return "<Testlink@%s>" % self.__uri
-	__repr__ = __str__
-
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
@@ -142,10 +138,6 @@ class TestlinkObject:
 		self.id = int(id)
 		self.name = DefaultParser().feed(unicode(name))
 		self.parent = parent
-
-	def __str__(self):
-		return "<Testlink Object (%d): %s>" % (self.id,self.name)
-	__repr__ = __str__
 
 
 class TestProject(TestlinkObject):
@@ -436,10 +428,6 @@ class TestCase(TestlinkObject):
 			self.id = int(id)
 			self.result = SectionParser().feed(DefaultParser().feed(unicode(expected_results)))
 
-		def __str__(self):
-			return "<Step (%d): %s - %s>" % (self.step_number,self.actions,self.result)
-		__repr__ = __str__
-
 	class Execution(object):
 		"""Testlink TestCase Execution representation
 		@cvar EXEC_TYPE: Possible execution types
@@ -481,14 +469,6 @@ class TestCase(TestlinkObject):
 			self.execution_type = int(execution_type)
 			self.execution_ts = date.strptime(str(execution_ts),Execution.DATETIME_FORMAT)
 			self.tester_id = int(tester_id)
-
-		def __str__(self):
-			result = {}
-			for k,v in self.__dict__.items():
-				if not str(k).startswith('_'):
-					result.update({k:v})
-			return str(result)
-		__repr__ = __str__
 
 		def delete(self):
 			self.api.deleteExecution(self.id)
