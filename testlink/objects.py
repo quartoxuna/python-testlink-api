@@ -10,6 +10,7 @@
 import re
 import xmlrpclib
 import datetime
+import copy
 from .api import TestlinkAPI
 from .log import tl_log as log
 from .parsers import *
@@ -239,27 +240,63 @@ class TestProject(TestlinkObject):
 			return [TestPlan(api=self._api,**plan) for plan in response]
 			
 
-	def getTestSuite(self,name=None,**params):
-		"""Returns TestSuites specified by parameters"""
-		raise NotImplementedError()
+	def getTestSuite(self,name=None,id=None,recursive=True,**params):
+		"""Returns TestSuites specified by parameters
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param recursive: Enable recursive search
+		@type recursive: bool
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: list
 		"""
-		if 'id' in params:
-			# Search by ID
-			resp = self._api.getTestSuiteById(params['id'])
-			if isinstance(resp,list) and len(resp)==1:
-				resp=resp[0]
-			return TestSuite(api=self._api,**resp)
-		
-		suites = self._api.getFirstLevelTestSuitesForTestProject(self.id)
-		if len(params)>0:
-			# Search by params
-			for key,value in params.items():
-				for s in suites:
-					if s[key]==value:
-						return TestSuite(api=self._api,**s)
+		# Check if simple API call can be done
+		# Since the ID is unique, all other params
+		# can be ignored
+		if id:
+			response = self._api.getTestSuiteById(id)
+			return [TestSuite(api=self._api,**response)]
+
+		# Get all first level testsuites
+		response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
+
+		# Bug !
+		# Since the API call to getFirstLevelTestSuites does NOT
+		# return the details, we have to get it with another API call
+		response = [self._api.getTestSuiteById(suite['id']) for suite in response]
+
+		# Built TestSuite object here to simplify method calls
+		first_level_suites = [TestSuite(api=self._api,**suite) for suite in response]
+
+		result = []
+		if len(params)>0 or name:
+			search_params = copy.copy(params)
+			search_params.update({'name':name})
+
+			# Check for every testsuite if all params
+			# match and return that testsuite
+			matches = []
+			for suite in response:
+				match = True
+				for key,value in search_params.items():
+					if not (hash(suite[key]) == hash(value)):
+						match = False
+						break
+				if match:
+					matches.append(TestSuite(api=self._api,**suite))
+			# Add to results
+			result.extend(matches)
 		else:
-			return [TestSuite(api=self._api,**s) for s in suites]
-		"""
+			# Add all to results
+			result.extend(first_level_suites)
+
+		# Add matches in nested testsuites
+		if recursive:
+			for suite in first_level_suites:
+				result.extend(suite.getTestSuite(name,id,recursive,**params))
+		return result
+
 
 
 class TestPlan(TestlinkObject):
@@ -442,15 +479,71 @@ class TestSuite(TestlinkObject):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = DefaultParser().feed(unicode(notes))
 
-	def getTestSuite(self,name=None,**params):
-		suites = self._api.getTestSuitesForTestSuite(self.id)
-		if len(params)>0:
-			for key,value in params.items():
-				for s in suites:
-					if s[key]==value:
-						return TestSuite(api=self._api,**s)
+
+	def getTestSuite(self,name=None,id=None,recursive=True,**params):
+		"""Returns TestSuites speficied by parameters
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param recursive: Enable recursive search
+		@type recursive: bool
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: list
+		"""
+		# Check if simple API call can be done
+		# Since the ID is unique, all other params
+		# can be ignored
+		if id:
+			response = self._api.getTestSuiteById(id)
+			return [TestSuite(api=self._api,**response[0])]
+
+		# Get all sub suites
+		response = self._api.getTestSuitesForTestSuite(self.id)
+
+		# Normalize result
+		if isinstance(response,str) and response.strip() == "":
+			# Nothing more to do here
+			return []
+		elif isinstance(response,dict):
+			# Check for nested dict
+			if isinstance(response[response.keys()[0]],dict):
+				response = [self._api.getTestSuiteById(suite_id) for suite_id in response.keys()]
+			else:
+				response = [response]
+
+		# Built TestSuite object here to simplify recursive calls
+		sub_suites = [TestSuite(api=self._api,**suite) for suite in response]
+
+		result = []
+		if len(params)>0 or name:
+			search_params = copy.copy(params)
+			search_params.update({'name':name})
+
+			# Check for every testsuite if all params
+			# match and return that testsuite
+			matches = []
+			for suite in response:
+				match = True
+				for key,value in search_params.items():
+					if not (hash(suite[key]) == hash(value)):
+						match = False
+						break
+				if match:
+					matches.append(TestSuite(api=self._api,**suite))
+			# Add to results
+			result.extend(matches)
 		else:
-			return [TestSuite(api=self._api,**s) for s in suites]
+			# Add all to results
+			result.extend(sub_suites)
+
+		# Add matches in nested testsuites recursively
+		if recursive:
+			for suite in sub_suites:
+				result.extend(suite.getTestSuite(name,id,recursive,**params))
+		return result
+
+
 
 	def getTestCase(self,name=None,**params):
 		cases = self._api.getTestCasesForTestSuite(self.id,details='full')
