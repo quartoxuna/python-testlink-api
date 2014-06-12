@@ -40,12 +40,9 @@ class Testlink(object):
 		@type url: str
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@raises InvalidURI: The given URI is not valid
 		"""
 
 		# URI modification for API initiation
-		if not url:
-			raise KeyError("URL not given")
 		self._url = url
 		if not url.endswith('/lib/api/xmlrpc.php'):
 			if not url.endswith('/'):
@@ -56,8 +53,6 @@ class Testlink(object):
 		self._api = TestlinkAPI(url)
 
 		# Set devkey globally
-		if not devkey:
-			raise KeyError("DevKey not given")
 		self._api.devkey = devkey
 
 
