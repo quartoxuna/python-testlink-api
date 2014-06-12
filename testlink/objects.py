@@ -125,7 +125,7 @@ class TestlinkObject:
 
 	__slots__ = ("_api","id","name")
 
-	def __init__(self,api,id,name):
+	def __init__(self,api=None,id=-1,name=""):
 		"""Initialises base Testlink object
 		@param api: TestlinkAPI instance
 		@type api: testlink.api.TestlinkAPI
@@ -169,7 +169,25 @@ class TestProject(TestlinkObject):
 	__slots__ = ("_api","id","name","notes","prefix","active","public","requirements_enabled",\
 			"priority_enabled","automation_enabled","inventory_enabled","tc_count","color")
 
-	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
+	def __init__(
+			self,\
+			api=None,\
+			id=-1,\
+			name="",\
+			notes="",\
+			prefix="",\
+			active=False,\
+			is_public=False,\
+			tc_counter=0,\
+			opt={
+				'requirementsEnabled':False,
+				'testPriorityEnabled':False,
+				'automationEnabled':False,
+				'inventoryEnabled':False
+			},\
+			color="",\
+			**kwargs\
+		):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = DefaultParser().feed(notes)
 		self.prefix = DefaultParser().feed(unicode(prefix))
@@ -257,7 +275,16 @@ class TestPlan(TestlinkObject):
 
 	__slots__ = ("_api","id","name","notes","is_active","is_public")
 
-	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
+	def __init__(
+			self,\
+			api=None,\
+			id=-1,\
+			name="",\
+			notes="",\
+			is_public=False,\
+			active=False,\
+			**kwargs
+		):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = DefaultParser().feed(unicode(notes))
 		self.is_active = bool(active)
@@ -304,7 +331,18 @@ class TestPlan(TestlinkObject):
 			return [TestSuite(api=self._api,**s) for s in suites]
 		"""
 
-	def getTestCase(self,testcaseid=None,buildid=None,keywordid=None,keywords=None,executed=None,assignedto=None,executionstatus=None,executiontype=None,**params):
+	def getTestCase(
+			self,\
+			testcaseid=None,\
+			buildid=None,\
+			keywordid=None,\
+			keywords=None,\
+			executed=None,\
+			assignedto=None,\
+			executionstatus=None,\
+			executiontype=None,\
+			**params
+		):
 		"""Returns testcases specified by parameters
 		@param params: Params for TestCase
 		@type params: mixed
@@ -375,7 +413,7 @@ class Build(TestlinkObject):
 
 	__slots__ = ("_api","id","name","notes")
 
-	def __init__(self,api,id,name,notes,**kwargs):
+	def __init__(self,api=None,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = DefaultParser().feed(unicode(notes))
 
@@ -388,7 +426,7 @@ class Platform(TestlinkObject):
 
 	__slots__ = ("_api","id","name","notes")
 
-	def __init__(self,api,id,name,notes,**kwargs):
+	def __init__(self,api=None,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = DefaultParser().feed(unicode(notes))
 
@@ -401,7 +439,7 @@ class TestSuite(TestlinkObject):
 
 	__slots__ = ("_api","id","name","notes")
 
-	def __init__(self,api,id,name,notes,**kwargs):
+	def __init__(self,api=None,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
 		self.notes = DefaultParser().feed(unicode(notes))
 
@@ -476,7 +514,16 @@ class TestCase(TestlinkObject):
 
 		__slots__ = ("id","number","actions","execution_type","is_active","results")
 
-		def __init__(self,step_number,actions,execution_type,active,id,expected_results,**kwargs):
+		def __init__(
+				self,\
+				step_number=1,\
+				actions="",\
+				execution_type=EXECUTION_TYPE.MANUAL,\
+				active=False,\
+				id=-1,\
+				expected_results="",\
+				**kwargs\
+			):
 			self.id = int(id)
 			self.number = int(step_number)
 			self.actions = SectionParser().feed(DefaultParser().feed(unicode(actions)))
@@ -516,7 +563,21 @@ class TestCase(TestlinkObject):
 
 		DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-		def __init__(self,id,testplan_id,platform_id,build_id,tcversion_id,tcversion_number,status,notes,execution_type,execution_ts,tester_id,**kwargs):
+		def __init__(
+				self,\
+				id=-1,\
+				testplan_id=-1,\
+				platform_id=-1,\
+				build_id=-1,\
+				tcversion_id=-1,\
+				tcversion_number=0,\
+				status='',\
+				notes="",\
+				execution_type=EXECUTION_TYPE.MANUAL,\
+				execution_ts="0000-00-00 00:00:00",\
+				tester_id=-1,\
+				**kwargs\
+			):
 			self.id = int(id)
 			self.testplan_id = int(testplan_id)
 			self.platform_id = int(platform_id)
@@ -534,46 +595,23 @@ class TestCase(TestlinkObject):
 
 
 	def __init__(
-			self,			\
-			api,			\
-			executed,		\
-			execution_notes,	\
-			tcversion_number,	\
-			tc_id,			\
-			assigner_id,		\
-			execution_order,	\
-			platform_name,		\
-			linked_ts,		\
-			tsuite_name,		\
-			assigned_build_id,	\
-			exec_on_tplan,		\
-			execution_run_type,	\
-			feature_id,		\
-			version,		\
-			exec_on_build,		\
-			testsuite_id,		\
-			exec_status,		\
-			status,			\
-			importance,		\
-			execution_type,		\
-			execution_ts,		\
-			active,			\
-			user_id,		\
-			tester_id,		\
-			exec_id,		\
-			tcversion_id,		\
-			name,			\
-			linked_by,		\
-			type,			\
-			summary,		\
-			preconditions,		\
-			platform_id,		\
-			z,			\
-			external_id,		\
-			urgency,		\
-			priority,		\
-			steps=[],		\
-			**kwargs		\
+			self,\
+			api=None,\
+			executed=False,\
+			execution_notes="",\
+			execution_order=-1,\
+			version=0,\
+			exec_status="",\
+			status="",\
+			importance=IMPORTANCE.LOW,\
+			execution_type=EXECUTION_TYPE.MANUAL,\
+			active=False,\
+			summary="",\
+			preconditions="",\
+			platform_id=-1,\
+			external_id=-1,\
+			steps=[],\
+			**kwargs\
 		):
 		TestlinkObject.__init__(self,api,tc_id,name)
 		self.executed = bool(executed)
@@ -606,13 +644,13 @@ class TestCase(TestlinkObject):
 
 	def reportResult(self,testplanid,status,notes=None,overwrite=False):
 		self._api.reportTCResult(
-			testplanid = testplanid,		\
-			status = status,			\
-			testcaseid = self.id,			\
-			testcaseexternalid = self.external_id,	\
-			notes = notes,				\
-			platformid = self.platform_id,		\
-			overwrite = overwrite
+			testplanid = testplanid,\
+			status = status,\
+			testcaseid = self.id,\
+			testcaseexternalid = self.external_id,\
+			notes = notes,\
+			platformid = self.platform_id,\
+			overwrite = overwrite\
 		)
 
 	def getAttachments(self):
