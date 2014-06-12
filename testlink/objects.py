@@ -123,6 +123,8 @@ class TestlinkObject:
 	@type name: str
 	"""
 
+	__slots__ = ("_api","id","name")
+
 	def __init__(self,api,id,name):
 		"""Initialises base Testlink object
 		@param api: TestlinkAPI instance
@@ -163,6 +165,9 @@ class TestProject(TestlinkObject):
 	@type tc_count: int
 	@ivar color: Assigned color of TestProject
 	@type color: str"""
+
+	__slots__ = ("_api","id","name","notes","prefix","active","public","requirements_enabled",\
+			"priority_enabled","automation_enabled","inventory_enabled","tc_count","color")
 
 	def __init__(self,api,id,name,notes,prefix,active,is_public,tc_counter,opt,color,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
@@ -249,6 +254,8 @@ class TestPlan(TestlinkObject):
 	@ivar is_public: TestPlan public flag
 	@type is_public: bool
 	"""
+
+	__slots__ = ("_api","id","name","notes","is_active","is_public")
 
 	def __init__(self,api,id,name,notes,is_public,active,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
@@ -366,6 +373,7 @@ class Build(TestlinkObject):
 	@type notes: str
 	"""
 
+	__slots__ = ("_api","id","name","notes")
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
@@ -378,6 +386,7 @@ class Platform(TestlinkObject):
 	@type notes: str
 	"""
 
+	__slots__ = ("_api","id","name","notes")
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
@@ -390,6 +399,7 @@ class TestSuite(TestlinkObject):
 	@type notes: str
 	"""
 
+	__slots__ = ("_api","id","name","notes")
 
 	def __init__(self,api,id,name,notes,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
@@ -444,6 +454,10 @@ class TestCase(TestlinkObject):
 	@type external_id: int
 	"""
 
+	__slots__ = ("_api","id","name","executed","execution_notes","execution_order","version",\
+			"exec_status","status","importance","execution_type","is_active","summary",\
+			"platform_id","external_id")
+
 	class Step(object):
 		"""Testlink TestCase Step representation
 		@ivar id: Internal ID of the Step
@@ -459,6 +473,9 @@ class TestCase(TestlinkObject):
 		@ivar results: Expected result of the step
 		@type results: str
 		"""
+
+		__slots__ = ("id","number","actions","execution_type","is_active","results")
+
 		def __init__(self,step_number,actions,execution_type,active,id,expected_results,**kwargs):
 			self.id = int(id)
 			self.number = int(step_number)
@@ -493,6 +510,9 @@ class TestCase(TestlinkObject):
 		@ivar tester_id: The internal ID of the tester
 		@type tester_id: int
 		"""
+
+		__slots__ = ("id","testplan_id","platform_id","build_id","tcversion_id","tcversion_number","status",\
+				"notes","execution_type","execution_ts","tester_id")
 
 		DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
