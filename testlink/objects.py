@@ -473,11 +473,12 @@ class TestSuite(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("_api","id","name","notes")
+	__slots__ = ("_api","id","name","details","parent_id")
 
-	def __init__(self,api=None,id=None,name=None,notes=None,**kwargs):
+	def __init__(self,api=None,id=None,name=None,details=None,parent_id=-1,**kwargs):
 		TestlinkObject.__init__(self,api,id,name)
-		self.notes = DefaultParser().feed(unicode(notes))
+		self.details = DefaultParser().feed(unicode(details))
+		self.parent_id = int(parent_id)
 
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
