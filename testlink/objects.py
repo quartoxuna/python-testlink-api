@@ -139,6 +139,9 @@ class TestlinkObject:
 		self.name = DefaultParser().feed(unicode(name))
 		self.parent = parent
 
+	def __eq__(self,other):
+		return self.id == other.id
+
 
 class TestProject(TestlinkObject):
 	"""Testlink TestProject representation
