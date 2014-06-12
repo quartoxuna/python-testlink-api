@@ -206,15 +206,14 @@ class TestProject(TestlinkObject):
 		@param name: The name of the TestPlan
 		@type name: str
 		@param params: Other params for TestPlan
-		@type params: list
+		@type params: dict
 		@returns: Matching TestPlans
 		@rtype: list
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
 			response = self._api.getTestPlanByName(name,projectname=self.name)
-			# Response is a list
-			return TestPlan(api=self._api,**response[0])
+			return [TestPlan(api=self._api,**response[0])]
 
 		# Get all TestPlans for the project
 		response = self._api.getProjectTestPlans(self.id)
@@ -224,16 +223,16 @@ class TestProject(TestlinkObject):
 			params['name'] = name
 	
 			# Check for every plan if all params
-			# match abd return this testplan
+			# match and return this testplan
 			matches = []
 			for plan in response:
 				match = True
 				for key,value in params.items():
-					if not (plan[key] == value):
+					if not (str(plan[key]) == str(value)):
 						match = False
 						break
 				if match:
-					matched.append(TestPlan(api=self._api**plan))
+					matched.append(TestPlan(api=self._api,**plan))
 			return matches
 		else:
 			# Otherwise, return all available testplans
