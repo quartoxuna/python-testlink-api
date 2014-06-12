@@ -107,11 +107,11 @@ class Testlink(object):
 						match = False
 						break
 				if match:
-					matches.append(TestProject(self.api,parent=self,**project))
+					matches.append(TestProject(self.api,**project))
 			return matches
 		else:
 			# Otherwise, return all available projects
-			return [TestProject(api=self.api,parent=self,**project) for project in response]
+			return [TestProject(api=self.api,**project) for project in response]
 
 
 class TestlinkObject:
@@ -124,7 +124,7 @@ class TestlinkObject:
 	@type name: str
 	"""
 
-	def __init__(self,api,id,name,parent=None):
+	def __init__(self,api,id,name):
 		"""Initialises base Testlink object
 		@param api: TestlinkAPI instance
 		@type api: testlink.api.TestlinkAPI
@@ -137,7 +137,6 @@ class TestlinkObject:
 		self.api = api
 		self.id = int(id)
 		self.name = DefaultParser().feed(unicode(name))
-		self.parent = parent
 
 	def __eq__(self,other):
 		return self.id == other.id
@@ -194,7 +193,7 @@ class TestProject(TestlinkObject):
 		if name and len(params)==0:
 			response = self.api.getTestPlanByName(name,projectname=self.name)
 			# Response is a list
-			return TestPlan(api=self.api,parent=self,**response[0])
+			return TestPlan(api=self.api,**response[0])
 
 		# Get all TestPlans for the project
 		response = self.api.getProjectTestPlans(self.id)
@@ -213,11 +212,11 @@ class TestProject(TestlinkObject):
 						match = False
 						break
 				if match:
-					matched.append(TestPlan(api=self.api,parent=self,**plan))
+					matched.append(TestPlan(api=self.api**plan))
 			return matches
 		else:
 			# Otherwise, return all available testplans
-			return [TestPlan(api=self.api,parent=self,**plan) for plan in response]
+			return [TestPlan(api=self.api,**plan) for plan in response]
 			
 
 	def getTestSuite(self,name=None,**params):
@@ -229,7 +228,7 @@ class TestProject(TestlinkObject):
 			resp = self.api.getTestSuiteById(params['id'])
 			if isinstance(resp,list) and len(resp)==1:
 				resp=resp[0]
-			return TestSuite(api=self.api,parent=self,**resp)
+			return TestSuite(api=self.api,**resp)
 		
 		suites = self.api.getFirstLevelTestSuitesForTestProject(self.id)
 		if len(params)>0:
@@ -237,9 +236,9 @@ class TestProject(TestlinkObject):
 			for key,value in params.items():
 				for s in suites:
 					if s[key]==value:
-						return TestSuite(api=self.api,parent=self,**s)
+						return TestSuite(api=self.api,**s)
 		else:
-			return [TestSuite(api=self.api,parent=self,**s) for s in suites]
+			return [TestSuite(api=self.api,**s) for s in suites]
 		"""
 
 
@@ -269,10 +268,10 @@ class TestPlan(TestlinkObject):
 		for key,value in params.items():
 			# Check for single result
 			if isinstance(builds,dict):
-				return Build(api=self,parent=self,**builds)
+				return Build(api=self,**builds)
 			for b in builds:
 				if b[key]==value:
-					return Build(api=self.api,parent=self,**b)
+					return Build(api=self.api,**b)
 
 	def getPlatform(self,name=None,**params):
 		"""Returns platforms specified by parameters"""
@@ -282,10 +281,10 @@ class TestPlan(TestlinkObject):
 		for key,value in params.items():
 			# Check for single results
 			if isinstance(platforms,dict):
-				return Platform(api=self,parent=self,**platforms)
+				return Platform(api=self,**platforms)
 			for p in platforms:
 				if p[key]==value:
-					return Platform(api=self.api,parent=self,**p)
+					return Platform(api=self.api,**p)
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
@@ -296,9 +295,9 @@ class TestPlan(TestlinkObject):
 			for key,value in params.items():
 				for s in suites:
 					if s[key]==value:
-						return TestSuite(api=self.api,parent=self,**s)
+						return TestSuite(api=self.api,**s)
 		else:
-			return [TestSuite(api=self.api,parent=self,**s) for s in suites]
+			return [TestSuite(api=self.api,**s) for s in suites]
 		"""
 
 	def getTestCase(self,testcaseid=None,buildid=None,keywordid=None,keywords=None,executed=None,assignedto=None,executionstatus=None,executiontype=None,**params):
@@ -357,11 +356,11 @@ class TestPlan(TestlinkObject):
 						match = False
 						break
 				if match:
-					matches.append(TestCase(api=self.api,parent=self,**case))
+					matches.append(TestCase(api=self.api,**case))
 			log.debug("Got %d matching testcases" % len(matches))
 			return matches
 		else:
-			return [TestCase(api=self.api,parent=self,**case) for case in testcases]
+			return [TestCase(api=self.api,**case) for case in testcases]
 						
 
 class Build(TestlinkObject):
@@ -393,9 +392,9 @@ class TestSuite(TestlinkObject):
 			for key,value in params.items():
 				for s in suites:
 					if s[key]==value:
-						return TestSuite(api=self.api,parent=self,**s)
+						return TestSuite(api=self.api,**s)
 		else:
-			return [TestSuite(api=self.api,parent=self,**s) for s in suites]
+			return [TestSuite(api=self.api,**s) for s in suites]
 
 	def getTestCase(self,name=None,**params):
 		cases = self.api.getTestCasesForTestSuite(self.id,details='full')
@@ -403,9 +402,9 @@ class TestSuite(TestlinkObject):
 			for key,value in params.items():
 				for c in cases:
 					if c[key]==value:
-						return TestCase(api=self.api,parent=self,**c)
+						return TestCase(api=self.api,**c)
 		else:
-			return [TestCase(api=self.api,parent=self,**c) for c in cases]
+			return [TestCase(api=self.api,**c) for c in cases]
 
 class TestCase(TestlinkObject):
 	"""Testlink TestCase representation
