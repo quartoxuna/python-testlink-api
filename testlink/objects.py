@@ -282,7 +282,7 @@ class TestProject(TestlinkObject):
 			for suite in response:
 				match = True
 				for key,value in search_params.items():
-					if not (hash(suite[key]) == hash(value)):
+					if value and not (unicode(suite[key]) == unicode(value)):
 						match = False
 						break
 				if match:
@@ -529,7 +529,7 @@ class TestSuite(TestlinkObject):
 			for suite in response:
 				match = True
 				for key,value in search_params.items():
-					if not (hash(suite[key]) == hash(value)):
+					if value and not (unicode(suite[key]) == unicode(value)):
 						match = False
 						break
 				if match:
