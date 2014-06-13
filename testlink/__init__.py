@@ -14,6 +14,9 @@ from .server import TestlinkXMLRPCServer
 
 from .log import tl_log as TESTLINK_LOG
 
+from .objects import ExecutionType
+from .objects import Importance
+
 from .objects import Testlink
 from .objects import TestProject
 from .objects import TestPlan

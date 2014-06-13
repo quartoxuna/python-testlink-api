@@ -16,11 +16,11 @@ from .log import tl_log as log
 from .parsers import *
 
 # Common enumerations
-class EXECUTION_TYPE:
+class ExecutionType:
 	MANUAL = 1
 	AUTOMATIC = 2
 
-class IMPORTANCE:
+class Importance:
 	HIGH = 3
 	MEDIUM = 2
 	LOW = 1
@@ -572,9 +572,9 @@ class TestCase(TestlinkObject):
 	@ivar status: Status
 	@type status: ???
 	@ivar importance: Importance
-	@type importance: IMPORTANCE
+	@type importance: Importance
 	@ivar execution_type: Execution Type
-	@type execution_type: EXECUTION_TYPE
+	@type execution_type: ExecutionType
 	@ivar is_active: Active flag
 	@type is_active: bool
 	@ivar summary: Summary of the TestCase
@@ -598,7 +598,7 @@ class TestCase(TestlinkObject):
 		@ivar actions: Actions of the step
 		@type actions: str
 		@ivar execution_type: Type of Execution
-		@type execution_type: EXECUTION_TYPE
+		@type execution_type: ExecutionType
 		@ivar is_active: Active flag
 		@type is_active: bool
 		@ivar results: Expected result of the step
@@ -611,7 +611,7 @@ class TestCase(TestlinkObject):
 				self,\
 				step_number=1,\
 				actions="",\
-				execution_type=EXECUTION_TYPE.MANUAL,\
+				execution_type=ExecutionType.MANUAL,\
 				active=False,\
 				id=-1,\
 				expected_results="",\
@@ -644,7 +644,7 @@ class TestCase(TestlinkObject):
 		@ivar notes: Notes of the Execution
 		@type notes: str
 		@ivar execution_type: Execution Type
-		@type execution_type: EXECUTION_TYPE
+		@type execution_type: ExecutionType
 		@ivar execution_ts: Timestamp of execution
 		@type execution_ts: datetime
 		@ivar tester_id: The internal ID of the tester
@@ -666,7 +666,7 @@ class TestCase(TestlinkObject):
 				tcversion_number=0,\
 				status='',\
 				notes="",\
-				execution_type=EXECUTION_TYPE.MANUAL,\
+				execution_type=ExecutionType.MANUAL,\
 				execution_ts="0000-00-00 00:00:00",\
 				tester_id=-1,\
 				**kwargs\
@@ -696,8 +696,8 @@ class TestCase(TestlinkObject):
 			version=0,\
 			exec_status="",\
 			status="",\
-			importance=IMPORTANCE.LOW,\
-			execution_type=EXECUTION_TYPE.MANUAL,\
+			importance=Importance.LOW,\
+			execution_type=ExecutionType.MANUAL,\
 			active=False,\
 			summary="",\
 			preconditions="",\
