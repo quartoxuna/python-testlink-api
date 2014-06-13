@@ -191,10 +191,10 @@ class TestProject(TestlinkObject):
 		self.prefix = DefaultParser().feed(unicode(prefix))
 		self.active = bool(active)
 		self.public = bool(is_public)
-		self.requirements_enabled = bool(opt['requirementsEnabled'])
-		self.priority_enabled = bool(opt['testPriorityEnabled'])
-		self.automation_enabled = bool(opt['automationEnabled'])
-		self.inventory_enabled = bool(opt['inventoryEnabled'])
+		self.requirements = bool(opt['requirementsEnabled'])
+		self.priority = bool(opt['testPriorityEnabled'])
+		self.automation = bool(opt['automationEnabled'])
+		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
 		self.color = DefaultParser().feed(unicode(color))
 
@@ -296,19 +296,33 @@ class TestProject(TestlinkObject):
 				result.extend(suite.getTestSuite(name,id,recursive,**params))
 		return result
 
+	def create(self):
+		"""Creates a new TestProject within the associated Testlink installation"""
+		Testlink._api.createTestProject(
+					name = self.name,\
+					prefix = self.prefix,\
+					notes = self.notes,\
+					active = self.active,\
+					public = self.public,\
+					requirements = self.requirements_enabled,\
+					priority = self.priority_enabled,\
+					automation = self.automation_enabled,\
+					inventory = self.inventory_enabled\
+				)
+
 
 
 class TestPlan(TestlinkObject):
 	"""Testlink TestPlan representation
 	@ivar notes: TestPlan notes
 	@type notes: str
-	@ivar is_active: TestPlan active flag
-	@type is_active: bool
-	@ivar is_public: TestPlan public flag
-	@type is_public: bool
+	@ivar active: TestPlan active flag
+	@type active: bool
+	@ivar public: TestPlan public flag
+	@type public: bool
 	"""
 
-	__slots__ = ("id","name","notes","is_active","is_public")
+	__slots__ = ("id","name","notes","active","public")
 
 	def __init__(
 			self,\
@@ -321,8 +335,8 @@ class TestPlan(TestlinkObject):
 		):
 		TestlinkObject.__init__(self,id,name)
 		self.notes = DefaultParser().feed(unicode(notes))
-		self.is_active = bool(active)
-		self.is_public = bool(is_public)
+		self.active = bool(active)
+		self.public = bool(is_public)
 	
 
 	def getBuild(self,name=None,**params):
@@ -599,8 +613,8 @@ class TestCase(TestlinkObject):
 	@type importance: Importance
 	@ivar execution_type: Execution Type
 	@type execution_type: ExecutionType
-	@ivar is_active: Active flag
-	@type is_active: bool
+	@ivar active: Active flag
+	@type active: bool
 	@ivar summary: Summary of the TestCase
 	@type summary: unicode
 	@ivar platform_id: Internal ID of platform
@@ -610,7 +624,7 @@ class TestCase(TestlinkObject):
 	"""
 
 	__slots__ = ("id","name","executed","execution_notes","execution_order","version",\
-			"exec_status","status","importance","execution_type","is_active","summary",\
+			"exec_status","status","importance","execution_type","active","summary",\
 			"platform_id","external_id")
 
 	class Step(object):
@@ -623,13 +637,13 @@ class TestCase(TestlinkObject):
 		@type actions: str
 		@ivar execution_type: Type of Execution
 		@type execution_type: ExecutionType
-		@ivar is_active: Active flag
-		@type is_active: bool
+		@ivar active: Active flag
+		@type active: bool
 		@ivar results: Expected result of the step
 		@type results: str
 		"""
 
-		__slots__ = ("id","number","actions","execution_type","is_active","results")
+		__slots__ = ("id","number","actions","execution_type","active","results")
 
 		def __init__(
 				self,\
@@ -645,7 +659,7 @@ class TestCase(TestlinkObject):
 			self.number = int(step_number)
 			self.actions = SectionParser().feed(DefaultParser().feed(unicode(actions)))
 			self.execution_type = int(execution_type)
-			self.is_active = bool(active)
+			self.active = bool(active)
 			self.results = SectionParser().feed(DefaultParser().feed(unicode(expected_results)))
 
 	class Execution(object):
@@ -740,7 +754,7 @@ class TestCase(TestlinkObject):
 		self.status = unicode(status)
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
-		self.is_active = bool(active)
+		self.active = bool(active)
 		self.summary = DefaultParser().feed(unicode(summary))
 		self.platform_id = int(platform_id)
 		self.external_id = int(external_id)
