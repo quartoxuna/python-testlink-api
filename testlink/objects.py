@@ -577,8 +577,6 @@ class TestSuite(TestlinkObject):
 			# Add name to search params
 			params['name'] = name
 
-			log.debug(" * Search params: " + str(params))
-
 			# Check for every testcase if all params
 			# match and return that testcase
 			matches = []
