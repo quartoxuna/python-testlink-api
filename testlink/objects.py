@@ -88,13 +88,13 @@ class Testlink(object):
 		@param params: Other params for TestProject
 		@type params: Keyword arguments
 		@returns: Matching TestProjects
-		@rtype: mixed
+		@rtype: list
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
 			response = Testlink._api.getTestProjectByName(name)
 			# Response is a list
-			return TestProject(**response[0])
+			return [TestProject(**response[0])]
 
 		# Get all available Projects
 		response = Testlink._api.getProjects()
