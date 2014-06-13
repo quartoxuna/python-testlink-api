@@ -269,7 +269,7 @@ class TestProject(TestlinkObject):
 		response = [Testlink._api.getTestSuiteById(suite['id']) for suite in response]
 
 		# Built TestSuite object here to simplify method calls
-		first_level_suites = [TestSuite(**suite) for suite in response]
+		first_level_suites = [TestSuite(testproject_id=self.id,**suite) for suite in response]
 
 		result = []
 		if len(params)>0 or name:
@@ -286,7 +286,7 @@ class TestProject(TestlinkObject):
 						match = False
 						break
 				if match:
-					matches.append(TestSuite(**suite))
+					matches.append(TestSuite(testproject_id=self.id,**suite))
 			# Add to results
 			result.extend(matches)
 		else:
@@ -488,13 +488,13 @@ class TestSuite(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("id","name","details","parent_id")
+	__slots__ = ("id","name","details","parent_id","__testproject_id")
 
-	def __init__(self,id=None,name=None,details=None,parent_id=-1,**kwargs):
+	def __init__(self,id=-1,name="",details="",parent_id=-1,testproject_id=-1,**kwargs):
 		TestlinkObject.__init__(self,id,name)
 		self.details = DefaultParser().feed(unicode(details))
 		self.parent_id = int(parent_id)
-
+		self.__testproject_id = int(testproject_id)
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Returns TestSuites speficied by parameters
@@ -529,7 +529,7 @@ class TestSuite(TestlinkObject):
 				response = [response]
 
 		# Built TestSuite object here to simplify recursive calls
-		sub_suites = [TestSuite(**suite) for suite in response]
+		sub_suites = [TestSuite(testproject_id=self.__testproject_id,**suite) for suite in response]
 
 		result = []
 		if len(params)>0 or name:
@@ -546,7 +546,7 @@ class TestSuite(TestlinkObject):
 						match = False
 						break
 				if match:
-					matches.append(TestSuite(**suite))
+					matches.append(TestSuite(testproject_id=self.__testproject_id,**suite))
 			# Add to results
 			result.extend(matches)
 		else:
