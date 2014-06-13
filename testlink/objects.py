@@ -692,6 +692,8 @@ class TestCase(TestlinkObject):
 	def __init__(
 			self,\
 			api=None,\
+			id=-1,\
+			name="",\
 			executed=False,\
 			execution_notes="",\
 			execution_order=-1,\
@@ -708,7 +710,7 @@ class TestCase(TestlinkObject):
 			steps=[],\
 			**kwargs\
 		):
-		TestlinkObject.__init__(self,api,tc_id,name)
+		TestlinkObject.__init__(self,api,id,name)
 		self.executed = bool(executed)
 		self.execution_notes = DefaultParser().feed(unicode(execution_notes))
 		self.execution_order = int(execution_order)
