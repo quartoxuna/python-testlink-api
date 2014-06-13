@@ -25,6 +25,9 @@ class Importance:
 	MEDIUM = 2
 	LOW = 1
 
+class OnDuplicate:
+	BLOCK = 'block'
+
 class Testlink(object):
 	"""Testlink Server implementation
 	@cvar _api: Used API instance
