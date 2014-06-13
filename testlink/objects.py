@@ -549,14 +549,40 @@ class TestSuite(TestlinkObject):
 
 
 	def getTestCase(self,name=None,**params):
-		cases = self._api.getTestCasesForTestSuite(self.id,details='full')
-		if len(params)>0:
-			for key,value in params.items():
-				for c in cases:
-					if c[key]==value:
-						return TestCase(api=self._api,**c)
+		"""Returns all TestCaes specified by parameters
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: list
+		"""
+		# Get all sub testcases
+		response = self._api.getTestCasesForTestSuite(self.id,details='full')
+
+		if len(params)>0 or name:
+			# Add name to search params
+			params['name'] = name
+
+			log.debug(" * Search params: " + str(params))
+
+			# Check for every testcase if all params
+			# match and return that testcase
+			matches = []
+			for case in response:
+				match = True
+				for key,value in params.items():
+					if value and not (unicode(case[key]) == unicode(value)):
+						match = False
+						break
+				if match:
+					matches.append(TestCase(api=self._api,**case))
+
+			# Return results
+			return matches
 		else:
-			return [TestCase(api=self._api,**c) for c in cases]
+			# Return all available testcases
+			return [TestCase(api=self._api,**case) for case in response]
 
 
 class TestCase(TestlinkObject):
