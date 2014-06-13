@@ -264,6 +264,8 @@ class TestProject(TestlinkObject):
 		# Bug !
 		# Since the API call to getFirstLevelTestSuites does NOT
 		# return the details, we have to get it with another API call
+		# This has to be done BEFORE the acutal filtering because otherwise
+		# we could not filter by the details
 		response = [self._api.getTestSuiteById(suite['id']) for suite in response]
 
 		# Built TestSuite object here to simplify method calls
