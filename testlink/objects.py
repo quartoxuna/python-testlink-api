@@ -299,20 +299,28 @@ class TestProject(TestlinkObject):
 				result.extend(suite.getTestSuite(name,id,recursive,**params))
 		return result
 
-	def create(self):
-		"""Creates a new TestProject within the associated Testlink installation"""
-		Testlink._api.createTestProject(
-					name = self.name,\
-					prefix = self.prefix,\
-					notes = self.notes,\
-					active = self.active,\
-					public = self.public,\
-					requirements = self.requirements_enabled,\
-					priority = self.priority_enabled,\
-					automation = self.automation_enabled,\
-					inventory = self.inventory_enabled\
-				)
+	def create_test_suite(self,suite,order=0,on_duplicate=OnDuplicate.BLOCK):
+		"""Creates a new TestSuite in the current TestProject
+		@param suite: TestSuite to create
+		@type suite: TestSuite
+		@param order: Order of the new TestSuite within parent object
+		@type order: int
+		@param on_duplicate: Action on duplicate (Default: OnDuplicate.BLOCK)
+		@type on_duplicate: OnDuplicate
+		@raises TypeError: Specified suite is not of type TestSuite
+		"""
+		# Check for correct type
+		if not isinstance(suite,TestSuite):
+			raise TypeError(str(suite.__class__.__name__))
 
+		# Create TestSuite
+		Testlink._api.createTestSuite(
+					name = suite.name,\
+					testprojectid = self.id,\
+					details = suite.details,\
+					order = order,\
+					actiononduplicate = on_duplicate\
+				)
 
 
 class TestPlan(TestlinkObject):
@@ -594,6 +602,30 @@ class TestSuite(TestlinkObject):
 		else:
 			# Return all available testcases
 			return [TestCase(**case) for case in response]
+
+	def create_test_suite(self,suite,order=0,on_duplicate=OnDuplicate.BLOCK):
+		"""Creates a new TestSuite within the current TestSuite
+		@param suite: TestSuite to create
+		@type suite: TestSuite
+		@param order: Order of the new TestSuite within parent object
+		@type order: int
+		@param on_duplicate: Action on duplicate (Default: OnDuplicate.BLOCK)
+		@type on_duplicate: OnDuplicate
+		@raises TypeError: Specified suite is not of type TestSuite
+		"""
+		# Check for correct type
+		if not isinstance(suite,TestSuite):
+			raise TypeError(str(suite.__class__.__name__))
+
+		# Create TestSuite
+		Testlink._api.createTestSuite(
+					name = suite.name,\
+					testprojectid = self.__testproject_id,\
+					details = suite.details,\
+					parentid = self.id,\
+					order = order,\
+					actiononduplicate = on_duplicate\
+				)
 
 
 class TestCase(TestlinkObject):
