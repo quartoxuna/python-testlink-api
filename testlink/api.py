@@ -82,6 +82,10 @@ class TestlinkAPI(object):
 		if self.devkey:
 			kwargs['devKey'] = self.devkey
 
+		# Check for empty method name
+		if not method or method.strip()=="":
+			raise NotSupported("<EMPTY>")
+
 		log.debug("Query: %s(%s)" % (str(method),str(kwargs)) )
 		try:
 			# Call the actual method
