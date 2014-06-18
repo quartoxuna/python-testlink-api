@@ -15,13 +15,12 @@ from .server import TestlinkXMLRPCServer
 from .log import tl_log as TESTLINK_LOG
 
 from .objects import ExecutionType
-from .objects import Importance
+from .objects import ImportanceLevel
+from .objects import CustomFieldDetails
 
 from .objects import Testlink
 from .objects import TestProject
 from .objects import TestPlan
-from .objects import Build
-from .objects import Platform
 from .objects import TestSuite
 from .objects import TestCase
 

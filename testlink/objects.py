@@ -20,12 +20,12 @@ class ExecutionType:
 	MANUAL = 1
 	AUTOMATIC = 2
 
-class Importance:
+class ImportanceLevel:
 	HIGH = 3
 	MEDIUM = 2
 	LOW = 1
 
-class OnDuplicate:
+class CustomFieldDetails:
 	BLOCK = 'block'
 
 class Testlink(object):
@@ -299,14 +299,14 @@ class TestProject(TestlinkObject):
 				result.extend(suite.getTestSuite(name,id,recursive,**params))
 		return result
 
-	def create_test_suite(self,suite,order=0,on_duplicate=OnDuplicate.BLOCK):
+	def create_test_suite(self,suite,order=0,on_duplicate=CustomFieldDetails.BLOCK):
 		"""Creates a new TestSuite in the current TestProject
 		@param suite: TestSuite to create
 		@type suite: TestSuite
 		@param order: Order of the new TestSuite within parent object
 		@type order: int
-		@param on_duplicate: Action on duplicate (Default: OnDuplicate.BLOCK)
-		@type on_duplicate: OnDuplicate
+		@param on_duplicate: Action on duplicate (Default: CustomFieldDetails.BLOCK)
+		@type on_duplicate: CustomFieldDetails
 		@raises TypeError: Specified suite is not of type TestSuite
 		"""
 		# Check for correct type
@@ -603,14 +603,14 @@ class TestSuite(TestlinkObject):
 			# Return all available testcases
 			return [TestCase(**case) for case in response]
 
-	def create_test_suite(self,suite,order=0,on_duplicate=OnDuplicate.BLOCK):
+	def create_test_suite(self,suite,order=0,on_duplicate=CustomFieldDetails.BLOCK):
 		"""Creates a new TestSuite within the current TestSuite
 		@param suite: TestSuite to create
 		@type suite: TestSuite
 		@param order: Order of the new TestSuite within parent object
 		@type order: int
-		@param on_duplicate: Action on duplicate (Default: OnDuplicate.BLOCK)
-		@type on_duplicate: OnDuplicate
+		@param on_duplicate: Action on duplicate (Default: CustomFieldDetails.BLOCK)
+		@type on_duplicate: CustomFieldDetails
 		@raises TypeError: Specified suite is not of type TestSuite
 		"""
 		# Check for correct type
@@ -642,8 +642,8 @@ class TestCase(TestlinkObject):
 	@type exec_status: str
 	@ivar status: Status
 	@type status: ???
-	@ivar importance: Importance
-	@type importance: Importance
+	@ivar importance: ImportanceLevel
+	@type importance: ImportanceLevel
 	@ivar execution_type: Execution Type
 	@type execution_type: ExecutionType
 	@ivar active: Active flag
@@ -768,7 +768,7 @@ class TestCase(TestlinkObject):
 			version=0,\
 			exec_status="",\
 			status="",\
-			importance=Importance.LOW,\
+			importance=ImportanceLevel.LOW,\
 			execution_type=ExecutionType.MANUAL,\
 			active=False,\
 			summary="",\
