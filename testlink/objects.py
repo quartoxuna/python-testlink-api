@@ -505,13 +505,13 @@ class TestSuite(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("id","name","details","parent_id","__testproject_id")
+	__slots__ = ("id","name","details","parent_id","_parent_testproject","_parent_testsuite")
 
-	def __init__(self,id=-1,name="",details="",parent_id=-1,testproject_id=-1,**kwargs):
+	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
 		self.details = DefaultParser().feed(unicode(details))
-		self.parent_id = int(parent_id)
-		self.__testproject_id = int(testproject_id)
+		self._parent_testproject = parent_testproject
+		self._parent_testsuite = parent_testsuite
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Returns TestSuites speficied by parameters
@@ -667,7 +667,7 @@ class TestCase(TestlinkObject):
 
 	__slots__ = ("id","name","executed","execution_notes","execution_order","version",\
 			"exec_status","status","importance","execution_type","active","summary",\
-			"platform_id","external_id")
+			"platform_id","external_id","_parent_testproject","_parent_testsuite")
 
 	class Step(object):
 		"""Testlink TestCase Step representation
@@ -783,8 +783,10 @@ class TestCase(TestlinkObject):
 			summary="",\
 			preconditions="",\
 			platform_id=-1,\
-			external_id=-1,\
+			tc_external_id=-1,\
 			steps=[],\
+			parent_testproject=None,\
+			parent_testsuite=None,\
 			**kwargs\
 		):
 		TestlinkObject.__init__(self,id,name)
@@ -799,7 +801,9 @@ class TestCase(TestlinkObject):
 		self.active = bool(active)
 		self.summary = DefaultParser().feed(unicode(summary))
 		self.platform_id = int(platform_id)
-		self.external_id = int(external_id)
+		self.external_id = int(tc_external_id)
+		self._parent_testproject = parent_testproject
+		self._parent_testsuite = parent_testsuite
 
 		# TestCase Steps
 		self.steps = [TestCase.Step(**s) for s in steps]
