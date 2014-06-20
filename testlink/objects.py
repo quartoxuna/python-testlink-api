@@ -144,6 +144,12 @@ class TestlinkObject:
 		self.id = int(id)
 		self.name = DefaultParser().feed(unicode(name))
 
+	def __unicode__(self):
+		return unicode(self.name)
+
+	def __str__(self):
+		return str(self.name)
+
 	def __eq__(self,other):
 		return self.id == other.id
 
