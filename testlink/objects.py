@@ -786,3 +786,20 @@ class TestCase(TestlinkObject):
 
 	def getAttachments(self):
 		return Testlink._api.getTestCaseAttachments(self.id,self.external_id)
+
+	def getCustomFieldDesignValue(self,fieldname,details=CustomFieldDetails.VALUE_ONLY):
+		"""Returns the custom field design value for the specified custom field
+		@param fieldname: The internal name of the custom field
+		@type fieldname: str
+		@param details: Granularity of the response
+		@type details: CustomFieldDetails
+		@returns: Custom Field value or informations
+		@rtype: mixed
+		"""
+		return Testlink._api.getTestCaseCustomFieldDesignValue(
+					testcaseexternalid = "%s-%s" % (str(self._parent_testproject.prefix),str(self.external_id)),\
+					version = self.version,\
+					projectid = self._parent_testproject.id,\
+					fieldname = fieldname,\
+					details = details\
+				)
