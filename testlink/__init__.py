@@ -16,6 +16,7 @@ from .log import tl_log as TESTLINK_LOG
 
 from .objects import ExecutionType
 from .objects import ImportanceLevel
+from .objects import DuplicateStrategy
 from .objects import CustomFieldDetails
 
 from .objects import Testlink

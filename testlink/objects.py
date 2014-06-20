@@ -25,8 +25,11 @@ class ImportanceLevel:
 	MEDIUM = 2
 	LOW = 1
 
-class CustomFieldDetails:
+class DuplicateStrategy:
 	BLOCK = 'block'
+
+class CustomFieldDetails:
+	VALUE_ONLY = 'value'
 
 class Testlink(object):
 	"""Testlink Server implementation
@@ -299,14 +302,14 @@ class TestProject(TestlinkObject):
 				result.extend(suite.getTestSuite(name,id,recursive,**params))
 		return result
 
-	def create_test_suite(self,suite,order=0,on_duplicate=CustomFieldDetails.BLOCK):
+	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite in the current TestProject
 		@param suite: TestSuite to create
 		@type suite: TestSuite
 		@param order: Order of the new TestSuite within parent object
 		@type order: int
-		@param on_duplicate: Action on duplicate (Default: CustomFieldDetails.BLOCK)
-		@type on_duplicate: CustomFieldDetails
+		@param on_duplicate: Action on duplicate (Default: DuplicateStrategy.BLOCK)
+		@type on_duplicate: DuplicateStrategy
 		@raises TypeError: Specified suite is not of type TestSuite
 		"""
 		# Check for correct type
@@ -603,14 +606,14 @@ class TestSuite(TestlinkObject):
 			# Return all available testcases
 			return [TestCase(**case) for case in response]
 
-	def create_test_suite(self,suite,order=0,on_duplicate=CustomFieldDetails.BLOCK):
+	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite within the current TestSuite
 		@param suite: TestSuite to create
 		@type suite: TestSuite
 		@param order: Order of the new TestSuite within parent object
 		@type order: int
-		@param on_duplicate: Action on duplicate (Default: CustomFieldDetails.BLOCK)
-		@type on_duplicate: CustomFieldDetails
+		@param on_duplicate: Action on duplicate (Default: DuplicateStrategy.BLOCK)
+		@type on_duplicate: DuplicateStrategy
 		@raises TypeError: Specified suite is not of type TestSuite
 		"""
 		# Check for correct type
