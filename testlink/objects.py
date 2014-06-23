@@ -356,7 +356,7 @@ class TestPlan(TestlinkObject):
 				return Platform(**platforms)
 			for p in platforms:
 				if p[key]==value:
-					return Platform(api,**p)
+					return Platform(**p)
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
