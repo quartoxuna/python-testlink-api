@@ -712,7 +712,7 @@ class TestCase(TestlinkObject):
 
 	def __init__(
 			self,\
-			id=-1,\
+			tc_id=-1,\
 			name="",\
 			executed=False,\
 			execution_notes="",\
@@ -726,13 +726,14 @@ class TestCase(TestlinkObject):
 			summary="",\
 			preconditions="",\
 			platform_id=-1,\
-			tc_external_id=-1,\
+			tc_external_id=None,\
+			external_id=-1,\
 			steps=[],\
 			parent_testproject=None,\
 			parent_testsuite=None,\
 			**kwargs\
 		):
-		TestlinkObject.__init__(self,id,name)
+		TestlinkObject.__init__(self,tc_id,name)
 		self.executed = bool(executed)
 		self.execution_notes = DefaultParser().feed(unicode(execution_notes))
 		self.execution_order = int(execution_order)
@@ -744,7 +745,7 @@ class TestCase(TestlinkObject):
 		self.active = bool(active)
 		self.summary = DefaultParser().feed(unicode(summary))
 		self.platform_id = int(platform_id)
-		self.external_id = int(tc_external_id)
+		self.external_id = int(tc_external_id) if tc_external_id else external_id
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
