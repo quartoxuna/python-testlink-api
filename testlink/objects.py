@@ -361,16 +361,6 @@ class TestPlan(TestlinkObject):
 	def getTestSuite(self,name=None,**params):
 		"""Return TestSuites specified by parameters"""
 		raise NotImplementedError()
-		"""
-		suites = Testlink._api.getTestSuitesForTestPlan(self.id)
-		if len(params)>0:
-			for key,value in params.items():
-				for s in suites:
-					if s[key]==value:
-						return TestSuite(api=Testlink._api,**s)
-		else:
-			return [TestSuite(api=Testlink._api,**s) for s in suites]
-		"""
 
 	def getTestCase(
 			self,\
