@@ -15,6 +15,8 @@ class DefaultParser(HTMLParser.HTMLParser):
 	"""Default parser, just unescape fed data"""
 
 	def feed(self,data):
+		# Replace space by hand
+		data = data.replace("&nbsp;",' ')
 		return HTMLParser.HTMLParser.unescape(self,data)
 
 
