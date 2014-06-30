@@ -151,7 +151,7 @@ class TestlinkObject:
 		@keyword kwargs: Additonal attributes
 		"""
 		self.id = int(id)
-		self.name = DefaultParser().feed(unicode(name))
+		self.name = next(DefaultParser().feed(unicode(name)))
 
 	def __unicode__(self):
 		return unicode(self.name)
@@ -208,8 +208,8 @@ class TestProject(TestlinkObject):
 			**kwargs\
 		):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = DefaultParser().feed(notes)
-		self.prefix = DefaultParser().feed(unicode(prefix))
+		self.notes = next(DefaultParser().feed(notes))
+		self.prefix = next(DefaultParser().feed(unicode(prefix)))
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -217,7 +217,7 @@ class TestProject(TestlinkObject):
 		self.automation = bool(opt['automationEnabled'])
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
-		self.color = DefaultParser().feed(unicode(color))
+		self.color = next(DefaultParser().feed(unicode(color)))
 
 	def iterTestPlan(self,name=None,**params):
 		"""Returns an iterator over TestPlans specified by parameters
@@ -370,7 +370,7 @@ class TestPlan(TestlinkObject):
 			**kwargs
 		):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = DefaultParser().feed(unicode(notes))
+		self.notes = next(DefaultParser().feed(unicode(notes)))
 		self.active = bool(active)
 		self.public = bool(is_public)
 	
@@ -489,7 +489,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = DefaultParser().feed(unicode(notes))
+		self.notes = next(DefaultParser().feed(unicode(notes)))
 
 
 class Platform(TestlinkObject):
@@ -502,7 +502,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = DefaultParser().feed(unicode(notes))
+		self.notes = next(DefaultParser().feed(unicode(notes)))
 
 
 class TestSuite(TestlinkObject):
@@ -515,7 +515,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.details = DefaultParser().feed(unicode(details))
+		self.details = next(DefaultParser().feed(unicode(details)))
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
@@ -713,10 +713,10 @@ class TestCase(TestlinkObject):
 			):
 			self.id = int(id)
 			self.number = int(step_number)
-			self.actions = SectionParser().feed(DefaultParser().feed(unicode(actions)))
+			self.actions = next(SectionParser().feed(next(DefaultParser().feed(unicode(actions)))))
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
-			self.results = SectionParser().feed(DefaultParser().feed(unicode(expected_results)))
+			self.results = next(SectionParser().feed(next(DefaultParser().feed(unicode(expected_results)))))
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
@@ -772,7 +772,7 @@ class TestCase(TestlinkObject):
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
 			self.status = unicode(status)
-			self.notes = DefaultParser().feed(unicode(notes))
+			self.notes = next(DefaultParser().feed(unicode(notes)))
 			self.execution_type = int(execution_type)
 			self.execution_ts = date.strptime(str(execution_ts),Execution.DATETIME_FORMAT)
 			self.tester_id = int(tester_id)
@@ -806,7 +806,7 @@ class TestCase(TestlinkObject):
 		):
 		TestlinkObject.__init__(self,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = DefaultParser().feed(unicode(execution_notes))
+		self.execution_notes = next(DefaultParser().feed(unicode(execution_notes)))
 		self.execution_order = int(execution_order)
 		self.version = int(version)
 		self.exec_status = unicode(exec_status)
@@ -814,7 +814,7 @@ class TestCase(TestlinkObject):
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = DefaultParser().feed(unicode(summary))
+		self.summary = next(DefaultParser().feed(unicode(summary)))
 		self.platform_id = int(platform_id)
 		self.external_id = int(tc_external_id) if tc_external_id else external_id
 		self._parent_testproject = parent_testproject
