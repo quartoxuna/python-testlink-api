@@ -84,7 +84,7 @@ class Testlink(object):
 			version.append(pre.group(2))
 		return version
 
-	def getTestProject(self,name=None,**params):
+	def iterTestProject(self,name=None,**params):
 		"""Returns an iterator over TestProjects specified by parameters
 		@param name: The name of the TestProject
 		@type name: str
@@ -98,23 +98,38 @@ class Testlink(object):
 			response = Testlink._api.getTestProjectByName(name)
 			# Response is a list
 			yield TestProject(**response[0])
+		else:
+			# Get all available Projects
+			response = Testlink._api.getProjects()
 
-		# Get all available Projects
-		response = Testlink._api.getProjects()
+			if len(params)>0:
+				# Add name to search parameters
+				params['name'] = name
 
-		if len(params)>0:
-			# Add name to search parameters
-			params['name'] = name
-	
-			# Check for every project if all params match
+				# Check for every project if all params match
+				for project in response:
+					for key,value in params.items():
+						if value and not (unicode(project[key]) == unicode(value)):
+							respone.remove(project)
+							break
+			# Yield matching projects
 			for project in response:
-				for key,value in params.items():
-					if value and not (unicode(project[key]) == unicode(value)):
-						respone.remove(project)
-						break
-		# Yield matching projects
-		for project in response:
-			yield TestProject(**project)
+				yield TestProject(**project)
+
+	def getTestProject(self,name=None,**params):
+		"""Returns TestProjects specified by parameters
+		@param name: The name of the TestProject
+		@type name: str
+		@param params: Other params for TestProject
+		@type params: Keyword arguments
+		@returns: Matching TestProjects
+		@rtype: list
+		"""
+		res = [project for project in self.iterTestProject(name,**params)]
+		log.warning("Got results: " + str(res))
+		if len(res)==1:
+			return res[0]
+		return res
 
 
 class TestlinkObject:
@@ -204,38 +219,52 @@ class TestProject(TestlinkObject):
 		self.tc_count = int(tc_counter)
 		self.color = DefaultParser().feed(unicode(color))
 
-	def getTestPlan(self,name=None,**params):
+	def iterTestPlan(self,name=None,**params):
 		"""Returns an iterator over TestPlans specified by parameters
 		@param name: The name of the TestPlan
 		@type name: str
 		@param params: Other params for TestPlan
 		@type params: dict
-		@returns: Matching TestPlans
-		@rtype: mixed
+		@returns: Matching TestPlans Generator
+		@rtype: generator
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
 			response = Testlink._api.getTestPlanByName(name,projectname=self.name)
 			yield TestPlan(**response[0])
-
-		# Get all TestPlans for the project
-		response = Testlink._api.getProjectTestPlans(self.id)
-
-		if len(params)>0:
-			# Add name to search parameters
-			params['name'] = name
+		else:
+			# Get all TestPlans for the project
+			response = Testlink._api.getProjectTestPlans(self.id)
 	
-			# Check for every plan if all params match
-			for plan in response:
-				for key,value in params.items():
-					if value and not (unicode(plan[key]) == unicode(value)):
-						response.remove(plan)
-						break
-		# Yield plans
-		for plan in repsonse:
-			yield TestPlan(**plan)
+			if len(params)>0:
+				# Add name to search parameters
+				params['name'] = name
 
-	def getTestSuite(self,name=None,id=None,**params):
+				# Check for every plan if all params match
+				for plan in response:
+					for key,value in params.items():
+						if value and not (unicode(plan[key]) == unicode(value)):
+							response.remove(plan)
+							break
+			# Yield plans
+			for plan in response:
+				yield TestPlan(**plan)
+
+	def getTestPlan(self,name=None,**params):
+		"""Returns TestPlans specified by parameters
+		@param name: The name of the TestPlan
+		@type name: str
+		@param params: Other params for TestPlan
+		@type params: dict
+		@returns: Matching TestPlans
+		@rtype: list
+		"""
+		res = [plan for plan in self.iterTestPlan(name,**params)]
+		if len(res)==1:
+			return res[0]
+		return res
+
+	def iterTestSuite(self,name=None,id=None,**params):
 		"""Returns and iterator over TestSuites specified by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
@@ -250,36 +279,50 @@ class TestProject(TestlinkObject):
 		if id:
 			response = Testlink._api.getTestSuiteById(id)
 			yield TestSuite(parent_testproject=self,**response)
+		else:
+			# Get all first level testsuites
+			response = Testlink._api.getFirstLevelTestSuitesForTestProject(self.id)
 
-		# Get all first level testsuites
-		response = Testlink._api.getFirstLevelTestSuitesForTestProject(self.id)
+			# Bug !
+			# Since the API call to getFirstLevelTestSuites does NOT
+			# return the details, we have to get it with another API call
+			# This has to be done BEFORE the acutal filtering because otherwise
+			# we could not filter by the details
+			all_suites = [Testlink._api.getTestSuiteById(suite['id']) for suite in response]
+			matches = copy.copy(all_suites)
 
-		# Bug !
-		# Since the API call to getFirstLevelTestSuites does NOT
-		# return the details, we have to get it with another API call
-		# This has to be done BEFORE the acutal filtering because otherwise
-		# we could not filter by the details
-		all_suites = [Testlink._api.getTestSuiteById(suite['id']) for suite in response]
-		matches = copy.copy(all_suites)
+			if len(params)>0 or name:
+				search_params = copy.copy(params)
+				search_params.update({'name':name})
 
-		if len(params)>0 or name:
-			search_params = copy.copy(params)
-			search_params.update({'name':name})
+				# Check for every testsuite if all params match
+				for suite in all_suites:
+					for key,value in search_params.items():
+						if value and not (unicode(suite[key]) == unicode(value)):
+							matches.remove(suite)
+							break
+			# Yield suites of current level
+			for suite in [TestSuite(parent_testproject=self,**suite) for suite in matches]:
+				yield suite
 
-			# Check for every testsuite if all params match
-			for suite in all_suites:
-				for key,value in search_params.items():
-					if value and not (unicode(suite[key]) == unicode(value)):
-						matches.remove(suite)
-						break
-		# Yield suites of current level
-		for suite in [TestSuite(parent_testproject=self,**suite) for suite in matches]:
-			yield suite
+			# Yield recursively found suites
+			for suite in [TestSuite(parent_testproject=self,**suite) for suite in all_suites]:
+				for sub_suite in suite.getTestSuite(name,id,**params):
+					yield sub_suite
 
-		# Yield recursively found suites
-		for suite in [TestSuite(parent_testproject=self,**suite) for suite in all_suites]:
-			for sub_suite in suite.getTestSuite(name,id,**params):
-				yield sub_suite
+	def getTestSuite(self,name=None,id=None,**params):
+		"""Returns TestSuites specified by parameters
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: list
+		"""
+		res = [suite for suite in self.iterTestSuite(name,id,**params)]
+		if len(res)==1:
+			return res[0]
+		return res
 
 	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite in the current TestProject
@@ -476,7 +519,7 @@ class TestSuite(TestlinkObject):
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
-	def getTestSuite(self,name=None,id=None,**params):
+	def iterTestSuite(self,name=None,id=None,**params):
 		"""Returns an iterator over TestSuites speficied by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
@@ -491,52 +534,66 @@ class TestSuite(TestlinkObject):
 		if id:
 			response = Testlink._api.getTestSuiteById(id)
 			yield TestSuite(parent_testproject=self._parent_testproject,parent_testsuite=self,**response[0])
+		else:
+			# Get all sub suites
+			response = Testlink._api.getTestSuitesForTestSuite(self.id)
 
-		# Get all sub suites
-		response = Testlink._api.getTestSuitesForTestSuite(self.id)
+			# Normalize result
+			if isinstance(response,str) and response.strip() == "":
+				# Nothing more to do here
+				return
+			elif isinstance(response,dict):
+				# Check for nested dict
+				if isinstance(response[response.keys()[0]],dict):
+					response = [Testlink._api.getTestSuiteById(suite_id) for suite_id in response.keys()]
+				else:
+					response = [response]
 
-		# Normalize result
-		if isinstance(response,str) and response.strip() == "":
-			# Nothing more to do here
-			return
-		elif isinstance(response,dict):
-			# Check for nested dict
-			if isinstance(response[response.keys()[0]],dict):
-				response = [Testlink._api.getTestSuiteById(suite_id) for suite_id in response.keys()]
-			else:
-				response = [response]
+			all_suites = response
+			matches = copy.copy(all_suites)
 
-		all_suites = response
-		matches = copy.copy(all_suites)
+			if len(params)>0 or name:
+				search_params = copy.copy(params)
+				search_params.update({'name':name})
 
-		if len(params)>0 or name:
-			search_params = copy.copy(params)
-			search_params.update({'name':name})
+				# Check for every testsuite if all params match
+				for suite in all_suites:
+					for key,value in search_params.items():
+						if value and not (unicode(suite[key]) == unicode(value)):
+							matches.remove(suite)
+							break
 
-			# Check for every testsuite if all params match
-			for suite in all_suites:
-				for key,value in search_params.items():
-					if value and not (unicode(suite[key]) == unicode(value)):
-						matches.remove(suite)
-						break
+			# Yield suites of current level
+			for suite in [TestSuite(parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in matches]:
+				yield suite
 
-		# Yield suites of current level
-		for suite in [TestSuite(parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in matches]:
-			yield suite
+			# Yield recursively found suites
+			for suite in [TestSuite(parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in all_suites]:
+				for sub_suite in suite.getTestSuite(name,id,**params):
+					yield sub_suite
 
-		# Yield recursively found suites
-		for suite in [TestSuite(parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in all_suites]:
-			for sub_suite in suite.getTestSuite(name,id,**params):
-				yield sub_suite
+	def getTestSuite(self,name=None,id=None,**params):
+		"""Returns TestSuites speficied by parameters
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: list
+		"""
+		res = [suite for suite in self.iterTestSuite(name,id,**params)]
+		if len(res)==1:
+			return res[0]
+		return res
 
-	def getTestCase(self,name=None,**params):
+	def iterTestCase(self,name=None,**params):
 		"""Returns and iterator over TestCaes specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
 		@param params: Other params for TestCase
 		@type params: dict
-		@returns: Matching TestCases
-		@rtype: list
+		@returns: Matching TestCases Generator
+		@rtype: generator
 		"""
 		# Get all sub testcases
 		response = Testlink._api.getTestCasesForTestSuite(self.id,details='full')
@@ -554,6 +611,20 @@ class TestSuite(TestlinkObject):
 		# Yield testcases
 		for case in response:
 			yield TestCase(parent_testproject=self._parent_testproject,parent_testsuite=self,**case)
+
+	def getTestCase(self,name=None,**params):
+		"""Returns TestCaes specified by parameters
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: list
+		"""
+		res = [case for case in self.iterTestCase(name,**params)]
+		if len(res)==1:
+			return res[0]
+		return res
 
 	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite within the current TestSuite
