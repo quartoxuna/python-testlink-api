@@ -780,6 +780,16 @@ class TestCase(TestlinkObject):
 		def delete(self):
 			Testlink._api.deleteExecution(self.id)
 
+	class Precondition(object):
+		"""Testlink TestCase Precondition representation
+		@ivar: condition: Name of the condition
+		@type conditions: str
+		@ivar subconditions: Subconditions of the condition
+		@type subconditions: list
+		"""
+		def __init__(self,condition,subs=()):
+			self.condition = condition
+			self.subconditions = [TestCase.Precondition(*sub) for sub in subs]
 
 	def __init__(
 			self,\
@@ -824,7 +834,8 @@ class TestCase(TestlinkObject):
 		self.steps = [TestCase.Step(**s) for s in steps]
 
 		# TestCase Preconditions
-		self.preconditions = ListParser().feed(DefaultParser().feed(unicode(preconditions)))
+		precon = ListParser().feed(next(DefaultParser().feed(unicode(preconditions))))
+		self.preconditions = [TestCase.Precondition(*con) for con in precon]
 
 	def getLastExecutionResult(self,testplanid):
 		resp = Testlink._api.getLastExecutionResult(testplanid,self.id,self.external_id)
