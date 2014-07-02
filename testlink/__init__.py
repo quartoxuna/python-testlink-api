@@ -6,23 +6,17 @@
 @summary: Testlink API Wrapper
 """
 
-from .api import TestlinkAPI
-from .api import APIError
-from .api import NotSupported
-
-from .server import TestlinkXMLRPCServer
-
 from .log import tl_log as TESTLINK_LOG
+from .server import *
+from .api import *
+from .objects import *
+from .parsers import *
 
-from .objects import ExecutionType
-from .objects import ImportanceLevel
-from .objects import DuplicateStrategy
-from .objects import CustomFieldDetails
-
-from .objects import Testlink
-from .objects import TestProject
-from .objects import TestPlan
-from .objects import TestSuite
-from .objects import TestCase
-
-import parsers
+__all__ = [\
+		'TESTLINK_LOG',\
+		'TestlinkXMLRPCServer',\
+		'NotSupported','APIError','TestlinkAPI',\
+		'DefaultParser','ListParser','SectionParser',\
+		'ExecutionType','ImportanceLevel','DuplicateStrategy','CustomFieldDetails',\
+		'Testlink','TestProject','TestSuite','TestCase','TestPlan','Build','Platform'\
+	]
