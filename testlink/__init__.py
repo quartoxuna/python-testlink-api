@@ -16,7 +16,7 @@ __all__ = [\
 		'TESTLINK_LOG',\
 		'TestlinkXMLRPCServer',\
 		'NotSupported','APIError','TestlinkAPI',\
-		'DefaultParser','ListParser','SectionParser',\
+		'DefaultParser','SectionParser',\
 		'ExecutionType','ImportanceLevel','DuplicateStrategy','CustomFieldDetails',\
 		'Testlink','TestProject','TestSuite','TestCase','TestPlan','Build','Platform'\
 	]

@@ -123,7 +123,7 @@ class Testlink(object):
 		res = data
 		for parser in cls._parsers:
 			res = parser().feed(res)
-		return next(res)
+		return res.next()
 
 class TestlinkObject:
 	"""Abstract Testlink Object
