@@ -13,7 +13,6 @@ import datetime
 import copy
 from .api import TestlinkAPI
 from .log import tl_log as log
-from .parsers import *
 
 # Common enumerations
 class ExecutionType:
@@ -43,8 +42,9 @@ class Testlink(object):
 	"""
 
 	_api = None
+	_parsers = []
 
-	def __init__(self,url,devkey):
+	def __init__(self,url,devkey,*parsers):
 		"""Initializes the Testlink Server object
 		@param url: Testlink URL
 		@type url: str
@@ -64,6 +64,9 @@ class Testlink(object):
 
 		# Set devkey globally
 		Testlink._api.devkey = devkey
+
+		# Set parsers
+		self._parsers = list(parsers)
 
 
 	def getVersion(self):
@@ -85,43 +88,40 @@ class Testlink(object):
 		return version
 
 	def getTestProject(self,name=None,**params):
-		"""Returns TestProject specified by parameters
+		"""Returns generator over TestProjects specified by parameters
 		@param name: The name of the TestProject
 		@type name: str
 		@param params: Other params for TestProject
-		@type params: Keyword arguments
+		@type params: dict
 		@returns: Matching TestProjects
-		@rtype: list
+		@rtype: generator
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
 			response = Testlink._api.getTestProjectByName(name)
-			# Response is a list
-			return [TestProject(**response[0])]
-
-		# Get all available Projects
-		response = Testlink._api.getProjects()
-
-		if len(params)>0:
-			# Add name to search parameters
-			params['name'] = name
-	
-			# Check for every project if all params
-			# match and return this project
-			matches = []
-			for project in response:
-				match = True
-				for key,value in params.items():
-					if not (project[key] == value):
-						match = False
-						break
-				if match:
-					matches.append(TestProject(**project))
-			return matches
+			yield TestProject(**response[0])
 		else:
-			# Otherwise, return all available projects
-			return [TestProject(**project) for project in response]
+			# Filter by specified parameters
+			response = Testlink._api.getProjects()
+			if len(params)>0:
+				params['name'] = name
+				for project in copy.copy(response):
+					for key,value in params.items():
+						if not (unicode(project[key]) == unicode(value)):
+							response.remove(project)
+			for project in response:
+				yield TestProject(**project)
 
+	@classmethod
+	def setParser(cls,*parsers):
+		cls._parsers = list(parsers)
+
+	@classmethod
+	def parse(cls,data):
+		res = data
+		for parser in cls._parsers:
+			res = parser().feed(res)
+		return next(res)
 
 class TestlinkObject:
 	"""Abstract Testlink Object
@@ -142,13 +142,13 @@ class TestlinkObject:
 		@keyword kwargs: Additonal attributes
 		"""
 		self.id = int(id)
-		self.name = DefaultParser().feed(unicode(name))
-
-	def __unicode__(self):
-		return unicode(self.name)
+		self.name = Testlink.parse(name)
 
 	def __str__(self):
 		return str(self.name)
+
+	def __unicode__(self):
+		return unicode(self.name)
 
 	def __eq__(self,other):
 		return self.id == other.id
@@ -199,8 +199,8 @@ class TestProject(TestlinkObject):
 			**kwargs\
 		):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = DefaultParser().feed(notes)
-		self.prefix = DefaultParser().feed(unicode(prefix))
+		self.notes = Testlink.parse(notes)
+		self.prefix = Testlink.parse(prefix)
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -208,49 +208,37 @@ class TestProject(TestlinkObject):
 		self.automation = bool(opt['automationEnabled'])
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
-		self.color = DefaultParser().feed(unicode(color))
+		self.color = Testlink.parse(color)
 
 
 	def getTestPlan(self,name=None,**params):
-		"""Returns TestPlans specified by parameters
+		"""Returns generator over TestPlans specified by parameters
 		@param name: The name of the TestPlan
 		@type name: str
 		@param params: Other params for TestPlan
 		@type params: dict
 		@returns: Matching TestPlans
-		@rtype: list
+		@rtype: generator
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
 			response = Testlink._api.getTestPlanByName(name,projectname=self.name)
-			return [TestPlan(**response[0])]
-
-		# Get all TestPlans for the project
-		response = Testlink._api.getProjectTestPlans(self.id)
-
-		if len(params)>0:
-			# Add name to search parameters
-			params['name'] = name
-	
-			# Check for every plan if all params
-			# match and return this testplan
-			matches = []
-			for plan in response:
-				match = True
-				for key,value in params.items():
-					if not (str(plan[key]) == str(value)):
-						match = False
-						break
-				if match:
-					matched.append(TestPlan(**plan))
-			return matches
+			yield TestPlan(**response[0])
 		else:
-			# Otherwise, return all available testplans
-			return [TestPlan(**plan) for plan in response]
+			# Filter by specified parameters
+			response = Testlink._api.getProjectTestPlans(self.id)
+			if len(params)>0:
+				params['name'] = name
+				for plan in copy.copy(response):
+					for key,value in params.items():
+						if not (unicode(plan[key]) == unicode(value)):
+							response.remove(plan)
+			for plan in response:
+				yield TestPlan(**plan)
 			
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
-		"""Returns TestSuites specified by parameters
+		"""Returns generator over TestSuites specified by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
 		@param recursive: Enable recursive search
@@ -258,55 +246,41 @@ class TestProject(TestlinkObject):
 		@param params: Other params for TestSuite
 		@type params: dict
 		@returns: Matching TestSuites
-		@rtype: list
+		@rtype: generator
 		"""
 		# Check if simple API call can be done
-		# Since the ID is unique, all other params
-		# can be ignored
+		# Since the ID is unique, all other params can be ignored
 		if id:
 			response = Testlink._api.getTestSuiteById(id)
-			return [TestSuite(**response)]
-
-		# Get all first level testsuites
-		response = Testlink._api.getFirstLevelTestSuitesForTestProject(self.id)
-
-		# Bug !
-		# Since the API call to getFirstLevelTestSuites does NOT
-		# return the details, we have to get it with another API call
-		# This has to be done BEFORE the acutal filtering because otherwise
-		# we could not filter by the details
-		response = [Testlink._api.getTestSuiteById(suite['id']) for suite in response]
-
-		# Built TestSuite object here to simplify method calls
-		first_level_suites = [TestSuite(testproject_id=self.id,**suite) for suite in response]
-
-		result = []
-		if len(params)>0 or name:
-			search_params = copy.copy(params)
-			search_params.update({'name':name})
-
-			# Check for every testsuite if all params
-			# match and return that testsuite
-			matches = []
-			for suite in response:
-				match = True
-				for key,value in search_params.items():
-					if value and not (unicode(suite[key]) == unicode(value)):
-						match = False
-						break
-				if match:
-					matches.append(TestSuite(testproject_id=self.id,**suite))
-			# Add to results
-			result.extend(matches)
+			yield TestSuite(**response)
 		else:
-			# Add all to results
-			result.extend(first_level_suites)
+			# Filter by specified parameters
+			response = Testlink._api.getFirstLevelTestSuitesForTestProject(self.id)
 
-		# Add matches in nested testsuites
-		if recursive:
+			# Bug !
+			# Since the API call to getFirstLevelTestSuites does NOT
+			# return the details, we have to get it with another API call
+			# This has to be done BEFORE the acutal filtering because otherwise
+			# we could not filter by the details
+			response = [Testlink._api.getTestSuiteById(suite['id']) for suite in response]
+
+			# Filter by specified parameters
+			if len(params)>0 or name:
+				params['name'] = name
+				params['id'] = None
+				for suite in copy.copy(response):
+					for key,value in params.items():
+						if value and not (unicode(suite[key]) == unicode(value)):
+							response.remove(suite)
+
+			# Built TestSuite objects here to simplify recursive search
+			first_level_suites = [TestSuite(testproject_id=self.id,**suite) for suite in response]
 			for suite in first_level_suites:
-				result.extend(suite.getTestSuite(name,id,recursive,**params))
-		return result
+				yield suite
+			# Recursively search in sub suites
+			for suite in first_level_suites:
+				for s in suite.getTestSuite(**params):
+					yield s
 
 	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite in the current TestProject
@@ -354,71 +328,109 @@ class TestPlan(TestlinkObject):
 			**kwargs
 		):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = DefaultParser().feed(unicode(notes))
+		self.notes = Testlink.parse(notes)
 		self.active = bool(active)
 		self.public = bool(is_public)
 	
 
 	def getBuild(self,name=None,**params):
-		"""Returns Builds specified by parameters"""
-		builds = Testlink._api.getBuildsForTestPlan(self.id)
-		# Add name to params
-		params['name'] = name
-		for key,value in params.items():
-			# Check for single result
-			if isinstance(builds,dict):
-				return Build(**builds)
-			for b in builds:
-				if b[key]==value:
-					return Build(**b)
+		"""Returns generator over Builds specified by parameters
+		@param name: The name of the Build
+		@type name: str
+		@param params: Other params for Build
+		@type params: dict
+		@returns: Macthing Builds
+		@rtype: generator
+		"""
+		# No simple API call possible, get all
+		response = Testlink._api.getBuildsForTestPlan(self.id)
+
+		# Filter by specified params
+		if len(params)>0 or name:
+			params['name'] = name
+			for build in copy.copy(response):
+				for key,value in params.items():
+					if value and not (unicode(build[key]) == unicode(value)):
+						response.remove(build)
+		for build in response:
+			yield Build(**build)
 
 	def getPlatform(self,name=None,**params):
-		"""Returns platforms specified by parameters"""
-		platforms = Testlink._api.getTestPlanPlatforms(self.id)
-		# Add name to params
-		params['name'] = name		
-		for key,value in params.items():
-			# Check for single results
-			if isinstance(platforms,dict):
-				return Platform(**platforms)
-			for p in platforms:
-				if p[key]==value:
-					return Platform(**p)
+		"""Returns generator over Platforms specified by parameters
+		@param name: The name of the Platform
+		@type name: str
+		@param params: Other params for Platform
+		@type params: dict
+		@returns: Matching Platforms
+		@rtype: generator
+		"""
+		# No simple API call possible, get all
+		response = Testlink._api.getTestPlanPlatforms(self.id)
+
+		# Filter by specified params
+		if len(params)>0 or name:
+			params['name'] = name
+			for platform in copy.copy(response):
+				for key,value in params.items():
+					if value and not (unicode(platform[key]) == unicode(value)):
+						response.remove(platform)
+		for platform in response:
+			yield Platform(**platform)
 		
 	def getTestSuite(self,name=None,**params):
-		"""Return TestSuites specified by parameters"""
+		"""Return generator TestSuites specified by parameters"""
+
 		raise NotImplementedError()
 
 	def getTestCase(
 			self,\
-			testcaseid=None,\
-			buildid=None,\
-			keywordid=None,\
-			keywords=None,\
-			executed=None,\
-			assignedto=None,\
-			executionstatus=None,\
-			executiontype=None,\
+			name = None,\
+			id = None,\
+			buildid = None,\
+			keywordid = None,\
+			keywords = None,\
+			executed = None,\
+			assigned_to = None,\
+			execution_status = None,\
+			execution_type = None,\
 			**params
 		):
-		"""Returns testcases specified by parameters
-		@param params: Params for TestCase
-		@type params: mixed
+		"""Returns generator over Testcases specified by parameters
+		@param name: The name of the TestCase
+		@type name: str
+		@param id: The internal ID of the TestCase
+		@type id: int
+		@param buildid: The internal ID of the Build
+		@type buildid: int
+		@param keywordid: The internal ID of the used Keyword
+		@type keywordid: int
+		@param keywords: Keywords to filter for
+		@type keywords: list
+		@param executed: Checks if TestCase is executed
+		@type executed: bool
+		@param assigned_to: Filter by internal ID of assigned Tester
+		@type assigned_to: int
+		@param execution_status: Filter by execution status
+		@type execution_status: char ???
+		@param execution_type: Filter by execution type
+		@type execution_type: ExecutionType
+		@param params: Other params for TestCase
+		@type params: dict
 		@returns: Matching TestCases
-		@rtype: mixed
+		@rtype: generator
 		"""
 		# Get all available TestCases
 		# Use all possible API params to speed up API call
 		response = Testlink._api.getTestCasesForTestPlan(\
 								self.id,\
-								testcaseid,\
+								id,\
 								buildid,\
 								keywordid,\
 								keywords,\
 								executed,\
-								assignedto,\
-								executionstatus,\
-								executiontype,\
+								assigned_to,\
+								execution_status,\
+								execution_type,\
 								steps = True\
 							)
 										
@@ -435,33 +447,15 @@ class TestPlan(TestlinkObject):
 				testcases.append(tc)
 		log.debug("Got %d testcases total" % len(testcases))
 
-		# Check for every project if all other params
-		# match and return this testcase
-		matches = []
-
-		# Remove None flagged additional params
-		# Otherwise, there will be checks if the none string '' returned
-		# by Testlink API matches the given None
-		for key,value in params.items():
-			if value is None:
-				del params[key]
-
-		# Check additional params
-		if len(params)>0:
-			log.debug("Checking for additional params: %s" % unicode(params))
-			for case in testcases:
-				match = True
+		# Filter by specified params
+		if len(params)>0 or name:
+			params['name'] = name
+			for case in copy.copy(testcases):
 				for key,value in params.items():
-					if not(str(case[key]) == str(value)):
-						match = False
-						break
-				if match:
-					matches.append(TestCase(**case))
-			log.debug("Got %d matching testcases" % len(matches))
-			return matches
-		else:
-			return [TestCase(**case) for case in testcases]
-						
+					if value and not (unicode(case[key]) == unicode(value)):
+						testcases.remove(case)
+		for case in testcases:
+			yield TestCase(**case)
 
 class Build(TestlinkObject):
 	"""Testlink Build representation
@@ -473,7 +467,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = DefaultParser().feed(unicode(notes))
+		self.notes = Testlink.parse(notes)
 
 
 class Platform(TestlinkObject):
@@ -486,7 +480,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = DefaultParser().feed(unicode(notes))
+		self.notes = Testlink.parse(notes)
 
 
 class TestSuite(TestlinkObject):
@@ -495,39 +489,31 @@ class TestSuite(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("id","name","details","parent_id","_parent_testproject","_parent_testsuite")
+	__slots__ = ("id","name","details","_parent_testproject","_parent_testsuite")
 
 	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.details = DefaultParser().feed(unicode(details))
+		self.details = Testlink.parse(details)
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
-	def getTestSuite(self,name=None,id=None,recursive=True,**params):
-		"""Returns TestSuites speficied by parameters
+	def getTestSuite(self,name=None,id=None,**params):
+		"""Returns geneator over TestSuites speficied by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
-		@param recursive: Enable recursive search
-		@type recursive: bool
 		@param params: Other params for TestSuite
 		@type params: dict
 		@returns: Matching TestSuites
-		@rtype: list
+		@rtype: generator
 		"""
-		# Check if simple API call can be done
-		# Since the ID is unique, all other params
-		# can be ignored
-		if id:
-			response = Testlink._api.getTestSuiteById(id)
-			return [TestSuite(**response[0])]
-
-		# Get all sub suites
+		# Simple API call could be done, but
+		# we want to ensure, that only sub suites of this
+		# particular suite are involved, so no API call here
 		response = Testlink._api.getTestSuitesForTestSuite(self.id)
 
 		# Normalize result
 		if isinstance(response,str) and response.strip() == "":
-			# Nothing more to do here
-			return []
+			response = []
 		elif isinstance(response,dict):
 			# Check for nested dict
 			if isinstance(response[response.keys()[0]],dict):
@@ -535,38 +521,23 @@ class TestSuite(TestlinkObject):
 			else:
 				response = [response]
 
-		# Built TestSuite object here to simplify recursive calls
-		sub_suites = [TestSuite(testproject_id=self.__testproject_id,**suite) for suite in response]
-
-		result = []
+		# Filter by specified parameters
 		if len(params)>0 or name:
-			search_params = copy.copy(params)
-			search_params.update({'name':name})
-
-			# Check for every testsuite if all params
-			# match and return that testsuite
-			matches = []
-			for suite in response:
-				match = True
-				for key,value in search_params.items():
+			params['name'] = name
+			params['id'] = id
+			for suite in copy.copy(response):
+				for key,value in params.items():
 					if value and not (unicode(suite[key]) == unicode(value)):
-						match = False
-						break
-				if match:
-					matches.append(TestSuite(testproject_id=self.__testproject_id,**suite))
-			# Add to results
-			result.extend(matches)
-		else:
-			# Add all to results
-			result.extend(sub_suites)
+						response.remove(suite)
 
-		# Add matches in nested testsuites recursively
-		if recursive:
-			for suite in sub_suites:
-				result.extend(suite.getTestSuite(name,id,recursive,**params))
-		return result
-
-
+		# Built TestSuite object here to simplify recursive search
+		sub_suites = [TestSuite(testproject_id=self.__testproject_id,**suite) for suite in response]
+		for suite in sub_suites:
+			yield suite
+		# Recursively search in sub suites
+		for suite in sub_suites:
+			for s in suite.getTestSuite(**params):
+				yield s
 
 	def getTestCase(self,name=None,**params):
 		"""Returns all TestCaes specified by parameters
@@ -577,30 +548,18 @@ class TestSuite(TestlinkObject):
 		@returns: Matching TestCases
 		@rtype: list
 		"""
-		# Get all sub testcases
+		# No simple API call possible, get all
 		response = Testlink._api.getTestCasesForTestSuite(self.id,details='full')
 
+		# Filter by specified parameters
 		if len(params)>0 or name:
-			# Add name to search params
 			params['name'] = name
-
-			# Check for every testcase if all params
-			# match and return that testcase
-			matches = []
-			for case in response:
-				match = True
+			for case in copy.copy(response):
 				for key,value in params.items():
 					if value and not (unicode(case[key]) == unicode(value)):
-						match = False
-						break
-				if match:
-					matches.append(TestCase(**case))
-
-			# Return results
-			return matches
-		else:
-			# Return all available testcases
-			return [TestCase(**case) for case in response]
+						response.remove(case)
+		for case in response:
+			yield TestCase(**case)
 
 	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite within the current TestSuite
@@ -689,10 +648,10 @@ class TestCase(TestlinkObject):
 			):
 			self.id = int(id)
 			self.number = int(step_number)
-			self.actions = SectionParser().feed(DefaultParser().feed(unicode(actions)))
+			self.actions = Testlink.parse(actions)
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
-			self.results = SectionParser().feed(DefaultParser().feed(unicode(expected_results)))
+			self.results = Testlink.parse(expected_results)
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
@@ -748,7 +707,7 @@ class TestCase(TestlinkObject):
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
 			self.status = unicode(status)
-			self.notes = DefaultParser().feed(unicode(notes))
+			self.notes = Testlink.parse(notes)
 			self.execution_type = int(execution_type)
 			self.execution_ts = date.strptime(str(execution_ts),Execution.DATETIME_FORMAT)
 			self.tester_id = int(tester_id)
@@ -792,7 +751,7 @@ class TestCase(TestlinkObject):
 		):
 		TestlinkObject.__init__(self,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = DefaultParser().feed(unicode(execution_notes))
+		self.execution_notes = Testlink.parse(execution_notes)
 		self.execution_order = int(execution_order)
 		self.version = int(version)
 		self.exec_status = unicode(exec_status)
@@ -800,18 +759,18 @@ class TestCase(TestlinkObject):
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = DefaultParser().feed(unicode(summary))
+		self.summary = Testlink.parse(summary)
 		self.platform_id = int(platform_id)
 		self.external_id = int(tc_external_id) if tc_external_id else external_id
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
+
 		# TestCase Steps
 		self.steps = [TestCase.Step(**s) for s in steps]
 
 		# TestCase Preconditions
-		precon = ListParser().feed(next(DefaultParser().feed(unicode(preconditions))))
-		self.preconditions = [TestCase.Precondition(*con) for con in precon]
+		self.preconditions = Testlink.parse(preconditions)
 
 	def getLastExecutionResult(self,testplanid):
 		resp = Testlink._api.getLastExecutionResult(testplanid,self.id,self.external_id)
