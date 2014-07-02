@@ -11,8 +11,10 @@ import re
 import xmlrpclib
 import datetime
 import copy
+
 from .api import TestlinkAPI
 from .log import tl_log as log
+from .parsers import DefaultParser
 
 # Common enumerations
 class ExecutionType:
@@ -42,7 +44,7 @@ class Testlink(object):
 	"""
 
 	_api = None
-	_parsers = []
+	_parsers = [DefaultParser]
 
 	def __init__(self,url,devkey,*parsers):
 		"""Initializes the Testlink Server object
@@ -274,7 +276,7 @@ class TestProject(TestlinkObject):
 							response.remove(suite)
 
 			# Built TestSuite objects here to simplify recursive search
-			first_level_suites = [TestSuite(testproject_id=self.id,**suite) for suite in response]
+			first_level_suites = [TestSuite(parent_testproject=self,**suite) for suite in response]
 			for suite in first_level_suites:
 				yield suite
 			# Recursively search in sub suites
@@ -325,12 +327,14 @@ class TestPlan(TestlinkObject):
 			notes="",\
 			is_public=False,\
 			active=False,\
+			parent_testproject=None,\
 			**kwargs
 		):
 		TestlinkObject.__init__(self,id,name)
 		self.notes = Testlink.parse(notes)
 		self.active = bool(active)
 		self.public = bool(is_public)
+		self._parent_testproject = parent_testproject
 	
 
 	def getBuild(self,name=None,**params):
@@ -455,7 +459,7 @@ class TestPlan(TestlinkObject):
 					if value and not (unicode(case[key]) == unicode(value)):
 						testcases.remove(case)
 		for case in testcases:
-			yield TestCase(**case)
+			yield TestCase(parent_testproject=self._parent_testproject,**case)
 
 class Build(TestlinkObject):
 	"""Testlink Build representation
@@ -531,7 +535,7 @@ class TestSuite(TestlinkObject):
 						response.remove(suite)
 
 		# Built TestSuite object here to simplify recursive search
-		sub_suites = [TestSuite(testproject_id=self.__testproject_id,**suite) for suite in response]
+		sub_suites = [TestSuite(parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in response]
 		for suite in sub_suites:
 			yield suite
 		# Recursively search in sub suites
@@ -559,7 +563,7 @@ class TestSuite(TestlinkObject):
 					if value and not (unicode(case[key]) == unicode(value)):
 						response.remove(case)
 		for case in response:
-			yield TestCase(**case)
+			yield TestCase(parent_testproject=self._parent_testproject,parent_testsuite=self,**case)
 
 	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite within the current TestSuite
