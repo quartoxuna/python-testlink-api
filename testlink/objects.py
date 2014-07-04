@@ -449,7 +449,6 @@ class TestPlan(TestlinkObject):
 					testcases = platforms
 					break
 				testcases.append(tc)
-		log.debug("Got %d testcases total" % len(testcases))
 
 		# Filter by specified params
 		if len(params)>0 or name:
@@ -458,6 +457,7 @@ class TestPlan(TestlinkObject):
 				for key,value in params.items():
 					if value and not (unicode(case[key]) == unicode(value)):
 						testcases.remove(case)
+		log.debug("Got %d testcases total" % len(testcases))
 		for case in testcases:
 			yield TestCase(parent_testproject=self._parent_testproject,**case)
 
@@ -774,7 +774,7 @@ class TestCase(TestlinkObject):
 		self.steps = [TestCase.Step(**s) for s in steps]
 
 		# TestCase Preconditions
-		self.preconditions = Testlink.parse(preconditions)
+		self.preconditions = preconditions
 
 	def getLastExecutionResult(self,testplanid):
 		resp = Testlink._api.getLastExecutionResult(testplanid,self.id,self.external_id)
