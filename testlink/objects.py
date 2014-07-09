@@ -137,6 +137,7 @@ class Testlink(object):
 					for key,value in params.items():
 						if not (unicode(project[key]) == unicode(value)):
 							response.remove(project)
+							break
 			for project in response:
 				yield TestProject(**project)
 
@@ -250,6 +251,7 @@ class TestProject(TestlinkObject):
 					for key,value in params.items():
 						if not (unicode(plan[key]) == unicode(value)):
 							response.remove(plan)
+							break
 			for plan in response:
 				yield TestPlan(**plan)
 			
@@ -289,6 +291,7 @@ class TestProject(TestlinkObject):
 					for key,value in params.items():
 						if value and not (unicode(suite[key]) == unicode(value)):
 							response.remove(suite)
+							break
 
 			# Built TestSuite objects here to simplify recursive search
 			first_level_suites = [TestSuite(parent_testproject=self,**suite) for suite in response]
@@ -371,6 +374,7 @@ class TestPlan(TestlinkObject):
 				for key,value in params.items():
 					if value and not (unicode(build[key]) == unicode(value)):
 						response.remove(build)
+						break
 		for build in response:
 			yield Build(**build)
 
@@ -393,6 +397,7 @@ class TestPlan(TestlinkObject):
 				for key,value in params.items():
 					if value and not (unicode(platform[key]) == unicode(value)):
 						response.remove(platform)
+						break
 		for platform in response:
 			yield Platform(**platform)
 		
@@ -472,6 +477,7 @@ class TestPlan(TestlinkObject):
 				for key,value in params.items():
 					if value and not (unicode(case[key]) == unicode(value)):
 						testcases.remove(case)
+						break
 		log.debug("Got %d testcases total" % len(testcases))
 		for case in testcases:
 			yield TestCase(parent_testproject=self._parent_testproject,**case)
@@ -548,6 +554,7 @@ class TestSuite(TestlinkObject):
 				for key,value in params.items():
 					if value and not (unicode(suite[key]) == unicode(value)):
 						response.remove(suite)
+						break
 
 		# Built TestSuite object here to simplify recursive search
 		sub_suites = [TestSuite(parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in response]
@@ -577,6 +584,7 @@ class TestSuite(TestlinkObject):
 				for key,value in params.items():
 					if value and not (unicode(case[key]) == unicode(value)):
 						response.remove(case)
+						break
 		for case in response:
 			yield TestCase(parent_testproject=self._parent_testproject,parent_testsuite=self,**case)
 
