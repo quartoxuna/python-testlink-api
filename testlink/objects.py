@@ -57,6 +57,8 @@ class CustomFieldDetails:
 class DefaultParser(HTMLParser.HTMLParser):
 	"""Default parser for XML-RPC responses. Translates HTML-Entities to readable characters."""
 	def feed(self,data):
+		if not data:
+			data = ""
 		# Replace blanks (&nbsp;) before using the unescape
 		# method, because it would result in unicode blank (\x0a)
 		return HTMLParser.HTMLParser.unescape(self,data.replace("&nbsp;",' '))
@@ -156,7 +158,7 @@ class TestlinkObject:
 		@type name: str
 		@keyword kwargs: Additonal attributes
 		"""
-		self.id = int(id)
+		self.id = int(id) if id else id
 		self.name = DefaultParser().feed(name)
 
 	def __str__(self):
