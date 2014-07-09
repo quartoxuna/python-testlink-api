@@ -11,6 +11,7 @@ import re
 import xmlrpclib
 import datetime
 import copy
+import HTMLParser
 
 from .api import TestlinkAPI
 from .log import tl_log as log
@@ -53,6 +54,13 @@ class CustomFieldDetails:
 	"""
 	VALUE_ONLY = 'value'
 
+class DefaultParser(HTMLParser.HTMLParser):
+	"""Default parser for XML-RPC responses. Translates HTML-Entities to readable characters."""
+	def feed(self,data):
+		# Replace blanks (&nbsp;) before using the unescape
+		# method, because it would result in unicode blank (\x0a)
+		return HTMLParser.HTMLParser.unescape(self,data.replace("&nbsp;",' '))
+
 class Testlink(object):
 	"""Testlink Server implementation
 	@cvar _api: Used API instance
@@ -65,9 +73,8 @@ class Testlink(object):
 	"""
 
 	_api = None
-	_parsers = [DefaultParser]
 
-	def __init__(self,url,devkey,*parsers):
+	def __init__(self,url,devkey):
 		"""Initializes the Testlink Server object
 		@param url: Testlink URL
 		@type url: str
@@ -87,10 +94,6 @@ class Testlink(object):
 
 		# Set devkey globally
 		Testlink._api.devkey = devkey
-
-		# Set parsers
-		self._parsers = list(parsers)
-
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
@@ -135,17 +138,6 @@ class Testlink(object):
 			for project in response:
 				yield TestProject(**project)
 
-	@classmethod
-	def setParser(cls,*parsers):
-		cls._parsers = list(parsers)
-
-	@classmethod
-	def parse(cls,data):
-		res = data
-		for parser in cls._parsers:
-			res = parser().feed(res)
-		return res.next()
-
 class TestlinkObject:
 	"""Abstract Testlink Object
 	@ivar id: Internal Testlink Id of the object
@@ -165,7 +157,7 @@ class TestlinkObject:
 		@keyword kwargs: Additonal attributes
 		"""
 		self.id = int(id)
-		self.name = Testlink.parse(name)
+		self.name = DefaultParser().feed(name)
 
 	def __str__(self):
 		return str(self.name)
@@ -222,8 +214,8 @@ class TestProject(TestlinkObject):
 			**kwargs\
 		):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = Testlink.parse(notes)
-		self.prefix = Testlink.parse(prefix)
+		self.notes = DefaultParser().feed(notes)
+		self.prefix = DefaultParser().feed(prefix)
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -231,7 +223,7 @@ class TestProject(TestlinkObject):
 		self.automation = bool(opt['automationEnabled'])
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
-		self.color = Testlink.parse(color)
+		self.color = DefaultParser().feed(color)
 
 
 	def getTestPlan(self,name=None,**params):
@@ -352,7 +344,7 @@ class TestPlan(TestlinkObject):
 			**kwargs
 		):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = Testlink.parse(notes)
+		self.notes = DefaultParser().feed(notes)
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self._parent_testproject = parent_testproject
@@ -492,7 +484,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = Testlink.parse(notes)
+		self.notes = DefaultParser().feed(notes)
 
 
 class Platform(TestlinkObject):
@@ -505,7 +497,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.notes = Testlink.parse(notes)
+		self.notes = DefaultParser().feed(notes)
 
 
 class TestSuite(TestlinkObject):
@@ -518,7 +510,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,**kwargs):
 		TestlinkObject.__init__(self,id,name)
-		self.details = Testlink.parse(details)
+		self.details = DefaultParser().feed(details)
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
@@ -673,10 +665,10 @@ class TestCase(TestlinkObject):
 			):
 			self.id = int(id)
 			self.number = int(step_number)
-			self.actions = Testlink.parse(actions)
+			self.actions = DefaultParser().feed(actions)
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
-			self.results = Testlink.parse(expected_results)
+			self.results = DefaultParser().feed(expected_results)
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
@@ -732,7 +724,7 @@ class TestCase(TestlinkObject):
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
 			self.status = unicode(status)
-			self.notes = Testlink.parse(notes)
+			self.notes = DefaultParser().feed(notes)
 			self.execution_type = int(execution_type)
 			self.execution_ts = date.strptime(str(execution_ts),Execution.DATETIME_FORMAT)
 			self.tester_id = int(tester_id)
@@ -776,7 +768,7 @@ class TestCase(TestlinkObject):
 		):
 		TestlinkObject.__init__(self,tc_id,name)
 		self.executed = bool(executed)
-		self.execution_notes = Testlink.parse(execution_notes)
+		self.execution_notes = DefaultParser().feed(execution_notes)
 		self.execution_order = int(execution_order)
 		self.version = int(version)
 		self.exec_status = unicode(exec_status)
@@ -784,7 +776,7 @@ class TestCase(TestlinkObject):
 		self.importance = int(importance)
 		self.execution_type = int(execution_type)
 		self.active = bool(active)
-		self.summary = Testlink.parse(summary)
+		self.summary = DefaultParser().feed(summary)
 		self.platform_id = int(platform_id)
 		self.external_id = int(tc_external_id) if tc_external_id else external_id
 		self._parent_testproject = parent_testproject
@@ -795,7 +787,7 @@ class TestCase(TestlinkObject):
 		self.steps = [TestCase.Step(**s) for s in steps]
 
 		# TestCase Preconditions
-		self.preconditions = preconditions
+		self.preconditions = DefaultParser().feed(preconditions)
 
 	def getLastExecutionResult(self,testplanid):
 		resp = Testlink._api.getLastExecutionResult(testplanid,self.id,self.external_id)
