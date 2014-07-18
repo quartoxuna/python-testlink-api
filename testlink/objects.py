@@ -15,7 +15,6 @@ import HTMLParser
 
 from .api import TestlinkAPI
 from .log import tl_log as log
-from .parsers import DefaultParser
 
 class ExecutionType:
 	"""Enumeration for execution types
