@@ -185,6 +185,36 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self.query("tl.doesUserExist", devKey=devkey, user=user)
 
+	def getUserByLogin(self, user, devkey=None):
+		"""Returns user information for specified user
+		@since: Testlink 1.9.8
+
+		@param devkey: Testlink devloper key
+		@type devkey: str
+		@param user: Login name
+		@type user: str
+		@returns: User Information array
+		@rtype: dict
+		"""
+		return self.query("tl.getUserByLogin", \
+				devKey = devkey, \
+				user = user )
+
+	def getUserByID(self, userid, devkey=None):
+		"""Returns user information for specified user
+		@since: Testlink 1.9.8
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param userid: The internal ID of the user
+		@type userid: int
+		@returns: User Information array
+		@rtype: dict
+		"""
+		return self.query("tl.getUserByID", \
+				devKey = devkey, \
+				userid = userid )
+
 
 	def getFullPath(self, nodeid, devkey=None):
 		"""Returns the full path of an object
@@ -669,6 +699,51 @@ class Testlink_XML_RPC_API(object):
 					order                  = order,           \
 					checkduplicatedname    = checkduplicates, \
 					actiononduplicatedname = actiononduplicate )
+
+	def updateTestCase(self, testcaseexternalid, version=None, testcasename=None, summary=None, preconditions=None, steps=None, importance=None, executiontype=None, status=None, estimatedexecduration=None, user=None, devkey=None):
+		"""Updates a specified TestCase
+		@since: Testlink 1.9.8
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testcaseexternalid: The external ID of the TestCase (PREFIX-NUMBER)
+		@type testcaseexternalid: str
+		@param version: <OPTIONAL> The version of the TestCase
+		@type version: int
+		@param testcasename: <OPTIONAL> The name of the TestCase
+		@type testcasename: str
+		@param summary: <OPTIONAL> The summary of the TestCase
+		@type summary: str
+		@param preconditions: <OPTIONAL> The preconditions of the TestCase
+		@type preconditions: str
+		@param steps: <OPTIONAL> The steps of the TestCase
+		@type steps: list
+		@param importance: <OPTIONAL> The importance of the TestCase
+		@type importance: int
+		@param executiontype: <OPTIONAL> The execution type of the TestCase
+		@type executiontype: int
+		@param status: <OPTIONAL> The status of the TestCase
+		@type status: ???
+		@param estimatedexecduration: <OPTIONAL> The estimated duration for execution
+		@type estimatedexecduration: ???
+		@param user: <OPTIONAL> The user used as updater. If not given, will be set to user that request update.
+		@type user: str
+		@returns: Server response
+		@rtype: dict/list/???
+		"""
+		return self.query("tl.updateTestCase", \
+					devKey = devkey, \
+					testcaseexternalid = testcaseexternalid, \
+					version = version, \
+					testcasename = testcasename, \
+					summary = summary, \
+					preconditions = preconditions, \
+					steps = steps, \
+					importance = importance, \
+					executiontype = executiontype, \
+					status = status, \
+					estimatedexecduration = estimatedexecduration, \
+					user = user )
 
 
 	def setTestCaseExecutionType(self, testcaseexternalid, version, testprojectid, executiontype, devkey=None):
