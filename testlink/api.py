@@ -151,14 +151,7 @@ class Testlink_XML_RPC_API(object):
 		@rtype: str
 		"""
 		return self.query("tl.sayHello")
-
-
-	def ping(self):
-		"""Alias for 'sayHello'
-		@returns: 'Hello!'
-		@rtype: str
-		"""
-		return self.query("tl.ping")
+	ping = sayHello
 
 
 	def repeat(self,value):
@@ -444,6 +437,7 @@ class Testlink_XML_RPC_API(object):
 					platformname       = platformname,       \
 					customfields       = customfields,       \
 					overwrite          = overwrite )
+	setTestCaseExecutionResult = reportTCResult
 
 	
 	def getLastExecutionResult(self, testplanid, testcaseid=None, testcaseexternalid=None, devkey=None):
@@ -464,7 +458,7 @@ class Testlink_XML_RPC_API(object):
 					testplanid         = testplanid, \
 					testcaseid         = testcaseid, \
 					testcaseexternalid = testcaseexternalid )
-	
+
 	
 	def deleteExecution(self, executionid, devkey=None):
 		"""Deletes a specific exexution result
