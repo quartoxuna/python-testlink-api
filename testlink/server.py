@@ -9,7 +9,7 @@
 # IMPORTS
 import time
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from .log import tl_log as log
+from .  import log
 
 class TestlinkXMLRPCServer(SimpleXMLRPCServer):
 	"""Testlink conform XML-RPC automation server"""

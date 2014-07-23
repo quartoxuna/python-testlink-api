@@ -13,10 +13,10 @@ import datetime
 import copy
 import HTMLParser
 
+from . import log
 from .api import Testlink_XML_RPC_API
 from .api import InvalidURL
 from .api import NotSupported
-from .log import tl_log as log
 
 class ExecutionType:
 	"""Enumeration for execution types
