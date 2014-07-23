@@ -129,6 +129,14 @@ class Testlink_XML_RPC_API(object):
 	# Raw API methods
 	#
 
+	def testLinkVersion(self):
+		"""Returns Testlink Version String
+		@note: Testlink >=1.9.10
+		@returns: Version String
+		@rtype: str
+		"""
+		return self.query("tl.testLinkVersion")
+
 	def about(self):
 		"""Returns informations about the current Testlink API
 		@returns: 'Testlink API Version: x.x initially written by Asial Brumfield with contributions by Testlink development Team'

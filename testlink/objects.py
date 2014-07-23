@@ -107,21 +107,15 @@ class Testlink(object):
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
-		@return: Version in list format [x,y,z]
-		@rtype: list
+		@return: Version String
+		@rtype: str
 		"""
-		about_str = Testlink._api.about()
-		version_str = re.search(r"(?P<version>\d+(\.{0,1}\d+)+)",about_str).group('version')
-		version = version_str.split('.')
-		# Get Alphas and Betas
-		pre = re.search(r"(Alpha|Beta)\s*(\d+)", about_str)
-		if pre:
-			if pre.group(1)=="Alpha":
-				version.append(0)
-			elif pre.group(1)=="Beta":
-				version.append(1)
-			version.append(pre.group(2))
-		return version
+		# Check for easy API call
+		try:
+			return self._api.testLinkVersion()
+		except NotSupported:
+			about_str = self._api.about()
+			return re.search(r"(?P<version>\d+(\.{0,1}\d+)+)",about_str).group('version')
 
 	def getTestProject(self,name=None,**params):
 		"""Returns generator over TestProjects specified by parameters
