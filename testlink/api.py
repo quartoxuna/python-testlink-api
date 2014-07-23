@@ -131,6 +131,8 @@ class Testlink_XML_RPC_API(object):
 
 	def testLinkVersion(self):
 		"""Returns Testlink Version String
+		@since: Testlink 1.9.9
+
 		@returns: Version String
 		@rtype: str
 		"""
