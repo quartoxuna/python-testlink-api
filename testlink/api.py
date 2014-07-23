@@ -326,6 +326,28 @@ class Testlink_XML_RPC_API(object):
 					testprojectid = projectid )
 
 
+	def getTestPlanCustomFieldDesignValue(self, testplanid, testprojectid, fieldname, devkey=None):
+		"""Returns the value of a specified CustomField for a specified TestPlan
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testplanid: The internal ID of the TestPlan
+		@type testplanid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param fieldname: The internal name of the CustomField
+		@type fieldname: str
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.getTestPlanCustomFieldValue", \
+					devKey = devkey, \
+					customfieldname = fieldname, \
+					testprojectid = testprojectid, \
+					testplanid = testplanid )
+
+
 	def createBuild(self, testplanid, name, notes='', devkey=None):
 		"""Creates a new Build for the specified TestPlan
 		@param devkey: Testlink developer key
@@ -374,6 +396,46 @@ class Testlink_XML_RPC_API(object):
 		return self.query("tl.getBuildsForTestPlan", \
 					devKey     = devkey,   \
 					testplanid = testplanid )
+
+
+	def getExecCountersByBuild(self, testplanid, devkey=None):
+		"""Returns the execution counters for a specified testplan
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testplanid: The internal ID of the TestPlan
+		@type testplanid: int
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.getExecCountersByBuild", \
+					devKey = devkey, \
+					testplanid = testplanid )
+
+
+	def createPlatform(self, testprojectname, platformname, notes="", devkey=None):
+		"""Creates a new Platform for the specified testproject
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testprojectname: The Name of the parent TestProject
+		@type testprojectname: str
+		@param platformname: The Name of the new Platform
+		@type platformname: str
+		@param notes: <OPTIONAL> Additional notes for the new Platform
+		@type notes: str
+		@returns: Server response
+		@rtype: list/dict/???
+
+		@todo: Normalize return type
+		"""
+		return self.query("tl.createPlatform", \
+					devKey = devkey, \
+					testprojectname = testprojectname, \
+					platformname = platformname,  \
+					notes = notes )
 	
 	
 	def getTestPlanPlatforms(self, testplanid, devkey=None):
@@ -607,7 +669,82 @@ class Testlink_XML_RPC_API(object):
 					order                  = order,           \
 					checkduplicatedname    = checkduplicates, \
 					actiononduplicatedname = actiononduplicate )
+
+
+	def setTestCaseExecutionType(self, testcaseexternalid, version, testprojectid, executiontype, devkey=None):
+		"""Updates the execution type for a specified TestCase
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testcaseexternalid: The external ID of the TestCase
+		@type testcaseexternalid: int
+		@param version: The version of the TestCase
+		@type version: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param executiontype: The execution type
+		@type executiontype: testlink.ExecutionType
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.setTestCaseExecutionType", \
+					devKey = devkey, \
+					testcaseexternalid = testcaseexternalid, \
+					version = version, \
+					testprojectid = testprojectid, \
+					executiontype = executiontype )
 	
+
+	def createTestCaseSteps(self, steps, action, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
+		"""Creates a new Step for the specified TestCase, can also be used for upgrade
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param steps: Steps to create, keys are: step_number,actions,expected,results,execution_type
+		@type steps: list
+		@param action: {'create' : If step exist, nothing will be done, 'update' : If step does not exist, will be created, else will be updated, 'push' : NOT IMPLEMENTED}
+		@type action: str
+		@param testcaseid: <OPTIONAL> The internal ID of the TestCase. If not given, external ID must be set.
+		@type testcaseid: int
+		@param testcaseexternalid: <OPTIONAL> The external IF of the TestCase. If not given, internal ID must be set.
+		@type testcaseexternalid: int
+		@param version: <OPTIONAL> Version of the TestCase, If not given, last active version will be used. If all versions are inactive, the latest version will be used.
+		@type version: int
+		@returns: Server response
+		@rtype: dict/list/???
+		"""
+		return self.query("tl.createTestCaseStep",  \
+					devKey = devkey,  \
+					testcaseexternalid = testcaseexternalid, \
+					testcaseid = testcaseid, \
+					version = version, \
+					action = action, \
+					steps = steps )
+
+
+	def deleteTestCaseSteps(self, testcaseexternalid, steps, version=None, devkey=None):
+		"""Deletes specified Steps for the specified TestCase
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		qtype devkey: str
+		@param testcaseexternalid: The external ID of the TestCase
+		@type testcaseexternalid: int
+		@param steps: Step numbers to delete
+		@type steps: list
+		@param version: <OPTIONAL> The version of the TestCase. If not given, the last active version will be used.
+		@type version: int
+		@returns: Server response
+		@rtype: dict/list/???
+		"""
+		return self.query("tl.deleteTestCaseSteps", \
+					devKey = devkey, \
+					testcaseexternalid = testcaseexternalid, \
+					steps = steps, \
+					version = version )
+
 	
 	def getTestCase(self, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
 		"""Returns a single TestCase specified by its ID
@@ -745,7 +882,45 @@ class Testlink_XML_RPC_API(object):
 					platformid         = platformid,         \
 					executionorder     = executionorder,     \
 					urgency            = urgency )
-	
+
+
+	def addPlatformToTestPlan(self, testplanid, platformname, devkey=None):
+		"""Adds a specified platform to a specified testplan
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testplanid: The internal ID of the TestPlan
+		@type testplanid: int
+		@param platformname: The name of the platform to add
+		@type platformname: str
+		@returns: Server response
+		@rtype: dict/list/???
+		"""
+		return self.query("tl.addPlatformToTestPlan", \
+					devKey = devkey, \
+					testplanid = testplanid, \
+					platformname = platformname )
+
+
+	def removePlatformFromTestPlan(self, testplanid, platformname, devkey=None):
+		"""Removes a specified platform from a specified testplan.
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testplanid: The internal ID of the TestPlan
+		@type testplanid: int
+		@param platformname: The name of the platform to remove
+		@type platformname: str
+		@returns: Server response
+		@rtype: dict/list/???
+		"""
+		return self.query("tl.remotePlatformFromTestPlan", \
+					devKey = devkey, \
+					testplanid = testplanid, \
+					platformname = platformname )
+
 	
 	def assignRequirements(self, testcaseexternalid, projectid, requirements, devkey=None):
 		"""Assigns specified Requirements to a specified TestCase
@@ -765,6 +940,72 @@ class Testlink_XML_RPC_API(object):
 					testcaseexternalid = testcaseexternalid, \
 					testprojectid      = projectid,          \
 					requirements       = requirements )
+
+
+	def getReqSpecCustomFieldDesignValue(self, reqspecid, testprojectid, fieldname, devkey=None):
+		"""Returns the value of a specified CustomField for a specified Requirement Specification
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param reqspecid: The internal ID of the Requirement Specification
+		@type reqspecid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param fieldname: The internal name of the CustomField
+		@type fieldname: str
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.getReqSpecCustomFieldDesignValue", \
+					devKey = devkey, \
+					customfieldname = fieldname, \
+					testprojectid = testprojectid, \
+					reqspecid = reqspecid )
+
+
+	def getRequirementCustomFieldDesignValue(self, requirementid, testprojectid, fieldname, devkey=None):
+		"""Returns the value of a specified CustomField for a specified Requirement
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param requirementid: The internal ID of the Requirement
+		@type requirementid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param fieldname: The internal name of the CustomField
+		@type fieldname: str
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.getRequirementCustomFieldDesignValue", \
+					devKey = devkey, \
+					customfieldname = fieldname, \
+					testprojectid = testprojectid, \
+					requirementid = requirementid )
+
+
+	def getTestSuiteCustomFieldDesignValue(self, testsuiteid, testprojectid, fieldname, devkey=None):
+		"""Returns the value of a specified CustomField for a specified TestSuite
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testsuiteid: The internal ID of the TestSuite
+		@type testsuiteid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param fieldname: The internal name of the CustomField
+		@type fieldname: str
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.getTestSuiteCustomFieldDesignValue", \
+					devKey = devkey, \
+					customfieldname = fieldname, \
+					testprojectid = testprojectid, \
+					testsuiteid = testsuiteid )
 	
 	
 	def getTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, projectid, fieldname, details='value', devkey=None):
@@ -791,6 +1032,86 @@ class Testlink_XML_RPC_API(object):
 					testprojectid      = projectid,          \
 					customfieldname    = fieldname,          \
 					details            = details )
+
+
+	def updateTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfields=None, devkey=None):
+		"""Updates values of CustomFields for a specified TestCase
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testcaseexternalid: The external ID of the TestCase
+		@type testcaseexternalid: int
+		@param version: The version of the TestCase
+		@type version: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param customfields: <OPTIONAL> Dictionary containing values using CustomField names as keys
+		@type customfields: dict
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.updateTestCaseCustomFieldDesignValue", \
+					devKey = devkey, \
+					testcaseexternalid = testcaseexternalid, \
+					version = version, \
+					testprojectid = testprojectid, \
+					customfields = customfields )
+
+
+	def getTestCaseCustomFieldExecutionValue(self, executionid, testplanid, version, projectid, fieldname, devkey=None):
+		"""Returns the value of a specified CustomField for a specified Execution
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param executionid: The internal ID of the execution
+		@type executionid: int
+		@param testplanid: The internal ID of the TestPlan
+		@type testplanid: int
+		@param version: The version of the TestCase
+		@type version: int
+		@param projectid: The internal ID of the TestProject
+		@type projectid: int
+		@param fieldname: The inernal name of the CustomField
+		@type fieldname: str
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.getTestCaseCustomFieldExecutionValue", \
+					devKey = devkey, \
+					customfieldname = fieldname, \
+					testprojectid = projectid, \
+					version = version, \
+					executionid = executionid, \
+					testplanid = testplanid )
+
+	def getTestCaseCustomFieldTestPlanDesignValue(self, linkid, testplanid, version, testcaseid, fieldname, devkey=None):
+		"""Returns the value of the specified CustomField for a specified TestCase within a specified TestPlan
+		@since: Testlink 1.9.4
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param linkid: The internal ID of the link?
+		@type linkid: int
+		@param testplanid: The internal ID of the TestPlan
+		@type testplanid: int
+		@param version; The version of the testcase
+		@type version: int
+		@param testcaseid: The internal ID of the TestCase
+		@type testcaseid: int
+		@param fieldname: The internal name of the CustomField
+		@type fieldname: str
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.getTestCaseCustomFieldTestPlanDesignValue", \
+					devKey = devkey, \
+					customfieldname = fieldname, \
+					testcaseid = testcaseid, \
+					version = version, \
+					testplanid = testplanid, \
+					linkid = linkid )
 	
 
 	def uploadAttachment(self, objectid, objecttable, name, mime, content, title=None, description=None, devkey=None):
