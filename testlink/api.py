@@ -131,11 +131,11 @@ class Testlink_XML_RPC_API(object):
 
 	def testLinkVersion(self):
 		"""Returns Testlink Version String
-		@note: Testlink >=1.9.10
 		@returns: Version String
 		@rtype: str
 		"""
 		return self.query("tl.testLinkVersion")
+
 
 	def about(self):
 		"""Returns informations about the current Testlink API
@@ -748,7 +748,7 @@ class Testlink_XML_RPC_API(object):
 	
 	
 	def assignRequirements(self, testcaseexternalid, projectid, requirements, devkey=None):
-		""""Assigns specified Requirements to a specified TestCase
+		"""Assigns specified Requirements to a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param testcaseexternalid: The external ID of the TestCase
@@ -792,7 +792,7 @@ class Testlink_XML_RPC_API(object):
 					customfieldname    = fieldname,          \
 					details            = details )
 	
-	
+
 	def uploadAttachment(self, objectid, objecttable, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified object
 		@param devkey: Testlink developer key
