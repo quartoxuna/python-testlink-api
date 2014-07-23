@@ -47,28 +47,51 @@ class APIError(Exception):
 		self.errorString = message
 
 
-class TestlinkAPI(object):
-	"""Raw Testlink API
-	Documented wrapper around Testlink API
-	Raises user friendly exceptions"""
+class InvalidURL(Exception):
+	"""To be raised, if the given URL is not valid"""
+	pass
 
-	def __init__(self,uri):
+
+class Testlink_XML_RPC_API(object):
+	"""Testlink XML-RPC API
+	@cvar RPC_PATHS: Paths to Testlink's XML-RPC endpoint
+	@type RPC_PATHS: list
+	@ivar _proxy: Used ServerProxy instance
+	@type _proxy: xmlrpclib.ServerProxy
+	@ivar _devkey: Used Developer Key
+	@type _devkey: str
+	"""
+
+	RPC_PATHS = ["/lib/api/xmlrpc.php","/lib/api/xmlrpc/v1/xmlrpc.php"]
+
+	def __init__(self,url):
 		"""Initialize the TestlinkAPI
-		@param uri: URI of Testlink XML-RPC server implementation
-		@type uri: str
-		@raises xmlrpclib.Error: The given proxy is not valid
+		@param url: Testlink URL
+		@type url: str
+		@raises InvalidURL: The given URL is not valid
 		"""
-		try:
-			self.__proxy = xmlrpclib.ServerProxy(uri,encoding='UTF-8',allow_none=True )
-		except IOError:
-			raise xmlrpclib.Error(uri)
-		self.devkey = None
+		self._proxy = None
+		self._devkey = None
+		# Check for each possible RPC path,
+		# if a connection can be made
+		for path in self.RPC_PATHS:
+			tmp = url
+			try:
+				if not tmp.endswith(path):
+					tmp += path
+				self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
+				# Check if URL ends on XML-RPC endpoint
+				self._proxy.system.listMethods()
+				return
+			except Exception:
+				pass
+		raise InvalidURL(url)
 
 	def __str__(self):
-		return str(self.__proxy)
+		return str(self._proxy)
 
 	def __repr__(self):
-		return str(self.__proxy)
+		return str(self._proxy)
 
 	def query(self,method,**kwargs):
 		"""Remote calls a method on the server
@@ -77,19 +100,18 @@ class TestlinkAPI(object):
 		@raise NotSupported: Called method is not supported by Testlink
 		@raise APIError: Testlink API server side error
 		"""
-
-		# Add class wide devkey if available
-		if self.devkey:
-			kwargs['devKey'] = self.devkey
+		# Use class wide devkey if not given
+		if not ('devKey' in kwargs and kwargs['devKey']) or kwargs['devKey'].strip() == "":
+			kwargs['devKey'] = self._devkey
 
 		# Check for empty method name
 		if not method or method.strip()=="":
-			raise NotSupported("<EMPTY>")
+			raise NotSupported("Empty method name")
 
 		log.debug("Query: %s(%s)" % (str(method),str(kwargs)) )
 		try:
 			# Call the actual method
-			fn = getattr(self.__proxy,method)
+			fn = getattr(self._proxy,method)
 			resp = fn(kwargs)
 			log.debug("Response: %s" % str(resp))
 		except xmlrpclib.Fault,f:

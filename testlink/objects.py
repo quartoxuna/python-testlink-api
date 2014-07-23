@@ -13,7 +13,9 @@ import datetime
 import copy
 import HTMLParser
 
-from .api import TestlinkAPI
+from .api import Testlink_XML_RPC_API
+from .api import InvalidURL
+from .api import NotSupported
 from .log import tl_log as log
 
 class ExecutionType:
@@ -62,20 +64,26 @@ class DefaultParser(HTMLParser.HTMLParser):
 		# method, because it would result in unicode blank (\x0a)
 		return HTMLParser.HTMLParser.unescape(self,data.replace("&nbsp;",' '))
 
+class APIType:
+	"""APIType enum
+	@cvar XML_RPC: Use XML-RPC API
+	@type XML_RPC: int
+	@cvar REST: Use REST API
+	@type REST: int
+	"""
+	XML_RPC = 0
+	REST = 1
+
+
 class Testlink(object):
 	"""Testlink Server implementation
-	@cvar _api: Used API instance
-	@type _api: TestlinkAPI
-
 	@ivar _url: URL of connected Testlink
 	@type _url: str
 	@ivar _devkey: Valid Testlink developer key
 	@type _devkey: str
 	"""
 
-	_api = None
-
-	def __init__(self,url,devkey):
+	def __init__(self,url,devkey,api=APIType.XML_RPC):
 		"""Initializes the Testlink Server object
 		@param url: Testlink URL
 		@type url: str
@@ -83,18 +91,19 @@ class Testlink(object):
 		@type devkey: str
 		"""
 		self._url = url
-
-		# URI modification for API initiation
-		if not url.endswith('/lib/api/xmlrpc.php'):
-			if not url.endswith('/'):
-				url += '/'
-			url += 'lib/api/xmlrpc.php'
+		self._devkey = devkey
 
 		# Init raw API
-		Testlink._api = TestlinkAPI(url)
+		if api == APIType.XML_RPC:
+			self._api = Testlink_XML_RPC_API(url)
+		elif api == APIType.REST:
+			raise NotImplementedError()
+
+		# Log API Information
+		log.info("Testlink API Version '%s' at '%s'" % (self.getVersion(),url) )
 
 		# Set devkey globally
-		Testlink._api.devkey = devkey
+		self._api.devkey = devkey
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
