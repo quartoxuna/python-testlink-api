@@ -746,7 +746,7 @@ class TestCase(TestlinkObject):
 
 	class Precondition(object):
 		"""Testlink TestCase Precondition representation
-		@ivar: condition: Name of the condition
+		@ivar condition: Name of the condition
 		@type conditions: str
 		@ivar subconditions: Subconditions of the condition
 		@type subconditions: list
