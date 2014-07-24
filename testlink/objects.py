@@ -20,6 +20,7 @@ from .enums import DuplicateStrategy
 from .enums import ImportanceLevel
 from .enums import ExecutionType
 from .enums import CustomFieldDetails
+from .parsers import DefaultParser
 
 class Testlink(object):
 	"""Testlink Server implementation
