@@ -408,7 +408,7 @@ class Testlink_XML_RPC_API(object):
 
 	def createPlatform(self, testprojectname, platformname, notes="", devkey=None):
 		"""Creates a new Platform for the specified testproject
-		@since: Testlink 1.9.4
+		@since: Testlink 1.9.6
 
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -428,6 +428,21 @@ class Testlink_XML_RPC_API(object):
 					testprojectname = testprojectname, \
 					platformname = platformname,  \
 					notes = notes )
+
+	def getProjectPlatforms(self, testprojectid, devkey=None):
+		"""Returns all platforms for a specified TestProject
+		@since: Testlink 1.9.6
+
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@returns: Server response
+		@rtype: list/dict/???
+		"""
+		return self.query("tl.getProjectPlatforms", \
+					devKey = devkey, \
+					testprojectid = testprojectid )
 	
 	
 	def getTestPlanPlatforms(self, testplanid, devkey=None):
@@ -923,7 +938,7 @@ class Testlink_XML_RPC_API(object):
 
 	def addPlatformToTestPlan(self, testplanid, platformname, devkey=None):
 		"""Adds a specified platform to a specified testplan
-		@since: Testlink 1.9.4
+		@since: Testlink 1.9.6
 
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -942,7 +957,7 @@ class Testlink_XML_RPC_API(object):
 
 	def removePlatformFromTestPlan(self, testplanid, platformname, devkey=None):
 		"""Removes a specified platform from a specified testplan.
-		@since: Testlink 1.9.4
+		@since: Testlink 1.9.6
 
 		@param devkey: Testlink developer key
 		@type devkey: str
