@@ -256,12 +256,12 @@ class TestProject(TestlinkObject):
 							break
 
 			# Built TestSuite objects here to simplify recursive search
-			first_level_suites = [TestSuite(parent_testproject=self,**suite) for suite in response]
+			first_level_suites = [TestSuite(api=self._api,parent_testproject=self,**suite) for suite in response]
 			for suite in first_level_suites:
 				yield suite
 			# Recursively search in sub suites
 			for suite in first_level_suites:
-				for s in suite.getTestSuite(api=self._api,**params):
+				for s in suite.getTestSuite(**params):
 					yield s
 
 	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
