@@ -9,48 +9,8 @@
 # IMPORTS
 import xmlrpclib
 from . import log
-
-class NotSupported(Exception):
-	"""To be raised, if Testlink does not support the requested method
-	@cvar errorName: Method, that is not supported
-	@type errorName: str
-	@cvar errorCode: Default xmlrpclib.Fault code -32601
-	@type errorCode: int
-	"""
-	errorCode = -32601
-	def __init__(self,fn_name):
-		"""Initializes the Exception
-		@param fn_name: Name of function causing the error
-		@type fn_name: str
-		"""
-		Exception.__init__(self,fn_name)
-		self.errorName = fn_name
-
-
-class APIError(Exception):
-	"""To be raised, if the Testlink API returns an error struct
-	@note: Default error struct {'code':'123','message':'foo'}
-	@ivar errorCode: Testlink API Error Code
-	@type errorCode: int
-	@ivar errorString: Testlink API Error String
-	@type errorString: str
-	"""
-	def __init__(self,code,message):
-		"""Initializes the Exception
-		@param code: Testlink API Error Code
-		@type code: int
-		@param message: Testlink API Error String
-		@type message: str
-		"""
-		Exception.__init__(self,message)
-		self.errorCode = code
-		self.errorString = message
-
-
-class InvalidURL(Exception):
-	"""To be raised, if the given URL is not valid"""
-	pass
-
+from .exceptions import NotSupported
+from .exceptions import APIError
 
 class Testlink_XML_RPC_API(object):
 	"""Testlink XML-RPC API
@@ -118,7 +78,7 @@ class Testlink_XML_RPC_API(object):
 			if (f.faultCode == NotSupported.errorCode):
 				raise NotSupported(method)
 		else:
-			# Check for API error {{'code': 123, 'message': foo}}
+			# Check for API error [{'code': 123, 'message': foo}]
 			if isinstance(resp,list) and len(resp)==1:
 				tmp = resp[0]
 				if (('code' in tmp) and ('message' in tmp)):

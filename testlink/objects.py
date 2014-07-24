@@ -8,72 +8,18 @@
 
 # IMPORTS
 import re
-import xmlrpclib
-import datetime
 import copy
-import HTMLParser
+from datetime import date
 
 from . import log
 from .api import Testlink_XML_RPC_API
-from .api import InvalidURL
-from .api import NotSupported
-
-class ExecutionType:
-	"""Enumeration for execution types
-	@cvar MANUAL: Manual execution
-	@type MANUAL: int
-	@cvar AUTOMATIC: Automamtic execution
-	@type AUTOMATIC: int
-	"""
-	MANUAL = 1
-	AUTOMATIC = 2
-
-class ImportanceLevel:
-	"""Enumeration for importance levels
-	@cvar HIGH: High Importance
-	@type HIGH: int
-	@cvar MEDIUM: Medium Importance
-	@type MEDIUM: int
-	@cvar LOW: Low Importance
-	@type LOW: int
-	"""
-	HIGH = 3
-	MEDIUM = 2
-	LOW = 1
-
-class DuplicateStrategy:
-	"""Enumeration for duplicate handling strategies
-	@cvar BLOCK: Block on duplicate
-	@type BLOCK: str
-	"""
-	BLOCK = 'block'
-
-class CustomFieldDetails:
-	"""Enumeration for custom field detail options
-	@cvar VALUE_ONLY: Only the value of the custom field
-	@type VALUE_ONLY: str
-	"""
-	VALUE_ONLY = 'value'
-
-class DefaultParser(HTMLParser.HTMLParser):
-	"""Default parser for XML-RPC responses. Translates HTML-Entities to readable characters."""
-	def feed(self,data):
-		if not data:
-			data = ""
-		# Replace blanks (&nbsp;) before using the unescape
-		# method, because it would result in unicode blank (\x0a)
-		return HTMLParser.HTMLParser.unescape(self,data.replace("&nbsp;",' '))
-
-class APIType:
-	"""APIType enum
-	@cvar XML_RPC: Use XML-RPC API
-	@type XML_RPC: int
-	@cvar REST: Use REST API
-	@type REST: int
-	"""
-	XML_RPC = 0
-	REST = 1
-
+from .exceptions import InvalidURL
+from .exceptions import NotSupported
+from .enums import APIType
+from .enums import DuplicateStrategy
+from .enums import ImportanceLevel
+from .enums import ExecutionType
+from .enums import CustomFieldDetails
 
 class Testlink(object):
 	"""Testlink Server implementation

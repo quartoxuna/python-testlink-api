@@ -6,12 +6,9 @@
 @summary: Testlink API Wrapper
 """
 
+# IMPORTS
 import logging
-from .server import *
-from .api import *
-from .objects import *
-
-# Define logger
+# Define logger before importing the rest
 log = logging.getLogger('testlink')
 # Backwards compatibility for Python < 2.7
 try:
@@ -20,9 +17,27 @@ try:
 except ImportError:
 	pass
 
+# EXPORTS
+from .exceptions import *
+from .enums import *
+#from .parsers import *
+from .server import *
+from .api import *
+from .objects import *
+
 __all__ = [\
-		'TestlinkXMLRPCServer',\
-		'NotSupported','APIError','Testlink_XML_RPC_API',\
-		'ExecutionType','ImportanceLevel','DuplicateStrategy','CustomFieldDetails',\
-		'Testlink','TestProject','TestSuite','TestCase','TestPlan','Build','Platform'\
+		# exceptions.py
+		'NotSupported','APIError','InvalidURL', \
+
+		# enums.py
+		'ExecutionType','ImportanceLevel','DuplicateStrategy','CustomFieldDetails','APIType', \
+
+		# server.py
+		'TestlinkXMLRPCServer', \
+
+		# xml_rpc_api.py
+		'Testlink_XML_RPC_API', \
+
+		# objects.py
+		'Testlink','TestProject','TestSuite','TestCase','TestPlan','Build','Platform' \
 	]

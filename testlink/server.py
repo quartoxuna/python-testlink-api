@@ -7,7 +7,6 @@
 """
 
 # IMPORTS
-import time
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from .  import log
 
