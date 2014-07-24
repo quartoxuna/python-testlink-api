@@ -53,7 +53,7 @@ class Testlink_XML_RPC_API(object):
 	def __repr__(self):
 		return str(self._proxy)
 
-	def query(self,method,**kwargs):
+	def _query(self,method,**kwargs):
 		"""Remote calls a method on the server
 		@param method: Method to call
 		@type method: str
@@ -96,7 +96,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Version String
 		@rtype: str
 		"""
-		return self.query("tl.testLinkVersion")
+		return self._query("tl.testLinkVersion")
 
 
 	def about(self):
@@ -104,7 +104,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: 'Testlink API Version: x.x initially written by Asial Brumfield with contributions by Testlink development Team'
 		@rtype: str
 		"""
-		return self.query("tl.about")
+		return self._query("tl.about")
 
 
 	def sayHello(self):
@@ -112,7 +112,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: 'Hello!'
 		@rtype: str
 		"""
-		return self.query("tl.sayHello")
+		return self._query("tl.sayHello")
 	ping = sayHello
 
 
@@ -123,7 +123,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: String 'You said: ' and the given value
 		@rtype: mixed
 		"""
-		return self.query("tl.repeat", str=str(value))
+		return self._query("tl.repeat", str=str(value))
 
 
 	def checkDevKey(self,devkey=None):
@@ -133,7 +133,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: True/False
 		@rtype: bool
 		"""
-		return self.query("tl.checkDevKey", devKey=devkey)
+		return self._query("tl.checkDevKey", devKey=devkey)
 
 
 	def doesUserExist(self, user, devkey=None):
@@ -145,7 +145,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: True/False
 		@rtype: bool
 		"""
-		return self.query("tl.doesUserExist", devKey=devkey, user=user)
+		return self._query("tl.doesUserExist", devKey=devkey, user=user)
 
 	def getUserByLogin(self, user, devkey=None):
 		"""Returns user information for specified user
@@ -158,7 +158,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: User Information array
 		@rtype: dict
 		"""
-		return self.query("tl.getUserByLogin", \
+		return self._query("tl.getUserByLogin", \
 				devKey = devkey, \
 				user = user )
 
@@ -173,7 +173,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: User Information array
 		@rtype: dict
 		"""
-		return self.query("tl.getUserByID", \
+		return self._query("tl.getUserByID", \
 				devKey = devkey, \
 				userid = userid )
 
@@ -187,7 +187,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Hierarchical path of the object
 		@rtype: str
 		"""
-		return self.query("tl.getFullPath", devKey=devkey, nodeID=nodeid)
+		return self._query("tl.getFullPath", devKey=devkey, nodeID=nodeid)
 
 
 	def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False, priority=False, automation=False, inventory=False, devkey=None):
@@ -226,7 +226,7 @@ class Testlink_XML_RPC_API(object):
 			'inventoryEnabled': inventory
 			}
 
-		return self.query("tl.createTestProject", \
+		return self._query("tl.createTestProject", \
 					devKey  = devkey,   \
 					name    = name,     \
 					prefix  = prefix,   \
@@ -243,7 +243,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: TestProjects as list of dicts
 		@rtype: list
 		"""
-		return self.query("tl.getProjects", devKey=devkey)
+		return self._query("tl.getProjects", devKey=devkey)
 
 
 	def getTestProjectByName(self, name, devkey=None):
@@ -255,7 +255,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestProject
 		@rtype: dict
 		"""
-		return self.query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
+		return self._query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
 
 
 	def createTestPlan(self, name, projectname, notes='', active=True, public=True, devkey=None):
@@ -278,7 +278,7 @@ class Testlink_XML_RPC_API(object):
 		@todo: Refactor optional arguments -> static values?
 		@todo: Specify return value
 		"""
-		return self.query("tl.createTestPlan",              \
+		return self._query("tl.createTestPlan",              \
 					devKey          = devkey,     \
 					testplanname    = name,       \
 					testprojectname = projectname,\
@@ -298,7 +298,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestPlan
 		@rtype: dict
 		"""
-		return self.query("tl.getTestPlanByName",       \
+		return self._query("tl.getTestPlanByName",       \
 					devKey          = devkey, \
 					testplanname    = name,   \
 					testprojectname = projectname )
@@ -313,7 +313,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestPlans
 		@rtype: list
 		"""
-		return self.query("tl.getProjectTestPlans",  \
+		return self._query("tl.getProjectTestPlans",  \
 					devKey       = devkey, \
 					testprojectid = projectid )
 
@@ -333,7 +333,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getTestPlanCustomFieldValue", \
+		return self._query("tl.getTestPlanCustomFieldValue", \
 					devKey = devkey, \
 					customfieldname = fieldname, \
 					testprojectid = testprojectid, \
@@ -355,7 +355,7 @@ class Testlink_XML_RPC_API(object):
 
 		@todo: Specify return value type
 		"""
-		return self.query("tl.createBuild",            \
+		return self._query("tl.createBuild",            \
 					devKey     = devkey,     \
 					testplanid = testplanid, \
 					buildname  = name,       \
@@ -371,7 +371,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching Build
 		@rtype: list
 		"""
-		return self.query("tl.getLatestBuildForTestPlan", \
+		return self._query("tl.getLatestBuildForTestPlan", \
 					devKey     = devkey,        \
 					testplanid = testplanid )
 	
@@ -385,7 +385,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching Builds
 		@rtype: list
 		"""
-		return self.query("tl.getBuildsForTestPlan", \
+		return self._query("tl.getBuildsForTestPlan", \
 					devKey     = devkey,   \
 					testplanid = testplanid )
 
@@ -401,7 +401,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getExecCountersByBuild", \
+		return self._query("tl.getExecCountersByBuild", \
 					devKey = devkey, \
 					testplanid = testplanid )
 
@@ -423,7 +423,7 @@ class Testlink_XML_RPC_API(object):
 
 		@todo: Normalize return type
 		"""
-		return self.query("tl.createPlatform", \
+		return self._query("tl.createPlatform", \
 					devKey = devkey, \
 					testprojectname = testprojectname, \
 					platformname = platformname,  \
@@ -440,7 +440,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getProjectPlatforms", \
+		return self._query("tl.getProjectPlatforms", \
 					devKey = devkey, \
 					testprojectid = testprojectid )
 	
@@ -454,7 +454,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching Platforms
 		@rtype: list
 		"""
-		return self.query("tl.getTestPlanPlatforms", \
+		return self._query("tl.getTestPlanPlatforms", \
 					devKey     = devkey,  \
 					testplanid = testplanid )
 	
@@ -491,7 +491,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.reportTCResult",                         \
+		return self._query("tl.reportTCResult",                         \
 					devKey             = devkey,             \
 					testplanid         = testplanid,         \
 					status             = status,             \
@@ -522,7 +522,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching result
 		@rtype: dict
 		"""
-		return self.query("tl.getLastExecutionResult",         \
+		return self._query("tl.getLastExecutionResult",         \
 					devKey             = devkey,     \
 					testplanid         = testplanid, \
 					testcaseid         = testcaseid, \
@@ -538,7 +538,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.deleteExecution",     \
+		return self._query("tl.deleteExecution",     \
 					devKey      = devkey, \
 					executionid = executionid )
 	
@@ -564,7 +564,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.createTestSuite",                         \
+		return self._query("tl.createTestSuite",                         \
 					devKey                 = devkey,          \
 					testsuitename          = name,            \
 					testprojectid          = testprojectid,   \
@@ -584,7 +584,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestSuite
 		@rtype: dict
 		"""
-		return self.query("tl.getTestSuiteByID",    \
+		return self._query("tl.getTestSuiteByID",    \
 					devKey      = devkey, \
 					testsuiteid = suiteid )
 	
@@ -598,7 +598,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.getTestSuitesForTestSuite", \
+		return self._query("tl.getTestSuitesForTestSuite", \
 					devKey      = devkey,       \
 					testsuiteid = suiteid )
 	
@@ -612,7 +612,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.getFirstLevelTestSuitesForTestProject", \
+		return self._query("tl.getFirstLevelTestSuitesForTestProject", \
 					devKey        = devkey,                 \
 					testprojectid = projectid )
 	
@@ -626,7 +626,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.getTestSuitesForTestPlan", \
+		return self._query("tl.getTestSuitesForTestPlan", \
 					devKey     = devkey,       \
 					testplanid = planid )
 	
@@ -662,7 +662,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.createTestCase",                          \
+		return self._query("tl.createTestCase",                          \
 					devKey                 = devkey,          \
 					testcasename           = name,            \
 					testsuiteid            = suiteid,         \
@@ -708,7 +708,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.updateTestCase", \
+		return self._query("tl.updateTestCase", \
 					devKey = devkey, \
 					testcaseexternalid = testcaseexternalid, \
 					version = version, \
@@ -740,7 +740,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.setTestCaseExecutionType", \
+		return self._query("tl.setTestCaseExecutionType", \
 					devKey = devkey, \
 					testcaseexternalid = testcaseexternalid, \
 					version = version, \
@@ -767,7 +767,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.createTestCaseStep",  \
+		return self._query("tl.createTestCaseStep",  \
 					devKey = devkey,  \
 					testcaseexternalid = testcaseexternalid, \
 					testcaseid = testcaseid, \
@@ -791,7 +791,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.deleteTestCaseSteps", \
+		return self._query("tl.deleteTestCaseSteps", \
 					devKey = devkey, \
 					testcaseexternalid = testcaseexternalid, \
 					steps = steps, \
@@ -811,7 +811,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestCase
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getTestCase",                            \
+		return self._query("tl.getTestCase",                            \
 					devKey             = devkey,             \
 					testcaseid         = testcaseid,         \
 					testcaseexternalid = testcaseexternalid, \
@@ -833,7 +833,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestCase ID
 		@rtype: int?
 		"""
-		return self.query("tl.getTestCaseIDByName",       \
+		return self._query("tl.getTestCaseIDByName",       \
 					devKey           = devkey,  \
 					testcasename     = name,    \
 					testsuitename    = suite,   \
@@ -854,7 +854,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getTestCasesForTestSuite", \
+		return self._query("tl.getTestCasesForTestSuite", \
 					devKey      = devkey,      \
 					testsuiteid = suiteid,     \
 					deep        = deep,        \
@@ -888,7 +888,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getTestCasesForTestPlan",        \
+		return self._query("tl.getTestCasesForTestPlan",        \
 					devKey        = devkey,          \
 					testplanid    = planid,          \
 					testcaseid    = testcaseid,      \
@@ -925,7 +925,7 @@ class Testlink_XML_RPC_API(object):
 
 		@todo: Set valid values for urgency
 		"""
-		return self.query("tl.addTestCaseToTestPlan",                  \
+		return self._query("tl.addTestCaseToTestPlan",                  \
 					devKey             = devkey,             \
 					testprojectid      = projectid,          \
 					testplanid         = planid,             \
@@ -949,7 +949,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.addPlatformToTestPlan", \
+		return self._query("tl.addPlatformToTestPlan", \
 					devKey = devkey, \
 					testplanid = testplanid, \
 					platformname = platformname )
@@ -968,7 +968,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self.query("tl.remotePlatformFromTestPlan", \
+		return self._query("tl.remotePlatformFromTestPlan", \
 					devKey = devkey, \
 					testplanid = testplanid, \
 					platformname = platformname )
@@ -987,7 +987,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.assignRequirements",                     \
+		return self._query("tl.assignRequirements",                     \
 					devKey             = devkey,             \
 					testcaseexternalid = testcaseexternalid, \
 					testprojectid      = projectid,          \
@@ -1009,7 +1009,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getReqSpecCustomFieldDesignValue", \
+		return self._query("tl.getReqSpecCustomFieldDesignValue", \
 					devKey = devkey, \
 					customfieldname = fieldname, \
 					testprojectid = testprojectid, \
@@ -1031,7 +1031,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getRequirementCustomFieldDesignValue", \
+		return self._query("tl.getRequirementCustomFieldDesignValue", \
 					devKey = devkey, \
 					customfieldname = fieldname, \
 					testprojectid = testprojectid, \
@@ -1053,7 +1053,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getTestSuiteCustomFieldDesignValue", \
+		return self._query("tl.getTestSuiteCustomFieldDesignValue", \
 					devKey = devkey, \
 					customfieldname = fieldname, \
 					testprojectid = testprojectid, \
@@ -1077,7 +1077,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Single value, information about specified field, information about all fields
 		@rtype: mixed
 		"""
-		return self.query("tl.getTestCaseCustomFieldDesignValue",      \
+		return self._query("tl.getTestCaseCustomFieldDesignValue",      \
 					devKey             = devkey,             \
 					testcaseexternalid = testcaseexternalid, \
 					version            = version,            \
@@ -1103,7 +1103,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.updateTestCaseCustomFieldDesignValue", \
+		return self._query("tl.updateTestCaseCustomFieldDesignValue", \
 					devKey = devkey, \
 					testcaseexternalid = testcaseexternalid, \
 					version = version, \
@@ -1130,7 +1130,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getTestCaseCustomFieldExecutionValue", \
+		return self._query("tl.getTestCaseCustomFieldExecutionValue", \
 					devKey = devkey, \
 					customfieldname = fieldname, \
 					testprojectid = projectid, \
@@ -1157,7 +1157,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self.query("tl.getTestCaseCustomFieldTestPlanDesignValue", \
+		return self._query("tl.getTestCaseCustomFieldTestPlanDesignValue", \
 					devKey = devkey, \
 					customfieldname = fieldname, \
 					testcaseid = testcaseid, \
@@ -1187,7 +1187,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.uploadAttachment",         \
+		return self._query("tl.uploadAttachment",         \
 					devKey      = devkey,      \
 					fkid        = objectid,    \
 					fktable     = objecttable, \
@@ -1217,7 +1217,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.uploadRequirementSpecificationAttachment", \
+		return self._query("tl.uploadRequirementSpecificationAttachment", \
 					devKey      = devkey,                      \
 					reqspecid   = reqspecid,                   \
 					filename    = name,                        \
@@ -1246,7 +1246,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.uploadRequirementAttachment", \
+		return self._query("tl.uploadRequirementAttachment", \
 					devKey         = devkey,      \
 					requirementsid = reqid,       \
 					filename       = name,        \
@@ -1275,7 +1275,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.uploadTestProjectAttachment", \
+		return self._query("tl.uploadTestProjectAttachment", \
 					devKey        = devkey,       \
 					testprojectid = projectid,    \
 					filename      = name,         \
@@ -1304,7 +1304,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.uploadTestSuiteAttachment", \
+		return self._query("tl.uploadTestSuiteAttachment", \
 					devKey      = devkey,       \
 					testsuiteid = suiteid,      \
 					filename    = name,         \
@@ -1333,7 +1333,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.uploadTestCaseAttachment", \
+		return self._query("tl.uploadTestCaseAttachment", \
 					devKey      = devkey,      \
 					testcaseid  = testcaseid,  \
 					filename    = name,        \
@@ -1362,7 +1362,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self.query("tl.uploadExecutionAttachment", \
+		return self._query("tl.uploadExecutionAttachment", \
 					devKey      = devkey,       \
 					executionid = executionid,  \
 					filename    = name,         \
@@ -1383,7 +1383,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching attachments
 		@rtype: dict
 		"""
-		return self.query("tl.getTestCaseAttachments",          \
+		return self._query("tl.getTestCaseAttachments",          \
 					devKey             = devkey,     \
 					testcaseid         = testcaseid, \
 					testcaseexternalid = testcaseexternalid )
