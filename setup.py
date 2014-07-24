@@ -40,7 +40,7 @@ class GenerateDoc(Command):
 
 setup(
 	name='python-testlink_api_wrapper',
-	version='0.9',
+	version='0.10',
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
 	author_email='kai.borowiak@secunet.com',
