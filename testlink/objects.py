@@ -10,6 +10,8 @@
 import re
 import copy
 from datetime import date
+from distutils.version import LooseVersion as Version
+
 
 from . import log
 from .api import Testlink_XML_RPC_API
@@ -52,15 +54,16 @@ class Testlink(object):
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
-		@return: Version String
-		@rtype: str
+		@return: Version struct
+		@rtype: distutils.version.LooseVersion
 		"""
 		# Check for easy API call
 		try:
-			return self._api.testLinkVersion()
+			return Version(self._api.testLinkVersion())
 		except NotSupported:
 			about_str = self._api.about()
-			return re.search(r"(?P<version>\d+(\.{0,1}\d+)+)",about_str).group('version')
+			version_str = re.search(r"(?P<version>\d+(\.{0,1}\d+)+)",about_str).group('version')
+			return Version(version_str)
 
 	def getTestProject(self,name=None,**params):
 		"""Returns generator over TestProjects specified by parameters
