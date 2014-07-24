@@ -77,7 +77,7 @@ class Testlink(object):
 			yield TestProject(**response[0])
 		else:
 			# Filter by specified parameters
-			response = Testlink._api.getProjects()
+			response = self._api.getProjects()
 			if len(params)>0:
 				params['name'] = name
 				for project in copy.copy(response):
@@ -86,7 +86,8 @@ class Testlink(object):
 							response.remove(project)
 							break
 			for project in response:
-				yield TestProject(**project)
+				yield TestProject(api=self._api,**project)
+
 
 class TestlinkObject:
 	"""Abstract Testlink Object
@@ -96,9 +97,9 @@ class TestlinkObject:
 	@type name: str
 	"""
 
-	__slots__ = ("id","name")
+	__slots__ = ("id","name","_api")
 
-	def __init__(self,id=-1,name=""):
+	def __init__(self,id=-1,name="",api=None):
 		"""Initialises base Testlink object
 		@param id: Internal Testlink Id of the object
 		@type id: int
@@ -108,6 +109,7 @@ class TestlinkObject:
 		"""
 		self.id = int(id) if id else id
 		self.name = DefaultParser().feed(name)
+		self._api = api
 
 	def __str__(self):
 		return str(self.name)
@@ -142,7 +144,7 @@ class TestProject(TestlinkObject):
 	@ivar color: Assigned color of TestProject
 	@type color: str"""
 
-	__slots__ = ("id","name","notes","prefix","active","public","requirements_enabled",\
+	__slots__ = ("_api","id","name","notes","prefix","active","public","requirements_enabled",\
 			"priority_enabled","automation_enabled","inventory_enabled","tc_count","color")
 
 	def __init__(
@@ -161,9 +163,10 @@ class TestProject(TestlinkObject):
 				'inventoryEnabled':False
 			},\
 			color="",\
+			api=None,\
 			**kwargs\
 		):
-		TestlinkObject.__init__(self,id,name)
+		TestlinkObject.__init__(self,id,name,api)
 		self.notes = DefaultParser().feed(notes)
 		self.prefix = DefaultParser().feed(prefix)
 		self.active = bool(active)
@@ -174,7 +177,6 @@ class TestProject(TestlinkObject):
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_count = int(tc_counter)
 		self.color = DefaultParser().feed(color)
-
 
 	def getTestPlan(self,name=None,**params):
 		"""Returns generator over TestPlans specified by parameters
@@ -187,11 +189,11 @@ class TestProject(TestlinkObject):
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
-			response = Testlink._api.getTestPlanByName(name,projectname=self.name)
-			yield TestPlan(**response[0])
+			response = self._api.getTestPlanByName(name,projectname=self.name)
+			yield TestPlan(api=self._api,**response[0])
 		else:
 			# Filter by specified parameters
-			response = Testlink._api.getProjectTestPlans(self.id)
+			response = self._api.getProjectTestPlans(self.id)
 			if len(params)>0:
 				params['name'] = name
 				for plan in copy.copy(response):
@@ -200,7 +202,7 @@ class TestProject(TestlinkObject):
 							response.remove(plan)
 							break
 			for plan in response:
-				yield TestPlan(**plan)
+				yield TestPlan(api=self._api,**plan)
 			
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
@@ -217,18 +219,18 @@ class TestProject(TestlinkObject):
 		# Check if simple API call can be done
 		# Since the ID is unique, all other params can be ignored
 		if id:
-			response = Testlink._api.getTestSuiteById(id)
-			yield TestSuite(**response)
+			response = self._api.getTestSuiteById(id)
+			yield TestSuite(api=self._api,**response)
 		else:
 			# Filter by specified parameters
-			response = Testlink._api.getFirstLevelTestSuitesForTestProject(self.id)
+			response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
 
 			# Bug !
 			# Since the API call to getFirstLevelTestSuites does NOT
 			# return the details, we have to get it with another API call
 			# This has to be done BEFORE the acutal filtering because otherwise
 			# we could not filter by the details
-			response = [Testlink._api.getTestSuiteById(suite['id']) for suite in response]
+			response = [self._api.getTestSuiteById(suite['id']) for suite in response]
 
 			# Filter by specified parameters
 			if len(params)>0 or name:
@@ -246,7 +248,7 @@ class TestProject(TestlinkObject):
 				yield suite
 			# Recursively search in sub suites
 			for suite in first_level_suites:
-				for s in suite.getTestSuite(**params):
+				for s in suite.getTestSuite(api=self._api,**params):
 					yield s
 
 	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
@@ -264,7 +266,7 @@ class TestProject(TestlinkObject):
 			raise TypeError(str(suite.__class__.__name__))
 
 		# Create TestSuite
-		Testlink._api.createTestSuite(
+		self._api.createTestSuite(
 					name = suite.name,\
 					testprojectid = self.id,\
 					details = suite.details,\
@@ -283,7 +285,7 @@ class TestPlan(TestlinkObject):
 	@type public: bool
 	"""
 
-	__slots__ = ("id","name","notes","active","public")
+	__slots__ = ("_api","id","name","notes","active","public")
 
 	def __init__(
 			self,\
@@ -293,9 +295,10 @@ class TestPlan(TestlinkObject):
 			is_public=False,\
 			active=False,\
 			parent_testproject=None,\
+			api=None,\
 			**kwargs
 		):
-		TestlinkObject.__init__(self,id,name)
+		TestlinkObject.__init__(self,id,name,api)
 		self.notes = DefaultParser().feed(notes)
 		self.active = bool(active)
 		self.public = bool(is_public)
@@ -312,7 +315,7 @@ class TestPlan(TestlinkObject):
 		@rtype: generator
 		"""
 		# No simple API call possible, get all
-		response = Testlink._api.getBuildsForTestPlan(self.id)
+		response = self._api.getBuildsForTestPlan(self.id)
 
 		# Filter by specified params
 		if len(params)>0 or name:
@@ -323,7 +326,7 @@ class TestPlan(TestlinkObject):
 						response.remove(build)
 						break
 		for build in response:
-			yield Build(**build)
+			yield Build(api=self._api,**build)
 
 	def getPlatform(self,name=None,**params):
 		"""Returns generator over Platforms specified by parameters
@@ -335,7 +338,7 @@ class TestPlan(TestlinkObject):
 		@rtype: generator
 		"""
 		# No simple API call possible, get all
-		response = Testlink._api.getTestPlanPlatforms(self.id)
+		response = self._api.getTestPlanPlatforms(self.id)
 
 		# Filter by specified params
 		if len(params)>0 or name:
@@ -346,11 +349,10 @@ class TestPlan(TestlinkObject):
 						response.remove(platform)
 						break
 		for platform in response:
-			yield Platform(**platform)
+			yield Platform(api=self._api,**platform)
 		
 	def getTestSuite(self,name=None,**params):
 		"""Return generator TestSuites specified by parameters"""
-
 		raise NotImplementedError()
 
 	def getTestCase(
@@ -392,7 +394,7 @@ class TestPlan(TestlinkObject):
 		"""
 		# Get all available TestCases
 		# Use all possible API params to speed up API call
-		response = Testlink._api.getTestCasesForTestPlan(\
+		response = self._api.getTestCasesForTestPlan(\
 								self.id,\
 								id,\
 								buildid,\
@@ -425,9 +427,8 @@ class TestPlan(TestlinkObject):
 					if value and not (unicode(case[key]) == unicode(value)):
 						testcases.remove(case)
 						break
-		log.debug("Got %d testcases total" % len(testcases))
 		for case in testcases:
-			yield TestCase(parent_testproject=self._parent_testproject,**case)
+			yield TestCase(api=self._api,parent_testproject=self._parent_testproject,**case)
 
 class Build(TestlinkObject):
 	"""Testlink Build representation
@@ -435,10 +436,10 @@ class Build(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("id","name","notes")
+	__slots__ = ("_api","id","name","notes")
 
-	def __init__(self,id=None,name=None,notes=None,**kwargs):
-		TestlinkObject.__init__(self,id,name)
+	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
+		TestlinkObject.__init__(self,id,name,api)
 		self.notes = DefaultParser().feed(notes)
 
 
@@ -448,10 +449,10 @@ class Platform(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("id","name","notes")
+	__slots__ = ("_api","id","name","notes")
 
-	def __init__(self,id=None,name=None,notes=None,**kwargs):
-		TestlinkObject.__init__(self,id,name)
+	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
+		TestlinkObject.__init__(self,id,name,api)
 		self.notes = DefaultParser().feed(notes)
 
 
@@ -461,10 +462,10 @@ class TestSuite(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("id","name","details","_parent_testproject","_parent_testsuite")
+	__slots__ = ("_api","id","name","details","_parent_testproject","_parent_testsuite")
 
-	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,**kwargs):
-		TestlinkObject.__init__(self,id,name)
+	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,api=None,**kwargs):
+		TestlinkObject.__init__(self,id,name,api)
 		self.details = DefaultParser().feed(details)
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
@@ -481,7 +482,7 @@ class TestSuite(TestlinkObject):
 		# Simple API call could be done, but
 		# we want to ensure, that only sub suites of this
 		# particular suite are involved, so no API call here
-		response = Testlink._api.getTestSuitesForTestSuite(self.id)
+		response = self._api.getTestSuitesForTestSuite(self.id)
 
 		# Normalize result
 		if isinstance(response,str) and response.strip() == "":
@@ -489,7 +490,7 @@ class TestSuite(TestlinkObject):
 		elif isinstance(response,dict):
 			# Check for nested dict
 			if isinstance(response[response.keys()[0]],dict):
-				response = [Testlink._api.getTestSuiteById(suite_id) for suite_id in response.keys()]
+				response = [self._api.getTestSuiteById(suite_id) for suite_id in response.keys()]
 			else:
 				response = [response]
 
@@ -504,7 +505,7 @@ class TestSuite(TestlinkObject):
 						break
 
 		# Built TestSuite object here to simplify recursive search
-		sub_suites = [TestSuite(parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in response]
+		sub_suites = [TestSuite(api=self._api,parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in response]
 		for suite in sub_suites:
 			yield suite
 		# Recursively search in sub suites
@@ -522,7 +523,7 @@ class TestSuite(TestlinkObject):
 		@rtype: list
 		"""
 		# No simple API call possible, get all
-		response = Testlink._api.getTestCasesForTestSuite(self.id,details='full')
+		response = self._api.getTestCasesForTestSuite(self.id,details='full')
 
 		# Filter by specified parameters
 		if len(params)>0 or name:
@@ -533,7 +534,7 @@ class TestSuite(TestlinkObject):
 						response.remove(case)
 						break
 		for case in response:
-			yield TestCase(parent_testproject=self._parent_testproject,parent_testsuite=self,**case)
+			yield TestCase(api=self._api,parent_testproject=self._parent_testproject,parent_testsuite=self,**case)
 
 	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite within the current TestSuite
@@ -550,7 +551,7 @@ class TestSuite(TestlinkObject):
 			raise TypeError(str(suite.__class__.__name__))
 
 		# Create TestSuite
-		Testlink._api.createTestSuite(
+		self._api.createTestSuite(
 					name = suite.name,\
 					testprojectid = self.__testproject_id,\
 					details = suite.details,\
@@ -588,7 +589,7 @@ class TestCase(TestlinkObject):
 	@type external_id: int
 	"""
 
-	__slots__ = ("id","name","executed","execution_notes","execution_order","version",\
+	__slots__ = ("_api","id","name","executed","execution_notes","execution_order","version",\
 			"exec_status","status","importance","execution_type","active","summary",\
 			"platform_id","external_id","_parent_testproject","_parent_testsuite")
 
@@ -687,7 +688,7 @@ class TestCase(TestlinkObject):
 			self.tester_id = int(tester_id)
 
 		def delete(self):
-			Testlink._api.deleteExecution(self.id)
+			self._api.deleteExecution(self.id)
 
 	class Precondition(object):
 		"""Testlink TestCase Precondition representation
@@ -721,9 +722,10 @@ class TestCase(TestlinkObject):
 			steps=[],\
 			parent_testproject=None,\
 			parent_testsuite=None,\
+			api=None,\
 			**kwargs\
 		):
-		TestlinkObject.__init__(self,tc_id,name)
+		TestlinkObject.__init__(self,tc_id,name,api)
 		self.executed = bool(executed)
 		self.execution_notes = DefaultParser().feed(execution_notes)
 		self.execution_order = int(execution_order)
@@ -747,16 +749,16 @@ class TestCase(TestlinkObject):
 		self.preconditions = DefaultParser().feed(preconditions)
 
 	def getLastExecutionResult(self,testplanid):
-		resp = Testlink._api.getLastExecutionResult(testplanid,self.id,self.external_id)
+		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id)
 		return TestCase.Execution(**resp)
 
 	def deleteLastExecution(self,testplanid):
 		# Update last execution
 		last = self.getLastExecutionResult(testplanid)
-		Testlink._api.deleteExecution(last.id)
+		self._api.deleteExecution(last.id)
 
 	def reportResult(self,testplanid,status,notes=None,overwrite=False):
-		Testlink._api.reportTCResult(
+		self._api.reportTCResult(
 			testplanid = testplanid,\
 			status = status,\
 			testcaseid = self.id,\
@@ -767,7 +769,7 @@ class TestCase(TestlinkObject):
 		)
 
 	def getAttachments(self):
-		return Testlink._api.getTestCaseAttachments(self.id,self.external_id)
+		return self._api.getTestCaseAttachments(self.id,self.external_id)
 
 	def getCustomFieldDesignValue(self,fieldname,details=CustomFieldDetails.VALUE_ONLY):
 		"""Returns the custom field design value for the specified custom field
@@ -778,7 +780,7 @@ class TestCase(TestlinkObject):
 		@returns: Custom Field value or informations
 		@rtype: mixed
 		"""
-		return Testlink._api.getTestCaseCustomFieldDesignValue(
+		return self._api.getTestCaseCustomFieldDesignValue(
 					testcaseexternalid = "%s-%s" % (str(self._parent_testproject.prefix),str(self.external_id)),\
 					version = self.version,\
 					projectid = self._parent_testproject.id,\
