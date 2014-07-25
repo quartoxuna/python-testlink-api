@@ -9,9 +9,8 @@
 # IMPORTS
 import re
 import copy
-from datetime import date
+from datetime import datetime
 from distutils.version import LooseVersion as Version
-
 
 from . import log
 from .api import Testlink_XML_RPC_API
@@ -23,6 +22,9 @@ from .enums import ImportanceLevel
 from .enums import ExecutionType
 from .enums import CustomFieldDetails
 from .parsers import DefaultParser
+
+# Global datetime format
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 class Testlink(object):
 	"""Testlink Server implementation
@@ -671,8 +673,6 @@ class TestCase(TestlinkObject):
 		__slots__ = ("id","testplan_id","platform_id","build_id","tcversion_id","tcversion_number","status",\
 				"notes","execution_type","execution_ts","tester_id")
 
-		DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-
 		def __init__(
 				self,\
 				id=-1,\
@@ -684,7 +684,7 @@ class TestCase(TestlinkObject):
 				status='',\
 				notes="",\
 				execution_type=ExecutionType.MANUAL,\
-				execution_ts="0000-00-00 00:00:00",\
+				execution_ts=str(datetime.min),\
 				tester_id=-1,\
 				**kwargs\
 			):
@@ -697,7 +697,10 @@ class TestCase(TestlinkObject):
 			self.status = unicode(status)
 			self.notes = DefaultParser().feed(notes)
 			self.execution_type = int(execution_type)
-			self.execution_ts = date.strptime(str(execution_ts),Execution.DATETIME_FORMAT)
+			try:
+				self.execution_ts = datetime.strptime(str(execution_ts),DATETIME_FORMAT)
+			except ValueError:
+				self.execution_ts = datetime.min
 			self.tester_id = int(tester_id)
 
 		def delete(self):
@@ -716,7 +719,8 @@ class TestCase(TestlinkObject):
 
 	def __init__(
 			self,\
-			tc_id=-1,\
+			id=-1,\
+			tcversion_id=-1,\
 			name="",\
 			executed=False,\
 			execution_notes="",\
@@ -733,12 +737,14 @@ class TestCase(TestlinkObject):
 			tc_external_id=None,\
 			external_id=-1,\
 			steps=[],\
+			creation_ts=str(datetime.min),\
+			modification_ts=str(datetime.min),\
 			parent_testproject=None,\
 			parent_testsuite=None,\
 			api=None,\
 			**kwargs\
 		):
-		TestlinkObject.__init__(self,tc_id,name,api)
+		TestlinkObject.__init__(self,id,name,api)
 		self.executed = bool(executed)
 		self.execution_notes = DefaultParser().feed(execution_notes)
 		self.execution_order = int(execution_order)
@@ -751,6 +757,15 @@ class TestCase(TestlinkObject):
 		self.summary = DefaultParser().feed(summary)
 		self.platform_id = int(platform_id)
 		self.external_id = int(tc_external_id) if tc_external_id else external_id
+		self.tcversion_id = int(tcversion_id)
+		try:
+			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
+		except ValueError:
+			self.creation_ts = datetime.min
+		try:
+			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
+		except ValueError:
+			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
