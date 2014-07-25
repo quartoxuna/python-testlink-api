@@ -154,13 +154,13 @@ class TestProject(TestlinkObject):
 	@type automation_enabled: bool
 	@ivar inventory_enabled: Inventory Feature flag
 	@type inventory_enabled: bool
-	@ivar tc_count: Current amount of TestCases in TestProject
-	@type tc_count: int
+	@ivar tc_counter: Current amount of TestCases in TestProject
+	@type tc_counter: int
 	@ivar color: Assigned color of TestProject
 	@type color: str"""
 
 	__slots__ = ("_api","id","name","notes","prefix","active","public","requirements_enabled",\
-			"priority_enabled","automation_enabled","inventory_enabled","tc_count","color")
+			"priority_enabled","automation_enabled","inventory_enabled","tc_counter","color")
 
 	def __init__(
 			self,\
@@ -190,7 +190,7 @@ class TestProject(TestlinkObject):
 		self.priority = bool(opt['testPriorityEnabled'])
 		self.automation = bool(opt['automationEnabled'])
 		self.inventory = bool(opt['inventoryEnabled'])
-		self.tc_count = int(tc_counter)
+		self.tc_counter = int(tc_counter)
 		self.color = DefaultParser().feed(color)
 
 	def getTestPlan(self,name=None,**params):
