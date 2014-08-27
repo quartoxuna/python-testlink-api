@@ -11,6 +11,7 @@ import xmlrpclib
 from .log import log
 from .exceptions import NotSupported
 from .exceptions import APIError
+from .exceptions import InvalidURL
 
 class Testlink_XML_RPC_API(object):
 	"""Testlink XML-RPC API
