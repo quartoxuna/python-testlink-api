@@ -8,7 +8,7 @@
 
 # IMPORTS
 import xmlrpclib
-from . import log
+from .log import log
 from .exceptions import NotSupported
 from .exceptions import APIError
 

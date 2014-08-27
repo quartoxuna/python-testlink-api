@@ -12,7 +12,7 @@ import copy
 from datetime import datetime
 from distutils.version import LooseVersion as Version
 
-from . import log
+from .log import log
 from .api import Testlink_XML_RPC_API
 from .exceptions import InvalidURL
 from .exceptions import NotSupported

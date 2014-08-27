@@ -8,7 +8,7 @@
 
 # IMPORTS
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from .  import log
+from .log import log
 
 class TestlinkXMLRPCServer(SimpleXMLRPCServer):
 	"""Testlink conform XML-RPC automation server"""
