@@ -7,12 +7,12 @@
 """
 
 # EXPORTS
-from .exceptions import *
-from .enums import *
-#from .parsers import *
-from .server import *
-from .api import *
-from .objects import *
+from exceptions import *
+from enums import *
+#from parsers import *
+from server import *
+from api import *
+from objects import *
 
 __all__ = [\
 		# exceptions.py

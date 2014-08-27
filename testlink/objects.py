@@ -12,16 +12,16 @@ import copy
 from datetime import datetime
 from distutils.version import LooseVersion as Version
 
-from .log import log
-from .api import Testlink_XML_RPC_API
-from .exceptions import InvalidURL
-from .exceptions import NotSupported
-from .enums import APIType
-from .enums import DuplicateStrategy
-from .enums import ImportanceLevel
-from .enums import ExecutionType
-from .enums import CustomFieldDetails
-from .parsers import DefaultParser
+from log import log
+from api import Testlink_XML_RPC_API
+from exceptions import InvalidURL
+from exceptions import NotSupported
+from enums import APIType
+from enums import DuplicateStrategy
+from enums import ImportanceLevel
+from enums import ExecutionType
+from enums import CustomFieldDetails
+from parsers import DefaultParser
 
 # Global datetime format
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -122,7 +122,10 @@ class TestlinkObject:
 		@type name: str
 		@keyword kwargs: Additonal attributes
 		"""
-		self.id = int(id) if id else id
+		if id:
+			self.id = int(id)
+		else:
+			self.id = id
 		self.name = DefaultParser().feed(name)
 		self._api = api
 
@@ -756,15 +759,18 @@ class TestCase(TestlinkObject):
 		self.active = bool(active)
 		self.summary = DefaultParser().feed(summary)
 		self.platform_id = int(platform_id)
-		self.external_id = int(tc_external_id) if tc_external_id else external_id
+		if tc_external_id:
+			self.external_id = int(tc_external_id)
+		else:
+			self.external_id = tc_external_id
 		self.tcversion_id = int(tcversion_id)
 		try:
 			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
-		except ValueError:
+		except (ValueError,AttributeError): # ValueError by method, AttributeError if Python < 2.5
 			self.creation_ts = datetime.min
 		try:
 			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
-		except ValueError:
+		except (ValueError,AttributeError): # ValueError by method, AttributeError if Python < 2.5
 			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite

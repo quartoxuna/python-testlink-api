@@ -3,7 +3,7 @@
 
 """
 @author: Kai Borowiak
-@summary: Testlink API Wrapper
+@summary: Logging initialization
 """
 
 # IMPORTS
