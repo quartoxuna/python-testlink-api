@@ -103,6 +103,26 @@ class Testlink(object):
 			for project in response:
 				yield TestProject(api=self._api,**project)
 
+	def create(self,obj,*args,**kwargs):
+		"""Create a new object using the current connected Testlink.
+		@param obj: Object to create
+		@type obj: mixed
+		@param args: Additional arguments for object creation
+		@type args: list
+		@param kwargs: Additional arguments for object creation
+		@type kwargs: dict
+		@raises TypeError: Unknown object type
+		"""
+		# Dispatch creation calls
+		if isinstance(obj,TestProject):
+			TestProject.create(self,obj,*args,**kwargs)
+		elif isinstance(obj,TestSuite):
+			TestSuite.create(self,obj,*args,**kwargs)
+		elif isinstance(obj,TestCase):
+			TestCase.create(self,obj,*args,**kwargs)
+		else:
+			raise TypeError(str(obj))
+
 
 class TestlinkObject:
 	"""Abstract Testlink Object
@@ -271,27 +291,62 @@ class TestProject(TestlinkObject):
 				for s in suite.getTestSuite(**params):
 					yield s
 
-	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
-		"""Creates a new TestSuite in the current TestProject
-		@param suite: TestSuite to create
-		@type suite: TestSuite
-		@param order: Order of the new TestSuite within parent object
-		@type order: int
-		@param on_duplicate: Action on duplicate (Default: DuplicateStrategy.BLOCK)
-		@type on_duplicate: DuplicateStrategy
-		@raises TypeError: Specified suite is not of type TestSuite
+	def getTestCase(self,name=None,id=None,external_id=None,recursive=True,**params):
+		"""Returns generator over TestCases specified by parameters
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param id: The internal ID of the TestCase
+		@type id: int
+		@param external_id: The external ID of the TestCase
+		@type external_id: int
+		@param recursive: Enable recursive search
+		@type recursive: bool
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: generator
 		"""
-		# Check for correct type
-		if not isinstance(suite,TestSuite):
-			raise TypeError(str(suite.__class__.__name__))
+		# Check if simple API calls can be done
+		# Since the ID is unique, try to get it in any case
+		if name and not id:
+			response = self._api.getTestCaseIdByName(name,project=self.name)
+			# If we got more than one TestCase, ignore the name
+			if len(response)==1:
+				id = response[0]['id']
 
-		# Create TestSuite
-		self._api.createTestSuite(
-					name = suite.name,\
-					testprojectid = self.id,\
-					details = suite.details,\
-					order = order,\
-					actiononduplicate = on_duplicate\
+		# If we have the id or external id, try to get the testcase by that
+		if id or external_id:
+			if external_id:
+				ext = "%s-%s" % (str(self.prefix),str(external_id))
+			else:
+				ext = None
+			response = self._api.getTestCase(id,ext)
+			# Server response is a list
+			if len(response)==1:
+				response = response[0]
+			yield TestCase(api=self._api,parent_testproject=self,**response)
+		else:
+			# Get all TestCases for the TestProject
+			raise NotImplementedError("Cannot get all TestCases for a TestProject yet")
+
+	@staticmethod
+	def create(tl,project,*args,**kwargs):
+		"""Creates the specified TestProject for the specified Testlink instance.
+		@param tl: Used Testlink instance
+		@type tl: Testlink
+		@param project: Used TestProject
+		@type project: TestProject
+		"""
+		response = tl._api.createTestProject(
+					name = project.name,
+					prefix = project.prefix,
+					notes = project.notes,
+					active = project.active,
+					public = project.public,
+					requirements = project.requirements,
+					priority = project.priority,
+					automation = project.automation,
+					inventory = project.inventory
 				)
 
 
@@ -556,26 +611,19 @@ class TestSuite(TestlinkObject):
 		for case in response:
 			yield TestCase(api=self._api,parent_testproject=self._parent_testproject,parent_testsuite=self,**case)
 
-	def create_test_suite(self,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
-		"""Creates a new TestSuite within the current TestSuite
-		@param suite: TestSuite to create
-		@type suite: TestSuite
-		@param order: Order of the new TestSuite within parent object
-		@type order: int
-		@param on_duplicate: Action on duplicate (Default: DuplicateStrategy.BLOCK)
-		@type on_duplicate: DuplicateStrategy
-		@raises TypeError: Specified suite is not of type TestSuite
+	@staticmethod
+	def create(tl,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
+		"""Creates the specified TestSuite for the specified Testlink instance.
+		@param tl: Used Testlink instance
+		@type tl: Testlink
+		@param project: Used TestProject
+		@type project: TestProject
 		"""
-		# Check for correct type
-		if not isinstance(suite,TestSuite):
-			raise TypeError(str(suite.__class__.__name__))
-
-		# Create TestSuite
-		self._api.createTestSuite(
+		response = tl._api.createTestSuite(
 					name = suite.name,\
 					testprojectid = self.__testproject_id,\
 					details = suite.details,\
-					parentid = self.id,\
+					parentid = suite.__parent_testsuite.id,\
 					order = order,\
 					actiononduplicate = on_duplicate\
 				)
@@ -823,3 +871,25 @@ class TestCase(TestlinkObject):
 					fieldname = fieldname,\
 					details = details\
 				)
+
+	@staticmethod
+	def create(tl,case,order=0,on_duplicate=DuplicateStrategy.BLOCK):
+		"""Creates the specified TestCase for the specified Testlink instance.
+		@param tl: Used Testlink instance
+		@type tl: Testlink
+		@param case: Used TestCase
+		@type case: TestCase
+		"""
+		response = tl._api.createTestCase(
+						name = case.name,
+						suiteid = case.__parent_testsuite.id,
+						projectid = case.__parent_testproject.id,
+						author = case.author,
+						summary = case.summary,
+						steps = case.steps,
+						preconditions = case.preconditions,
+						importance = case.importance,
+						execution = case.execution,
+						order = order,
+						actiononduplicate = on_duplicate
+					)
