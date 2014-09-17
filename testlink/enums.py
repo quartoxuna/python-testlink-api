@@ -35,6 +35,8 @@ class DuplicateStrategy:
 	@cvar BLOCK: Block on duplicate
 	@type BLOCK: str
 	"""
+	NEW_VERSION = 'create_new_version'
+	GENERATE_NEW = 'generate_new'
 	BLOCK = 'block'
 
 class CustomFieldDetails:
