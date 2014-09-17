@@ -227,6 +227,8 @@ class TestProject(TestlinkObject):
 		"""Returns generator over TestSuites specified by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
+		@param id: The internal ID of the TestSuite
+		@type id: int
 		@param recursive: Enable recursive search
 		@type recursive: bool
 		@param params: Other params for TestSuite
