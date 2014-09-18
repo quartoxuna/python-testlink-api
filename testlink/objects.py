@@ -115,16 +115,16 @@ class Testlink(object):
 		"""
 		# Dispatch creation calls
 		if isinstance(obj,TestProject):
-			TestProject.create(self,obj,*args,**kwargs)
+			return TestProject.create(self,obj,*args,**kwargs)
 		elif isinstance(obj,TestSuite):
-			TestSuite.create(self,obj,*args,**kwargs)
+			return TestSuite.create(self,obj,*args,**kwargs)
 		elif isinstance(obj,TestCase):
-			TestCase.create(self,obj,*args,**kwargs)
+			return TestCase.create(self,obj,*args,**kwargs)
 		else:
 			raise TypeError(str(obj))
 
 
-class TestlinkObject:
+class TestlinkObject(object):
 	"""Abstract Testlink Object
 	@ivar id: Internal Testlink Id of the object
 	@type id: int
@@ -134,7 +134,7 @@ class TestlinkObject:
 
 	__slots__ = ("id","name","_api")
 
-	def __init__(self,id=-1,name="",api=None):
+	def __init__(self,id=None,name="",api=None):
 		"""Initialises base Testlink object
 		@param id: Internal Testlink Id of the object
 		@type id: int
@@ -142,7 +142,7 @@ class TestlinkObject:
 		@type name: str
 		@keyword kwargs: Additonal attributes
 		"""
-		if id:
+		if id is not None:
 			self.id = int(id)
 		else:
 			self.id = id
@@ -157,6 +157,24 @@ class TestlinkObject:
 
 	def __eq__(self,other):
 		return self.id == other.id
+
+	def getTestlink(self):
+		raise NotImplementedError()
+
+	def getTestPlan(self):
+		raise NotImplementedError()
+
+	def getBuild(self):
+		raise NotImplementedError()
+
+	def getPlatform(self):
+		raise NotImplementedError()
+
+	def getTestSuite(self):
+		raise NotImplementedError()
+
+	def getTestCase(self):
+		raise NotImplementedError()
 
 
 class TestProject(TestlinkObject):
@@ -182,8 +200,8 @@ class TestProject(TestlinkObject):
 	@ivar color: Assigned color of TestProject
 	@type color: str"""
 
-	__slots__ = ("_api","id","name","notes","prefix","active","public","requirements_enabled",\
-			"priority_enabled","automation_enabled","inventory_enabled","tc_counter","color")
+	__slots__ = ("notes","prefix","active","public","requirements",\
+			"priority","automation","inventory","tc_counter","color")
 
 	def __init__(
 			self,\
@@ -241,7 +259,6 @@ class TestProject(TestlinkObject):
 							break
 			for plan in response:
 				yield TestPlan(api=self._api,**plan)
-			
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Returns generator over TestSuites specified by parameters
@@ -324,7 +341,7 @@ class TestProject(TestlinkObject):
 			# Server response is a list
 			if len(response)==1:
 				response = response[0]
-			yield TestCase(api=self._api,parent_testproject=self,**response)
+			yield TestCase(api=self._api,_parent_testproject=self,**response)
 		else:
 			# Get all TestCases for the TestProject
 			raise NotImplementedError("Cannot get all TestCases for a TestProject yet")
@@ -337,7 +354,7 @@ class TestProject(TestlinkObject):
 		@param project: Used TestProject
 		@type project: TestProject
 		"""
-		response = tl._api.createTestProject(
+		return tl._api.createTestProject(
 					name = project.name,
 					prefix = project.prefix,
 					notes = project.notes,
@@ -349,7 +366,6 @@ class TestProject(TestlinkObject):
 					inventory = project.inventory
 				)
 
-
 class TestPlan(TestlinkObject):
 	"""Testlink TestPlan representation
 	@ivar notes: TestPlan notes
@@ -360,7 +376,7 @@ class TestPlan(TestlinkObject):
 	@type public: bool
 	"""
 
-	__slots__ = ("_api","id","name","notes","active","public")
+	__slots__ = ("notes","active","public","_parent_testproject")
 
 	def __init__(
 			self,\
@@ -505,13 +521,14 @@ class TestPlan(TestlinkObject):
 		for case in testcases:
 			yield TestCase(api=self._api,parent_testproject=self._parent_testproject,**case)
 
+
 class Build(TestlinkObject):
 	"""Testlink Build representation
 	@ivar notes: Build notes
 	@type notes: str
 	"""
 
-	__slots__ = ("_api","id","name","notes")
+	__slots__ = ("notes")
 
 	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
@@ -524,7 +541,7 @@ class Platform(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("_api","id","name","notes")
+	__slots__ = ("notes")
 
 	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
@@ -537,7 +554,7 @@ class TestSuite(TestlinkObject):
 	@type notes: str
 	"""
 
-	__slots__ = ("_api","id","name","details","_parent_testproject","_parent_testsuite")
+	__slots__ = ("details","_parent_testproject","_parent_testsuite")
 
 	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
@@ -619,14 +636,25 @@ class TestSuite(TestlinkObject):
 		@param project: Used TestProject
 		@type project: TestProject
 		"""
-		response = tl._api.createTestSuite(
-					name = suite.name,\
-					testprojectid = self.__testproject_id,\
-					details = suite.details,\
-					parentid = suite.__parent_testsuite.id,\
-					order = order,\
-					actiononduplicate = on_duplicate\
-				)
+		kwargs = {
+				'name' : suite.name,
+				'testprojectid' : suite._parent_testproject.id,
+				'details' : suite.details,
+				'order' : order,
+				'actiononduplicate' : on_duplicate,
+				'parentid' : None
+		}
+
+		if suite._parent_testsuite is not None:
+			kwargs['parentid'] = suite._parent_testsuite.id
+
+		response = tl._api.createTestSuite(**kwargs)
+
+		if isinstance(response,list) and len(response)==1:
+			response = response[0]
+
+		return response
+
 
 
 class TestCase(TestlinkObject):
@@ -655,11 +683,9 @@ class TestCase(TestlinkObject):
 	@type platform_id: int
 	@ivar external_id: External ID of the TestCase
 	@type external_id: int
-	"""
 
-	__slots__ = ("_api","id","name","executed","execution_notes","execution_order","version",\
-			"exec_status","status","importance","execution_type","active","summary",\
-			"platform_id","external_id","_parent_testproject","_parent_testsuite")
+	@note: No __slots__ defined, so __dict__ available
+	"""
 
 	class Step(object):
 		"""Testlink TestCase Step representation
@@ -676,25 +702,25 @@ class TestCase(TestlinkObject):
 		@ivar results: Expected result of the step
 		@type results: str
 		"""
-
-		__slots__ = ("id","number","actions","execution_type","active","results")
-
 		def __init__(
 				self,\
 				step_number=1,\
 				actions="",\
 				execution_type=ExecutionType.MANUAL,\
 				active=False,\
-				id=-1,\
+				id=None,\
 				expected_results="",\
 				**kwargs\
 			):
-			self.id = int(id)
-			self.number = int(step_number)
+			if id is not None:
+				self.id = int(id)
+			else:
+				self.id = id
+			self.step_number = int(step_number)
 			self.actions = DefaultParser().feed(actions)
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
-			self.results = DefaultParser().feed(expected_results)
+			self.expected_results = DefaultParser().feed(expected_results)
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
@@ -770,67 +796,153 @@ class TestCase(TestlinkObject):
 			self.condition = condition
 			self.subconditions = [TestCase.Precondition(*sub) for sub in subs]
 
+
 	def __init__(
-			self,\
-			id=-1,\
-			tcversion_id=-1,\
-			name="",\
-			executed=False,\
-			execution_notes="",\
-			execution_order=-1,\
-			version=0,\
-			exec_status="",\
-			status="",\
-			importance=ImportanceLevel.LOW,\
-			execution_type=ExecutionType.MANUAL,\
-			active=False,\
-			summary="",\
-			preconditions="",\
-			platform_id=-1,\
-			tc_external_id=None,\
-			external_id=-1,\
-			steps=[],\
-			creation_ts=str(datetime.min),\
-			modification_ts=str(datetime.min),\
-			parent_testproject=None,\
-			parent_testsuite=None,\
-			api=None,\
-			**kwargs\
-		):
-		TestlinkObject.__init__(self,id,name,api)
-		self.executed = bool(executed)
-		self.execution_notes = DefaultParser().feed(execution_notes)
-		self.execution_order = int(execution_order)
-		self.version = int(version)
-		self.exec_status = unicode(exec_status)
-		self.status = unicode(status)
-		self.importance = int(importance)
-		self.execution_type = int(execution_type)
-		self.active = bool(active)
-		self.summary = DefaultParser().feed(summary)
-		self.platform_id = int(platform_id)
-		if tc_external_id:
-			self.external_id = int(tc_external_id)
-		else:
-			self.external_id = tc_external_id
-		self.tcversion_id = int(tcversion_id)
-		try:
-			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
-		except (ValueError,AttributeError): # ValueError by method, AttributeError if Python < 2.5
-			self.creation_ts = datetime.min
-		try:
-			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
-		except (ValueError,AttributeError): # ValueError by method, AttributeError if Python < 2.5
-			self.modification_ts = datetime.min
-		self._parent_testproject = parent_testproject
-		self._parent_testsuite = parent_testsuite
+			self,
+			name=None,
+			version=1,
+			status=None,
+			importance=ImportanceLevel.MEDIUM,
+			execution_type=ExecutionType.MANUAL,
+			preconditions="",
+			summary="",
+			active=True,
+			steps=[],
+			api=None,
+			_parent_testproject=None,
+			_parent_testsuite=None,
+			customfields={},
+			**kwargs
+			):
+		"""Initialises a new TestCase with the specified parameters.
+		@param name: The name of the TestCase
+		@type name: str
+		@param version: The version of the TestCase
+		@type version: int
+		@param status: The status of the TestCase
+		@type status: int
+		@param importance: The importance of the TestCase
+		@type importance: int
+		@param execution_type: The execution type of the TestCase
+		@type execution_type: int
+		@param preconditions: The preconditions for the TestCase
+		@type preconditions: str
+		@param summary: The summary of the TestCase
+		@type summary: str
+		@param active: Indicator for active TestCase version
+		@type active: bool
 
+		@param _parent_testproject: The parent TestProject of the TestCase
+		@type _parent_testproject: TestProject
+		@param _parent_testsuite: The parent TestSuite of the TestCase
+		@type _parent_testsuite: TestSuite
+		@param customfields: Custom Fields defined for this TestCase
+		@type customfields: dict
 
-		# TestCase Steps
-		self.steps = [TestCase.Step(**s) for s in steps]
+		@note: All other attributes depend on the called API method
+		-------------------------------------------------------------------------------------------
+		| getTestCaseForTestSuite()   | getTestCase()               | getTestCasesForTestPlan()   |
+		|	                      |                             |                             |
+		|  node_order                 |  node_order                 |                             |
+		|  is_open                    |  is_open                    |                             |
+		|  id # Testcase ID           |  id  # Version ID           |                             |
+		|                             |  testcase_id # Testcase ID  |                             |
+		|  node_type_id               |                             |                             |
+		|  layout                     |  layout                     |                             |
+		|  tc_external_id             |  tc_external_id             |                             |
+		|                             |                             |  external_id                |
+		|  parent_id                  |                             |                             |
+		|  version                    |  version                    |  version                    |
+		|  details                    |                             |                             |
+		|  updater_id                 |  updater_id                 |                             |
+		|  status                     |  status                     |  status                     |
+		|  importance                 |  importance                 |  importance                 |
+		|                             |                             |  urgency                    |
+		|                             |                             |  priority                   |
+		|  modification_ts            |  modification_ts            |                             |
+		|  execution_type             |  execution_type             |  execution_type             |
+		|  preconditions              |  preconditions              |  preconditions              |
+		|  active                     |  active                     |  active                     |
+		|  creation_ts                |  creation_ts                |                             |
+		|  node_table                 |                             |                             |
+		|  tcversion_id # Version ID  |                             |                             |
+		|  name                       |  name                       |  name                       |
+		|  summary                    |  summary                    |  summary                    |
+		|                             |  steps                      |  steps                      |
+		|  author_id                  |  author_id                  |                             |
+		|                             |  author_login               |                             |
+		|                             |  author_first_name          |                             |
+		|                             |  author_last_name           |                             |
+		|                             |  updater_login              |                             |
+		|                             |  updater_first_name         |                             |
+		|                             |  updater_last_name          |                             |
+		|                             |  testsuite_id               |  testsuite_id               |
+		|                             |                             |  exec_id                    |
+		|                             |                             |  executed                   |
+		|                             |                             |  execution_notes            |
+		|                             |                             |  execution_ts               |
+		|                             |                             |  tcversion_number           |
+		|                             |                             |  tc_id # Testcase ID        |
+		|                             |                             |  assigner_id                |
+		|                             |                             |  execution_order            |
+		|                             |                             |  platform_name              |
+		|                             |                             |  linked_ts                  |
+		|                             |                             |  linked_by                  |
+		|                             |                             |  tsuite_name                |
+		|                             |                             |  assigned_build_id          |
+		|                             |                             |  exec_on_tplan              |
+		|                             |                             |  exec_on_build              |
+		|                             |                             |  execution_run_type         |
+		|                             |                             |  feature_id                 |
+		|                             |                             |  exec_status                |
+		|                             |                             |  user_id                    |
+		|                             |                             |  tester_id                  |
+		|                             |                             |  tcversion_id # Version ID  |
+		|                             |                             |  type                       |
+		|                             |                             |  platform_id                |
+		===========================================================================================
+		"""
+		# Get the "correct" id
+		if ('id' in kwargs) and ('tcversion_id' in kwargs):
+			# getTestCasesForTestSuite()
+			TestlinkObject.__init__(self,kwargs['id'],name,api)
+			self.tc_version_id = kwargs['tcversion_id']
+		elif ('id' in kwargs) and ('testcase_id' in kwargs):
+			# getTestCase()
+			TestlinkObject.__init__(self,kwargs['testcase_id'],name,api)
+			self.tc_version_id = kwargs['id']
+		elif ('tc_id' in kwargs) and ('tcversion_id' in kwargs):
+			# getTestCasesForTestPlan
+			TestlinkObject.__init__(self,kwargs['tc_id'],name,api)
+			self.tc_version_id = kwargs['tcversion_id']
 
-		# TestCase Preconditions
-		self.preconditions = DefaultParser().feed(preconditions)
+		# Set the "correct" external id
+		if ('tc_external_id' in kwargs):
+			self.external_id = kwargs['tc_external_id']
+		elif ('external_id' in kwargs):
+			self.external_id = kwargs['external_id']
+
+		# Set common attributes
+		self.version = version
+		self.status = status
+		self.importance = importance
+		self.execution_type = execution_type
+		self.preconditions = preconditions
+		self.summary = summary
+		self.active = active
+		
+		# Set internal attributes
+		self._parent_testproject = _parent_testproject
+		self._parent_testsuite = _parent_testsuite
+		self.customfields = customfields
+
+		# Set steps
+		self.steps = []
+		for s in steps:
+			if isinstance(s,TestCase.Step):
+				self.steps.append(s)
+			else:
+				self.steps.append(TestCase.Step(**s))
 
 	def getLastExecutionResult(self,testplanid):
 		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id)
@@ -866,7 +978,7 @@ class TestCase(TestlinkObject):
 		"""
 		return self._api.getTestCaseCustomFieldDesignValue(
 					testcaseexternalid = "%s-%s" % (str(self._parent_testproject.prefix),str(self.external_id)),\
-					version = self.version,\
+					version = int(self.version),\
 					projectid = self._parent_testproject.id,\
 					fieldname = fieldname,\
 					details = details\
@@ -882,14 +994,18 @@ class TestCase(TestlinkObject):
 		"""
 		response = tl._api.createTestCase(
 						name = case.name,
-						suiteid = case.__parent_testsuite.id,
-						projectid = case.__parent_testproject.id,
+						suiteid = case._parent_testsuite.id,
+						projectid = case._parent_testproject.id,
 						author = case.author,
 						summary = case.summary,
 						steps = case.steps,
 						preconditions = case.preconditions,
 						importance = case.importance,
-						execution = case.execution,
+						customfields = case.customfields,
 						order = order,
 						actiononduplicate = on_duplicate
 					)
+		# Normalize result
+		if isinstance(response,list) and len(response)==1:
+			response = response[0]
+		return response
