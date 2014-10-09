@@ -246,7 +246,7 @@ class TestProject(TestlinkObject):
 		# Check if simple API call can be done
 		if name and len(params)==0:
 			response = self._api.getTestPlanByName(name,projectname=self.name)
-			yield TestPlan(api=self._api,**response[0])
+			yield TestPlan(api=self._api,parent_testproject=self,**response[0])
 		else:
 			# Filter by specified parameters
 			response = self._api.getProjectTestPlans(self.id)
@@ -258,7 +258,7 @@ class TestProject(TestlinkObject):
 							response.remove(plan)
 							break
 			for plan in response:
-				yield TestPlan(api=self._api,**plan)
+				yield TestPlan(api=self._api,parent_testproject=self,**plan)
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Returns generator over TestSuites specified by parameters
@@ -341,7 +341,7 @@ class TestProject(TestlinkObject):
 			# Server response is a list
 			if len(response)==1:
 				response = response[0]
-			yield TestCase(api=self._api,_parent_testproject=self,**response)
+			yield TestCase(api=self._api,parent_testproject=self,**response)
 		else:
 			# Get all TestCases for the TestProject
 			raise NotImplementedError("Cannot get all TestCases for a TestProject yet")
@@ -809,8 +809,8 @@ class TestCase(TestlinkObject):
 			active=True,
 			steps=[],
 			api=None,
-			_parent_testproject=None,
-			_parent_testsuite=None,
+			parent_testproject=None,
+			parent_testsuite=None,
 			customfields={},
 			**kwargs
 			):
@@ -832,10 +832,10 @@ class TestCase(TestlinkObject):
 		@param active: Indicator for active TestCase version
 		@type active: bool
 
-		@param _parent_testproject: The parent TestProject of the TestCase
-		@type _parent_testproject: TestProject
-		@param _parent_testsuite: The parent TestSuite of the TestCase
-		@type _parent_testsuite: TestSuite
+		@param parent_testproject: The parent TestProject of the TestCase
+		@type parent_testproject: TestProject
+		@param parent_testsuite: The parent TestSuite of the TestCase
+		@type parent_testsuite: TestSuite
 		@param customfields: Custom Fields defined for this TestCase
 		@type customfields: dict
 
@@ -938,8 +938,8 @@ class TestCase(TestlinkObject):
 		self.active = active
 		
 		# Set internal attributes
-		self._parent_testproject = _parent_testproject
-		self._parent_testsuite = _parent_testsuite
+		self._parent_testproject = parent_testproject
+		self._parent_testsuite = parent_testsuite
 		self.customfields = customfields
 
 		# Set steps
