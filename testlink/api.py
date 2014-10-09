@@ -1081,13 +1081,17 @@ class Testlink_XML_RPC_API(object):
 		@returns: Single value, information about specified field, information about all fields
 		@rtype: mixed
 		"""
-		return self._query("tl.getTestCaseCustomFieldDesignValue",      \
+		resp =  self._query("tl.getTestCaseCustomFieldDesignValue",      \
 					devKey             = devkey,             \
 					testcaseexternalid = testcaseexternalid, \
 					version            = version,            \
 					testprojectid      = projectid,          \
 					customfieldname    = fieldname,          \
 					details            = details )
+		# Return None for an empty string
+		if resp is not None and len(resp)==0:
+			resp = None
+		return resp
 
 
 	def updateTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfields=None, devkey=None):
