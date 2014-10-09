@@ -515,12 +515,29 @@ class TestPlan(TestlinkObject):
 			params['name'] = name
 			for case in copy.copy(testcases):
 				for key,value in params.items():
-					if value and not (unicode(case[key]) == unicode(value)):
-						testcases.remove(case)
-						break
-		for case in testcases:
-			yield TestCase(api=self._api,parent_testproject=self._parent_testproject,**case)
-
+					# Create a testcase instance here
+					# to have normalized attributes
+					tcase = TestCase(api=self._api,parent_testproject=self._parent_testproject,**case)
+					try:
+						if value and not (unicode(getattr(tcase,key)) == unicode(value)):
+							# Testcase does not match
+							tcase = None
+							break
+					except AttributeError:
+						# TestCase has no attribute key
+						# Try to treat key as the name of a custom field
+						ext_id = "%s-%s" % (tcase._parent_testproject.prefix,tcase.external_id)
+						cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,tcase.version,tcase._parent_testproject.id,key)
+						if ( \
+							(cf_val is None) or \
+							( value and not(unicode(cf_val) == unicode(value)) ) \
+						):
+							# No match either, try next testcase
+							tcase = None
+							break
+				# Yield matching testcase
+				if tcase is not None:
+					yield tcase
 
 class Build(TestlinkObject):
 	"""Testlink Build representation
