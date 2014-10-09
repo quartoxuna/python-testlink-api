@@ -929,7 +929,7 @@ class TestCase(TestlinkObject):
 			self.platform_id = None
 
 		# Set common attributes
-		self.version = version
+		self.version = int(version)
 		self.status = status
 		self.importance = importance
 		self.execution_type = execution_type
