@@ -950,8 +950,8 @@ class TestCase(TestlinkObject):
 		self.status = status
 		self.importance = importance
 		self.execution_type = execution_type
-		self.preconditions = preconditions
-		self.summary = summary
+		self.preconditions = DefaultParser.feed(preconditions)
+		self.summary = DefaultParser.feed(summary)
 		self.active = active
 		
 		# Set internal attributes
