@@ -21,7 +21,6 @@ from enums import DuplicateStrategy
 from enums import ImportanceLevel
 from enums import ExecutionType
 from enums import CustomFieldDetails
-from parsers import DefaultParser
 
 # Global datetime format
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -146,7 +145,7 @@ class TestlinkObject(object):
 			self.id = int(id)
 		else:
 			self.id = id
-		self.name = DefaultParser().feed(name)
+		self.name = name
 		self._api = api
 
 	def __str__(self):
@@ -223,8 +222,8 @@ class TestProject(TestlinkObject):
 			**kwargs\
 		):
 		TestlinkObject.__init__(self,id,name,api)
-		self.notes = DefaultParser().feed(notes)
-		self.prefix = DefaultParser().feed(prefix)
+		self.notes = notes
+		self.prefix = prefix
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -232,7 +231,7 @@ class TestProject(TestlinkObject):
 		self.automation = bool(opt['automationEnabled'])
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_counter = int(tc_counter)
-		self.color = DefaultParser().feed(color)
+		self.color = color
 
 	def getTestPlan(self,name=None,**params):
 		"""Returns generator over TestPlans specified by parameters
@@ -390,7 +389,7 @@ class TestPlan(TestlinkObject):
 			**kwargs
 		):
 		TestlinkObject.__init__(self,id,name,api)
-		self.notes = DefaultParser().feed(notes)
+		self.notes = notes
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self._parent_testproject = parent_testproject
@@ -549,7 +548,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
-		self.notes = DefaultParser().feed(notes)
+		self.notes = notes
 
 
 class Platform(TestlinkObject):
@@ -562,7 +561,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
-		self.notes = DefaultParser().feed(notes)
+		self.notes = notes
 
 
 class TestSuite(TestlinkObject):
@@ -575,7 +574,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
-		self.details = DefaultParser().feed(details)
+		self.details = details
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
@@ -734,10 +733,10 @@ class TestCase(TestlinkObject):
 			else:
 				self.id = id
 			self.step_number = int(step_number)
-			self.actions = DefaultParser().feed(actions)
+			self.actions = actions
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
-			self.expected_results = DefaultParser().feed(expected_results)
+			self.expected_results = expected_results
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
@@ -791,7 +790,7 @@ class TestCase(TestlinkObject):
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
 			self.status = unicode(status)
-			self.notes = DefaultParser().feed(notes)
+			self.notes = notes
 			self.execution_type = int(execution_type)
 			try:
 				self.execution_ts = datetime.strptime(str(execution_ts),DATETIME_FORMAT)
@@ -801,18 +800,6 @@ class TestCase(TestlinkObject):
 
 		def delete(self):
 			self._api.deleteExecution(self.id)
-
-	class Precondition(object):
-		"""Testlink TestCase Precondition representation
-		@ivar condition: Name of the condition
-		@type conditions: str
-		@ivar subconditions: Subconditions of the condition
-		@type subconditions: list
-		"""
-		def __init__(self,condition,subs=()):
-			self.condition = condition
-			self.subconditions = [TestCase.Precondition(*sub) for sub in subs]
-
 
 	def __init__(
 			self,
@@ -950,8 +937,8 @@ class TestCase(TestlinkObject):
 		self.status = status
 		self.importance = importance
 		self.execution_type = execution_type
-		self.preconditions = DefaultParser.feed(preconditions)
-		self.summary = DefaultParser.feed(summary)
+		self.preconditions = preconditions
+		self.summary = summary
 		self.active = active
 		
 		# Set internal attributes

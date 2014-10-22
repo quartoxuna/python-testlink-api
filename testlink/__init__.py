@@ -9,7 +9,7 @@
 # EXPORTS
 from exceptions import *
 from enums import *
-#from parsers import *
+from parsers import *
 from server import *
 from api import *
 from objects import *
@@ -20,6 +20,9 @@ __all__ = [\
 
 		# enums.py
 		'ExecutionType','ImportanceLevel','DuplicateStrategy','CustomFieldDetails','APIType', \
+
+		# parsers.py
+		'HTMLEntityParser', \
 
 		# server.py
 		'TestlinkXMLRPCServer', \

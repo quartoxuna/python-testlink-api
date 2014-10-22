@@ -9,7 +9,7 @@
 # IMPORTS
 import HTMLParser
 
-class DefaultParser(HTMLParser.HTMLParser):
+class HTMLEntityParser(HTMLParser.HTMLParser):
 	"""Default parser for XML-RPC responses. Translates HTML-Entities to readable characters."""
 	def feed(self,data):
 		if not data:
