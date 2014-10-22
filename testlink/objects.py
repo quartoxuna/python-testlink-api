@@ -21,6 +21,7 @@ from enums import DuplicateStrategy
 from enums import ImportanceLevel
 from enums import ExecutionType
 from enums import CustomFieldDetails
+from parsers import HTMLEntityParser
 
 # Global datetime format
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -33,7 +34,9 @@ class Testlink(object):
 	@type _devkey: str
 	"""
 
-	def __init__(self,url,devkey,api=APIType.XML_RPC):
+	_parsers = [HTMLEntityParser()]
+
+	def __init__(self,url,devkey,api=APIType.XML_RPC,*parsers):
 		"""Initializes the Testlink Server object
 		@param url: Testlink URL
 		@type url: str
@@ -52,6 +55,16 @@ class Testlink(object):
 
 		# Set devkey globally
 		self._api._devkey = devkey
+
+		# Set parsers
+		Testlink._parsers.extend(list(parsers))
+
+	@staticmethod
+	def parse(data):
+		res = data
+		for p in Testlink._parsers:
+			data = p.feed(data)
+		return data
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
@@ -145,7 +158,7 @@ class TestlinkObject(object):
 			self.id = int(id)
 		else:
 			self.id = id
-		self.name = name
+		self.name = Testlink.parse(name)
 		self._api = api
 
 	def __str__(self):
@@ -222,8 +235,8 @@ class TestProject(TestlinkObject):
 			**kwargs\
 		):
 		TestlinkObject.__init__(self,id,name,api)
-		self.notes = notes
-		self.prefix = prefix
+		self.notes = Testlink.parse(notes)
+		self.prefix = Testlink.parse(prefix)
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self.requirements = bool(opt['requirementsEnabled'])
@@ -389,7 +402,7 @@ class TestPlan(TestlinkObject):
 			**kwargs
 		):
 		TestlinkObject.__init__(self,id,name,api)
-		self.notes = notes
+		self.notes = Testlink.parse(notes)
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self._parent_testproject = parent_testproject
@@ -548,7 +561,7 @@ class Build(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
-		self.notes = notes
+		self.notes = Testlink.parse(notes)
 
 
 class Platform(TestlinkObject):
@@ -561,7 +574,7 @@ class Platform(TestlinkObject):
 
 	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
-		self.notes = notes
+		self.notes = Testlink.parse(notes)
 
 
 class TestSuite(TestlinkObject):
@@ -574,7 +587,7 @@ class TestSuite(TestlinkObject):
 
 	def __init__(self,id=-1,name="",details="",parent_testproject=None,parent_testsuite=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
-		self.details = details
+		self.details = Testlink.parse(details)
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
@@ -733,10 +746,10 @@ class TestCase(TestlinkObject):
 			else:
 				self.id = id
 			self.step_number = int(step_number)
-			self.actions = actions
+			self.actions = Testlink.parse(actions)
 			self.execution_type = int(execution_type)
 			self.active = bool(active)
-			self.expected_results = expected_results
+			self.expected_results = Testlink.parse(expected_results)
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
@@ -789,8 +802,8 @@ class TestCase(TestlinkObject):
 			self.build_id = int(build_id)
 			self.tcversion_id = int(tcversion_id)
 			self.tcversion_number = int(tcversion_number)
-			self.status = unicode(status)
-			self.notes = notes
+			self.status = Testlink.parse(status)
+			self.notes = Testlink.parse(notes)
 			self.execution_type = int(execution_type)
 			try:
 				self.execution_ts = datetime.strptime(str(execution_ts),DATETIME_FORMAT)
@@ -937,8 +950,8 @@ class TestCase(TestlinkObject):
 		self.status = status
 		self.importance = importance
 		self.execution_type = execution_type
-		self.preconditions = preconditions
-		self.summary = summary
+		self.preconditions = Testlink.parse(preconditions)
+		self.summary = Testlink.parse(summary)
 		self.active = active
 		
 		# Set internal attributes

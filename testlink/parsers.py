@@ -47,10 +47,10 @@ class HTMLTagRemover(HTMLParser.HTMLParser,IParser):
 		self.__result += data
 
 	def feed(self,data):
-		super(HTMLTagRemover.self).feed(data)
+		super(HTMLTagRemover,self).feed(data)
 		return self.__result
 
-class HTMLEntityParser(IParser):
+class HTMLEntityParser(HTMLParser.HTMLParser,IParser):
 	"""Translates HTML-Entities to normal characters"""
 	def __init__(self):
 		super(HTMLEntityParser,self).__init__()
