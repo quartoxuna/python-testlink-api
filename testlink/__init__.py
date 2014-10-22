@@ -22,7 +22,7 @@ __all__ = [\
 		'ExecutionType','ImportanceLevel','DuplicateStrategy','CustomFieldDetails','APIType', \
 
 		# parsers.py
-		'HTMLEntityParser', \
+		'HTMLTagRemover','HTMLEntityParser','HTMLSectionParser','HTMLListParser', \
 
 		# server.py
 		'TestlinkXMLRPCServer', \
