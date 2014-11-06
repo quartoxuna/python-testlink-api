@@ -13,6 +13,21 @@ from exceptions import NotSupported
 from exceptions import APIError
 from exceptions import InvalidURL
 
+# Decorators
+TL_VERSION = tuple([1,0])
+class TLVersion(object):
+	def __init__(self,version):		
+		self.version = tuple(map(int,(version.split("."))))
+
+	def __call__(self,fn):
+		def _wrapped(*args,**kwargs):
+			# Check version
+			if self.version > TL_VERSION:
+				raise NotSupported("Method '%s' requires Testlink version >= %s but is %s" % (str(fn.__name__),str(self.version),str(TL_VERSION)))
+			return fn(*args,**kwargs)
+		return _wrapped
+
+
 class Testlink_XML_RPC_API(object):
 	"""Testlink XML-RPC API
 	@cvar RPC_PATHS: Paths to Testlink's XML-RPC endpoint
@@ -47,6 +62,13 @@ class Testlink_XML_RPC_API(object):
 			except Exception:
 				pass
 		raise InvalidURL(url)
+
+		# Get the version
+		try:
+			TL_VERSION = self.testLinkVersion()
+		except NotSupported:
+			# If this call fails, Testlink API has version 1.0
+			pass
 
 	def __str__(self):
 		return str(self._proxy)
@@ -89,7 +111,7 @@ class Testlink_XML_RPC_API(object):
 	#
 	# Raw API methods
 	#
-
+	@TLVersion("1.9.9")
 	def testLinkVersion(self):
 		"""Returns Testlink Version String
 		@since: Testlink 1.9.9
@@ -99,7 +121,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self._query("tl.testLinkVersion")
 
-
+	@TLVersion("1.0")
 	def about(self):
 		"""Returns informations about the current Testlink API
 		@returns: 'Testlink API Version: x.x initially written by Asial Brumfield with contributions by Testlink development Team'
@@ -108,6 +130,7 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.about")
 
 
+	@TLVersion("1.0")
 	def sayHello(self):
 		"""Returns the string 'Hello!'
 		@returns: 'Hello!'
@@ -116,7 +139,7 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.sayHello")
 	ping = sayHello
 
-
+	@TLVersion("1.0")
 	def repeat(self,value):
 		"""Repeats the given value
 		@param value: The value to be repeated by the server
@@ -126,7 +149,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self._query("tl.repeat", str=str(value))
 
-
+	@TLVersion("1.0")
 	def checkDevKey(self,devkey=None):
 		"""Checks if the specified developer key is valid
 		@param devkey: The developer key to be tested
@@ -136,7 +159,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self._query("tl.checkDevKey", devKey=devkey)
 
-
+	@TLVersion("1.0")
 	def doesUserExist(self, user, devkey=None):
 		"""Checks, if a specified user exists
 		@param devkey: Testlink developer key
@@ -148,6 +171,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self._query("tl.doesUserExist", devKey=devkey, user=user)
 
+	@TLVersion("1.9.8")
 	def getUserByLogin(self, user, devkey=None):
 		"""Returns user information for specified user
 		@since: Testlink 1.9.8
@@ -163,6 +187,7 @@ class Testlink_XML_RPC_API(object):
 				devKey = devkey, \
 				user = user )
 
+	@TLVersion("1.9.8")
 	def getUserByID(self, userid, devkey=None):
 		"""Returns user information for specified user
 		@since: Testlink 1.9.8
@@ -178,7 +203,7 @@ class Testlink_XML_RPC_API(object):
 				devKey = devkey, \
 				userid = userid )
 
-
+	@TLVersion("1.0")
 	def getFullPath(self, nodeid, devkey=None):
 		"""Returns the full path of an object
 		@param devkey: Testlink developer key
@@ -190,7 +215,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self._query("tl.getFullPath", devKey=devkey, nodeID=nodeid)
 
-
+	@TLVersion("1.0")
 	def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False, priority=False, automation=False, inventory=False, devkey=None):
 		"""Creates a new TestProject
 		@param devkey: Testlink developer key
@@ -236,7 +261,7 @@ class Testlink_XML_RPC_API(object):
 					public  = public,   \
 					options = opts )
 
-
+	@TLVersion("1.0")
 	def getProjects(self, devkey=None):
 		"""Returns all available TestProjects
 		@param devkey: Testlink developer key
@@ -246,7 +271,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self._query("tl.getProjects", devKey=devkey)
 
-
+	@TLVersion("1.0")
 	def getTestProjectByName(self, name, devkey=None):
 		"""Returns a single TestProject specified by its name
 		@param devkey: Testlink developer key
@@ -258,7 +283,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self._query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
 
-
+	@TLVersion("1.0")
 	def createTestPlan(self, name, projectname, notes='', active=True, public=True, devkey=None):
 		"""Creates a new TestPlan
 		@param devkey: Testlink developer key
@@ -287,7 +312,7 @@ class Testlink_XML_RPC_API(object):
 					active          = active,     \
 					public          = public )
 
-
+	@TLVersion("1.0")
 	def getTestPlanByName(self, name, projectname, devkey=None):
 		"""Returns a single TestPlan specified by its name
 		@param devkey: Testlink developer key
@@ -304,7 +329,7 @@ class Testlink_XML_RPC_API(object):
 					testplanname    = name,   \
 					testprojectname = projectname )
 
-
+	@TLVersion("1.0")
 	def getProjectTestPlans(self, projectid, devkey=None):
 		"""Returns all TestPlans for a specified TestProject
 		@param devkey: Testlink developer key
@@ -318,7 +343,7 @@ class Testlink_XML_RPC_API(object):
 					devKey       = devkey, \
 					testprojectid = projectid )
 
-
+	@TLVersion("1.9.4")
 	def getTestPlanCustomFieldDesignValue(self, testplanid, testprojectid, fieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified TestPlan
 		@since: Testlink 1.9.4
@@ -340,7 +365,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectid = testprojectid, \
 					testplanid = testplanid )
 
-
+	@TLVersion("1.0")
 	def createBuild(self, testplanid, name, notes='', devkey=None):
 		"""Creates a new Build for the specified TestPlan
 		@param devkey: Testlink developer key
@@ -362,7 +387,7 @@ class Testlink_XML_RPC_API(object):
 					buildname  = name,       \
 					buildnotes = notes )
 
-
+	@TLVersion("1.0")
 	def getLatestBuildForTestPlan(self, testplanid, devkey=None):
 		"""Returns the latest Build for the specified TestPlan
 		@param devkey: Testlink developer key
@@ -376,7 +401,7 @@ class Testlink_XML_RPC_API(object):
 					devKey     = devkey,        \
 					testplanid = testplanid )
 	
-	
+	@TLVersion("1.0")
 	def getBuildsForTestPlan(self, testplanid, devkey=None):
 		"""Returns all Builds for the specified TestPlan
 		@param devkey: Testlink developer key
@@ -390,7 +415,7 @@ class Testlink_XML_RPC_API(object):
 					devKey     = devkey,   \
 					testplanid = testplanid )
 
-
+	@TLVersion("1.9.4")
 	def getExecCountersByBuild(self, testplanid, devkey=None):
 		"""Returns the execution counters for a specified testplan
 		@since: Testlink 1.9.4
@@ -406,7 +431,7 @@ class Testlink_XML_RPC_API(object):
 					devKey = devkey, \
 					testplanid = testplanid )
 
-
+	@TLVersion("1.9.6")
 	def createPlatform(self, testprojectname, platformname, notes="", devkey=None):
 		"""Creates a new Platform for the specified testproject
 		@since: Testlink 1.9.6
@@ -430,6 +455,7 @@ class Testlink_XML_RPC_API(object):
 					platformname = platformname,  \
 					notes = notes )
 
+	@TLVersion("1.9.6")
 	def getProjectPlatforms(self, testprojectid, devkey=None):
 		"""Returns all platforms for a specified TestProject
 		@since: Testlink 1.9.6
@@ -445,7 +471,7 @@ class Testlink_XML_RPC_API(object):
 					devKey = devkey, \
 					testprojectid = testprojectid )
 	
-	
+	@TLVersion("1.0")
 	def getTestPlanPlatforms(self, testplanid, devkey=None):
 		"""Returns all Platforms fot the specified TestPlan
 		@param devkey: Testlink developer key
@@ -459,7 +485,7 @@ class Testlink_XML_RPC_API(object):
 					devKey     = devkey,  \
 					testplanid = testplanid )
 	
-	
+	@TLVersion("1.0")
 	def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False, devkey=None):
 		"""Sets the execution result for a specified TestCase
 		@param devkey: Testlink developer key
@@ -509,7 +535,7 @@ class Testlink_XML_RPC_API(object):
 					overwrite          = overwrite )
 	setTestCaseExecutionResult = reportTCResult
 
-	
+	@TLVersion("1.0")
 	def getLastExecutionResult(self, testplanid, testcaseid=None, testcaseexternalid=None, devkey=None):
 		"""Returns the execution result for a specified TestCase and TestPlan
 		@param devkey: Testlink developer key
@@ -529,7 +555,7 @@ class Testlink_XML_RPC_API(object):
 					testcaseid         = testcaseid, \
 					testcaseexternalid = testcaseexternalid )
 
-	
+	@TLVersion("1.0")
 	def deleteExecution(self, executionid, devkey=None):
 		"""Deletes a specific exexution result
 		@param devkey: Testlink developer key
@@ -543,7 +569,7 @@ class Testlink_XML_RPC_API(object):
 					devKey      = devkey, \
 					executionid = executionid )
 	
-	
+	@TLVersion("1.0")
 	def createTestSuite(self, name, testprojectid, details=None, parentid=None, order=None, checkduplicates=True, actiononduplicate='block', devkey=None):
 		"""Creates a new TestSuite
 		@param devkey: Testlink developer key
@@ -575,7 +601,7 @@ class Testlink_XML_RPC_API(object):
 					checkduplicatedname    = checkduplicates, \
 					actiononduplicatedname = actiononduplicate )
 	
-	
+	@TLVersion("1.0")
 	def getTestSuiteById(self, suiteid, devkey=None):
 		"""Returns a single TestSuite specified by the internal ID
 		@param devkey: Testlink developer key
@@ -589,7 +615,7 @@ class Testlink_XML_RPC_API(object):
 					devKey      = devkey, \
 					testsuiteid = suiteid )
 	
-	
+	@TLVersion("1.0")
 	def getTestSuitesForTestSuite(self, suiteid, devkey=None):
 		"""Returns all TestSuites within the specified TestSuite
 		@param devkey: Testlink developer key
@@ -603,7 +629,7 @@ class Testlink_XML_RPC_API(object):
 					devKey      = devkey,       \
 					testsuiteid = suiteid )
 	
-	
+	@TLVersion("1.0")
 	def getFirstLevelTestSuitesForTestProject(self, projectid, devkey=None):
 		"""Returns the first level TestSuites for a specified TestProject
 		@param devkey: Testlink developer key
@@ -617,7 +643,7 @@ class Testlink_XML_RPC_API(object):
 					devKey        = devkey,                 \
 					testprojectid = projectid )
 	
-	
+	@TLVersion("1.0")
 	def getTestSuitesForTestPlan(self, planid, devkey=None):
 		"""Returns all TestSuites for a specified TestPlan
 		@param devkey: Testlink developer key
@@ -631,7 +657,7 @@ class Testlink_XML_RPC_API(object):
 					devKey     = devkey,       \
 					testplanid = planid )
 	
-	
+	@TLVersion("1.0")
 	def createTestCase(self, name, suiteid, projectid, author, summary, steps=[], preconditions=None, importance=0, execution=0, order=None, checkduplicates=True, actiononduplicate='block', customfields={}, devkey=None):
 		"""Creates a new TestCase
 		@param devkey: Testlink developer key
@@ -681,6 +707,7 @@ class Testlink_XML_RPC_API(object):
 					actiononduplicatedname = actiononduplicate, \
 					customfields          = customfields)
 
+	@TLVersion("1.9.8")
 	def updateTestCase(self, testcaseexternalid, version=None, testcasename=None, summary=None, preconditions=None, steps=None, importance=None, executiontype=None, status=None, estimatedexecduration=None, user=None, devkey=None):
 		"""Updates a specified TestCase
 		@since: Testlink 1.9.8
@@ -706,7 +733,7 @@ class Testlink_XML_RPC_API(object):
 		@param status: <OPTIONAL> The status of the TestCase
 		@type status: ???
 		@param estimatedexecduration: <OPTIONAL> The estimated duration for execution
-		@type estimatedexecduration: ???
+		@type estimatedexecduration: int
 		@param user: <OPTIONAL> The user used as updater. If not given, will be set to user that request update.
 		@type user: str
 		@returns: Server response
@@ -726,7 +753,7 @@ class Testlink_XML_RPC_API(object):
 					estimatedexecduration = estimatedexecduration, \
 					user = user )
 
-
+	@TLVersion("1.9.4")
 	def setTestCaseExecutionType(self, testcaseexternalid, version, testprojectid, executiontype, devkey=None):
 		"""Updates the execution type for a specified TestCase
 		@since: Testlink 1.9.4
@@ -751,7 +778,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectid = testprojectid, \
 					executiontype = executiontype )
 	
-
+	@TLVersion("1.9.4")
 	def createTestCaseSteps(self, steps, action, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
 		"""Creates a new Step for the specified TestCase, can also be used for upgrade
 		@since: Testlink 1.9.4
@@ -779,7 +806,7 @@ class Testlink_XML_RPC_API(object):
 					action = action, \
 					steps = steps )
 
-
+	@TLVersion("1.9.4")
 	def deleteTestCaseSteps(self, testcaseexternalid, steps, version=None, devkey=None):
 		"""Deletes specified Steps for the specified TestCase
 		@since: Testlink 1.9.4
@@ -801,7 +828,7 @@ class Testlink_XML_RPC_API(object):
 					steps = steps, \
 					version = version )
 
-	
+	@TLVersion("1.0")
 	def getTestCase(self, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
 		"""Returns a single TestCase specified by its ID
 		@param devkey: Testlink developer key
@@ -821,7 +848,7 @@ class Testlink_XML_RPC_API(object):
 					testcaseexternalid = testcaseexternalid, \
 					version            = version )
 	
-	
+	@TLVersion("1.0")
 	def getTestCaseIdByName(self, name, suite=None, project=None, path=None, devkey=None):
 		"""Returns the internal ID of a specified TestCase
 		@param devkey: Testlink developer key
@@ -844,7 +871,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectname  = project, \
 					testcasepathname = path )
 	
-	
+	@TLVersion("1.0")
 	def getTestCasesForTestSuite(self, suiteid, deep=False, details='simple', devkey=None):
 		"""Returns all TestCases for a specified TestSuite
 		@param devkey: Testlink developer key
@@ -864,7 +891,7 @@ class Testlink_XML_RPC_API(object):
 					deep        = deep,        \
 					details     = details )
 	
-	
+	@TLVersion("1.0")
 	def getTestCasesForTestPlan(self, planid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executionstatus=None, executiontype=None, steps=False, devkey=None):
 		"""Returns all TestCases for a specified TestPlan
 		@param devkey: Testlink developer key
@@ -905,7 +932,7 @@ class Testlink_XML_RPC_API(object):
 					executiontype = executiontype,   \
 					getstepsinfo   = steps )
 	
-	
+	@TLVersion("1.0")
 	def addTestCaseToTestPlan(self, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
 		"""Adds a specified TestCase to a specified TestPlan
 		@param devkey: Testlink developer key
@@ -939,7 +966,7 @@ class Testlink_XML_RPC_API(object):
 					executionorder     = executionorder,     \
 					urgency            = urgency )
 
-
+	@TLVersion("1.9.6")
 	def addPlatformToTestPlan(self, testplanid, platformname, devkey=None):
 		"""Adds a specified platform to a specified testplan
 		@since: Testlink 1.9.6
@@ -958,7 +985,7 @@ class Testlink_XML_RPC_API(object):
 					testplanid = testplanid, \
 					platformname = platformname )
 
-
+	@TLVersion("1.9.6")
 	def removePlatformFromTestPlan(self, testplanid, platformname, devkey=None):
 		"""Removes a specified platform from a specified testplan.
 		@since: Testlink 1.9.6
@@ -977,7 +1004,7 @@ class Testlink_XML_RPC_API(object):
 					testplanid = testplanid, \
 					platformname = platformname )
 
-	
+	@TLVersion("1.0")
 	def assignRequirements(self, testcaseexternalid, projectid, requirements, devkey=None):
 		"""Assigns specified Requirements to a specified TestCase
 		@param devkey: Testlink developer key
@@ -997,7 +1024,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectid      = projectid,          \
 					requirements       = requirements )
 
-
+	@TLVersion("1.9.4")
 	def getReqSpecCustomFieldDesignValue(self, reqspecid, testprojectid, fieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified Requirement Specification
 		@since: Testlink 1.9.4
@@ -1019,7 +1046,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectid = testprojectid, \
 					reqspecid = reqspecid )
 
-
+	@TLVersion("1.9.4")
 	def getRequirementCustomFieldDesignValue(self, requirementid, testprojectid, fieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified Requirement
 		@since: Testlink 1.9.4
@@ -1041,7 +1068,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectid = testprojectid, \
 					requirementid = requirementid )
 
-
+	@TLVersion("1.9.4")
 	def getTestSuiteCustomFieldDesignValue(self, testsuiteid, testprojectid, fieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified TestSuite
 		@since: Testlink 1.9.4
@@ -1063,7 +1090,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectid = testprojectid, \
 					testsuiteid = testsuiteid )
 	
-	
+	@TLVersion("1.0")
 	def getTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, projectid, fieldname, details='value', devkey=None):
 		"""Returns the value of a specified CustomField for a specified TestCase
 		@param devkey: Testlink developer key
@@ -1093,7 +1120,7 @@ class Testlink_XML_RPC_API(object):
 			resp = None
 		return resp
 
-
+	@TLVersion("1.9.4")
 	def updateTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfields=None, devkey=None):
 		"""Updates values of CustomFields for a specified TestCase
 		@since: Testlink 1.9.4
@@ -1118,7 +1145,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectid = testprojectid, \
 					customfields = customfields )
 
-
+	@TLVersion("1.9.4")
 	def getTestCaseCustomFieldExecutionValue(self, executionid, testplanid, version, projectid, fieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified Execution
 		@since: Testlink 1.9.4
@@ -1146,6 +1173,7 @@ class Testlink_XML_RPC_API(object):
 					executionid = executionid, \
 					testplanid = testplanid )
 
+	@TLVersion("1.9.4")
 	def getTestCaseCustomFieldTestPlanDesignValue(self, linkid, testplanid, version, testcaseid, fieldname, devkey=None):
 		"""Returns the value of the specified CustomField for a specified TestCase within a specified TestPlan
 		@since: Testlink 1.9.4
@@ -1173,7 +1201,7 @@ class Testlink_XML_RPC_API(object):
 					testplanid = testplanid, \
 					linkid = linkid )
 	
-
+	@TLVersion("1.0")
 	def uploadAttachment(self, objectid, objecttable, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified object
 		@param devkey: Testlink developer key
@@ -1205,7 +1233,7 @@ class Testlink_XML_RPC_API(object):
 					title       = title,       \
 					description = description )
 	
-	
+	@TLVersion("1.0")
 	def uploadRequirementSpecificationAttachment(self, reqspecid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Requirement Specification
 		@param devkey: Testlink developer key
@@ -1234,7 +1262,7 @@ class Testlink_XML_RPC_API(object):
 					title       = title,                       \
 					description = description )
 	
-	
+	@TLVersion("1.0")
 	def uploadRequirementAttachment(self, reqid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Requirement
 		@param devkey: Testlink developer key
@@ -1263,7 +1291,7 @@ class Testlink_XML_RPC_API(object):
 					title          = title,       \
 					description    = description )
 	
-	
+	@TLVersion("1.0")
 	def uploadTestProjectAttachment(self, projectid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestProject
 		@param devkey: Testlink developer key
@@ -1292,7 +1320,7 @@ class Testlink_XML_RPC_API(object):
 					title         = title,        \
 					description   = description )
 	
-	
+	@TLVersion("1.0")
 	def uploadTestSuiteAttachment(self, suiteid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestSuite
 		@param devkey: Testlink developer key
@@ -1321,7 +1349,7 @@ class Testlink_XML_RPC_API(object):
 					title       = title,        \
 					description = description )
 	
-	
+	@TLVersion("1.0")
 	def uploadTestCaseAttachment(self, testcaseid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestCase
 		@param devkey: Testlink developer key
@@ -1350,7 +1378,7 @@ class Testlink_XML_RPC_API(object):
 					title       = title,       \
 					description = description )
 	
-	
+	@TLVersion("1.0")
 	def uploadExecutionAttachment(self, executionid, name, mime, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Execution
 		@param devkey: Testlink developer key
@@ -1379,7 +1407,7 @@ class Testlink_XML_RPC_API(object):
 					title       = title,        \
 					description = description )
 	
-	
+	@TLVersion("1.0")
 	def getTestCaseAttachments(self, testcaseid=None, testcaseexternalid=None, devkey=None):
 		"""Returns all available Attachments for the specified TestCase
 		@param devkey: Testlink developer key
