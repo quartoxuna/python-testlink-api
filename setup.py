@@ -1,52 +1,42 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from distutils.core import setup
-from distutils.core import Command
+# IMPORTS
 import os
+from setuptools import find_packages
+from setuptools import setup
+from setuptools import Command
 
-_PACKAGES_ = ['testlink']
+_PACKAGES_ = find_packages()
 _APIDOC_ = "apidoc"
 
-try:
-	from epydoc import cli as epydoc_cli
-
-	_OPTIONS_ = type("",(),epydoc_cli.OPTION_DEFAULTS)()
-	_OPTIONS_.verbosity = 1
-	_OPTIONS_.include_log = False
-	_OPTIONS_.dotpath = None
-	_OPTIONS_.action = "html"
-	_OPTIONS_.target = _APIDOC_
-
-	USE_EPYDOC = True
-except Exception,ex:
-	USE_EPYDOC= False
-	EPYDOC_ERROR = str(ex)
-
-class GenerateDoc(Command):
+class GenerateEpydoc(Command):
 	description = "custom command, that generates documentation using the epydoc module"
 	user_options = []
 	def initialize_options(self):
-		pass
+		from epydoc import cli as epydoc_cli
+		self.options = type("",(),epydoc_cli.OPTION_DEFAULTS)()
+		self.options.verbosity = 0
+		self.options.simple_term = True
+		self.options.include_log = False
+		self.options.dotpath = None
+		self.options.action = "html"
+		self.options.target = _APIDOC_
+		if not os.path.isdir(_APIDOC_):
+			os.mkdir(_APIDOC_)
 	def finalize_options(self):
 		pass
 	def run(self):
-		# Create directory if needed
-		if not os.path.isdir(_APIDOC_):
-			os.mkdir(_APIDOC_)
-		if USE_EPYDOC:
-			epydoc_cli.main(_OPTIONS_,_PACKAGES_)
-		else:
-			print("Cannot generate apidoc: %s" % EPYDOC_ERROR)
+		from epydoc import cli as epydoc_cli
+		epydoc_cli.main(self.options,_PACKAGES_)
 
 setup(
-	name='python-testlink_api_wrapper',
+	name='testlink',
 	version='0.10',
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
 	author_email='kai.borowiak@secunet.com',
 	packages=_PACKAGES_,
 	keywords='testlink api xmlrpc python',
-	license='GPL',
-	requires=['bs4'],
-	cmdclass={'epydoc':GenerateDoc}
+	cmdclass={'epydoc':GenerateEpydoc},
 )
