@@ -978,6 +978,9 @@ class TestCase(TestlinkObject):
 			else:
 				self.steps.append(TestCase.Step(**s))
 
+	def __str__(self):
+		return "%s-%s %s" % (unicode(self._parent_testproject.prefix),unicode(self.external_id),unicode(self.name))
+
 	def getLastExecutionResult(self,testplanid):
 		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id)
 		return TestCase.Execution(**resp)
