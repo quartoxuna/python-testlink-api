@@ -509,7 +509,11 @@ class TestPlan(TestlinkObject):
 								execution_type,\
 								steps = True\
 							)
-										
+
+		# Check for empty response
+		if (response is None) or len(response)==0:
+			return
+
 		# Normalize result
 		testcases = []
 		for tcid,platforms in response.items():
@@ -520,16 +524,17 @@ class TestPlan(TestlinkObject):
 					log.debug("No Platforms within this testplan")
 					testcases = platforms
 					break
-				testcases.append(tc)
+				else:
+					testcases.append(tc)
 
 		# Filter by specified params
 		if len(params)>0 or name:
 			params['name'] = name
 			for case in copy.copy(testcases):
+				# Create a testcase instance here
+				# to have normalized attributes
+				tcase = TestCase(api=self._api,parent_testproject=self._parent_testproject,**case)
 				for key,value in params.items():
-					# Create a testcase instance here
-					# to have normalized attributes
-					tcase = TestCase(api=self._api,parent_testproject=self._parent_testproject,**case)
 					try:
 						if value and not (unicode(getattr(tcase,key)) == unicode(value)):
 							# Testcase does not match
@@ -944,6 +949,12 @@ class TestCase(TestlinkObject):
 			self.platform_id = kwargs['platform_id']
 		else:
 			self.platform_id = None
+
+		# Set exec status if available
+		if ('exec_status' in kwargs):
+			self.exec_status = kwargs['exec_status']
+		else:
+			self.exec_status = None
 
 		# Set common attributes
 		self.version = int(version)
