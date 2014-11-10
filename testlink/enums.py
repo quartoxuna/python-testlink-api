@@ -56,3 +56,28 @@ class APIType:
 	"""
 	XML_RPC = 0
 	REST = 1
+
+class TestcaseStatus:
+	"""TestlinkStatus enum
+	@cvar DRAFT: Draft status
+	@type DRAFT: int
+	@cvar READY_FOR_REVIEW: Ready for review status
+	@type READY_FOR_REVIEW: int
+	@cvar REVIEW_IN_PROGRESS: Review in progress status
+	@type REVIEW_IN_PROGRESS: int
+	@cvar REWORK: Rework status
+	@type REWORK: int
+	@cvar OBSOLETE: Obsolete status
+	@type OBSOLETE: int
+	@cvar FUTURE: Future status
+	@type FUTURE: int
+	@cvar FINAL: Final status
+	@type FINAL: int
+	"""
+	DRAFT = 1
+	READY_FOR_REVIEW = 2
+	REVIEW_IN_PROGRESS = 3
+	REWORK = 4
+	OBSOLETE = 5
+	FUTURE = 6
+	FINAL = 7
