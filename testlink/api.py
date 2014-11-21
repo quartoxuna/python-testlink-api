@@ -16,7 +16,8 @@ from exceptions import InvalidURL
 # Decorators
 TL_VERSION = tuple([1,0])
 class TLVersion(object):
-	def __init__(self,version):		
+	global TL_VERSION
+	def __init__(self,version):
 		self.version = tuple(map(int,(version.split("."))))
 
 	def __call__(self,fn):
@@ -38,6 +39,7 @@ class Testlink_XML_RPC_API(object):
 	@type _devkey: str
 	"""
 
+	global TL_VERSION
 	RPC_PATHS = ["/lib/api/xmlrpc.php","/lib/api/xmlrpc/v1/xmlrpc.php"]
 
 	def __init__(self,url):
