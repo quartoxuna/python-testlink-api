@@ -13,18 +13,17 @@ from exceptions import NotSupported
 from exceptions import APIError
 from exceptions import InvalidURL
 
-# Decorators
-TL_VERSION = tuple([1,0])
+from distutils.version import LooseVersion as Version
+
 class TLVersion(object):
-	global TL_VERSION
 	def __init__(self,version):
-		self.version = tuple(map(int,(version.split("."))))
+		self.version = Version(version)
 
 	def __call__(self,fn):
-		def _wrapped(*args,**kwargs):
+		def _wrapped(parent,*args,**kwargs):
 			# Check version
-			if self.version > TL_VERSION:
-				raise NotSupported("Method '%s' requires Testlink version >= %s but is %s" % (str(fn.__name__),str(self.version),str(TL_VERSION)))
+			if self.version > parent._tl_version:
+				raise NotSupported("Method '%s' requires Testlink version >= %s but is %s" % (str(fn.__name__),str(self.version),str(Testlink_XML_RPC_API.TL_VERSION)))
 			return fn(*args,**kwargs)
 		return _wrapped
 
@@ -39,7 +38,6 @@ class Testlink_XML_RPC_API(object):
 	@type _devkey: str
 	"""
 
-	global TL_VERSION
 	RPC_PATHS = ["/lib/api/xmlrpc.php","/lib/api/xmlrpc/v1/xmlrpc.php"]
 
 	def __init__(self,url):
@@ -50,6 +48,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		self._proxy = None
 		self._devkey = None
+		self._tl_version = Version("1.0")
 		# Check for each possible RPC path,
 		# if a connection can be made
 		for path in self.RPC_PATHS:
@@ -58,19 +57,22 @@ class Testlink_XML_RPC_API(object):
 				if not tmp.endswith(path):
 					tmp += path
 				self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
-				# Check if URL ends on XML-RPC endpoint
-				self._proxy.system.listMethods()
-				return
-			except Exception:
-				pass
-		raise InvalidURL(url)
 
-		# Get the version
-		try:
-			TL_VERSION = self.testLinkVersion()
-		except NotSupported:
-			# If this call fails, Testlink API has version 1.0
-			pass
+				# Get the version
+				# Wihtout wrapping function to avoid version check
+				# before acutally having the version
+				self._tl_version = Version(self._query("tl.testLinkVersion"))
+				return
+
+			except xmlrpclib.ProtocolError:
+				# Invalid URL
+				continue
+			except NotSupported:
+				# Testlink API has version 1.0
+				return
+
+		# Did not return, so URL was not valid
+		raise InvalidURL(url)
 
 	def __str__(self):
 		return str(self._proxy)

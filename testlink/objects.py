@@ -72,12 +72,7 @@ class Testlink(object):
 		@rtype: distutils.version.LooseVersion
 		"""
 		# Check for easy API call
-		try:
-			return Version(self._api.testLinkVersion())
-		except NotSupported:
-			about_str = self._api.about()
-			version_str = re.search(r"(?P<version>\d+(\.{0,1}\d+)+)",about_str).group('version')
-			return Version(version_str)
+		return self._api._tl_version
 
 	def getTestProject(self,name=None,**params):
 		"""Returns generator over TestProjects specified by parameters
