@@ -32,7 +32,7 @@ class GenerateEpydoc(Command):
 
 setup(
 	name='testlink',
-	version='0.10',
+	version='0.10.1',
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
 	author_email='kai.borowiak@secunet.com',

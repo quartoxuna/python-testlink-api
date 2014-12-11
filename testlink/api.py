@@ -74,12 +74,6 @@ class Testlink_XML_RPC_API(object):
 		# Did not return, so URL was not valid
 		raise InvalidURL(url)
 
-	def __str__(self):
-		return str(self._proxy)
-
-	def __repr__(self):
-		return str(self._proxy)
-
 	def _query(self,method,**kwargs):
 		"""Remote calls a method on the server
 		@param method: Method to call
