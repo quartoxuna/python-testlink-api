@@ -10,7 +10,7 @@
 import unittest
 from testlink.parsers import HTMLTagRemover
 
-class test_HTMLTagRemover(unittest.TestCase):
+class HTMLTagRemoverTests(unittest.TestCase):
 
 	def setUp(self):
 		self.parser = HTMLTagRemover()
