@@ -32,11 +32,12 @@ class GenerateEpydoc(Command):
 
 setup(
 	name='testlink',
-	version='0.10.1',
+	version='0.11',
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
 	author_email='kai.borowiak@secunet.com',
 	packages=_PACKAGES_,
 	keywords='testlink api xmlrpc python',
 	cmdclass={'epydoc':GenerateEpydoc},
+	test_suite='test',
 )
