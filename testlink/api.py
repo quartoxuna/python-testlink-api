@@ -11,7 +11,7 @@ import xmlrpclib
 from log import log
 from exceptions import NotSupported
 from exceptions import APIError
-from exceptions import InvalidURL
+from exceptions import ConnectionError
 
 from distutils.version import LooseVersion as Version
 
@@ -44,7 +44,7 @@ class Testlink_XML_RPC_API(object):
 		"""Initialize the TestlinkAPI
 		@param url: Testlink URL
 		@type url: str
-		@raises InvalidURL: The given URL is not valid
+		@raises ConnectionError: The given URL is not valid
 		"""
 		self._proxy = None
 		self._devkey = None
@@ -64,15 +64,11 @@ class Testlink_XML_RPC_API(object):
 				self._tl_version = Version(self._query("tl.testLinkVersion"))
 				return
 
-			except xmlrpclib.ProtocolError:
-				# Invalid URL
-				continue
 			except NotSupported:
 				# Testlink API has version 1.0
 				return
-
-		# Did not return, so URL was not valid
-		raise InvalidURL(url)
+			except Exception,e:
+				raise ConnectionError(str(e))
 
 	def _query(self,method,**kwargs):
 		"""Remote calls a method on the server

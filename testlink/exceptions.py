@@ -43,6 +43,6 @@ class APIError(Exception):
 		self.errorString = message
 
 
-class InvalidURL(Exception):
-	"""To be raised, if the given URL is not valid"""
+class ConnectionError(Exception):
+	"""To be raised, if the connection to the XML-RPC server cannot be stablished"""
 	pass

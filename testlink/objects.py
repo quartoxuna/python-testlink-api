@@ -14,7 +14,7 @@ from distutils.version import LooseVersion as Version
 
 from log import log
 from api import Testlink_XML_RPC_API
-from exceptions import InvalidURL
+from exceptions import ConnectionError
 from exceptions import NotSupported
 from enums import APIType
 from enums import DuplicateStrategy
