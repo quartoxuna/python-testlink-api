@@ -17,6 +17,5 @@ class HTMLSectionParserTests(unittest.TestCase):
 		self.parser = HTMLSectionParser()
 
 	def test_sections(self):
-		"""Test sections"""
 		html = "<p>S</p><p>P</p><p>A</p><p>M</p>"
 		self.assertEqual(self.parser.feed(html),list("SPAM"))

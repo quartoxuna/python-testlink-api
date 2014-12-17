@@ -17,6 +17,5 @@ class HTMLListParserTests(unittest.TestCase):
 		self.parser = HTMLListParser()
 
 	def test_lists(self):
-		"""Check nested list"""
 		html = "<ol><li>S</li><ul><li>P</li></ul><li>A</li><li>M</li></ol>"
 		self.assertEqual(self.parser.feed(html),["S",["P"],"A","M"])
