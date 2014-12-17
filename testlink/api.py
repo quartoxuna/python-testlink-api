@@ -278,14 +278,14 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
 
 	@TLVersion("1.0")
-	def createTestPlan(self, name, projectname, notes='', active=True, public=True, devkey=None):
+	def createTestPlan(self, name, project, notes='', active=True, public=True, devkey=None):
 		"""Creates a new TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param name: Name of the TestPlan
 		@type name: str
-		@param projectname: Name of the parent TestProject
-		@type projectname: str
+		@param project: Name of the parent TestProject
+		@type project: str
 		@param notes: <OPTIONAL> Additional notes of the TestPlan (Default is: '')
 		@type notes: str
 		@param active: <OPTIONAL> The TestPlan is marked as active (Default is: True)
@@ -301,7 +301,7 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.createTestPlan",              \
 					devKey          = devkey,     \
 					testplanname    = name,       \
-					testprojectname = projectname,\
+					testprojectname = project,\
 					notes           = notes,      \
 					active          = active,     \
 					public          = public )
