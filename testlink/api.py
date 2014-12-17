@@ -24,7 +24,7 @@ class TLVersion(object):
 			# Check version
 			if self.version > parent._tl_version:
 				raise NotSupported("Method '%s' requires Testlink version >= %s but is %s" % (str(fn.__name__),str(self.version),str(parent._tl_version)))
-			return fn(*args,**kwargs)
+			return fn(parent,*args,**kwargs)
 		return _wrapped
 
 
