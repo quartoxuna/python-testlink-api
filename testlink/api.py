@@ -64,11 +64,11 @@ class Testlink_XML_RPC_API(object):
 				self._tl_version = Version(self._query("tl.testLinkVersion"))
 				return
 
-			except NotSupported:
+			except AttributeError:
 				# Testlink API has version 1.0
 				return
-			except Exception,e:
-				raise ConnectionError(str(e))
+			except Exception,ex:
+				raise ConnectionError(ex)
 
 	def _query(self,method,**kwargs):
 		"""Remote calls a method on the server
