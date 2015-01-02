@@ -54,8 +54,8 @@ class APIType:
 	@cvar REST: Use REST API
 	@type REST: int
 	"""
-	XML_RPC = 0
-	REST = 1
+	XML_RPC = "XML-RPC"
+	REST = "REST"
 
 class TestcaseStatus:
 	"""TestlinkStatus enum
