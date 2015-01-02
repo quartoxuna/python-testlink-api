@@ -14,6 +14,7 @@ from exceptions import APIError
 from exceptions import ConnectionError
 
 from distutils.version import LooseVersion as Version
+from urlparse import urlparse
 
 class TLVersion(object):
 	def __init__(self,version):
@@ -49,6 +50,21 @@ class Testlink_XML_RPC_API(object):
 		self._proxy = None
 		self._devkey = None
 		self._tl_version = Version("1.0")
+
+		# Check if URL is correct
+		url_components = urlparse(url)
+		if (\
+			# Must have scheme and net location
+			len(url_components.scheme.strip())==0 or \
+			len(url_components.netloc.strip())==0 or \
+			# Path must be either empty or complete
+			(\
+				len(url_components.path.strip())>0 and \
+				url_components.path not in self.RPC_PATHS\
+			)\
+		):
+			raise ConnectionError("Invalid URI (%s)" % str(url))
+
 		# Check for each possible RPC path,
 		# if a connection can be made
 		for path in self.RPC_PATHS:
@@ -61,7 +77,7 @@ class Testlink_XML_RPC_API(object):
 				# Get the version
 				# Wihtout wrapping function to avoid version check
 				# before acutally having the version
-				self._tl_version = Version(self._query("tl.testLinkVersion"))
+				self._tl_version = Version(str(self._query("tl.testLinkVersion")))
 				return
 
 			except AttributeError:

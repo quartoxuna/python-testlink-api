@@ -27,21 +27,19 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		self._patcher = patch('xmlrpclib.ServerProxy',spec=True)
 		self._mock_server = self._patcher.start()
 		self._mock_tl = Mock()
-		self._api = Testlink_XML_RPC_API("http://localhost")
+		self._api = Testlink_XML_RPC_API("http://localhost/lib/api/xmlrpc.php")
 		self._api._proxy = self._mock_server
 
 	def tearDown(self):
 		self._patcher.stop()
 
 	# We need to patch to the 'real' ServerProxy here to get good results
-	@patch('xmlrpclib.ServerProxy')
-	def test_invalid_url(self,mock_server):
-		mock_server = xmlrpclib.ServerProxy
+	def test_invalid_url(self):
 		self.assertRaises(Exception,Testlink_XML_RPC_API)
 		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"SPAM")
 		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://")
-		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://127.0.0.2:8080/lib/api/xmlrpc.php")
-		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://127.0.0.2:8080/lib/api/xmlrpc/v1/xmlrpc.php")
+		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://127.0.0.1/")
+		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://127.0.0.1/lib/api/")
 
 	def test_query(self):
 		# Define mock endpoints
