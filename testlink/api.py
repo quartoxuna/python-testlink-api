@@ -354,7 +354,7 @@ class Testlink_XML_RPC_API(object):
 					testprojectid = projectid )
 
 	@TLVersion("1.9.4")
-	def getTestPlanCustomFieldDesignValue(self, testplanid, testprojectid, fieldname, devkey=None):
+	def getTestPlanCustomFieldValue(self, testplanid, testprojectid, fieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified TestPlan
 		@since: Testlink 1.9.4
 
