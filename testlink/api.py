@@ -56,14 +56,18 @@ class Testlink_XML_RPC_API(object):
 		if (\
 			# Must have scheme and net location
 			len(url_components.scheme.strip())==0 or \
-			len(url_components.netloc.strip())==0 or \
-			# Path must be either empty or complete
-			(\
-				len(url_components.path.strip())>0 and \
-				url_components.path not in self.RPC_PATHS\
-			)\
+			len(url_components.netloc.strip())==0 \
 		):
 			raise ConnectionError("Invalid URI (%s)" % str(url))
+		if (len(url_components.path.strip())>0):
+			# If there is a scheme, check it
+			ok = False
+			for rpcp in self.RPC_PATHS:
+				if rpcp in url_components.path.strip():
+					ok = True
+					break
+			if not ok:
+				raise ConnectionError("Invalid URI (%s)" % str(url))
 
 		# Check for each possible RPC path,
 		# if a connection can be made
@@ -84,7 +88,8 @@ class Testlink_XML_RPC_API(object):
 				# Testlink API has version 1.0
 				return
 			except Exception,ex:
-				raise ConnectionError(ex)
+				continue
+		raise ConnectionError("Cannot connect to Testlink API @ %s" % str(url))
 
 	def _query(self,method,**kwargs):
 		"""Remote calls a method on the server
