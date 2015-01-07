@@ -16,7 +16,7 @@ from objects import *
 
 __all__ = [\
 		# exceptions.py
-		'NotSupported','APIError','InvalidURL', \
+		'NotSupported','APIError','ConnectionError', \
 
 		# enums.py
 		'ExecutionType','ImportanceLevel','DuplicateStrategy','CustomFieldDetails','APIType', \
