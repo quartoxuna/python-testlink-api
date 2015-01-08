@@ -35,7 +35,7 @@ setup(
 	version='0.11',
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
-	author_email='kai.borowiak@secunet.com',
+	author_email='info@quartoxuna.com',
 	url='https://github.com/quartoxuna/python-testlink-api',
 	packages=_PACKAGES_,
 	keywords='testlink api xmlrpc python',

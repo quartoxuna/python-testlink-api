@@ -1,8 +1,4 @@
-*~
 *.pyc
-*.swp
-
-*.egg-info/*
+*.egg*
 build/*
 dist/*
-apidoc/*
