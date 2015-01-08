@@ -8,10 +8,10 @@ from setuptools import setup
 from setuptools import Command
 
 _PACKAGES_ = find_packages()
-_APIDOC_ = "apidoc"
+_APIDOC_ = os.path.join("build","docs")
 
-class GenerateEpydoc(Command):
-	description = "custom command, that generates documentation using the epydoc module"
+class BuildDoc(Command):
+	description = "builds documentation using the epydoc module"
 	user_options = []
 	def initialize_options(self):
 		from epydoc import cli as epydoc_cli
@@ -31,13 +31,18 @@ class GenerateEpydoc(Command):
 		epydoc_cli.main(self.options,_PACKAGES_)
 
 setup(
-	name='testlink',
+	name='python-testlink-api',
 	version='0.11',
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
 	author_email='kai.borowiak@secunet.com',
+	url='https://github.com/quartoxuna/python-testlink-api',
 	packages=_PACKAGES_,
 	keywords='testlink api xmlrpc python',
-	cmdclass={'epydoc':GenerateEpydoc},
+
+	tests_require=['mock'],
 	test_suite='test',
+
+	extras_require = {'apidoc': ['epydoc']},
+	cmdclass={'build_doc':BuildDoc},
 )
