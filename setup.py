@@ -23,7 +23,7 @@ class BuildDoc(Command):
 		self.options.action = "html"
 		self.options.target = _APIDOC_
 		if not os.path.isdir(_APIDOC_):
-			os.mkdir(_APIDOC_)
+			os.makedirs(_APIDOC_)
 	def finalize_options(self):
 		pass
 	def run(self):
