@@ -115,6 +115,8 @@ class Testlink_XML_RPC_API(object):
 		except xmlrpclib.Fault,f:
 			if (f.faultCode == NotSupported.errorCode):
 				raise NotSupported(method)
+		except xmlrpclib.ProtocolError,pe:
+			raise NotSupported(method)
 		else:
 			# Check for API error [{'code': 123, 'message': foo}]
 			if isinstance(resp,list) and len(resp)==1:
