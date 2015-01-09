@@ -377,3 +377,56 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		query.assert_called_with('tl.getLatestBuildForTestPlan',devKey=None,testplanid=test_data)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getLatestBuildForTestPlan)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getBuildsForTestPlan(self,query):
+		"""XML-RPC API call 'getBuildsForTestPlan' (1.0)"""
+		query.return_value = [randict("name","id"),randict("name","id")]
+		test_data = input()
+		self.assertEquals(self._api.getBuildsForTestPlan(test_data),query.return_value)
+		query.assert_called_with('tl.getBuildsForTestPlan',devKey=None,testplanid=test_data)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.getBuildsForTestPlan)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getExecCountersByBuild(self,query):
+		"""XML-RPC API call 'getExecCountersByBuild' (1.9.4)"""
+		query.return_value = [randict("a","b","c")]
+		test_data = input()
+		self.assertRaises(NotSupported,self._api.getExecCountersByBuild)
+		self._api._tl_version = Version("1.9.4")
+		self.assertEquals(self._api.getExecCountersByBuild(test_data),query.return_value)
+		query.assert_called_with('tl.getExecCountersByBuild',devKey=None,testplanid=test_data)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_createPlatform(self,query):
+		"""XML-RPC API call 'createPlatform' (1.9.6)"""
+		query.return_value = randict("message")
+		# Check default params
+		defaults = randict("testprojectname","platformname")
+		self.assertRaises(NotSupported,self._api.createPlatform)
+		self._api._tl_version = Version("1.9.6")
+		self.assertEquals(self._api.createPlatform(**defaults),query.return_value)
+		query.assert_called_with('tl.createPlatform',\
+						devKey = None,\
+						notes = '',\
+						**defaults\
+					)
+		# Check with specified parameters
+		non_defaults = randict("testprojectname","platformname","notes")
+		self.assertEquals(self._api.createPlatform(**non_defaults),query.return_value)
+		query.assert_called_with('tl.createPlatform',\
+						devKey = None,\
+						**non_defaults\
+					)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getProjectPlatforms(self,query):
+		"""XML-RPC API call 'getProjectPlatforms' (1.9.6)"""
+		query.return_value = [randict("name","id"),randict("name","id")]
+		test_data = input()
+		self.assertRaises(NotSupported,self._api.getProjectPlatforms)
+		self._api._tl_version = Version("1.9.6")
+		self.assertEquals(self._api.getProjectPlatforms(test_data),query.return_value)
+		query.assert_called_with('tl.getProjectPlatforms',devKey = None,testprojectid = test_data)
+
