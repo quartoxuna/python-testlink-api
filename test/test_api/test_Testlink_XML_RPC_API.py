@@ -61,10 +61,9 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	def test_invalid_url(self):
 		"""XML-RPC API with invalid URL"""
 		self.assertRaises(Exception,Testlink_XML_RPC_API)
-		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"SPAM")
+		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"")
+		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"foo")
 		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://")
-		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://127.0.0.1/")
-		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://127.0.0.1/lib/api/")
 
 	def test_query(self):
 		"""XML-RPC query wrapper"""
