@@ -94,6 +94,17 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		self._api._query("passed",**data)
 		self._mock_server.passed.assert_called_with(dict(a=data['a'],b=data['b'],c=data['c'],devKey=key))
 
+	def test_globalDevKey(self):
+		"""Global DevKey setting"""
+		key = input(20)
+		test_data = randict("foo","bar")
+		mock = MagicMock()
+		self._mock_server.attach_mock(mock,"mockMethod")
+		self._api._devkey = key
+		self._api._query("mockMethod",**test_data)
+		test_data["devKey"] = key
+		mock.assert_called_with(test_data)
+
 	#
 	# Since the raw API calls are very simple, some checks can be done
 	# together. For each raw call, the following things are checked:
