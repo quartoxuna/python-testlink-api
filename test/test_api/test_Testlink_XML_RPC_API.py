@@ -138,10 +138,15 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_testLinkVersion(self,query):
-		query.return_value = "1.3.3.7"
+		"""'testLinkVersion' (1.9.9)"""
+		# First _query fails because NotSupported
+		query.return_value = "1.9.9"
+		query.side_effect = NotSupported('tl.testLinkVersion')
 		self.assertRaises(NotSupported,self._api.testLinkVersion)
+
+		query.side_effect = None
 		self._api._tl_version = Version("1.9.9")
-		self.assertEquals(self._api.testLinkVersion(),"1.3.3.7")
+		self.assertEquals(self._api.testLinkVersion(),query.return_value)
 		query.assert_called_with('tl.testLinkVersion')
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
