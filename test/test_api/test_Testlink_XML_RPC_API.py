@@ -59,6 +59,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	# We need to patch to the 'real' ServerProxy here to get good results
 	def test_invalid_url(self):
+		"""XML-RPC API with invalid URL"""
 		self.assertRaises(Exception,Testlink_XML_RPC_API)
 		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"SPAM")
 		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://")
@@ -66,6 +67,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		self.assertRaises(ConnectionError,Testlink_XML_RPC_API,"http://127.0.0.1/lib/api/")
 
 	def test_query(self):
+		"""XML-RPC query wrapper"""
 		# Define mock endpoints
 		self._mock_server.passed = Mock(return_value="SPAM!")
 		self._mock_server.error = Mock(return_value=[{'code':1337,'message':'SPAM!'}])
@@ -94,24 +96,34 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		self._mock_server.passed.assert_called_with(dict(a=data['a'],b=data['b'],c=data['c'],devKey=key))
 
 	#
-	# The following tests have all the same structure:
+	# Since the raw API calls are very simple, some checks can be done
+	# together. For each raw call, the following things are checked:
+	# 	- Method raises NotSupported if called within wrong API version
+	# 	- No manipulation of server response (result of _query method call)
+	# 	- Correct naming and forwarding to internal _query method
 	#
 	# @patch("testlink.api.Testlink_XML_RPC_API._query")
 	# def test_foo(self,query):
+	# 	"""XML-RPC API call 'foo' (x.x.x)"""	
 	#
-	#     # Mock already query result
-	#     query.return_value = input()
+	# 	# Mock query result (since this has been checked already)
+	# 	query.return_value = input
 	#
-	#     # Check if version check succeeds
-	#     self.assertRaises(NotSupported,self._api.foo,*args,**kwargs)
+	# 	# Define test data
+	# 	test_data = randict("foo","bar")
 	#
-	#     # Patch Testlink Version if needed to get pass the TLVersion decorator (OPTIONAL)
-	#     self._api._tl_version = Version("x.x.x")
+	# 	# Version check if api version > 1.0
+	# 	self.assertRaises(NotSupported,self._api.foo)
+	# 	self._api._tl_version = Version("x.x.x")
 	#
-	#     # Verify result and matches with query result
-	#     # Also verify passed arguments
-	#     self.assertEquals(self._api.foo(), query.return_value)
-	#     query.assert_called_with('foo',*args,**kwargs)
+	# 	# Verify result and matches with query result
+	# 	# Also verify passed arguments
+	# 	self.assertEquals(self._api.foo(**test_data), query.return_value)
+	# 	query.assert_called_with('foo',**test_data)
+	#
+	# 	# Version check if api version = 1.0
+	# 	self._api._tl_version = Version("0.9")
+	# 	self.assertRaises(NotSupported,self._api.foo)
 	#
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
@@ -124,6 +136,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_about(self,query):
+		"""XML-RPC API call 'about' (1.0)"""
 		query.return_value = input(50)
 		self.assertEquals(self._api.about(),query.return_value)
 		query.assert_called_with('tl.about')
@@ -132,6 +145,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_sayHello(self,query):
+		"""XML-RPC API call 'sayHello' (1.0)"""
 		query.return_value = input()
 		self.assertEquals(self._api.sayHello(),query.return_value)
 		query.assert_called_with('tl.sayHello')
@@ -140,6 +154,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_repeat(self,query):
+		"""XML-RPC API call 'repeat' (1.0)"""
 		query.return_value = input(20)
 		test_data = query.return_value
 		self.assertEquals(self._api.repeat(test_data),query.return_value)
@@ -149,6 +164,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_checkDevKey(self,query):
+		"""XML-RPC API call 'checkDevKey' (1.0)"""
 		query.return_value = True
 		test_data = input()
 		self.assertEquals(self._api.checkDevKey(test_data),query.return_value)
@@ -158,6 +174,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_doesUserExist(self,query):
+		"""XML-RPC API call 'doesUserExist' (1.0)"""
 		query.return_value = True
 		test_data = input()
 		self.assertEquals(self._api.doesUserExist(test_data),query.return_value)
@@ -167,6 +184,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getUserByLogin(self,query):
+		"""XML-RPC API call 'getUserByLogin' (1.9.8)"""
 		query.return_value = input()
 		test_data = input()
 		self.assertRaises(NotSupported,self._api.getUserByLogin)
@@ -176,6 +194,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getUserByID(self,query):
+		"""XML-RPC API call 'getUserByID' (1.9.8)"""
 		query.return_value = randict("name","id")
 		test_data = input(2)
 		self.assertRaises(NotSupported,self._api.getUserByID)
@@ -185,6 +204,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getFullPath(self,query):
+		"""XML-RPC API call 'getFullPath (1.0)"""
 		query.return_value = input()
 		test_data = input()
 		self.assertEquals(self._api.getFullPath(test_data),query.return_value)
@@ -194,6 +214,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_createTestProject(self,query):
+		"""XML-RPC API call 'createTestProject' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
 		defaults = randict("name","prefix")
@@ -231,6 +252,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getProjects(self,query):
+		"""XML-RPC API call 'getProjects' (1.0)"""
 		query.return_value = [randict("name")]
 		self.assertEquals(self._api.getProjects(),query.return_value)
 		query.assert_called_with('tl.getProjects',devKey = None)
@@ -239,6 +261,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getTestProjectByName(self,query):
+		"""XML-RPC API call 'getTestProjectByName' (1.0)"""
 		test_data = randict("name")
 		query.return_value = [test_data]
 		self.assertEquals(self._api.getTestProjectByName(test_data['name']),query.return_value)
@@ -248,6 +271,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_createTestPlan(self,query):
+		"""XML-RPC API call 'createTestPlan' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
 		defaults = randict("name","project")
@@ -276,6 +300,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getTestPlanByName(self,query):
+		"""XML-RPC API call getTestPlanByName' (1.0)"""
 		test_data = randict("name","projectname")
 		query.return_value = [test_data]
 		self.assertEquals(self._api.getTestPlanByName(**test_data),query.return_value)
@@ -285,6 +310,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getProjectTestPlans(self,query):
+		"""XML-RPC API call 'getProjectTestPlans' (1.0)"""
 		test_data = input()
 		query.return_value = [randict("name")]
 		self.assertEquals(self._api.getProjectTestPlans(test_data),query.return_value)
@@ -294,6 +320,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getTestPlanCustomFieldValue(self,query):
+		"""XML-RPC API call 'getTestPlanCustomFieldValue' (1.9.4)"""
 		test_data = randict("testplanid","testprojectid","fieldname")
 		query.return_value = input()
 		self.assertRaises(NotSupported,self._api.getTestPlanCustomFieldValue)
@@ -308,6 +335,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_createBuild(self,query):
+		"""XML-RPC API call 'createBuild' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
 		defaults = randict("testplanid","name")
@@ -332,6 +360,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getLatestBuildForTestPlan(self,query):
+		"""XML-RPC API call 'getLatestBuildForTestPlan' (1.0)"""
 		query.return_value = [randict("name","id")]
 		test_data = input()
 		self.assertEquals(self._api.getLatestBuildForTestPlan(test_data),query.return_value)
