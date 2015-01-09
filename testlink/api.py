@@ -73,8 +73,8 @@ class Testlink_XML_RPC_API(object):
 					tmp += path
 				self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
 				self._proxy.system.listMethods()
+				break
 			except Exception,ex:
-				print(str(ex))
 				self._proxy = None
 				continue
 		if self._proxy is None:

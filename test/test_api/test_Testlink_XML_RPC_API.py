@@ -44,6 +44,13 @@ def randict(*args):
 		res[arg] = input()
 	return res
 	
+class ServerMock(Mock):
+	class system:
+		@staticmethod
+		def listMethods():
+			pass
+	def __init__(self,*args,**kwargs):
+		super(ServerMock,self).__init__(*args,**kwargs)
 
 class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
@@ -53,7 +60,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	def setUp(self):
 		"""Needed to connect to a mocked Server endpoint in each test"""
-		self._patcher = patch('xmlrpclib.ServerProxy',spec=True)
+		self._patcher = patch('xmlrpclib.ServerProxy',new=ServerMock,spec=True)
 		self._mock_server = self._patcher.start()
 		self._api = Testlink_XML_RPC_API("http://localhost/lib/api/xmlrpc.php")
 		self._api._proxy = self._mock_server
@@ -102,12 +109,11 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		"""Global DevKey setting"""
 		key = input(20)
 		test_data = randict("foo","bar")
-		mock = MagicMock()
-		self._mock_server.attach_mock(mock,"mockMethod")
 		self._api._devkey = key
+		self._mock_server.mockMethod = MagicMock()
 		self._api._query("mockMethod",**test_data)
 		test_data["devKey"] = key
-		mock.assert_called_with(test_data)
+		self._mock_server.mockMethod.assert_called_with(test_data)
 
 	#
 	# Since the raw API calls are very simple, some checks can be done
