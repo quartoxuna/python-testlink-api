@@ -51,6 +51,10 @@ class Testlink_XML_RPC_API(object):
 		self._devkey = None
 		self._tl_version = Version("1.0")
 
+		# Patch URL
+		if (url.endswith('/')):
+			url = url[:-1]
+
 		# Check if URL is correct
 		url_components = urlparse(url)
 		if (\
@@ -59,15 +63,6 @@ class Testlink_XML_RPC_API(object):
 			len(url_components.netloc.strip())==0 \
 		):
 			raise ConnectionError("Invalid URI (%s)" % str(url))
-		if (len(url_components.path.strip())>0):
-			# If there is a scheme, check it
-			ok = False
-			for rpcp in self.RPC_PATHS:
-				if rpcp in url_components.path.strip():
-					ok = True
-					break
-			if not ok:
-				raise ConnectionError("Invalid URI (%s)" % str(url))
 
 		# Check for each possible RPC path,
 		# if a connection can be made
@@ -77,19 +72,22 @@ class Testlink_XML_RPC_API(object):
 				if not tmp.endswith(path):
 					tmp += path
 				self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
-
-				# Get the version
-				# Wihtout wrapping function to avoid version check
-				# before acutally having the version
-				self._tl_version = Version(str(self._query("tl.testLinkVersion")))
-				return
-
-			except AttributeError:
-				# Testlink API has version 1.0
-				return
 			except Exception,ex:
 				continue
-		raise ConnectionError("Cannot connect to Testlink API @ %s" % str(url))
+		if self._proxy is None:
+			raise ConnectionError("Cannot connect to Testlink API @ %s" % str(url))
+
+		try:
+			# Get the version
+			# Wihtout wrapping function to avoid version check
+			# before acutally having the version
+			self._tl_version = Version(str(self._query("tl.testLinkVersion")))
+		except NotSupported,ne:
+			# Testlink API has version 1.0
+			return
+		except AttributeError,ae:
+			# Mocked _query during tests
+			return
 
 	def _query(self,method,**kwargs):
 		"""Remote calls a method on the server
