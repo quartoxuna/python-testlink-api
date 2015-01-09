@@ -72,7 +72,10 @@ class Testlink_XML_RPC_API(object):
 				if not tmp.endswith(path):
 					tmp += path
 				self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
+				self._proxy.system.listMethods()
 			except Exception,ex:
+				print(str(ex))
+				self._proxy = None
 				continue
 		if self._proxy is None:
 			raise ConnectionError("Cannot connect to Testlink API @ %s" % str(url))
@@ -113,8 +116,6 @@ class Testlink_XML_RPC_API(object):
 		except xmlrpclib.Fault,f:
 			if (f.faultCode == NotSupported.errorCode):
 				raise NotSupported(method)
-		except xmlrpclib.ProtocolError,pe:
-			raise NotSupported(method)
 		else:
 			# Check for API error [{'code': 123, 'message': foo}]
 			if isinstance(resp,list) and len(resp)==1:
