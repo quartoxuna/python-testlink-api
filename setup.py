@@ -6,6 +6,7 @@ import os
 from setuptools import find_packages
 from setuptools import setup
 from setuptools import Command
+import testlink
 
 _PACKAGES_ = find_packages()
 _APIDOC_ = os.path.join("build","docs")
@@ -32,7 +33,7 @@ class BuildDoc(Command):
 
 setup(
 	name='python-testlink-api',
-	version='0.11',
+	version=testlink.__version__,
 	description='Testlink API Wrapper library',
 	author='Kai Borowiak',
 	author_email='info@quartoxuna.com',

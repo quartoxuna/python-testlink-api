@@ -6,6 +6,8 @@
 @summary: Testlink API Wrapper
 """
 
+__version__ = '0.11'
+
 # EXPORTS
 from exceptions import *
 from enums import *
