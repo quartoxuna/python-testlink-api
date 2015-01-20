@@ -951,6 +951,12 @@ class TestCase(TestlinkObject):
 		else:
 			self.exec_status = None
 
+		# Set exec notes if available
+		if ('execution_notes' in kwargs):
+			self.execution_notes = kwargs['execution_notes']
+		else:
+			self.execution_notes = None
+
 		# Set common attributes
 		self.version = int(version)
 		self.status = status
