@@ -1045,6 +1045,7 @@ class TestCase(TestlinkObject):
 						steps = case.steps,
 						preconditions = case.preconditions,
 						importance = case.importance,
+						execution = case.execution_type,
 						customfields = case.customfields,
 						order = order,
 						actiononduplicate = on_duplicate
