@@ -717,7 +717,7 @@ class Testlink_XML_RPC_API(object):
 					steps                  = steps,           \
 					preconditions          = preconditions,   \
 					importance             = importance,      \
-					execution              = execution,       \
+					executiontype          = execution,       \
 					order                  = order,           \
 					checkduplicatedname    = checkduplicates, \
 					actiononduplicatedname = actiononduplicate, \
