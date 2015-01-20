@@ -348,7 +348,12 @@ class TestProject(TestlinkObject):
 			# Server response is a list
 			if len(response)==1:
 				response = response[0]
-			yield TestCase(api=self._api,parent_testproject=self,**response)
+
+			# Need to get testsuite to set as parent
+			suite_resp = self._api.getTestSuiteById(response['testsuite_id'])
+			suite = TestSuite(**suite_resp)
+
+			yield TestCase(api=self._api,parent_testproject=self,parent_testsuite=suite,**response)
 		else:
 			# Get all TestCases for the TestProject
 			raise NotImplementedError("Cannot get all TestCases for a TestProject yet")
