@@ -350,7 +350,9 @@ class TestProject(TestlinkObject):
 				response = response[0]
 
 			# Need to get testsuite to set as parent
-			suite = self._api.getTestSuiteById(response['testsuite_id'])
+
+			suite_resp = self._api.getTestSuiteById(response['testsuite_id'])
+			suite = TestSuite(**suite_resp)
 
 			yield TestCase(api=self._api,parent_testproject=self,parent_testsuite=suite,**response)
 		else:
@@ -1044,6 +1046,7 @@ class TestCase(TestlinkObject):
 						steps = case.steps,
 						preconditions = case.preconditions,
 						importance = case.importance,
+						execution = case.execution_type,
 						customfields = case.customfields,
 						order = order,
 						actiononduplicate = on_duplicate
