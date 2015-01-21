@@ -990,6 +990,8 @@ class TestCase(TestlinkObject):
 
 	def getLastExecutionResult(self,testplanid):
 		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id)
+		if isinstance(resp,list) and len(resp)==1:
+			resp = resp[0]
 		return TestCase.Execution(**resp)
 
 	def deleteLastExecution(self,testplanid):
