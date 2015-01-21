@@ -9,9 +9,14 @@
 # IMPORTS
 import xmlrpclib
 from log import log
+
 from exceptions import NotSupported
 from exceptions import APIError
 from exceptions import ConnectionError
+
+from enums import ExecutionType
+from enums import ImportanceLevel
+from enums import DuplicateStrategy
 
 from distutils.version import LooseVersion as Version
 from urlparse import urlparse
@@ -586,7 +591,7 @@ class Testlink_XML_RPC_API(object):
 					executionid = executionid )
 	
 	@TLVersion("1.0")
-	def createTestSuite(self, name, testprojectid, details=None, parentid=None, order=None, checkduplicates=True, actiononduplicate='block', devkey=None):
+	def createTestSuite(self, name, testprojectid, details=None, parentid=None, order=None, checkduplicates=True, actiononduplicate=DuplicateStrategy.BLOCK, devkey=None):
 		"""Creates a new TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -602,7 +607,7 @@ class Testlink_XML_RPC_API(object):
 		@type order: int
 		@param checkduplicates: <OPTIONAL> Enables duplicate handling (Default is: True)
 		@type checkduplicates: bool
-		@param actiononduplicate: <OPTIONAL> Action on duplicate (Default is: 'block')
+		@param actiononduplicate: <OPTIONAL> Action on duplicate
 		@param actiononduplicate: str
 		@returns: Server response
 		@rtype: dict
@@ -674,7 +679,7 @@ class Testlink_XML_RPC_API(object):
 					testplanid = planid )
 	
 	@TLVersion("1.0")
-	def createTestCase(self, name, suiteid, projectid, author, summary, steps=[], preconditions=None, importance=0, execution=0, order=None, checkduplicates=True, actiononduplicate='block', customfields={}, devkey=None):
+	def createTestCase(self, name, suiteid, projectid, author, summary, steps=[], preconditions=None, importance=ImportanceLevel.MEDIUM, execution=ExecutionType.MANUAL, order=None, checkduplicates=True, actiononduplicate=DuplicateStrategy.BLOCK, customfields={}, devkey=None):
 		"""Creates a new TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
