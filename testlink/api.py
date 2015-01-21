@@ -913,7 +913,7 @@ class Testlink_XML_RPC_API(object):
 					details     = details )
 	
 	@TLVersion("1.0")
-	def getTestCasesForTestPlan(self, planid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executionstatus=None, executiontype=None, steps=False, devkey=None):
+	def getTestCasesForTestPlan(self, planid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executionstatus=None, executiontype=None, steps=False, details='full', devkey=None):
 		"""Returns all TestCases for a specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -940,18 +940,25 @@ class Testlink_XML_RPC_API(object):
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self._query("tl.getTestCasesForTestPlan",        \
-					devKey        = devkey,          \
-					testplanid    = planid,          \
-					testcaseid    = testcaseid,      \
-					buidlid       = buildid,         \
-					keywordid     = keywordid,       \
-					keywords      = keywords,        \
-					executed      = executed,        \
-					assignedto    = assignedto,      \
-					executestatus = executionstatus, \
-					executiontype = executiontype,   \
-					getstepsinfo   = steps )
+		arguments = {
+				"devKey"        : devkey,          \
+				"testplanid"    : planid,          \
+				"testcaseid"    : testcaseid,      \
+				"buidlid"       : buildid,         \
+				"keywordid"     : keywordid,       \
+				"keywords"      : keywords,        \
+				"executed"      : executed,        \
+				"assignedto"    : assignedto,      \
+				"executestatus" : executionstatus, \
+				"executiontype" : executiontype,   \
+				"getstepsinfo"  : steps            \
+			}
+
+		if self._tl_version >= Version("1.9.4"):
+			# Add 'details' attribute
+			arguments['details'] = details
+
+		return self._query("tl.getTestCasesForTestPlan", **arguments)
 	
 	@TLVersion("1.0")
 	def addTestCaseToTestPlan(self, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
