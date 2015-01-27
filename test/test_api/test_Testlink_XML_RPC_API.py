@@ -688,3 +688,26 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 						devKey = None,\
 						**non_defaults\
 					)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_deleteTestCaseSteps(self,query):
+		"""'deleteTestCaseSteps' (1.9.4)"""
+		query.return_value = randict("message")
+		self.assertRaises(NotSupported,self._api.deleteTestCaseSteps)
+		self._api._tl_version = Version("1.9.4")
+		# Check default params
+		defaults = randict("testcaseexternalid","steps")
+		self.assertEquals(self._api.deleteTestCaseSteps(**defaults),query.return_value)
+		query.assert_called_with('tl.deleteTestCaseSteps',\
+						devKey = None,\
+						version = None,\
+						**defaults\
+					)
+		# Check with specified parameters
+		non_defaults = randict("testcaseexternalid","steps","version")
+		self.assertEquals(self._api.deleteTestCaseSteps(**non_defaults),query.return_value)
+		query.assert_called_with('tl.deleteTestCaseSteps',\
+						devKey = None,\
+						**non_defaults\
+					)
+		
