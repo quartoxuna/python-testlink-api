@@ -944,7 +944,7 @@ class Testlink_XML_RPC_API(object):
 				"devKey"        : devkey,          \
 				"testplanid"    : planid,          \
 				"testcaseid"    : testcaseid,      \
-				"buidlid"       : buildid,         \
+				"buildid"       : buildid,         \
 				"keywordid"     : keywordid,       \
 				"keywords"      : keywords,        \
 				"executed"      : executed,        \
@@ -1027,7 +1027,7 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
-		return self._query("tl.remotePlatformFromTestPlan", \
+		return self._query("tl.removePlatformFromTestPlan", \
 					devKey = devkey, \
 					testplanid = testplanid, \
 					platformname = platformname )
