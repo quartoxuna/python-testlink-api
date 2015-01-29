@@ -937,6 +937,8 @@ class Testlink_XML_RPC_API(object):
 		@type executiontype: int
 		@param steps: <OPTIONAL> Toggles if steps are returned
 		@type steps: bool
+		@param details: <OPTIONAL> Set detail amount (Since Testlink 1.9.4)
+		@type details: str
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
