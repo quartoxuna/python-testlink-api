@@ -21,6 +21,10 @@ class TLVersionDecoratorTests(unittest.TestCase):
 		super(TLVersionDecoratorTests,self).__init__(*args,**kwargs)
 		self._testMethodDoc = "@TLVersion: " + self._testMethodDoc
 
+	def tearDown(self):
+		# Restore defaults
+		TLVersion.IGNORE = False
+
 	def dummy(self,*args,**kwargs):
 		pass
 
@@ -42,3 +46,14 @@ class TLVersionDecoratorTests(unittest.TestCase):
 		for v in higher:
 			decorated = TLVersion(str(v))
 			self.assertRaises(NotSupported,decorated(self.dummy),self)
+
+	def test_ignore(self):
+		"""Ignore version checks"""
+		self.assertEquals(TLVersion.IGNORE,False)
+		TLVersion.IGNORE = True
+		versions = ("1.0","0.9","1.1")
+		for v in versions:
+			decorated = TLVersion(str(v))
+			self.assertEquals(decorated.IGNORE,True)
+			decorated(self.dummy)(self)
+

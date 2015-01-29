@@ -30,7 +30,7 @@ __all__ = [\
 		'TestlinkXMLRPCServer', \
 
 		# xml_rpc_api.py
-		'Testlink_XML_RPC_API', \
+		'Testlink_XML_RPC_API','TLVersion', \
 
 		# objects.py
 		'Testlink','TestProject','TestSuite','TestCase','TestPlan','Build','Platform' \

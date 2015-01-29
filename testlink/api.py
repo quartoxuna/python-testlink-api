@@ -22,13 +22,14 @@ from distutils.version import LooseVersion as Version
 from urlparse import urlparse
 
 class TLVersion(object):
+	IGNORE = False
 	def __init__(self,version):
 		self.version = Version(version)
 
 	def __call__(self,fn):
 		def _wrapped(parent,*args,**kwargs):
 			# Check version
-			if self.version > parent._tl_version:
+			if (self.version > parent._tl_version) and not TLVersion.IGNORE:
 				raise NotSupported("Method '%s' requires Testlink version >= %s but is %s" % (str(fn.__name__),str(self.version),str(parent._tl_version)))
 			return fn(parent,*args,**kwargs)
 		return _wrapped
