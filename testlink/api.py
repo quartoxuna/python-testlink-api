@@ -557,7 +557,7 @@ class Testlink_XML_RPC_API(object):
 	setTestCaseExecutionResult = reportTCResult
 
 	@TLVersion("1.0")
-	def getLastExecutionResult(self, testplanid, testcaseid=None, testcaseexternalid=None, devkey=None):
+	def getLastExecutionResult(self, testplanid, testcaseid=None, testcaseexternalid=None, platformid=None, platformname=None, buildid=None, buildname=None, bugs=False, devkey=None):
 		"""Returns the execution result for a specified TestCase and TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -567,14 +567,34 @@ class Testlink_XML_RPC_API(object):
 		@type testcaseid: int
 		@param testcaseexternalid: <OPTIONAL> The external ID of the TestCase. If not given, the internal ID must be set
 		@type testcaseexternalid: int
+		@param platformid: <OPTIONAL> The internal ID of the platform (Since Testlink 1.9.9)
+		@type platformid: int
+		@param platformname: <OPTIONAL> The name of the platform (Since Testlink 1.9.9)
+		@type platformname: str
+		@param buildid: <OPTIONAL> The internal ID of the build (Since Testlink 1.9.9)
+		@type buildid: int
+		@param buildname: <OPTIONAL> The name of the build (Since Testlink 1.9.9)
+		@type buildname: str
+		@param bugs: <OPTIONAL> Also get related bugs (Since Testlink 1.9.9)
+		@type bugs: bool
 		@returns: Matching result
 		@rtype: dict
 		"""
-		return self._query("tl.getLastExecutionResult",         \
-					devKey             = devkey,     \
-					testplanid         = testplanid, \
-					testcaseid         = testcaseid, \
-					testcaseexternalid = testcaseexternalid )
+		arguments = {
+				"devKey"             : devkey,     \
+				"testplanid"         : testplanid, \
+				"testcaseid"         : testcaseid, \
+				"testcaseexternalid" : testcaseexternalid\
+			}
+
+		if self._tl_version >= Version("1.9.9"):
+			arguments['platformid'] = platformid
+			arguments['platformname'] = platformname
+			arguments['buildid'] = buildid
+			arguments['buildname'] = buildname
+			arguments['options'] = {'getBugs':bugs}
+
+		return self._query("tl.getLastExecutionResult",**arguments)
 
 	@TLVersion("1.0")
 	def deleteExecution(self, executionid, devkey=None):

@@ -497,11 +497,51 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	def test_getLastExecutionResult(self,query):
 		"""'getLastExecutionResult' (1.0)"""
 		query.return_value = randict("id","name","status")
-		test_data = randict("testplanid","testcaseid","testcaseexternalid")
-		self.assertEquals(self._api.getLastExecutionResult(**test_data),query.return_value)
-		query.assert_called_with('tl.getLastExecutionResult',devKey=None,**test_data)
+		# Check default params
+		defaults = randict("testplanid")
+		self.assertEquals(self._api.getLastExecutionResult(**defaults),query.return_value)
+		query.assert_called_with('tl.getLastExecutionResult',\
+						devKey = None,\
+						testcaseid = None,\
+						testcaseexternalid = None,\
+						**defaults\
+					)
+		# Check with specified parameters
+		non_defaults = randict("testplanid","testcaseid","testcaseexternalid")
+		self.assertEquals(self._api.getLastExecutionResult(**non_defaults),query.return_value)
+		query.assert_called_with('tl.getLastExecutionResult',\
+						devKey = None,\
+						**non_defaults\
+					)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getLastExecutionResult)
+		# Check new arguments since version 1.9.9
+		self._api._tl_version = Version("1.9.9")
+		self.assertEquals(self._api.getLastExecutionResult(**defaults),query.return_value)
+		query.assert_called_with('tl.getLastExecutionResult',\
+						devKey = None,\
+						testplanid = defaults['testplanid'],\
+						testcaseid = None,\
+						testcaseexternalid = None,\
+						platformid = None,\
+						platformname = None,\
+						buildid = None,\
+						buildname = None,\
+						options = {'getBugs':False}\
+					)
+		non_defaults.update(randict("platformid","platformname","buildid","buildname","bugs"))
+		self.assertEquals(self._api.getLastExecutionResult(**non_defaults),query.return_value)
+		query.assert_called_with('tl.getLastExecutionResult',\
+						devKey = None,\
+						testplanid = non_defaults['testplanid'],\
+						testcaseid = non_defaults['testcaseid'],\
+						testcaseexternalid = non_defaults['testcaseexternalid'],\
+						platformid = non_defaults['platformid'],\
+						platformname = non_defaults['platformname'],\
+						buildid = non_defaults['buildid'],\
+						buildname = non_defaults['buildname'],\
+						options = {'getBugs':non_defaults['bugs']}\
+					)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_deleteExecution(self,query):
