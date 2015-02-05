@@ -1004,7 +1004,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getTestSuiteCustomFieldDesignValue(self,query):
 		"""'getTestSuiteCustomFieldDesignValue' (1.9.4)"""
-		query.return_value = input()
+		query.return_value = randict("name","id","value")
 		test_data = randict("testsuiteid","testprojectid","fieldname")
 		self.assertRaises(NotSupported,self._api.getTestSuiteCustomFieldDesignValue)
 		self._api._tl_version = Version("1.9.4")
@@ -1057,3 +1057,277 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 						devKey = None,\
 						**test_data\
 					)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getTestCaseCustomFieldExecutionValue(self,query):
+		"""'getTestCaseCustomFieldExecutionValue' (1.9.4)"""
+		query.return_value = randict("name","id","value")
+		test_data = randict("executionid","testplanid","version","projectid","fieldname")
+		self.assertRaises(NotSupported,self._api.getTestCaseCustomFieldExecutionValue)
+		self._api._tl_version = Version("1.9.4")
+		self.assertEquals(self._api.getTestCaseCustomFieldExecutionValue(**test_data),query.return_value)
+		query.assert_called_with('tl.getTestCaseCustomFieldExecutionValue',\
+						devKey = None,\
+						executionid = test_data['executionid'],\
+						testplanid = test_data['testplanid'],\
+						version = test_data['version'],\
+						testprojectid = test_data['projectid'],\
+						customfieldname = test_data['fieldname']\
+					)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getTestCaseCustomFieldTestPlanDesignValue(self,query):
+		"""'getTestCaseCustomFieldTestPlanDesignValue' (1.9.4)"""
+		query.return_value = randict("name","id","value")
+		test_data = randict("linkid","testplanid","version","testcaseid","fieldname")
+		self.assertRaises(NotSupported,self._api.getTestCaseCustomFieldTestPlanDesignValue)
+		self._api._tl_version = Version("1.9.4")
+		self.assertEquals(self._api.getTestCaseCustomFieldTestPlanDesignValue(**test_data),query.return_value)
+		query.assert_called_with('tl.getTestCaseCustomFieldTestPlanDesignValue',\
+						devKey = None,\
+						linkid = test_data['linkid'],\
+						testplanid = test_data['testplanid'],\
+						version = test_data['version'],\
+						testcaseid = test_data['testcaseid'],\
+						customfieldname = test_data['fieldname']\
+					)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_uploadAttachment(self,query):
+		"""'uploadAttachment' (1.0)"""
+		query.return_value = randict("message")
+		# Check default params
+		defaults = randict("objectid","objecttable","name","mime","content")
+		self.assertEquals(self._api.uploadAttachment(**defaults),query.return_value)
+		query.assert_called_with('tl.uploadAttachment',\
+						devKey = None,\
+						fkid = defaults['objectid'],\
+						fktable = defaults['objecttable'],\
+						filename = defaults['name'],\
+						filetype = defaults['mime'],\
+						content = defaults['content'],\
+						title = None,\
+						description = None\
+					)
+		# Check with specified parameters
+		non_defaults = randict("objectid","objecttable","name","mime","content","title","description")
+		self.assertEquals(self._api.uploadAttachment(**non_defaults),query.return_value)
+		query.assert_called_with('tl.uploadAttachment',\
+						devKey = None,\
+						fkid = non_defaults['objectid'],\
+						fktable = non_defaults['objecttable'],\
+						filename = non_defaults['name'],\
+						filetype = non_defaults['mime'],\
+						content = non_defaults['content'],\
+						title = non_defaults['title'],\
+						description = non_defaults['description']\
+					)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.uploadAttachment)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_uploadRequirementSpecificationAttachment(self,query):
+		"""'uploadRequirementSpecificationAttachment' (1.0)"""
+		query.return_value = randict("message")
+		# Check default params
+		defaults = randict("reqspecid","name","mime","content")
+		self.assertEquals(self._api.uploadRequirementSpecificationAttachment(**defaults),query.return_value)
+		query.assert_called_with('tl.uploadRequirementSpecificationAttachment',\
+						devKey = None,\
+						reqspecid = defaults['reqspecid'],\
+						filename = defaults['name'],\
+						filetype = defaults['mime'],\
+						content = defaults['content'],\
+						title = None,\
+						description = None\
+					)
+		# Check with specified parameters
+		non_defaults = randict("reqspecid","name","mime","content","title","description")
+		self.assertEquals(self._api.uploadRequirementSpecificationAttachment(**non_defaults),query.return_value)
+		query.assert_called_with('tl.uploadRequirementSpecificationAttachment',\
+						devKey = None,\
+						reqspecid = non_defaults['reqspecid'],\
+						filename = non_defaults['name'],\
+						filetype = non_defaults['mime'],\
+						content = non_defaults['content'],\
+						title = non_defaults['title'],\
+						description = non_defaults['description']\
+					)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.uploadRequirementSpecificationAttachment)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_uploadRequirementAttachment(self,query):
+		"""'uploadRequirementAttachment' (1.0)"""
+		query.return_value = randict("message")
+		# Check default params
+		defaults = randict("reqid","name","mime","content")
+		self.assertEquals(self._api.uploadRequirementAttachment(**defaults),query.return_value)
+		query.assert_called_with('tl.uploadRequirementAttachment',\
+						devKey = None,\
+						requirementsid = defaults['reqid'],\
+						filename = defaults['name'],\
+						filetype = defaults['mime'],\
+						content = defaults['content'],\
+						title = None,\
+						description = None\
+					)
+		# Check with specified parameters
+		non_defaults = randict("reqid","name","mime","content","title","description")
+		self.assertEquals(self._api.uploadRequirementAttachment(**non_defaults),query.return_value)
+		query.assert_called_with('tl.uploadRequirementAttachment',\
+						devKey = None,\
+						requirementsid = non_defaults['reqid'],\
+						filename = non_defaults['name'],\
+						filetype = non_defaults['mime'],\
+						content = non_defaults['content'],\
+						title = non_defaults['title'],\
+						description = non_defaults['description']\
+					)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.uploadRequirementAttachment)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_uploadTestProjectAttachment(self,query):
+		"""'uploadTestProjectAttachment' (1.0)"""
+		query.return_value = randict("message")
+		# Check default params
+		defaults = randict("projectid","name","mime","content")
+		self.assertEquals(self._api.uploadTestProjectAttachment(**defaults),query.return_value)
+		query.assert_called_with('tl.uploadTestProjectAttachment',\
+						devKey = None,\
+						testprojectid = defaults['projectid'],\
+						filename = defaults['name'],\
+						filetype = defaults['mime'],\
+						content = defaults['content'],\
+						title = None,\
+						description = None\
+					)
+		# Check with specified parameters
+		non_defaults = randict("projectid","name","mime","content","title","description")
+		self.assertEquals(self._api.uploadTestProjectAttachment(**non_defaults),query.return_value)
+		query.assert_called_with('tl.uploadTestProjectAttachment',\
+						devKey = None,\
+						testprojectid = non_defaults['projectid'],\
+						filename = non_defaults['name'],\
+						filetype = non_defaults['mime'],\
+						content = non_defaults['content'],\
+						title = non_defaults['title'],\
+						description = non_defaults['description']\
+					)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.uploadTestProjectAttachment)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_uploadTestSuiteAttachment(self,query):
+		"""'uploadTestSuiteAttachment' (1.0)"""
+		query.return_value = randict("message")
+		# Check default params
+		defaults = randict("suiteid","name","mime","content")
+		self.assertEquals(self._api.uploadTestSuiteAttachment(**defaults),query.return_value)
+		query.assert_called_with('tl.uploadTestSuiteAttachment',\
+						devKey = None,\
+						testsuiteid = defaults['suiteid'],\
+						filename = defaults['name'],\
+						filetype = defaults['mime'],\
+						content = defaults['content'],\
+						title = None,\
+						description = None\
+					)
+		# Check with specified parameters
+		non_defaults = randict("suiteid","name","mime","content","title","description")
+		self.assertEquals(self._api.uploadTestSuiteAttachment(**non_defaults),query.return_value)
+		query.assert_called_with('tl.uploadTestSuiteAttachment',\
+						devKey = None,\
+						testsuiteid = non_defaults['suiteid'],\
+						filename = non_defaults['name'],\
+						filetype = non_defaults['mime'],\
+						content = non_defaults['content'],\
+						title = non_defaults['title'],\
+						description = non_defaults['description']\
+					)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.uploadTestSuiteAttachment)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_uploadTestCaseAttachment(self,query):
+		"""'uploadTestCaseAttachment' (1.0)"""
+		query.return_value = randict("message")
+		# Check default params
+		defaults = randict("testcaseid","name","mime","content")
+		self.assertEquals(self._api.uploadTestCaseAttachment(**defaults),query.return_value)
+		query.assert_called_with('tl.uploadTestCaseAttachment',\
+						devKey = None,\
+						testcaseid = defaults['testcaseid'],\
+						filename = defaults['name'],\
+						filetype = defaults['mime'],\
+						content = defaults['content'],\
+						title = None,\
+						description = None\
+					)
+		# Check with specified parameters
+		non_defaults = randict("testcaseid","name","mime","content","title","description")
+		self.assertEquals(self._api.uploadTestCaseAttachment(**non_defaults),query.return_value)
+		query.assert_called_with('tl.uploadTestCaseAttachment',\
+						devKey = None,\
+						testcaseid = non_defaults['testcaseid'],\
+						filename = non_defaults['name'],\
+						filetype = non_defaults['mime'],\
+						content = non_defaults['content'],\
+						title = non_defaults['title'],\
+						description = non_defaults['description']\
+					)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.uploadTestCaseAttachment)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_uploadExecutionAttachment(self,query):
+		"""'uploadExecutionAttachment' (1.0)"""
+		query.return_value = randict("message")
+		# Check default params
+		defaults = randict("executionid","name","mime","content")
+		self.assertEquals(self._api.uploadExecutionAttachment(**defaults),query.return_value)
+		query.assert_called_with('tl.uploadExecutionAttachment',\
+						devKey = None,\
+						executionid = defaults['executionid'],\
+						filename = defaults['name'],\
+						filetype = defaults['mime'],\
+						content = defaults['content'],\
+						title = None,\
+						description = None\
+					)
+		# Check with specified parameters
+		non_defaults = randict("executionid","name","mime","content","title","description")
+		self.assertEquals(self._api.uploadExecutionAttachment(**non_defaults),query.return_value)
+		query.assert_called_with('tl.uploadExecutionAttachment',\
+						devKey = None,\
+						executionid = non_defaults['executionid'],\
+						filename = non_defaults['name'],\
+						filetype = non_defaults['mime'],\
+						content = non_defaults['content'],\
+						title = non_defaults['title'],\
+						description = non_defaults['description']\
+					)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.uploadExecutionAttachment)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getTestCaseAttachments(self,query):
+		"""'getTestCaseAttachments' (1.0)"""
+		query.return_value = randict("name","type","content","title")
+		# Check default params
+		self.assertEquals(self._api.getTestCaseAttachments(),query.return_value)
+		query.assert_called_with('tl.getTestCaseAttachments',\
+						devKey = None,\
+						testcaseid = None,\
+						testcaseexternalid = None\
+					)
+		# Check with specified parameters
+		non_defaults = randict("testcaseid","testcaseexternalid")
+		self.assertEquals(self._api.getTestCaseAttachments(**non_defaults),query.return_value)
+		query.assert_called_with('tl.getTestCaseAttachments',\
+						devKey = None,\
+						**non_defaults\
+					)
+		self._api._tl_version = Version("0.9")
+		self.assertRaises(NotSupported,self._api.getTestCaseAttachments)
