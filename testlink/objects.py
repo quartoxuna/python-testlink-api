@@ -988,8 +988,8 @@ class TestCase(TestlinkObject):
 	def __str__(self):
 		return "%s-%s %s" % (unicode(self._parent_testproject.prefix),unicode(self.external_id),unicode(self.name))
 
-	def getLastExecutionResult(self,testplanid):
-		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id)
+	def getLastExecutionResult(self,testplanid,platformid=None,platformname=None,buildid=None,buildname=None,bugs=False):
+		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
 		if isinstance(resp,list) and len(resp)==1:
 			resp = resp[0]
 		return TestCase.Execution(**resp)
