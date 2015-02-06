@@ -9,7 +9,6 @@
 # IMPORTS
 import unittest
 from mock import Mock, MagicMock, patch
-import copy
 import string
 import random
 
@@ -137,7 +136,6 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	# 	query.return_value = input
 	#
 	# 	# Define test data
-	#       # Use same param names as the server if possible
 	# 	test_data = randict("foo","bar")
 	#
 	# 	# Version check if api version > 1.0
@@ -189,9 +187,9 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	def test_repeat(self,query):
 		"""'repeat' (1.0)"""
 		query.return_value = input(20)
-		test_data = randict("value")
-		self.assertEquals(self._api.repeat(**test_data),query.return_value)
-		query.assert_called_with('tl.repeat', str = test_data['value'])
+		test_data = query.return_value
+		self.assertEquals(self._api.repeat(test_data),query.return_value)
+		query.assert_called_with('tl.repeat',str=test_data)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.repeat)
 
@@ -199,9 +197,9 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	def test_checkDevKey(self,query):
 		"""'checkDevKey' (1.0)"""
 		query.return_value = True
-		test_data = randict("devkey")
-		self.assertEquals(self._api.checkDevKey(**test_data),query.return_value)
-		query.assert_called_with('tl.checkDevKey',devKey = test_data['devkey'])
+		test_data = input()
+		self.assertEquals(self._api.checkDevKey(test_data),query.return_value)
+		query.assert_called_with('tl.checkDevKey',devKey = test_data)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.checkDevKey)
 
@@ -209,39 +207,39 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	def test_doesUserExist(self,query):
 		"""'doesUserExist' (1.0)"""
 		query.return_value = True
-		test_data = randict("user")
-		self.assertEquals(self._api.doesUserExist(**test_data),query.return_value)
-		query.assert_called_with('tl.doesUserExist', devKey=None, **test_data)
+		test_data = input()
+		self.assertEquals(self._api.doesUserExist(test_data),query.return_value)
+		query.assert_called_with('tl.doesUserExist',user=test_data,devKey=None)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.doesUserExist)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getUserByLogin(self,query):
 		"""'getUserByLogin' (1.9.8)"""
-		query.return_value = randict("id","name")
-		test_data = randict("user")
+		query.return_value = input()
+		test_data = input()
 		self.assertRaises(NotSupported,self._api.getUserByLogin)
 		self._api._tl_version = Version("1.9.8")
-		self.assertEquals(self._api.getUserByLogin(**test_data),query.return_value)
-		query.assert_called_with('tl.getUserByLogin', devKey=None, **test_data)
+		self.assertEquals(self._api.getUserByLogin(test_data),query.return_value)
+		query.assert_called_with('tl.getUserByLogin',user=test_data,devKey=None)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getUserByID(self,query):
 		"""'getUserByID' (1.9.8)"""
-		query.return_value = randict("id","name")
-		test_data = randict("userid")
+		query.return_value = randict("name","id")
+		test_data = input()
 		self.assertRaises(NotSupported,self._api.getUserByID)
 		self._api._tl_version = Version("1.9.8")
-		self.assertEquals(self._api.getUserByID(**test_data),query.return_value)
-		query.assert_called_with('tl.getUserByID', devKey=None, **test_data)
+		self.assertEquals(self._api.getUserByID(test_data),query.return_value)
+		query.assert_called_with('tl.getUserByID',userid=test_data,devKey=None)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getFullPath(self,query):
 		"""'getFullPath' (1.0)"""
 		query.return_value = input()
-		test_data = randict("nodeid")
-		self.assertEquals(self._api.getFullPath(**test_data),query.return_value)
-		query.assert_called_with('tl.getFullPath',devKey=None, **test_data)
+		test_data = input()
+		self.assertEquals(self._api.getFullPath(test_data),query.return_value)
+		query.assert_called_with('tl.getFullPath',nodeID=test_data,devKey=None)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getFullPath)
 
@@ -250,10 +248,9 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		"""'createTestProject' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
-		defaults = randict("testprojectname","testcaseprefix")
+		defaults = randict("name","prefix")
 		self.assertEquals(self._api.createTestProject(**defaults),query.return_value)
 		query.assert_called_with('tl.createTestProject',\
-							devKey = None,\
 							notes = '',\
 							active = True,\
 							public = True,\
@@ -261,21 +258,25 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 									'testPriorityEnabled':False,\
 									'automationEnabled':False,\
 									'inventoryEnabled':False},\
+							devKey = None,
 							**defaults\
 						)
 		# Check with specified params
 		options = randict("requirements","priority","automation","inventory")
-		non_defaults = randict("testprojectname","testcaseprefix","notes","active","public")
-		merged_args = copy.copy(non_defaults)
-		merged_args.update(options)
-		self.assertEquals(self._api.createTestProject(**merged_args),query.return_value)
+		non_defaults = randict("name","prefix","notes","active","public")
+		non_defaults.update(options)
+		self.assertEquals(self._api.createTestProject(**non_defaults),query.return_value)
 		query.assert_called_with('tl.createTestProject',\
 							devKey = None,\
 							options = 	{'requirementsEnabled':options['requirements'],\
 									'testPriorityEnabled':options['priority'],\
 									'automationEnabled':options['automation'],\
 									'inventoryEnabled':options['inventory']},\
-							**non_defaults\
+							name = non_defaults['name'],\
+							prefix = non_defaults['prefix'],\
+							notes = non_defaults['notes'],\
+							active = non_defaults['active'],\
+							public = non_defaults['public'],\
 						)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.createTestProject)
@@ -283,7 +284,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getProjects(self,query):
 		"""'getProjects' (1.0)"""
-		query.return_value = [randict("id","name"),randict("id","name")]
+		query.return_value = [randict("name")]
 		self.assertEquals(self._api.getProjects(),query.return_value)
 		query.assert_called_with('tl.getProjects',devKey = None)
 		self._api._tl_version = Version("0.9")
@@ -292,10 +293,10 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getTestProjectByName(self,query):
 		"""'getTestProjectByName' (1.0)"""
-		query.return_value = randict("id","name")
-		test_data = randict("testprojectname")
-		self.assertEquals(self._api.getTestProjectByName(**test_data),query.return_value)
-		query.assert_called_with('tl.getTestProjectByName', devKey=None, **test_data)
+		test_data = randict("name")
+		query.return_value = [test_data]
+		self.assertEquals(self._api.getTestProjectByName(test_data['name']),query.return_value)
+		query.assert_called_with('tl.getTestProjectByName',testprojectname=test_data['name'],devKey=None)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getTestProjectByName)
 
@@ -304,21 +305,26 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		"""'createTestPlan' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
-		defaults = randict("testplanname","testprojectname")
+		defaults = randict("name","project")
 		self.assertEquals(self._api.createTestPlan(**defaults),query.return_value)
 		query.assert_called_with('tl.createTestPlan',\
-							devKey = None,\
 							notes = '',\
 							active = True,\
 							public = True,\
-							**defaults\
+							devKey = None,\
+							testplanname = defaults['name'],\
+							testprojectname = defaults['project']\
 						)
 		# Check with specified params
-		non_defaults = randict("testplanname","testprojectname","notes","active","public")
+		non_defaults = randict("name","project","notes","active","public")
 		self.assertEquals(self._api.createTestPlan(**non_defaults),query.return_value)
 		query.assert_called_with('tl.createTestPlan',\
 							devKey = None,\
-							**non_defaults\
+							active = non_defaults['active'],\
+							public = non_defaults['public'],\
+							notes = non_defaults['notes'],\
+							testplanname = non_defaults['name'],\
+							testprojectname = non_defaults['project']\
 						)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.createTestPlan)
@@ -326,34 +332,36 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getTestPlanByName(self,query):
 		"""'getTestPlanByName' (1.0)"""
-		query.return_value = randict("id","name")
-		test_data = randict("testprojectname","testplanname")
+		test_data = randict("name","projectname")
+		query.return_value = [test_data]
 		self.assertEquals(self._api.getTestPlanByName(**test_data),query.return_value)
-		query.assert_called_with('tl.getTestPlanByName', devKey=None, **test_data)
+		query.assert_called_with('tl.getTestPlanByName',testplanname=test_data['name'],testprojectname=test_data['projectname'],devKey=None)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getTestPlanByName)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getProjectTestPlans(self,query):
 		"""'getProjectTestPlans' (1.0)"""
-		query.return_value = randict("id","name")
-		test_data = randict("testprojectid")
-		self.assertEquals(self._api.getProjectTestPlans(**test_data),query.return_value)
-		query.assert_called_with('tl.getProjectTestPlans', devKey=None, **test_data)
+		test_data = input()
+		query.return_value = [randict("name")]
+		self.assertEquals(self._api.getProjectTestPlans(test_data),query.return_value)
+		query.assert_called_with('tl.getProjectTestPlans',testprojectid=test_data,devKey=None)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getProjectTestPlans)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
-	def test_getTestPlanCustomFieldDesignValue(self,query):
+	def test_getTestPlanCustomFieldValue(self,query):
 		"""'getTestPlanCustomFieldValue' (1.9.4)"""
+		test_data = randict("testplanid","testprojectid","fieldname")
 		query.return_value = input()
-		test_data = randict("testplanid","testprojectid","customfieldname")
-		self.assertRaises(NotSupported,self._api.getTestPlanCustomFieldDesignValue)
+		self.assertRaises(NotSupported,self._api.getTestPlanCustomFieldValue)
 		self._api._tl_version = Version("1.9.4")
-		self.assertEquals(self._api.getTestPlanCustomFieldDesignValue(**test_data),query.return_value)
-		query.assert_called_with('tl.getTestPlanCustomFieldDesignValue',\
+		self.assertEquals(self._api.getTestPlanCustomFieldValue(**test_data),query.return_value)	
+		query.assert_called_with('tl.getTestPlanCustomFieldValue',\
 							devKey = None,\
-							**test_data\
+							customfieldname = test_data['fieldname'],\
+							testprojectid = test_data['testprojectid'],\
+							testplanid = test_data['testplanid']\
 						)
 	
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
@@ -361,19 +369,22 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		"""'createBuild' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
-		defaults = randict("testplanid","buildname")
+		defaults = randict("testplanid","name")
 		self.assertEquals(self._api.createBuild(**defaults),query.return_value)
 		query.assert_called_with('tl.createBuild',\
 							devKey = None,\
 							buildnotes = '',\
-							**defaults\
+							buildname = defaults['name'],\
+							testplanid = defaults['testplanid'],\
 						)
 		# Check with specified params
-		non_defaults =randict("testplanid","buildname","buildnotes")
+		non_defaults =randict("testplanid","name","notes")
 		self.assertEquals(self._api.createBuild(**non_defaults),query.return_value)
 		query.assert_called_with('tl.createBuild',\
 							devKey = None,\
-							**non_defaults\
+							buildnotes = non_defaults['notes'],\
+							buildname = non_defaults['name'],\
+							testplanid = non_defaults['testplanid']\
 						)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.createBuild)
@@ -381,32 +392,32 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getLatestBuildForTestPlan(self,query):
 		"""'getLatestBuildForTestPlan' (1.0)"""
-		query.return_value = randict("id","name")
-		test_data = randict("testplanid")
-		self.assertEquals(self._api.getLatestBuildForTestPlan(**test_data),query.return_value)
-		query.assert_called_with('tl.getLatestBuildForTestPlan', devKey=None, **test_data)
+		query.return_value = [randict("name","id")]
+		test_data = input()
+		self.assertEquals(self._api.getLatestBuildForTestPlan(test_data),query.return_value)
+		query.assert_called_with('tl.getLatestBuildForTestPlan',devKey=None,testplanid=test_data)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getLatestBuildForTestPlan)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getBuildsForTestPlan(self,query):
 		"""'getBuildsForTestPlan' (1.0)"""
-		query.return_value = [randict("id","name"),randict("id","name")]
-		test_data = randict("testplanid")
-		self.assertEquals(self._api.getBuildsForTestPlan(**test_data),query.return_value)
-		query.assert_called_with('tl.getBuildsForTestPlan', devKey=None, **test_data)
+		query.return_value = [randict("name","id"),randict("name","id")]
+		test_data = input()
+		self.assertEquals(self._api.getBuildsForTestPlan(test_data),query.return_value)
+		query.assert_called_with('tl.getBuildsForTestPlan',devKey=None,testplanid=test_data)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getBuildsForTestPlan)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getExecCountersByBuild(self,query):
 		"""'getExecCountersByBuild' (1.9.4)"""
-		query.return_value = randict("a","b","c")
-		test_data = randict("testplanid")
+		query.return_value = [randict("a","b","c")]
+		test_data = input()
 		self.assertRaises(NotSupported,self._api.getExecCountersByBuild)
 		self._api._tl_version = Version("1.9.4")
-		self.assertEquals(self._api.getExecCountersByBuild(**test_data),query.return_value)
-		query.assert_called_with('tl.getExecCountersByBuild', devKey=None, **test_data)
+		self.assertEquals(self._api.getExecCountersByBuild(test_data),query.return_value)
+		query.assert_called_with('tl.getExecCountersByBuild',devKey=None,testplanid=test_data)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_createPlatform(self,query):
@@ -433,26 +444,26 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getProjectPlatforms(self,query):
 		"""'getProjectPlatforms' (1.9.6)"""
-		query.return_value = [randict("id","name"),randict("id","name")]
-		test_data = randict("testprojectid")
+		query.return_value = [randict("name","id"),randict("name","id")]
+		test_data = input()
 		self.assertRaises(NotSupported,self._api.getProjectPlatforms)
 		self._api._tl_version = Version("1.9.6")
-		self.assertEquals(self._api.getProjectPlatforms(**test_data),query.return_value)
-		query.assert_called_with('tl.getProjectPlatforms', devKey=None, **test_data)
+		self.assertEquals(self._api.getProjectPlatforms(test_data),query.return_value)
+		query.assert_called_with('tl.getProjectPlatforms',devKey = None,testprojectid = test_data)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getTestPlanPlatforms(self,query):
 		"""'getTestPlanPlatforms' (1.0)"""
-		query.return_value = [randict("id","name"),randict("id","name")]
-		test_data = randict("testplanid")
-		self.assertEquals(self._api.getTestPlanPlatforms(**test_data),query.return_value)
-		query.assert_called_with('tl.getTestPlanPlatforms', devKey=None, **test_data)
+		query.return_value = [randict("name","id"),randict("name","id")]
+		test_data = input()
+		self.assertEquals(self._api.getTestPlanPlatforms(test_data),query.return_value)
+		query.assert_called_with('tl.getTestPlanPlatforms',devKey=None,testplanid=test_data)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getTestPlanPlatforms)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_reportTCResult(self,query):
-		"""'reportTCResult' (1.0/1.9.10)"""
+		"""'reportTCResult' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
 		defaults = randict("testplanid","status")
@@ -481,40 +492,6 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 					)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.reportTCResult)
-		# Check new argument 'user' since version 1.9.10
-		self._api._tl_version = Version("1.9.10")
-		self.assertEquals(self._api.reportTCResult(**defaults),query.return_value)
-		query.assert_called_with('tl.reportTCResult',\
-						devKey = None,\
-						testcaseid = None,\
-						testcaseexternalid = None,\
-						buildid = None,\
-						buildname = None,\
-						notes = None,\
-						guess = True,\
-						bugid = None,\
-						platformid = None,\
-						platformname = None,\
-						customfields = None,\
-						overwrite = False,\
-						user = None,\
-						**defaults\
-					)
-		non_defaults['user'] = input()
-		self.assertEquals(self._api.reportTCResult(**non_defaults),query.return_value)
-		query.assert_called_with('tl.reportTCResult',\
-						devKey = None,\
-						**non_defaults\
-					)
-
-	@patch("testlink.api.Testlink_XML_RPC_API._query")
-	def test_setTestCaseExecutionResult(self,query):
-		"""'setTestCaseExecutionResult' (1.0)"""
-		# Just verify that reportTCResult is called
-		query.return_value = randict("message")
-		test_data = randict("testplanid","status","testcaseid","testcaseexternalid","buildid","buildname","notes","guess","bugid","platformid","platformname","customfields","overwrite")
-		self.assertEquals(self._api.setTestCaseExecutionResult(**test_data),query.return_value)
-		query.assert_called_with('tl.reportTCResult', devKey = None, **test_data)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getLastExecutionResult(self,query):
@@ -543,32 +520,36 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		self.assertEquals(self._api.getLastExecutionResult(**defaults),query.return_value)
 		query.assert_called_with('tl.getLastExecutionResult',\
 						devKey = None,\
+						testplanid = defaults['testplanid'],\
 						testcaseid = None,\
 						testcaseexternalid = None,\
 						platformid = None,\
 						platformname = None,\
 						buildid = None,\
 						buildname = None,\
-						options = {'getBugs':False},\
-						**defaults\
+						options = {'getBugs':False}\
 					)
-		non_defaults.update(randict("platformid","platformname","buildid","buildname"))
-		merged_args = copy.copy(non_defaults)
-		merged_args.update(randict("bugs"))
-		self.assertEquals(self._api.getLastExecutionResult(**merged_args),query.return_value)
+		non_defaults.update(randict("platformid","platformname","buildid","buildname","bugs"))
+		self.assertEquals(self._api.getLastExecutionResult(**non_defaults),query.return_value)
 		query.assert_called_with('tl.getLastExecutionResult',\
 						devKey = None,\
-						options = {'getBugs':merged_args['bugs']},\
-						**non_defaults\
+						testplanid = non_defaults['testplanid'],\
+						testcaseid = non_defaults['testcaseid'],\
+						testcaseexternalid = non_defaults['testcaseexternalid'],\
+						platformid = non_defaults['platformid'],\
+						platformname = non_defaults['platformname'],\
+						buildid = non_defaults['buildid'],\
+						buildname = non_defaults['buildname'],\
+						options = {'getBugs':non_defaults['bugs']}\
 					)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_deleteExecution(self,query):
 		"""'deleteExecution' (1.0)"""
 		query.return_value = randict("message")
-		test_data = randict("executionid")
-		self.assertEquals(self._api.deleteExecution(**test_data),query.return_value)
-		query.assert_called_with('tl.deleteExecution', devKey=None, **test_data)
+		test_data = input()
+		self.assertEquals(self._api.deleteExecution(test_data),query.return_value)
+		query.assert_called_with('tl.deleteExecution',executionid=test_data,devKey=None)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.deleteExecution)
 
@@ -577,18 +558,20 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		"""'createTestSuite' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
-		defaults = randict("testprojectid","testsuitename","details")
+		defaults = randict("name","testprojectid")
 		self.assertEquals(self._api.createTestSuite(**defaults),query.return_value)
 		query.assert_called_with('tl.createTestSuite',\
 						devKey = None,\
+						testsuitename = defaults['name'],\
+						testprojectid = defaults['testprojectid'],\
+						details = None,\
 						parentid = None,\
 						order = None,\
 						checkduplicatedname = True,\
-						actiononduplicatedname = 'block',\
-						**defaults\
+						actiononduplicatedname = 'block'\
 					)
 		# Check with specified parameters
-		non_defaults = randict("testprojectid","testsuitename","details","parentid","order","checkduplicatedname","actiononduplicatedname")
+		non_defaults = randict("name","testprojectid","details","parentid","order","checkduplicates","actiononduplicate")
 		self.assertEquals(self._api.createTestSuite(**non_defaults),query.return_value)
 		query.assert_called_with('tl.createTestSuite', devKey = None, **non_defaults)
 		self._api._tl_version = Version("0.9")
