@@ -65,8 +65,8 @@ class Testlink_XML_RPC_API(object):
 		url_components = urlparse(url)
 		if (\
 			# Must have scheme and net location
-			len(url_components.scheme.strip())==0 or \
-			len(url_components.netloc.strip())==0 \
+			len(url_components[0].strip())==0 or \
+			len(url_components[1].strip())==0 \
 		):
 			raise ConnectionError("Invalid URI (%s)" % str(url))
 
