@@ -9,29 +9,10 @@
 __version__ = '0.13'
 
 # EXPORTS
-from exceptions import *
-from enums import *
-from parsers import *
-from server import *
-from api import *
-from objects import *
-
-__all__ = [\
-		# exceptions.py
-		'NotSupported','APIError','ConnectionError', \
-
-		# enums.py
-		'ExecutionType','ImportanceLevel','DuplicateStrategy','CustomFieldDetails','APIType', \
-
-		# parsers.py
-		'HTMLTagRemover','HTMLEntityParser','HTMLSectionParser','HTMLListParser', \
-
-		# server.py
-		'TestlinkXMLRPCServer', \
-
-		# xml_rpc_api.py
-		'Testlink_XML_RPC_API','TLVersion', \
-
-		# objects.py
-		'Testlink','TestProject','TestSuite','TestCase','TestPlan','Build','Platform' \
-	]
+from objects import Testlink
+from objects import TestProject
+from objects import TestSuite
+from objects import TestCase
+from objects import TestPlan
+from objects import Build
+from objects import Platform
