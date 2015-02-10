@@ -6,7 +6,7 @@
 @summary: Testlink API Wrapper
 """
 
-__version__ = '0.12'
+__version__ = '0.12.1'
 
 # EXPORTS
 from exceptions import *
