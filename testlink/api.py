@@ -22,8 +22,15 @@ from distutils.version import LooseVersion as Version
 from urlparse import urlparse
 
 class TLVersion(object):
+	"""Function decorator for Testlink version requirements.
+	@raises NotSupported: Called method is not supported by current Testlink API
+	"""
 	IGNORE = False
 	def __init__(self,version):
+		"""
+		@param version: Minimum required version of Testlink API
+		@type version str
+		"""
 		self.version = Version(version)
 
 	def __call__(self,fn):
@@ -235,17 +242,17 @@ class Testlink_XML_RPC_API(object):
 		@returns: Hierarchical path of the object
 		@rtype: str
 		"""
-		return self._query("tl.getFullPath", devKey=devkey, nodeID=nodeid)
+		return self._query("tl.getFullPath", devKey=devkey, nodeid=nodeid)
 
 	@TLVersion("1.0")
-	def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False, priority=False, automation=False, inventory=False, devkey=None):
+	def createTestProject(self, testprojectname, testcaseprefix, notes='', active=True, public=True, requirements=False, priority=False, automation=False, inventory=False, devkey=None):
 		"""Creates a new TestProject
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param name: Name of the TestProject
-		@type name: str
-		@param prefix: The prefix for TestCases within the new TestProject
-		@type prefix: str
+		@param testprojectname: Name of the TestProject
+		@type testprojectname: str
+		@param testcaseprefix: The prefix for TestCases within the new TestProject
+		@type testcaseprefix: str
 		@param notes: <OPTIONAL> Additional notes of the TestProject (Default is: '')
 		@type notes: str
 		@param active: <OPTIONAL> The TestProject is marked as active (Default is: True)
@@ -275,13 +282,13 @@ class Testlink_XML_RPC_API(object):
 			}
 
 		return self._query("tl.createTestProject", \
-					devKey  = devkey,   \
-					name    = name,     \
-					prefix  = prefix,   \
-					notes   = notes,    \
-					active  = active,   \
-					public  = public,   \
-					options = opts )
+					devKey          = devkey,          \
+					testprojectname = testprojectname, \
+					testcaseprefix  = testcaseprefix,  \
+					notes           = notes,           \
+					active          = active,          \
+					public          = public,          \
+					options         = opts )
 
 	@TLVersion("1.0")
 	def getProjects(self, devkey=None):
@@ -294,26 +301,26 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.getProjects", devKey=devkey)
 
 	@TLVersion("1.0")
-	def getTestProjectByName(self, name, devkey=None):
+	def getTestProjectByName(self, testprojectname, devkey=None):
 		"""Returns a single TestProject specified by its name
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param name: Name of the TestProject
-		@type name: str
+		@param testprojectname: Name of the TestProject
+		@type testprojectname: str
 		@returns: Matching TestProject
 		@rtype: dict
 		"""
-		return self._query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
+		return self._query("tl.getTestProjectByName", devKey=devkey, testprojectname=testprojectname)
 
 	@TLVersion("1.0")
-	def createTestPlan(self, name, project, notes='', active=True, public=True, devkey=None):
+	def createTestPlan(self, testplanname, testprojectname, notes='', active=True, public=True, devkey=None):
 		"""Creates a new TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param name: Name of the TestPlan
-		@type name: str
-		@param project: Name of the parent TestProject
-		@type project: str
+		@param testplanname: Name of the TestPlan
+		@type testplanname: str
+		@param testprojectname: Name of the parent TestProject
+		@type testprojectname: str
 		@param notes: <OPTIONAL> Additional notes of the TestPlan (Default is: '')
 		@type notes: str
 		@param active: <OPTIONAL> The TestPlan is marked as active (Default is: True)
@@ -326,47 +333,47 @@ class Testlink_XML_RPC_API(object):
 		@todo: Refactor optional arguments -> static values?
 		@todo: Specify return value
 		"""
-		return self._query("tl.createTestPlan",              \
-					devKey          = devkey,     \
-					testplanname    = name,       \
-					testprojectname = project,\
-					notes           = notes,      \
-					active          = active,     \
+		return self._query("tl.createTestPlan",                    \
+					devKey          = devkey,          \
+					testplanname    = testplanname,    \
+					testprojectname = testprojectname, \
+					notes           = notes,           \
+					active          = active,          \
 					public          = public )
 
 	@TLVersion("1.0")
-	def getTestPlanByName(self, name, projectname, devkey=None):
+	def getTestPlanByName(self, testplanname, testprojectname, devkey=None):
 		"""Returns a single TestPlan specified by its name
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param name: Name of the TestPlan
-		@type name: str
-		@param projectname: Name of the parent TestProject
-		@type projectname: str
+		@param testplanname: Name of the TestPlan
+		@type testplanname: str
+		@param testprojectname: Name of the parent TestProject
+		@type testprojectname: str
 		@returns: Matching TestPlan
 		@rtype: dict
 		"""
-		return self._query("tl.getTestPlanByName",       \
-					devKey          = devkey, \
-					testplanname    = name,   \
-					testprojectname = projectname )
+		return self._query("tl.getTestPlanByName",              \
+					devKey          = devkey,       \
+					testplanname    = testplanname, \
+					testprojectname = testprojectname )
 
 	@TLVersion("1.0")
-	def getProjectTestPlans(self, projectid, devkey=None):
+	def getProjectTestPlans(self, testprojectid, devkey=None):
 		"""Returns all TestPlans for a specified TestProject
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param projectid: The internal ID of the TestProject
-		@type projectid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
 		@returns: Matching TestPlans
 		@rtype: list
 		"""
 		return self._query("tl.getProjectTestPlans",  \
 					devKey       = devkey, \
-					testprojectid = projectid )
+					testprojectid = testprojectid )
 
 	@TLVersion("1.9.4")
-	def getTestPlanCustomFieldValue(self, testplanid, testprojectid, fieldname, devkey=None):
+	def getTestPlanCustomFieldDesignValue(self, testplanid, testprojectid, customfieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified TestPlan
 		@since: Testlink 1.9.4
 
@@ -376,28 +383,28 @@ class Testlink_XML_RPC_API(object):
 		@type testplanid: int
 		@param testprojectid: The internal ID of the TestProject
 		@type testprojectid: int
-		@param fieldname: The internal name of the CustomField
-		@type fieldname: str
+		@param customfieldname: The internal name of the CustomField
+		@type customfieldname: str
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
-		return self._query("tl.getTestPlanCustomFieldValue", \
+		return self._query("tl.getTestPlanCustomFieldDesignValue", \
 					devKey = devkey, \
-					customfieldname = fieldname, \
+					customfieldname = customfieldname, \
 					testprojectid = testprojectid, \
 					testplanid = testplanid )
 
 	@TLVersion("1.0")
-	def createBuild(self, testplanid, name, notes='', devkey=None):
+	def createBuild(self, testplanid, buildname, buildnotes='', devkey=None):
 		"""Creates a new Build for the specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param testplanid: The internal ID of the parent TestPlan
 		@type testplanid: int
-		@param name: The name of the Build
-		@type name: str
-		@param notes: <OPTIONAL> Additional notes for the Build (Default is: '')
-		@type notes: str
+		@param buildname: The name of the Build
+		@type buildname: str
+		@param buildnotes: <OPTIONAL> Additional notes for the Build (Default is: '')
+		@type buildnotes: str
 		@returns: Server response
 		@rtype: list/dict/???
 
@@ -406,8 +413,8 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.createBuild",            \
 					devKey     = devkey,     \
 					testplanid = testplanid, \
-					buildname  = name,       \
-					buildnotes = notes )
+					buildname  = buildname,  \
+					buildnotes = buildnotes )
 
 	@TLVersion("1.0")
 	def getLatestBuildForTestPlan(self, testplanid, devkey=None):
@@ -508,7 +515,7 @@ class Testlink_XML_RPC_API(object):
 					testplanid = testplanid )
 	
 	@TLVersion("1.0")
-	def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False, devkey=None):
+	def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False, user=None, devkey=None):
 		"""Sets the execution result for a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -537,24 +544,32 @@ class Testlink_XML_RPC_API(object):
 		@type customfields: dict
 		@param overwrite: <OPTIONAL> Overwrites the latest result (Default is: False)
 		@type overwrite: bool
+		@param user: <OPTIONAL> User to set the result (Since Testlnk 1.9.10)
+		@type user: str
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self._query("tl.reportTCResult",                         \
-					devKey             = devkey,             \
-					testplanid         = testplanid,         \
-					status             = status,             \
-					testcaseid         = testcaseid,         \
-					testcaseexternalid = testcaseexternalid, \
-					buildid            = buildid,            \
-					buildname          = buildname,          \
-					notes              = notes,              \
-					guess              = guess,              \
-					bugid              = bugid,              \
-					platformid         = platformid,         \
-					platformname       = platformname,       \
-					customfields       = customfields,       \
-					overwrite          = overwrite )
+		arguments = {
+				"devKey"             : devkey,             \
+				"testplanid"         : testplanid,         \
+				"status"             : status,             \
+				"testcaseid"         : testcaseid,         \
+				"testcaseexternalid" : testcaseexternalid, \
+				"buildid"            : buildid,            \
+				"buildname"          : buildname,          \
+				"notes"              : notes,              \
+				"guess"              : guess,              \
+				"bugid"              : bugid,              \
+				"platformid"         : platformid,         \
+				"platformname"       : platformname,       \
+				"customfields"       : customfields,       \
+				"overwrite"          : overwrite           \
+			}
+
+		if self._tl_version >= Version("1.9.10"):
+			arguments['user'] = user
+
+		return self._query("tl.reportTCResult",**arguments)
 	setTestCaseExecutionResult = reportTCResult
 
 	@TLVersion("1.0")
@@ -612,12 +627,12 @@ class Testlink_XML_RPC_API(object):
 					executionid = executionid )
 	
 	@TLVersion("1.0")
-	def createTestSuite(self, name, testprojectid, details=None, parentid=None, order=None, checkduplicates=True, actiononduplicate=DuplicateStrategy.BLOCK, devkey=None):
+	def createTestSuite(self, testsuitename, testprojectid, details=None, parentid=None, order=None, checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK, devkey=None):
 		"""Creates a new TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param name: The name of the TestSuite
-		@type name: str
+		@param testsuitename: The name of the TestSuite
+		@type testsuitename: str
 		@param testprojectid: The internal ID of the parent TestProject
 		@type testprojectid: int
 		@param details: <OPTIONAL> Additional notes for the TestSuite
@@ -626,64 +641,64 @@ class Testlink_XML_RPC_API(object):
 		@type parentid: int
 		@param order: <OPTIONAL> Ordering withing the parent TestSuite
 		@type order: int
-		@param checkduplicates: <OPTIONAL> Enables duplicate handling (Default is: True)
-		@type checkduplicates: bool
-		@param actiononduplicate: <OPTIONAL> Action on duplicate
-		@param actiononduplicate: str
+		@param checkduplicatedname: <OPTIONAL> Enables duplicate handling (Default is: True)
+		@type checkduplicatedname: bool
+		@param actiononduplicatedname: <OPTIONAL> Action on duplicate
+		@param actiononduplicatedname: str
 		@returns: Server response
 		@rtype: dict
 		"""
 		return self._query("tl.createTestSuite",                         \
 					devKey                 = devkey,          \
-					testsuitename          = name,            \
+					testsuitename          = testsuitename,   \
 					testprojectid          = testprojectid,   \
 					details                = details,         \
 					parentid               = parentid,        \
 					order                  = order,           \
-					checkduplicatedname    = checkduplicates, \
-					actiononduplicatedname = actiononduplicate )
+					checkduplicatedname    = checkduplicatedname, \
+					actiononduplicatedname = actiononduplicatedname )
 	
 	@TLVersion("1.0")
-	def getTestSuiteById(self, suiteid, devkey=None):
+	def getTestSuiteById(self, testsuiteid, devkey=None):
 		"""Returns a single TestSuite specified by the internal ID
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param suiteid: The internal ID of the TestSuite
-		@type suiteid: int
+		@param testsuiteid: The internal ID of the TestSuite
+		@type testsuiteid: int
 		@returns: Matching TestSuite
 		@rtype: dict
 		"""
 		return self._query("tl.getTestSuiteByID",    \
 					devKey      = devkey, \
-					testsuiteid = suiteid )
+					testsuiteid = testsuiteid )
 	
 	@TLVersion("1.0")
-	def getTestSuitesForTestSuite(self, suiteid, devkey=None):
+	def getTestSuitesForTestSuite(self, testsuiteid, devkey=None):
 		"""Returns all TestSuites within the specified TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param suiteid: The internal ID of the TestSuite
-		@type suiteid: int
+		@param testsuiteid: The internal ID of the TestSuite
+		@type testsuiteid: int
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
 		return self._query("tl.getTestSuitesForTestSuite", \
 					devKey      = devkey,       \
-					testsuiteid = suiteid )
+					testsuiteid = testsuiteid )
 	
 	@TLVersion("1.0")
-	def getFirstLevelTestSuitesForTestProject(self, projectid, devkey=None):
+	def getFirstLevelTestSuitesForTestProject(self, testprojectid, devkey=None):
 		"""Returns the first level TestSuites for a specified TestProject
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param projectid: The internal ID of the TestProject
-		@type projectid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
 		@returns: Matching TestSuites
 		@rtype: dict/list/???
 		"""
 		return self._query("tl.getFirstLevelTestSuitesForTestProject", \
 					devKey        = devkey,                 \
-					testprojectid = projectid )
+					testprojectid = testprojectid )
 	
 	@TLVersion("1.0")
 	def getTestSuitesForTestPlan(self, planid, devkey=None):
@@ -700,18 +715,18 @@ class Testlink_XML_RPC_API(object):
 					testplanid = planid )
 	
 	@TLVersion("1.0")
-	def createTestCase(self, name, suiteid, projectid, author, summary, steps=[], preconditions=None, importance=ImportanceLevel.MEDIUM, execution=ExecutionType.MANUAL, order=None, checkduplicates=True, actiononduplicate=DuplicateStrategy.BLOCK, customfields={}, devkey=None):
+	def createTestCase(self, testcasename, testsuiteid, testprojectid, authorlogin, summary, steps=[], preconditions=None, importance=ImportanceLevel.MEDIUM, executiontype=ExecutionType.MANUAL, order=None, checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK, devkey=None):
 		"""Creates a new TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param name: TestCase title
-		@type name: str
-		@param suiteid: The internal ID of the parent TestSuite
-		@type suiteid: int
-		@param projectid: The internal ID of the parent TestProject
-		@type projectid: int
-		@param author: The author of the TestCase
-		@type author: str
+		@param testcasename: TestCase title
+		@type testcasename: str
+		@param testsuiteid: The internal ID of the parent TestSuite
+		@type testsuiteid: int
+		@param testprojectid: The internal ID of the parent TestProject
+		@type testprojectid: int
+		@param authorlogin: The author of the TestCase
+		@type authorlogin: str
 		@param summary: The summary of the TestCase
 		@type summary: str
 		@param steps: <OPTIONAL> Steps of the TestCase
@@ -720,34 +735,32 @@ class Testlink_XML_RPC_API(object):
 		@type preconditions: str
 		@param importance: <OPTIONAL> The importance of the TestCase (Default is: 'LOW')
 		@type importance: int
-		@param execution: <OPTIONAL> The execution mode of the TestCase (Default is: 'MANUAL')
-		@type execution: int
+		@param executiontype: <OPTIONAL> The execution mode of the TestCase (Default is: 'MANUAL')
+		@type executiontype: int
 		@param order: <OPTIONAL> The order of the TestCase within the TestSuite
 		@type order: int
-		@param checkduplicates: <OPTIONAL> Enables duplicate handling (Default is: True)
-		@type checkduplicates: bool
-		@param actiononduplicate: <OPTIONAL> Action on duplicate (Default is: 'block')
-		@type actiononduplicate: str
-		@param customfields: <OPTIONAL> TestCase Custom Fields
-		@type customfields: dict
+		@param checkduplicatedname: <OPTIONAL> Enables duplicate handling (Default is: True)
+		@type checkduplicatedname: bool
+		@param actiononduplicatedname: <OPTIONAL> Action on duplicate (Default is: 'block')
+		@type actiononduplicatedname: str
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
 		return self._query("tl.createTestCase",                          \
 					devKey                 = devkey,          \
-					testcasename           = name,            \
-					testsuiteid            = suiteid,         \
-					testprojectid          = projectid,       \
-					authorlogin            = author,          \
+					testcasename           = testcasename,    \
+					testsuiteid            = testsuiteid,     \
+					testprojectid          = testprojectid,   \
+					authorlogin            = authorlogin,     \
 					summary                = summary,         \
 					steps                  = steps,           \
 					preconditions          = preconditions,   \
 					importance             = importance,      \
-					executiontype          = execution,       \
+					executiontype          = executiontype,   \
 					order                  = order,           \
-					checkduplicatedname    = checkduplicates, \
-					actiononduplicatedname = actiononduplicate, \
-					customfields          = customfields)
+					checkduplicatedname    = checkduplicatedname, \
+					actiononduplicatedname = actiononduplicatedname\
+				)
 
 	@TLVersion("1.9.8")
 	def updateTestCase(self, testcaseexternalid, version=None, testcasename=None, summary=None, preconditions=None, steps=None, importance=None, executiontype=None, status=None, estimatedexecduration=None, user=None, devkey=None):
@@ -891,55 +904,61 @@ class Testlink_XML_RPC_API(object):
 					version            = version )
 	
 	@TLVersion("1.0")
-	def getTestCaseIdByName(self, name, suite=None, project=None, path=None, devkey=None):
+	def getTestCaseIdByName(self, testcasename, testsuitename=None, testprojectname=None, testcasepathname=None, devkey=None):
 		"""Returns the internal ID of a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param name: Title of the TestCase
-		@type name: str
-		@param suite: <OPTIONAL> Name of the parent TestSuite
-		@type suite: str
-		@param project: <OPTIONAL> Name of the paren TestProject
-		@type project: str
-		@param path: <OPTIONAL> Hierarchical path of the TestCase
-		@type path: str
+		@param testcasename: Title of the TestCase
+		@type testcasename: str
+		@param testsuitename: <OPTIONAL> Name of the parent TestSuite
+		@type testsuitename: str
+		@param testprojectname: <OPTIONAL> Name of the paren TestProject
+		@type testprojectname: str
+		@param testcasepathname: <OPTIONAL> Hierarchical path of the TestCase
+		@type testcasepathname: str
 		@returns: Matching TestCase ID
 		@rtype: int?
 		"""
 		return self._query("tl.getTestCaseIDByName",       \
-					devKey           = devkey,  \
-					testcasename     = name,    \
-					testsuitename    = suite,   \
-					testprojectname  = project, \
-					testcasepathname = path )
+					devKey           = devkey,          \
+					testcasename     = testcasename,    \
+					testsuitename    = testsuitename,   \
+					testprojectname  = testprojectname, \
+					testcasepathname = testcasepathname )
 	
 	@TLVersion("1.0")
-	def getTestCasesForTestSuite(self, suiteid, deep=False, details='simple', devkey=None):
+	def getTestCasesForTestSuite(self, testsuiteid, deep=False, details='simple', getkeywords=False, devkey=None):
 		"""Returns all TestCases for a specified TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param suiteid: The internal ID of the TestSuite
-		@type suiteid: int
+		@param testsuiteid: The internal ID of the TestSuite
+		@type testsuiteid: int
 		@param deep: <OPTIONAL> Recursively returns TestCases from TestSuite (Default is: False)
 		@type deep: bool
 		@param details: <OPTIONAL> Toggle detailed output (Defailt is: 'simple')
 		@type details: str
+		@param getkeywords: <OPTIONAL> Also get keywords for testcases (Default is: False) (Since Testlink 1.9.10)
+		@type getkeywords: bool
 		@returns: Matching TestCases
 		@rtype: list/dict/???
 		"""
-		return self._query("tl.getTestCasesForTestSuite", \
-					devKey      = devkey,      \
-					testsuiteid = suiteid,     \
-					deep        = deep,        \
-					details     = details )
+		arguments = {
+					"devKey"      : devkey,      \
+					"testsuiteid" : testsuiteid, \
+					"deep"        : deep,        \
+					"details"     : details      \
+			}
+		if self._tl_version >= Version("1.9.10"):
+			arguments['getkeywords'] = getkeywords
+		return self._query("tl.getTestCasesForTestSuite", **arguments)
 	
 	@TLVersion("1.0")
-	def getTestCasesForTestPlan(self, planid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executionstatus=None, executiontype=None, steps=False, details='full', devkey=None):
+	def getTestCasesForTestPlan(self, testplanid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executestatus=None, executiontype=None, getstepsinfo=False, details='full', devkey=None):
 		"""Returns all TestCases for a specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param planid: The internal ID of the TestPlan
-		@type planid: int
+		@param testplanid: The internal ID of the TestPlan
+		@type testplanid: int
 		@param testcaseid: <OPTIONAL> The internal ID of the TestCase
 		@type testcaseid: int
 		@param buildid: <OPTIONAL> The internal ID of the Build
@@ -952,12 +971,12 @@ class Testlink_XML_RPC_API(object):
 		@type executed: bool
 		@param assignedto: <OPTIONAL> Assigned user
 		@type assignedto: str
-		@param executionstatus: <OPTIONAL> The execution status
-		@type executionstatus: int
+		@param executestatus: <OPTIONAL> The execution status
+		@type executestatus: int
 		@param executiontype: <OPTIONAL> The execution type
 		@type executiontype: int
-		@param steps: <OPTIONAL> Toggles if steps are returned
-		@type steps: bool
+		@param getstepsinfo: <OPTIONAL> Toggles if steps are returned
+		@type getstepsinfo: bool
 		@param details: <OPTIONAL> Set detail amount (Since Testlink 1.9.4)
 		@type details: str
 		@returns: Matching TestCases
@@ -965,16 +984,16 @@ class Testlink_XML_RPC_API(object):
 		"""
 		arguments = {
 				"devKey"        : devkey,          \
-				"testplanid"    : planid,          \
+				"testplanid"    : testplanid,      \
 				"testcaseid"    : testcaseid,      \
 				"buildid"       : buildid,         \
 				"keywordid"     : keywordid,       \
 				"keywords"      : keywords,        \
 				"executed"      : executed,        \
 				"assignedto"    : assignedto,      \
-				"executestatus" : executionstatus, \
+				"executestatus" : executestatus, \
 				"executiontype" : executiontype,   \
-				"getstepsinfo"  : steps            \
+				"getstepsinfo"  : getstepsinfo      \
 			}
 
 		if self._tl_version >= Version("1.9.4"):
@@ -984,14 +1003,14 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.getTestCasesForTestPlan", **arguments)
 	
 	@TLVersion("1.0")
-	def addTestCaseToTestPlan(self, projectid, planid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
+	def addTestCaseToTestPlan(self, testprojectid, testplanid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
 		"""Adds a specified TestCase to a specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param projectid: The internal ID of the TestProject
-		@type projectid: int
-		@param planid: The internal ID of the TestPlan
-		@type planid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param testplanid: The internal ID of the TestPlan
+		@type testplanid: int
 		@param testcaseexternalid: The external ID of the TestCase
 		@type testcaseexternalid: int
 		@param version: The version of the TestCase
@@ -1009,8 +1028,8 @@ class Testlink_XML_RPC_API(object):
 		"""
 		return self._query("tl.addTestCaseToTestPlan",                  \
 					devKey             = devkey,             \
-					testprojectid      = projectid,          \
-					testplanid         = planid,             \
+					testprojectid      = testprojectid,      \
+					testplanid         = testplanid,         \
 					testcaseexternalid = testcaseexternalid, \
 					version            = version,            \
 					platformid         = platformid,         \
@@ -1056,14 +1075,14 @@ class Testlink_XML_RPC_API(object):
 					platformname = platformname )
 
 	@TLVersion("1.0")
-	def assignRequirements(self, testcaseexternalid, projectid, requirements, devkey=None):
+	def assignRequirements(self, testcaseexternalid, testprojectid, requirements, devkey=None):
 		"""Assigns specified Requirements to a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param testcaseexternalid: The external ID of the TestCase
 		@type testcaseexternalid: int
-		@param projectid: The internal ID of the TestProject
-		@type projectid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
 		@param requirements: The requirements to assign
 		@type requirements: list
 		@returns: Server response
@@ -1072,11 +1091,11 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.assignRequirements",                     \
 					devKey             = devkey,             \
 					testcaseexternalid = testcaseexternalid, \
-					testprojectid      = projectid,          \
+					testprojectid      = testprojectid,      \
 					requirements       = requirements )
 
 	@TLVersion("1.9.4")
-	def getReqSpecCustomFieldDesignValue(self, reqspecid, testprojectid, fieldname, devkey=None):
+	def getReqSpecCustomFieldDesignValue(self, reqspecid, testprojectid, customfieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified Requirement Specification
 		@since: Testlink 1.9.4
 
@@ -1086,19 +1105,19 @@ class Testlink_XML_RPC_API(object):
 		@type reqspecid: int
 		@param testprojectid: The internal ID of the TestProject
 		@type testprojectid: int
-		@param fieldname: The internal name of the CustomField
-		@type fieldname: str
+		@param customfieldname: The internal name of the CustomField
+		@type customfieldname: str
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
 		return self._query("tl.getReqSpecCustomFieldDesignValue", \
 					devKey = devkey, \
-					customfieldname = fieldname, \
+					customfieldname = customfieldname, \
 					testprojectid = testprojectid, \
 					reqspecid = reqspecid )
 
 	@TLVersion("1.9.4")
-	def getRequirementCustomFieldDesignValue(self, requirementid, testprojectid, fieldname, devkey=None):
+	def getRequirementCustomFieldDesignValue(self, requirementid, testprojectid, customfieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified Requirement
 		@since: Testlink 1.9.4
 
@@ -1108,19 +1127,19 @@ class Testlink_XML_RPC_API(object):
 		@type requirementid: int
 		@param testprojectid: The internal ID of the TestProject
 		@type testprojectid: int
-		@param fieldname: The internal name of the CustomField
-		@type fieldname: str
+		@param customfieldname: The internal name of the CustomField
+		@type customfieldname: str
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
 		return self._query("tl.getRequirementCustomFieldDesignValue", \
 					devKey = devkey, \
-					customfieldname = fieldname, \
+					customfieldname = customfieldname, \
 					testprojectid = testprojectid, \
 					requirementid = requirementid )
 
 	@TLVersion("1.9.4")
-	def getTestSuiteCustomFieldDesignValue(self, testsuiteid, testprojectid, fieldname, devkey=None):
+	def getTestSuiteCustomFieldDesignValue(self, testsuiteid, testprojectid, customfieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified TestSuite
 		@since: Testlink 1.9.4
 
@@ -1130,19 +1149,19 @@ class Testlink_XML_RPC_API(object):
 		@type testsuiteid: int
 		@param testprojectid: The internal ID of the TestProject
 		@type testprojectid: int
-		@param fieldname: The internal name of the CustomField
-		@type fieldname: str
+		@param customfieldname: The internal name of the CustomField
+		@type customfieldname: str
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
 		return self._query("tl.getTestSuiteCustomFieldDesignValue", \
 					devKey = devkey, \
-					customfieldname = fieldname, \
+					customfieldname = customfieldname, \
 					testprojectid = testprojectid, \
 					testsuiteid = testsuiteid )
 	
 	@TLVersion("1.0")
-	def getTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, projectid, fieldname, details='value', devkey=None):
+	def getTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfieldname, details='value', devkey=None):
 		"""Returns the value of a specified CustomField for a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -1150,10 +1169,10 @@ class Testlink_XML_RPC_API(object):
 		@type testcaseexternalid: int
 		@param version: The version of the TestCase
 		@type version: int
-		@param projectid: The internal ID of the TestProject
-		@type projectid: int
-		@param fieldname: The internal name of the CustomField
-		@type fieldname: str
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param customfieldname: The internal name of the CustomField
+		@type customfieldname: str
 		@param details: <OPTIONAL> Sets the detail level of the result (Default is: 'value')
 		@type details: str
 		@returns: Single value, information about specified field, information about all fields
@@ -1163,8 +1182,8 @@ class Testlink_XML_RPC_API(object):
 					devKey             = devkey,             \
 					testcaseexternalid = testcaseexternalid, \
 					version            = version,            \
-					testprojectid      = projectid,          \
-					customfieldname    = fieldname,          \
+					testprojectid      = testprojectid,      \
+					customfieldname    = customfieldname,    \
 					details            = details )
 		# Return None for an empty string
 		if resp is not None and len(resp)==0:
@@ -1197,7 +1216,7 @@ class Testlink_XML_RPC_API(object):
 					customfields = customfields )
 
 	@TLVersion("1.9.4")
-	def getTestCaseCustomFieldExecutionValue(self, executionid, testplanid, version, projectid, fieldname, devkey=None):
+	def getTestCaseCustomFieldExecutionValue(self, executionid, testplanid, version, testprojectid, customfieldname, devkey=None):
 		"""Returns the value of a specified CustomField for a specified Execution
 		@since: Testlink 1.9.4
 
@@ -1209,23 +1228,23 @@ class Testlink_XML_RPC_API(object):
 		@type testplanid: int
 		@param version: The version of the TestCase
 		@type version: int
-		@param projectid: The internal ID of the TestProject
-		@type projectid: int
-		@param fieldname: The inernal name of the CustomField
-		@type fieldname: str
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param customfieldname: The inernal name of the CustomField
+		@type customfieldname: str
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
 		return self._query("tl.getTestCaseCustomFieldExecutionValue", \
-					devKey = devkey, \
-					customfieldname = fieldname, \
-					testprojectid = projectid, \
-					version = version, \
-					executionid = executionid, \
+					devKey = devkey,                   \
+					customfieldname = customfieldname, \
+					testprojectid = testprojectid,     \
+					version = version,                 \
+					executionid = executionid,         \
 					testplanid = testplanid )
 
 	@TLVersion("1.9.4")
-	def getTestCaseCustomFieldTestPlanDesignValue(self, linkid, testplanid, version, testcaseid, fieldname, devkey=None):
+	def getTestCaseCustomFieldTestPlanDesignValue(self, linkid, testplanid, version, testprojectid, customfieldname, devkey=None):
 		"""Returns the value of the specified CustomField for a specified TestCase within a specified TestPlan
 		@since: Testlink 1.9.4
 
@@ -1237,34 +1256,34 @@ class Testlink_XML_RPC_API(object):
 		@type testplanid: int
 		@param version; The version of the testcase
 		@type version: int
-		@param testcaseid: The internal ID of the TestCase
-		@type testcaseid: int
-		@param fieldname: The internal name of the CustomField
-		@type fieldname: str
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param customfieldname: The internal name of the CustomField
+		@type customfieldname: str
 		@returns: Server response
 		@rtype: list/dict/???
 		"""
 		return self._query("tl.getTestCaseCustomFieldTestPlanDesignValue", \
-					devKey = devkey, \
-					customfieldname = fieldname, \
-					testcaseid = testcaseid, \
-					version = version, \
-					testplanid = testplanid, \
+					devKey = devkey,                   \
+					customfieldname = customfieldname, \
+					testprojectid = testprojectid,     \
+					version = version,                 \
+					testplanid = testplanid,           \
 					linkid = linkid )
 	
 	@TLVersion("1.0")
-	def uploadAttachment(self, objectid, objecttable, name, mime, content, title=None, description=None, devkey=None):
+	def uploadAttachment(self, fkid, fktable, filename, filetype, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified object
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param objectid: The internal ID of the attached object
-		@type objectid: int
-		@param objecttable: The table of the attached object
-		@type objecttable: str
-		@param name: The file name of the Attachment
-		@type name: str
-		@param mime: The MIME-Type of the Attachment
-		@type mime: str
+		@param fkid: The internal ID of the attached object
+		@type fkid: int
+		@param fktable: The table of the attached object
+		@type fktable: str
+		@param filename: The file name of the Attachment
+		@type filename: str
+		@param filetype: The MIME-Type of the Attachment
+		@type filetype: str
 		@param content: Base64 encoded dump of Attachment
 		@type content: str
 		@param title: <OPTIONAL> Title for the Attachment
@@ -1274,27 +1293,27 @@ class Testlink_XML_RPC_API(object):
 		@returns: Server response
 		@rtype: dict
 		"""
-		return self._query("tl.uploadAttachment",         \
-					devKey      = devkey,      \
-					fkid        = objectid,    \
-					fktable     = objecttable, \
-					filename    = name,        \
-					filetype    = mime,        \
-					content     = content,     \
-					title       = title,       \
+		return self._query("tl.uploadAttachment",       \
+					devKey      = devkey,   \
+					fkid        = fkid,     \
+					fktable     = fktable,  \
+					filename    = filename, \
+					filetype    = filetype, \
+					content     = content,  \
+					title       = title,    \
 					description = description )
 	
 	@TLVersion("1.0")
-	def uploadRequirementSpecificationAttachment(self, reqspecid, name, mime, content, title=None, description=None, devkey=None):
+	def uploadRequirementSpecificationAttachment(self, reqspecid, filename, filetype, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Requirement Specification
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param reqspecid: The internal ID of the Requirement Specification
 		@type reqspecid: int
-		@param name: The file name of the Attachment
-		@type name: str
-		@param mime: The MIME-Type of the Attachment
-		@type mime: str
+		@param filename: The file name of the Attachment
+		@type filename: str
+		@param filetype: The MIME-Type of the Attachment
+		@type filetype: str
 		@param content: Base64 encoded dump of Attachment
 		@type content: str
 		@param title: <OPTIONAL> Title for the Attachment
@@ -1307,23 +1326,23 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.uploadRequirementSpecificationAttachment", \
 					devKey      = devkey,                      \
 					reqspecid   = reqspecid,                   \
-					filename    = name,                        \
-					filetype    = mime,                        \
+					filename    = filename,                    \
+					filetype    = filetype,                    \
 					content     = content,                     \
 					title       = title,                       \
 					description = description )
 	
 	@TLVersion("1.0")
-	def uploadRequirementAttachment(self, reqid, name, mime, content, title=None, description=None, devkey=None):
+	def uploadRequirementAttachment(self, requirementid, filename, filetype, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Requirement
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param reqid: The internal ID of the Requirement
-		@type reqid: int
-		@param name: The file name of the Attachment
-		@type name: str
-		@param mime: The MIME-Type of the Attachment
-		@type mime: str
+		@param requirementid: The internal ID of the Requirement
+		@type requirementid: int
+		@param filename: The file name of the Attachment
+		@type filename: str
+		@param filetype: The MIME-Type of the Attachment
+		@type filetype: str
 		@param content: Base64 encoded dump of Attachment
 		@type content: str
 		@param title: <OPTIONAL> Title for the Attachment
@@ -1334,25 +1353,25 @@ class Testlink_XML_RPC_API(object):
 		@rtype: dict
 		"""
 		return self._query("tl.uploadRequirementAttachment", \
-					devKey         = devkey,      \
-					requirementsid = reqid,       \
-					filename       = name,        \
-					filetype       = mime,        \
-					content        = content,     \
-					title          = title,       \
+					devKey         = devkey,       \
+					requirementid = requirementid, \
+					filename       = filename,     \
+					filetype       = filetype,     \
+					content        = content,      \
+					title          = title,        \
 					description    = description )
 	
 	@TLVersion("1.0")
-	def uploadTestProjectAttachment(self, projectid, name, mime, content, title=None, description=None, devkey=None):
+	def uploadTestProjectAttachment(self, testprojectid, filename, filetype, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestProject
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param projectid: The internal ID of the TestProject
-		@type projectid: int
-		@param name: The file name of the Attachment
-		@type name: str
-		@param mime: The MIME-Type of the Attachment
-		@type mime: str
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param filename: The file name of the Attachment
+		@type filename: str
+		@param filetype: The MIME-Type of the Attachment
+		@type filetype: str
 		@param content: Base64 encoded dump of Attachment
 		@type content: str
 		@param title: <OPTIONAL> Title for the Attachment
@@ -1363,25 +1382,25 @@ class Testlink_XML_RPC_API(object):
 		@rtype: dict
 		"""
 		return self._query("tl.uploadTestProjectAttachment", \
-					devKey        = devkey,       \
-					testprojectid = projectid,    \
-					filename      = name,         \
-					filetype      = mime,         \
-					content       = content,      \
-					title         = title,        \
+					devKey        = devkey,        \
+					testprojectid = testprojectid, \
+					filename      = filename,      \
+					filetype      = filetype,      \
+					content       = content,       \
+					title         = title,         \
 					description   = description )
 	
 	@TLVersion("1.0")
-	def uploadTestSuiteAttachment(self, suiteid, name, mime, content, title=None, description=None, devkey=None):
+	def uploadTestSuiteAttachment(self, testsuiteid, filename, filetype, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param suiteid: The internal ID of the TestSuite
-		@type suiteid: int
-		@param name: The file name of the Attachment
-		@type name: str
-		@param mime: The MIME-Type of the Attachment
-		@type mime: str
+		@param testsuiteid: The internal ID of the TestSuite
+		@type testsuiteid: int
+		@param filename: The file name of the Attachment
+		@type filename: str
+		@param filetype: The MIME-Type of the Attachment
+		@type filetype: str
 		@param content: Base64 encoded dump of Attachment
 		@type content: str
 		@param title: <OPTIONAL> Title for the Attachment
@@ -1392,25 +1411,25 @@ class Testlink_XML_RPC_API(object):
 		@rtype: dict
 		"""
 		return self._query("tl.uploadTestSuiteAttachment", \
-					devKey      = devkey,       \
-					testsuiteid = suiteid,      \
-					filename    = name,         \
-					filetype    = mime,         \
-					content     = content,      \
-					title       = title,        \
+					devKey      = devkey,      \
+					testsuiteid = testsuiteid, \
+					filename    = filename,    \
+					filetype    = filetype,    \
+					content     = content,     \
+					title       = title,       \
 					description = description )
 	
 	@TLVersion("1.0")
-	def uploadTestCaseAttachment(self, testcaseid, name, mime, content, title=None, description=None, devkey=None):
+	def uploadTestCaseAttachment(self, testcaseid, filename, filetype, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param testcaseid: The internal ID of the TestCase
 		@type testcaseid: int
-		@param name: The file name of the Attachment
-		@type name: str
-		@param mime: The MIME-Type of the Attachment
-		@type mime: str
+		@param filename: The file name of the Attachment
+		@type filename: str
+		@param filetype: The MIME-Type of the Attachment
+		@type filetype: str
 		@param content: Base64 encoded dump of Attachment
 		@type content: str
 		@param title: <OPTIONAL> Title for the Attachment
@@ -1421,25 +1440,25 @@ class Testlink_XML_RPC_API(object):
 		@rtype: dict
 		"""
 		return self._query("tl.uploadTestCaseAttachment", \
-					devKey      = devkey,      \
-					testcaseid  = testcaseid,  \
-					filename    = name,        \
-					filetype    = mime,        \
-					content     = content,     \
-					title       = title,       \
+					devKey      = devkey,     \
+					testcaseid  = testcaseid, \
+					filename    = filename,   \
+					filetype    = filetype,   \
+					content     = content,    \
+					title       = title,      \
 					description = description )
 	
 	@TLVersion("1.0")
-	def uploadExecutionAttachment(self, executionid, name, mime, content, title=None, description=None, devkey=None):
+	def uploadExecutionAttachment(self, executionid, filename, filetype, content, title=None, description=None, devkey=None):
 		"""Uploads the specified Attachment for the specified Execution
 		@param devkey: Testlink developer key
 		@type devkey: str
 		@param executionid: The internal ID of the Execution
 		@type executionid: int
-		@param name: The file name of the Attachment
-		@type name: str
-		@param mime: The MIME-Type of the Attachment
-		@type mime: str
+		@param filename: The file name of the Attachment
+		@type filename: str
+		@param filetype: The MIME-Type of the Attachment
+		@type filetype: str
 		@param content: Base64 encoded dump of Attachment
 		@type content: str
 		@param title: <OPTIONAL> Title for the Attachment
@@ -1450,12 +1469,12 @@ class Testlink_XML_RPC_API(object):
 		@rtype: dict
 		"""
 		return self._query("tl.uploadExecutionAttachment", \
-					devKey      = devkey,       \
-					executionid = executionid,  \
-					filename    = name,         \
-					filetype    = mime,         \
-					content     = content,      \
-					title       = title,        \
+					devKey      = devkey,      \
+					executionid = executionid, \
+					filename    = filename,    \
+					filetype    = filetype,    \
+					content     = content,     \
+					title       = title,       \
 					description = description )
 	
 	@TLVersion("1.0")
