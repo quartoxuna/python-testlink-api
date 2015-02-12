@@ -1039,7 +1039,7 @@ class TestCase(TestlinkObject):
 					details = details\
 				)
 
-	def update(self,testcasename=None,summary=None,preconditions=None,steps=[],importance=None,executiontype=None,status=None,estimatedexecduration=None):
+	def update(self,testcasename=None,summary=None,preconditions=None,steps=None,importance=None,executiontype=None,status=None,estimatedexecduration=None):
 		"""Updates the the current TestCase.
 		@param testcasename: The name of the TestCase
 		@type testcasname: str
@@ -1059,6 +1059,22 @@ class TestCase(TestlinkObject):
 		@type estimatedexecduration: int
 		@returns: None
 		"""
+
+		if not testcasename:
+			testcasename = self.name
+		if not summary:
+			summary = self.summary
+		if not preconditions:
+			preconditions = self.preconditions
+		if not steps:
+			steps = self.steps
+		if not importance:
+			importance = self.importance
+		if not executiontype:
+			executiontype = self.execution_type
+		if not status:
+			status = self.status
+
 		self._api.updateTestCase(
 				testcaseexternalid = "%s-%s" % (str(self._parent_testproject.prefix),str(self.external_id)),\
 				testcasename = testcasename,\
