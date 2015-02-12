@@ -822,7 +822,6 @@ class TestCase(TestlinkObject):
 
 	def __init__(
 			self,
-			name=None,
 			version=1,
 			status=None,
 			importance=ImportanceLevel.MEDIUM,
@@ -925,19 +924,28 @@ class TestCase(TestlinkObject):
 		|                             |                             |  platform_id                |
 		===========================================================================================
 		"""
+		# Init
+		TestlinkObject.__init__(self,api = api)
+
 		# Get the "correct" id
 		if ('id' in kwargs) and ('tcversion_id' in kwargs):
 			# getTestCasesForTestSuite()
-			TestlinkObject.__init__(self,kwargs['id'],name,api)
+			self.id = kwargs['id']
 			self.tc_version_id = kwargs['tcversion_id']
 		elif ('id' in kwargs) and ('testcase_id' in kwargs):
 			# getTestCase()
-			TestlinkObject.__init__(self,kwargs['testcase_id'],name,api)
+			self.id = kwargs['testcase_id']
 			self.tc_version_id = kwargs['id']
 		elif ('tc_id' in kwargs) and ('tcversion_id' in kwargs):
 			# getTestCasesForTestPlan
-			TestlinkObject.__init__(self,kwargs['tc_id'],name,api)
+			self.id = kwargs['tc_id']
 			self.tc_version_id = kwargs['tcversion_id']
+
+		# Get the "correct" name
+		if ('name' in kwargs):
+			self.name = kwargs['name']
+		elif ('tcase_name' in kwargs):
+			self.name = kwargs['tcase_name']
 
 		# Set the "correct" external id
 		if ('tc_external_id' in kwargs):
