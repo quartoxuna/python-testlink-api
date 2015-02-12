@@ -1053,7 +1053,7 @@ class TestCase(TestlinkObject):
 		"""
 		self._api.updateTestCase(
 				testcaseexternalid = "%s-%s" % (str(self._parent_testproject.prefix),str(self.external_id)),\
-				testcasename = name,\
+				testcasename = testcasename,\
 				summary = summary,\
 				preconditions = preconditions,\
 				steps = steps,\
