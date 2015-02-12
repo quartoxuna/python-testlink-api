@@ -1031,6 +1031,38 @@ class TestCase(TestlinkObject):
 					details = details\
 				)
 
+	def update(self,testcasename=None,summary=None,preconditions=None,steps=[],importance=None,executiontype=None,status=None,estimatedexecduration=None):
+		"""Updates the the current TestCase.
+		@param testcasename: The name of the TestCase
+		@type testcasname: str
+		@param summary: The summary of the TestCase
+		@type summary: str
+		@param preconditions: The Preconditions of the TestCase
+		@type preconditions: str
+		@param steps: The steps of the TestCase
+		@type steps: list
+		@param importance: The importance of the TestCase
+		@type importance: enums.ImportanceLevel
+		@param executiontype: The execution type of the TestCase
+		@type executiontype: enums.ExecutionType
+		@param status: The status of the TestCase
+		@type status: enums.TestcaseStatus
+		@param estimatedexecduration: The estimated execution time of the TestCase
+		@type estimatedexecduration: int
+		@returns: None
+		"""
+		self._api.updateTestCase(
+				testcaseexternalid = "%s-%s" % (str(self._parent_testproject.prefix),str(self.external_id)),\
+				testcasename = name,\
+				summary = summary,\
+				preconditions = preconditions,\
+				steps = steps,\
+				importance = importance,\
+				executiontype = executiontype,\
+				status = status,\
+				estimatedexecduration = estimatedexecduration
+			)
+
 	@staticmethod
 	def create(tl,case,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates the specified TestCase for the specified Testlink instance.
