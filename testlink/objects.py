@@ -432,6 +432,36 @@ class TestProject(TestlinkObject):
 		"""
 		return normalize( [c for c in self.iterTestCase(name,id,external_id,recursive,**params)] )
 
+	def iterRequirementSpecification(self,title=None,**params):
+		"""Iterates over Requirement Specifications specified by parameters
+		@param title: The title of the wanted Requirement Specification
+		@type title: str
+		@returns: Matching Requirement Specifications
+		@rtype: generator
+		"""
+		# No simple API call possible, get all
+		response = self._api.getRequirementSpecificationsForTestProject(self.id)
+
+		# Filter by speficied params
+		if len(params)>0 or title:
+			params['title'] = title
+			for reqspec in copy.copy(response):
+				for key,value in params.items():
+					if value and not (unicode(reqspec[key]) == unicode(value)):
+						response.remove(reqspec)
+						break
+		for reqspec in response:
+			yield RequirementSpecification(api=self._api,name=title,parent_testproject=self,**reqspec)
+
+	def getRequirementSpecification(self,title=None,**params):
+		"""Returns all Requirement Specifications specified by parameters
+		@param title: The title of the wanted Requirement Specification
+		@type title: str
+		@returns: Matching Requirement Specifications
+		@rtype: list
+		"""
+		return normalize( [r for r in self.iterRequirementSpecification(title,**params)] )
+
 	@staticmethod
 	def create(tl,project,*args,**kwargs):
 		"""Creates the specified TestProject for the specified Testlink instance.
@@ -1264,3 +1294,155 @@ class TestCase(TestlinkObject):
 		if isinstance(response,list) and len(response)==1:
 			response = response[0]
 		return response
+
+class RequirementSpecification(TestlinkObject):
+	"""Testlink Requirement Specification representation"""
+
+	__slots__ = ("doc_id","type","scope","testproject_id","author_id","creation_ts",\
+			"modifier_id","modification_ts","total_req","node_order","_parent_testproject")
+
+	def __init__(\
+			self,\
+			id = -1,\
+			doc_id = '',\
+			title = '',\
+			type = None,\
+			scope = '',\
+			testproject_id = None,\
+			author_id = None,\
+			creation_ts = str(datetime.min),\
+			modifier_id = None,\
+			modification_ts = str(datetime.min),\
+			total_req = 0,\
+			node_order = 0,\
+			api = None,\
+			parent_testproject = None,\
+			**kwargs\
+			):
+		"""Initializes a new Requirement Specification with the specified parameters.
+		@todo: doc
+		"""
+		TestlinkObject.__init__(self,id,title,api)
+		self.doc_id = str(doc_id)
+		self.type = int(type)
+		self.scope = scope
+		self.testproject_id = int(testproject_id)
+		self.author_id = int(author_id)
+		try:
+			self.modifier_id = int(modifier_id)
+		except ValueError:
+			self.modifier_id = -1
+		self.total_req = int(total_req)
+		self.node_order = int(node_order)
+		try:
+			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
+		except ValueError:
+			self.creation_ts = datetime.min
+		try:
+			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
+		except ValueError:
+			self.modification_ts = datetime.min
+		self._parent_testproject = parent_testproject
+
+	def iterRequirement(self,title=None,**params):
+		"""Iterates over Requirements specified by parameters
+		@param title: The title of the wanted Requirement
+		@type title: str
+		@returns: Matching Requirements
+		@rtype: generator
+		"""
+		# No Simple API Call possible, get all
+		response = self._api.getRequirementsForRequirementSpecification(self.id,self._parent_testproject.id)
+
+		# Filter by specifiec params
+		if len(params)>0 or title:
+			params['title'] = title
+			for req in copy.copy(response):
+				for key,value in params.items():
+					if value and not (unicode(req[key]) == unicode(value)):
+						response.remove(req)
+						break
+		for req in response:
+			yield Requirement(api=self._api,name=title,parent_testproject=self._parent_testproject,**req)
+
+	def getRequirement(self,title=None,**params):
+		"""Returns all Requirements with the specified parameters
+		@param title: The title of the wanted Requirement
+		@type title: str
+		@returns: Matching Requirements
+		@rtype: mixed
+		"""
+		return normalize( [r for r in self.iterRequirement(title,**params)] )
+
+class Requirement(TestlinkObject):
+	"""Testlink Requirement representation"""
+
+	__slots__ = ("srs_id","req_doc_id","req_spec_title","type","version","version_id","revision","revision_id",\
+			"scope","status","node_order","is_open","active","expected_coverage","testproject_id","author",\
+			"author_id","creation_ts","modifier","modifier_id","modification_ts","_parent_testproject" )
+
+	def __init__(\
+			self,
+			id = -1,\
+			srs_id = None,\
+			req_doc_id = '',\
+			title = '',\
+			req_spec_title = None,\
+			type = None,\
+			version = None,\
+			version_id = None,\
+			revision = None,\
+			revision_id = None,\
+			scope = '',\
+			status = None,\
+			node_order = 0,\
+			is_open = True,\
+			active = True,\
+			expected_coverage = None,\
+			testproject_id = -1,\
+			author = None,\
+			author_id = None,\
+			creation_ts = str(datetime.min),\
+			modifier = None,\
+			modifier_id = None,\
+			modification_ts = str(datetime.min),\
+			api = None,\
+			parent_testproject = None,\
+			**kwargs\
+			):
+		"""Initializes a new Requirement with the specified parameters
+		@todo: doc
+		"""
+		TestlinkObject.__init__(self,id,title,api)
+		self.srs_id = str(srs_id)
+		self.req_doc_id = str(req_doc_id)
+		self.req_spec_title = req_spec_title
+		self.type = int(type)
+		self.version = int(version)
+		self.version_id = int(version_id)
+		self.revision = int(revision)
+		self.revision_id = int(revision_id)
+		self.scope = scope
+		self.status = str(status)
+		self.node_order = int(node_order)
+		self.is_open = bool(is_open)
+		self.active = bool(active)
+		self.expected_coverage = int(expected_coverage)
+		self.testproject_id = int(testproject_id)
+		self.author = str(author)
+		self.author_id = int(author_id)
+		self.modifier = str(modifier)
+		try:
+			self.modifier_id = int(modifier_id)
+		except ValueError:
+			self.modifier_id = -1
+		try:
+			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
+		except ValueError:
+			self.creation_ts = datetime.min
+		try:
+			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
+		except ValueError:
+			self.modification_ts = datetime.min
+		self._parent_testproject = parent_testproject
+			

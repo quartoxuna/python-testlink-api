@@ -1495,3 +1495,34 @@ class Testlink_XML_RPC_API(object):
 					devKey             = devkey,     \
 					testcaseid         = testcaseid, \
 					testcaseexternalid = testcaseexternalid )
+
+	@TLVersion("1.11-sinaqs",strict=True)
+	def getRequirementSpecificationsForTestProject(self, testprojectid, devkey=None):
+		"""Returns all available Requirement Specifications for the specified TestProject
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testprojectid: The internal ID of the TestProject.
+		@type testprojectid: int
+		@returns: Matching requirement specifications
+		@rtype: list
+		"""
+		return self._query("tl.getRequirementSpecificationsForTestProject", \
+					devKey        = devkey, \
+					testprojectid = testprojectid )
+
+	@TLVersion("1.11-sinaqs",strict=True)
+	def getRequirementsForRequirementSpecification(self, reqspecid, testprojectid, devkey=None):
+		"""Returns all available Requirements for the specified Requirement Specification
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@þaram reqspecid: The internal ID of the Requirement Specification
+		@type reqspecid: int
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@returns: Matching requirements
+		@rtype: list
+		"""
+		return self._query("tl.getRequirementsForRequirementSpecification", \
+					devKey        = devkey,    \
+					reqspecid     = reqspecid, \
+					testprojectid = testprojectid )
