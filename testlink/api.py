@@ -129,8 +129,12 @@ class Testlink_XML_RPC_API(object):
 			resp = fn(kwargs)
 			log.debug("Response: %s" % str(resp))
 		except xmlrpclib.Fault,f:
+			# If method is not supported, raise NotSupported
+			# Otherwise re-raise original error
 			if (f.faultCode == NotSupported.errorCode):
 				raise NotSupported(method)
+			else:
+				raise
 		else:
 			# Check for API error [{'code': 123, 'message': foo}]
 			if isinstance(resp,list) and len(resp)==1:
