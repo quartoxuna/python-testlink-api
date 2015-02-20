@@ -558,20 +558,19 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		"""'createTestSuite' (1.0)"""
 		query.return_value = randict("message")
 		# Check default params
-		defaults = randict("name","testprojectid")
+		defaults = randict("testsuitename","testprojectid")
 		self.assertEquals(self._api.createTestSuite(**defaults),query.return_value)
 		query.assert_called_with('tl.createTestSuite',\
 						devKey = None,\
-						testsuitename = defaults['name'],\
-						testprojectid = defaults['testprojectid'],\
 						details = None,\
 						parentid = None,\
 						order = None,\
 						checkduplicatedname = True,\
-						actiononduplicatedname = 'block'\
+						actiononduplicatedname = 'block',
+						**defaults\
 					)
 		# Check with specified parameters
-		non_defaults = randict("name","testprojectid","details","parentid","order","checkduplicates","actiononduplicate")
+		non_defaults = randict("testsuitename","testprojectid","details","parentid","order","checkduplicatedname","actiononduplicatedname")
 		self.assertEquals(self._api.createTestSuite(**non_defaults),query.return_value)
 		query.assert_called_with('tl.createTestSuite', devKey = None, **non_defaults)
 		self._api._tl_version = Version("0.9")
@@ -965,7 +964,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 						**test_data\
 					)
 
-	@patch("testlink.Testlink_XML_RPC_API._query")
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getTestCaseCustomFieldDesignValue(self,query):
 		"""'getTestCaseCustomFieldDesignValue' (1.0)"""
 		query.return_value = randict("name","id","value")

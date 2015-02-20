@@ -629,12 +629,12 @@ class Testlink_XML_RPC_API(object):
 					executionid = executionid )
 	
 	@TLVersion("1.0")
-	def createTestSuite(self, name, testprojectid, details=None, parentid=None, order=None, checkduplicates=True, actiononduplicate=DuplicateStrategy.BLOCK, devkey=None):
+	def createTestSuite(self, testsuitename, testprojectid, details=None, parentid=None, order=None, checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK, devkey=None):
 		"""Creates a new TestSuite
 		@param devkey: Testlink developer key
 		@type devkey: str
-		@param name: The name of the TestSuite
-		@type name: str
+		@param testsuitename: The name of the TestSuite
+		@type testsuitename: str
 		@param testprojectid: The internal ID of the parent TestProject
 		@type testprojectid: int
 		@param details: <OPTIONAL> Additional notes for the TestSuite
@@ -643,22 +643,22 @@ class Testlink_XML_RPC_API(object):
 		@type parentid: int
 		@param order: <OPTIONAL> Ordering withing the parent TestSuite
 		@type order: int
-		@param checkduplicates: <OPTIONAL> Enables duplicate handling (Default is: True)
-		@type checkduplicates: bool
-		@param actiononduplicate: <OPTIONAL> Action on duplicate
-		@param actiononduplicate: str
+		@param checkduplicatedname: <OPTIONAL> Enables duplicate handling (Default is: True)
+		@type checkduplicatedname: bool
+		@param actiononduplicatedname: <OPTIONAL> Action on duplicate
+		@param actiononduplicatedname: str
 		@returns: Server response
 		@rtype: dict
 		"""
 		return self._query("tl.createTestSuite",                         \
 					devKey                 = devkey,          \
-					testsuitename          = name,            \
+					testsuitename          = testsuitename,   \
 					testprojectid          = testprojectid,   \
 					details                = details,         \
 					parentid               = parentid,        \
 					order                  = order,           \
-					checkduplicatedname    = checkduplicates, \
-					actiononduplicatedname = actiononduplicate )
+					checkduplicatedname    = checkduplicatedname, \
+					actiononduplicatedname = actiononduplicatedname )
 	
 	@TLVersion("1.0")
 	def getTestSuiteById(self, testsuiteid, devkey=None):
