@@ -79,6 +79,7 @@ class Testlink_XML_RPC_API(object):
 
 		# Check for each possible RPC path,
 		# if a connection can be made
+		last_excpt = None
 		for path in self.RPC_PATHS:
 			tmp = url
 			try:
@@ -88,10 +89,11 @@ class Testlink_XML_RPC_API(object):
 				self._proxy.system.listMethods()
 				break
 			except Exception,ex:
+				last_excpt = ex
 				self._proxy = None
 				continue
 		if self._proxy is None:
-			raise ConnectionError("Cannot connect to Testlink API @ %s" % str(url))
+			raise ConnectionError("Cannot connect to Testlink API @ %s (%s)" % (str(url),str(last_excpt)))
 
 		try:
 			# Get the version
