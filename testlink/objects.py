@@ -25,6 +25,23 @@ from enums import CustomFieldDetails
 # Global datetime format
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+# Helper method
+def normalize(res):
+	"""Normalizes a result list.
+	If the specified list is empty, return None.
+	If the specified list has only one element, return that element.
+	Else return the list as is.
+	@param res: Result list
+	@type res: list
+	@rtype: mixed
+	"""
+	if len(res)==0:
+		return None
+	elif len(res)==1:
+		return res[0]
+	else:
+		return res
+
 class Testlink(object):
 	"""Testlink Server implementation
 	@ivar _url: URL of connected Testlink
@@ -61,8 +78,8 @@ class Testlink(object):
 		# Check for easy API call
 		return self._api._tl_version
 
-	def getTestProject(self,name=None,**params):
-		"""Returns generator over TestProjects specified by parameters
+	def iterTestProject(self,name=None,**params):
+		"""Iterates over TestProjects specified by parameters
 		@param name: The name of the TestProject
 		@type name: str
 		@param params: Other params for TestProject
@@ -96,6 +113,17 @@ class Testlink(object):
 							break
 			for project in response:
 				yield TestProject(api=self._api,**project)
+
+	def getTestProject(self,name=None,**params):
+		"""Returns all TestProjects specified by parameters
+		@param name: The name of the TestProject
+		@type name: str
+		@param params: Other params for TestProject
+		@type params: dict
+		@returns: Matching TestProjects
+		@rtype: mixed
+		"""
+		return normalize( [p for p in self.iterTestProject(name,**params)] )
 
 	def create(self,obj,*args,**kwargs):
 		"""Create a new object using the current connected Testlink.
@@ -155,16 +183,31 @@ class TestlinkObject(object):
 	def getTestlink(self):
 		raise NotImplementedError()
 
+	def iterTestPlan(self):
+		raise NotImplementedError()
+
 	def getTestPlan(self):
+		raise NotImplementedError()
+
+	def iterBuild(self):
 		raise NotImplementedError()
 
 	def getBuild(self):
 		raise NotImplementedError()
 
+	def iterPlatform(self):
+		raise NotImplementedError()
+
 	def getPlatform(self):
 		raise NotImplementedError()
 
+	def iterTestSuite(self):
+		raise NotImplementedError()
+
 	def getTestSuite(self):
+		raise NotImplementedError()
+
+	def iterTestCase(self):
 		raise NotImplementedError()
 
 	def getTestCase(self):
@@ -228,8 +271,8 @@ class TestProject(TestlinkObject):
 		self.tc_counter = int(tc_counter)
 		self.color = color
 
-	def getTestPlan(self,name=None,**params):
-		"""Returns generator over TestPlans specified by parameters
+	def iterTestPlan(self,name=None,**params):
+		"""Iterates over TestPlans specified by parameters
 		@param name: The name of the TestPlan
 		@type name: str
 		@param params: Other params for TestPlan
@@ -254,8 +297,19 @@ class TestProject(TestlinkObject):
 			for plan in response:
 				yield TestPlan(api=self._api,parent_testproject=self,**plan)
 
-	def getTestSuite(self,name=None,id=None,recursive=True,**params):
-		"""Returns generator over TestSuites specified by parameters
+	def getTestPlan(self,name=None,**params):
+		"""Returns all TestPlans specified by parameters
+		@param name: The name of the TestPlan
+		@type name: str
+		@param params: Other params for TestPlan
+		@type params: dict
+		@returns: Matching TestPlans
+		@rtype: mixed
+		"""
+		return normalize( [p for p in self.iterTestPlan(name,**params)] )
+
+	def iterTestSuite(self,name=None,id=None,recursive=True,**params):
+		"""Iterates over TestSuites specified by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
 		@param id: The internal ID of the TestSuite
@@ -302,8 +356,23 @@ class TestProject(TestlinkObject):
 				for s in suite.getTestSuite(**params):
 					yield s
 
-	def getTestCase(self,name=None,id=None,external_id=None,recursive=True,**params):
-		"""Returns generator over TestCases specified by parameters
+	def getTestSuite(self,name=None,id=None,recursive=True,**params):
+		"""Returns all TestSuites specified by parameters
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param id: The internal ID of the TestSuite
+		@type id: int
+		@param recursive: Enable recursive search
+		@type recursive: bool
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: mixed
+		"""
+		return normalize( [s for s in self.iterTestSuite(self,name,id,recursive,**params)] )
+
+	def iterTestCase(self,name=None,id=None,external_id=None,recursive=True,**params):
+		"""Iterates over TestCases specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
 		@param id: The internal ID of the TestCase
@@ -345,6 +414,23 @@ class TestProject(TestlinkObject):
 		else:
 			# Get all TestCases for the TestProject
 			raise NotImplementedError("Cannot get all TestCases for a TestProject yet")
+
+	def getTestCase(self,name=None,id=None,external_id=None,recursive=True,**params):
+		"""Returns all TestCases specified by parameters
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param id: The internal ID of the TestCase
+		@type id: int
+		@param external_id: The external ID of the TestCase
+		@type external_id: int
+		@param recursive: Enable recursive search
+		@type recursive: bool
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: mixed
+		"""
+		return normalize( [c for c in self.iterTestCase(name,id,external_id,recursive,**params)] )
 
 	@staticmethod
 	def create(tl,project,*args,**kwargs):
@@ -396,8 +482,8 @@ class TestPlan(TestlinkObject):
 		self._parent_testproject = parent_testproject
 	
 
-	def getBuild(self,name=None,**params):
-		"""Returns generator over Builds specified by parameters
+	def iterBuild(self,name=None,**params):
+		"""Iterates over Builds specified by parameters
 		@param name: The name of the Build
 		@type name: str
 		@param params: Other params for Build
@@ -419,8 +505,19 @@ class TestPlan(TestlinkObject):
 		for build in response:
 			yield Build(api=self._api,**build)
 
-	def getPlatform(self,name=None,**params):
-		"""Returns generator over Platforms specified by parameters
+	def getBuild(self,name=None,**params):
+		"""Returns all Builds specified by parameters
+		@param name: The name of the Build
+		@type name: str
+		@param params: Other params for Build
+		@type params: dict
+		@returns: Macthing Builds
+		@rtype: mixed
+		"""
+		return normalize( [b for b in self.iterBuild(name,**params)] )
+
+	def iterPlatform(self,name=None,**params):
+		"""Iterates over Platforms specified by parameters
 		@param name: The name of the Platform
 		@type name: str
 		@param params: Other params for Platform
@@ -441,12 +538,19 @@ class TestPlan(TestlinkObject):
 						break
 		for platform in response:
 			yield Platform(api=self._api,**platform)
-		
-	def getTestSuite(self,name=None,**params):
-		"""Return generator TestSuites specified by parameters"""
-		raise NotImplementedError()
 
-	def getTestCase(
+	def getPlatform(self,name=None,**params):
+		"""Returns all Platforms specified by parameters
+		@param name: The name of the Platform
+		@type name: str
+		@param params: Other params for Platform
+		@type params: dict
+		@returns: Matching Platforms
+		@rtype: mixed
+		"""
+		return normalize( [p for p in self.iterPlatform(name,**params)] )
+
+	def iterTestCase(
 			self,\
 			name = None,\
 			id = None,\
@@ -459,7 +563,7 @@ class TestPlan(TestlinkObject):
 			execution_type = None,\
 			**params
 		):
-		"""Returns generator over Testcases specified by parameters
+		"""Iterates over Testcases specified by parameters
 		@param name: The name of the TestCase
 		@type name: str
 		@param id: The internal ID of the TestCase
@@ -543,6 +647,45 @@ class TestPlan(TestlinkObject):
 				if tcase is not None:
 					yield tcase
 
+	def getTestCase(
+			self,\
+			name = None,\
+			id = None,\
+			buildid = None,\
+			keywordid = None,\
+			keywords = None,\
+			executed = None,\
+			assigned_to = None,\
+			execution_status = None,\
+			execution_type = None,\
+			**params
+		):
+		"""Returns all Testcases specified by parameters
+		@param name: The name of the TestCase
+		@type name: str
+		@param id: The internal ID of the TestCase
+		@type id: int
+		@param buildid: The internal ID of the Build
+		@type buildid: int
+		@param keywordid: The internal ID of the used Keyword
+		@type keywordid: int
+		@param keywords: Keywords to filter for
+		@type keywords: list
+		@param executed: Checks if TestCase is executed
+		@type executed: bool
+		@param assigned_to: Filter by internal ID of assigned Tester
+		@type assigned_to: int
+		@param execution_status: Filter by execution status
+		@type execution_status: char ???
+		@param execution_type: Filter by execution type
+		@type execution_type: ExecutionType
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: mixed
+		"""
+		return normalize( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executes,assigned_to,execution_status,execution_type,**params)] )
+
 class Build(TestlinkObject):
 	"""Testlink Build representation
 	@ivar notes: Build notes
@@ -583,8 +726,8 @@ class TestSuite(TestlinkObject):
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
-	def getTestSuite(self,name=None,id=None,**params):
-		"""Returns geneator over TestSuites speficied by parameters
+	def iterTestSuite(self,name=None,id=None,**params):
+		"""Iterates over TestSuites speficied by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
 		@param params: Other params for TestSuite
@@ -626,14 +769,25 @@ class TestSuite(TestlinkObject):
 			for s in suite.getTestSuite(**params):
 				yield s
 
-	def getTestCase(self,name=None,**params):
-		"""Returns all TestCaes specified by parameters
+	def getTestSuite(self,name=None,id=None,**params):
+		"""Returns all TestSuites speficied by parameters
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: mixed
+		"""
+		return normalize( [s for s in self.iterTestSuite(name,id,**params)] )
+
+	def iterTestCase(self,name=None,**params):
+		"""Iterates over TestCases specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
 		@param params: Other params for TestCase
 		@type params: dict
 		@returns: Matching TestCases
-		@rtype: list
+		@rtype: generator
 		"""
 		# No simple API call possible, get all
 		response = self._api.getTestCasesForTestSuite(self.id,details='full')
@@ -648,6 +802,17 @@ class TestSuite(TestlinkObject):
 						break
 		for case in response:
 			yield TestCase(api=self._api,parent_testproject=self._parent_testproject,parent_testsuite=self,**case)
+
+	def getTestCase(self,name=None,**params):
+		"""Returns all TestCases specified by parameters
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: mixed
+		"""
+		return normalize( [c for c in self.iterTestCase(name,**params)] )
 
 	@staticmethod
 	def create(tl,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
