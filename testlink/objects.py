@@ -717,7 +717,7 @@ class TestPlan(TestlinkObject):
 		@returns: Matching TestCases
 		@rtype: mixed
 		"""
-		return normalize( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executes,assigned_to,execution_status,execution_type,**params)] )
+		return normalize( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executed,assigned_to,execution_status,execution_type,**params)] )
 
 class Build(TestlinkObject):
 	"""Testlink Build representation
