@@ -177,6 +177,9 @@ class TestlinkObject(object):
 	def __unicode__(self):
 		return unicode(self.name)
 
+	def __repr__(self):
+		return self.__unicode__()
+
 	def __eq__(self,other):
 		return self.id == other.id
 
