@@ -632,7 +632,7 @@ class TestPlan(TestlinkObject):
 								assigned_to,\
 								execution_status,\
 								execution_type,\
-								steps = True\
+								getstepsinfo = True\
 							)
 
 		# Check for empty response
