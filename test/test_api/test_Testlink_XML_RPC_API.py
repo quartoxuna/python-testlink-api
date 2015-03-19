@@ -1199,3 +1199,29 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 					)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.getTestCaseAttachments)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getRequirementSpecificationsForTestProject(self,query):
+		"""'getRequirementSpecificationsForTestProject' (1.11-sinaqs)"""
+		query.return_value = [randict("name","id"),randict("name","id")]
+		test_data = randict("testprojectid")
+		self.assertRaises(NotSupported,self._api.getRequirementSpecificationsForTestProject)
+		self._api._tl_version = Version("1.11-sinaqs")
+		self.assertEquals(self._api.getRequirementSpecificationsForTestProject(**test_data),query.return_value)
+		query.assert_called_with('tl.getRequirementSpecificationsForTestProject',\
+						devKey = None,\
+						**test_data\
+					)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getRequirementsForRequirementSpecification(self,query):
+		"""'getRequirementsForRequirementForRequirementSpecification' (1.11-sinaqs)"""
+		query.return_value = [randict("name","id"),randict("name","id")]
+		test_data = randict("reqspecid","testprojectid")
+		self.assertRaises(NotSupported,self._api.getRequirementsForRequirementSpecification)
+		self._api._tl_version = Version("1.11-sinaqs")
+		self.assertEquals(self._api.getRequirementsForRequirementSpecification(**test_data),query.return_value)
+		query.assert_called_with('tl.getRequirementsForRequirementSpecification',\
+						devKey = None,\
+						**test_data\
+					)
