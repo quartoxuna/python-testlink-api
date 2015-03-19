@@ -1225,3 +1225,16 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 						devKey = None,\
 						**test_data\
 					)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getRisksForRequirement(self,query):
+		"""'getRisksForRequirement' (1.11-sinaqs)"""
+		query.return_value = [randict("name","id"),randict("name","id")]
+		test_data = randict("requirementid")
+		self.assertRaises(NotSupported,self._api.getRisksForRequirement)
+		self._api._tl_version = Version("1.11-sinaqs")
+		self.assertEquals(self._api.getRisksForRequirement(**test_data),query.return_value)
+		query.assert_called_with('tl.getRisksForRequirement',\
+						devKey = None,\
+						**test_data\
+					)

@@ -1526,3 +1526,17 @@ class Testlink_XML_RPC_API(object):
 					devKey        = devkey,    \
 					reqspecid     = reqspecid, \
 					testprojectid = testprojectid )
+
+	@TLVersion("1.11-sinaqs",strict=True)
+	def getRisksForRequirement(self, requirementid, devkey=None):
+		"""Returns all avaialble Risks for the specified Requirement
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param requirementid: The internal ID of the Requirement
+		@type requirementid: int
+		@returns: Matching risks
+		@rtype: list
+		"""
+		return self._query("tl.getRisksForRequirement",\
+					devKey        = devkey,\
+					requirementid = requirementid )
