@@ -104,13 +104,6 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		self._api._query("passed",**data)
 		self._mock_server.passed.assert_called_with(dict(a=data['a'],b=data['b'],c=data['c'],devKey=None))
 
-		# Check global devkey setting
-		data = randict("a","b","c")
-		key = input()
-		self._api._devkey = key
-		self._api._query("passed",**data)
-		self._mock_server.passed.assert_called_with(dict(a=data['a'],b=data['b'],c=data['c'],devKey=key))
-
 	def test_globalDevKey(self):
 		"""Global DevKey setting"""
 		key = input(20)
