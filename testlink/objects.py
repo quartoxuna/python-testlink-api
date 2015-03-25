@@ -186,6 +186,12 @@ class TestlinkObject(object):
 	def getTestlink(self,*args,**kwargs):
 		raise NotImplementedError()
 
+	def iterTestProject(self,*args,**kwargs):
+		raise NotImplementedError()
+
+	def getTestProject(self,*args,**kwargs):
+		return normalize( [p for p in self.iterTestProject(*args,**kwargs)] )
+
 	def iterTestPlan(self,*args,**kwargs):
 		raise NotImplementedError()
 
@@ -514,6 +520,8 @@ class TestPlan(TestlinkObject):
 		self.public = bool(is_public)
 		self._parent_testproject = parent_testproject
 	
+	def iterTestProject(self,*args,**kwargs):
+		yield self._parent_testproject
 
 	def iterBuild(self,name=None,**params):
 		"""Iterates over Builds specified by parameters
@@ -657,7 +665,7 @@ class TestPlan(TestlinkObject):
 			for case in copy.copy(testcases):
 				# Create a testcase instance here
 				# to have normalized attributes
-				tcase = TestCase(api=self._api,parent_testproject=self._parent_testproject,**case)
+				tcase = TestCase(api=self._api,parent_testproject=self.getTestProject(),**case)
 				for key,value in params.items():
 					try:
 						if value and not (unicode(getattr(tcase,key)) == unicode(value)):
@@ -667,8 +675,8 @@ class TestPlan(TestlinkObject):
 					except AttributeError:
 						# TestCase has no attribute key
 						# Try to treat key as the name of a custom field
-						ext_id = "%s-%s" % (tcase._parent_testproject.prefix,tcase.external_id)
-						cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,tcase.version,tcase._parent_testproject.id,key)
+						ext_id = "%s-%s" % (tcase.getTestProject().prefix,tcase.external_id)
+						cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,tcase.version,tcase.getTestProject().id,key)
 						if ( \
 							(cf_val is None) or \
 							( value and not(unicode(cf_val) == unicode(value)) ) \
@@ -759,6 +767,12 @@ class TestSuite(TestlinkObject):
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
 
+	def iterTestProject(self,*args,**kwargs):
+		yield self._parent_testproject
+
+	def iterTestSuite(self):
+		yield self._parent_testsuite
+
 	def iterTestSuite(self,name=None,id=None,**params):
 		"""Iterates over TestSuites speficied by parameters
 		@param name: The name of the wanted TestSuite
@@ -794,7 +808,7 @@ class TestSuite(TestlinkObject):
 						break
 
 		# Built TestSuite object here to simplify recursive search
-		sub_suites = [TestSuite(api=self._api,parent_testproject=self._parent_testproject,parent_testsuite=self,**suite) for suite in response]
+		sub_suites = [TestSuite(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**suite) for suite in response]
 		for suite in sub_suites:
 			yield suite
 		# Recursively search in sub suites
@@ -834,7 +848,7 @@ class TestSuite(TestlinkObject):
 						response.remove(case)
 						break
 		for case in response:
-			yield TestCase(api=self._api,parent_testproject=self._parent_testproject,parent_testsuite=self,**case)
+			yield TestCase(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**case)
 
 	def getTestCase(self,name=None,**params):
 		"""Returns all TestCases specified by parameters
@@ -857,15 +871,15 @@ class TestSuite(TestlinkObject):
 		"""
 		kwargs = {
 				'name' : suite.name,
-				'testprojectid' : suite._parent_testproject.id,
+				'testprojectid' : suite.getTestProject().id,
 				'details' : suite.details,
 				'order' : order,
 				'actiononduplicate' : on_duplicate,
 				'parentid' : None
 		}
 
-		if suite._parent_testsuite is not None:
-			kwargs['parentid'] = suite._parent_testsuite.id
+		if suite.getTestSuite() is not None:
+			kwargs['parentid'] = suite.getTestSuite().id
 
 		response = tl._api.createTestSuite(**kwargs)
 
@@ -1178,10 +1192,16 @@ class TestCase(TestlinkObject):
 				self.steps.append(TestCase.Step(**s))
 
 	def __unicode__(self):
-		return "%s-%s %s" % (unicode(self._parent_testproject.prefix),unicode(self.external_id),unicode(self.name))
+		return "%s-%s %s" % (unicode(self.getTestProject().prefix),unicode(self.external_id),unicode(self.name))
 
 	def __str__(self):
 		return __unicode__(self)
+
+	def iterTestProject(self,*args,**kwargs):
+		yield self._parent_testproject
+
+	def iterTestSuite(self,*args,**kwargs):
+		yield self._parent_testsuite
 
 	def getLastExecutionResult(self,testplanid,platformid=None,platformname=None,buildid=None,buildname=None,bugs=False):
 		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
@@ -1219,9 +1239,9 @@ class TestCase(TestlinkObject):
 		@rtype: mixed
 		"""
 		return self._api.getTestCaseCustomFieldDesignValue(
-					testcaseexternalid = "%s-%s" % (str(self._parent_testproject.prefix),str(self.external_id)),\
+					testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
 					version = int(self.version),\
-					projectid = self._parent_testproject.id,\
+					projectid = self.getTestProject().id,\
 					fieldname = fieldname,\
 					details = details\
 				)
@@ -1263,7 +1283,7 @@ class TestCase(TestlinkObject):
 			status = self.status
 
 		self._api.updateTestCase(
-				testcaseexternalid = "%s-%s" % (str(self._parent_testproject.prefix),str(self.external_id)),\
+				testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
 				testcasename = testcasename,\
 				summary = summary,\
 				preconditions = preconditions,\
@@ -1284,8 +1304,8 @@ class TestCase(TestlinkObject):
 		"""
 		response = tl._api.createTestCase(
 						name = case.name,
-						suiteid = case._parent_testsuite.id,
-						projectid = case._parent_testproject.id,
+						suiteid = case.getTestSuite().id,
+						projectid = case.getTestProject().id,
 						author = case.author,
 						summary = case.summary,
 						steps = case.steps,
@@ -1350,6 +1370,9 @@ class RequirementSpecification(TestlinkObject):
 			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
 
+	def iterTestProject(self,*args,**kwargs):
+		yield self._parent_testproject
+
 	def iterRequirement(self,title=None,**params):
 		"""Iterates over Requirements specified by parameters
 		@param title: The title of the wanted Requirement
@@ -1358,7 +1381,7 @@ class RequirementSpecification(TestlinkObject):
 		@rtype: generator
 		"""
 		# No Simple API Call possible, get all
-		response = self._api.getRequirementsForRequirementSpecification(self.id,self._parent_testproject.id)
+		response = self._api.getRequirementsForRequirementSpecification(self.id,self.getTestProject().id)
 
 		# Filter by specifiec params
 		if len(params)>0 or title:
@@ -1369,7 +1392,7 @@ class RequirementSpecification(TestlinkObject):
 						response.remove(req)
 						break
 		for req in response:
-			yield Requirement(api=self._api,name=title,parent_testproject=self._parent_testproject,**req)
+			yield Requirement(api=self._api,name=title,parent_testproject=self.getTestProject(),**req)
 
 	def getRequirement(self,title=None,**params):
 		"""Returns all Requirements with the specified parameters
@@ -1451,4 +1474,7 @@ class Requirement(TestlinkObject):
 		except ValueError:
 			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
+
+		def iterTestProject(self,*args,**kwargs):
+			yield seld._parent_testproject
 			
