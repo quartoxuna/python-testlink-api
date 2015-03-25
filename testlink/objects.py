@@ -727,6 +727,22 @@ class TestPlan(TestlinkObject):
 		"""
 		return normalize( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executed,assigned_to,execution_status,execution_type,**params)] )
 
+	def assignTestCase(self, case, platform=None, execution_order=None, urgency=None):
+		"""Assigns the specified TestCase to the current TestPlan.
+		@param case: TestCase to add to current TestPlan
+		@type case: TestCase
+		@param platform: <OPTIONAL> Platform to add to
+		@type platform: Platform
+		@param execution_order: <OPTIONAL> Desired execution order
+		@type execution_order: int
+		@param urgency: <OPTIONAL> Desired urgency
+		@type urgency: enums.UrgencyLevel
+		@raises APIError: Could not add TestCase
+		"""
+		if not platform:
+			platform = Platform(-1)
+		self._api.addTestCaseToTestPlan(self.getTestProject().id,self.id,"%s-%s" % (self.getTestProject().prefix,str(case.external_id)),case.version,platform.id,execution_order,urgency)
+
 class Build(TestlinkObject):
 	"""Testlink Build representation
 	@ivar notes: Build notes
