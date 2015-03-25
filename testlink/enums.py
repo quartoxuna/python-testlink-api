@@ -30,6 +30,19 @@ class ImportanceLevel:
 	MEDIUM = 2
 	LOW = 1
 
+class UrgencyLevel:
+	"""Enumeration for urgency levels
+	@cvar HIGH: High Urgency
+	@type HIGH: int
+	@cvar MEDIUM: Medium Urgency
+	@type MEDIUM: int
+	@cvar LOW: Low Urgency
+	@type LOW: int
+	"""
+	HIGH = 3
+	MEDIUM = 2
+	LOW = 1
+
 class DuplicateStrategy:
 	"""Enumeration for duplicate handling strategies
 	@cvar BLOCK: Block on duplicate
