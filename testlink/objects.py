@@ -72,11 +72,10 @@ class Testlink(object):
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
-		@return: Version struct
-		@rtype: distutils.version.LooseVersion
+		@return: Version
+		@rtype: str
 		"""
-		# Check for easy API call
-		return self._api._tl_version
+		return str(self._api._tl_version)
 
 	def iterTestProject(self,name=None,**params):
 		"""Iterates over TestProjects specified by parameters
