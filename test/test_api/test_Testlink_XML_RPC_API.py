@@ -10,25 +10,18 @@
 import unittest
 from mock import Mock, MagicMock, patch
 
+from distutils.version import LooseVersion as Version
+import xmlrpclib
+
 from .. import input, randict, ServerMock
 
 from testlink.api import Testlink_XML_RPC_API
-
 from testlink.exceptions import NotSupported
 from testlink.exceptions import APIError
 from testlink.exceptions import ConnectionError
-
 from testlink.enums import ExecutionType
 from testlink.enums import ImportanceLevel
 
-from distutils.version import LooseVersion as Version
-import threading
-import SimpleXMLRPCServer
-import xmlrpclib
-
-import logging
-#logging.basicConfig(level=logging.DEBUG)
-	
 class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 
 	def __init__(self,*args,**kwargs):
