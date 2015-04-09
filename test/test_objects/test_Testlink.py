@@ -10,7 +10,7 @@
 import unittest
 from mock import Mock, MagicMock, patch
 
-from .. import input, randict, ServerMock
+from .. import randput, randict, ServerMock
 
 from testlink.api import Testlink_XML_RPC_API
 from testlink.objects import Testlink
@@ -18,7 +18,7 @@ from testlink.exceptions import *
 from testlink.enums import *
 
 URL = "http://localhost/"
-DEVKEY = input(50)
+DEVKEY = randput(50)
 
 class TestlinkTests(unittest.TestCase):
 

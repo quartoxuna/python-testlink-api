@@ -11,7 +11,7 @@ import string
 import random
 from mock import Mock
 
-def input(length=10):
+def randput(length=10):
 	"""Generates random input with specified length
 	@param length: Length of input (Default: 10)
 	@type length: int
@@ -29,7 +29,7 @@ def randict(*args):
 	"""
 	res = {}
 	for arg in args:
-		res[arg] = input()
+		res[arg] = randput()
 	return res
 
 class ServerMock(Mock):
