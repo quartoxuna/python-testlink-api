@@ -32,6 +32,15 @@ def randict(*args):
 		res[arg] = randput()
 	return res
 
+def generate(*args):
+	"""Returns a generator which yields the specified elements.
+	@param args: Elements to yield
+	@type args: list
+	@rtype: generator
+	"""
+	for a in args:
+		yield a
+
 class ServerMock(Mock):
 	class system:
 		@staticmethod
