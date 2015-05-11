@@ -94,3 +94,69 @@ class TestcaseStatus:
 	OBSOLETE = 5
 	FUTURE = 6
 	FINAL = 7
+
+class RequirementSpecificationType:
+	"""Requirement Specification Type enum
+	@cvar SECTION: Section
+	@type SECTION: int
+	@cvar USER: User Requirement Specification
+	@type USER: int
+	@cvar SYSTEM: System Requirement Specification
+	@type SYSTEM: int
+	"""
+	SECTION = 1
+	USER = 2
+	SYSTEM = 3
+
+class RequirementStatus:
+	"""Requirement Status enum
+	@cvar VALID: Valid
+	@type VALID: str
+	@cvar NOT_TESTABLE: Not testable
+	@type NON_TESTABLE: str
+	@cvar DRAFT: Draft
+	@type DRAFT: str
+	@cvar REVIEW: Review
+	@type REVIEW: str
+	@cvar REWORK: Rework
+	@type REWORK: str
+	@cvar FINISH: Finish
+	@type FINISH: str
+	@cvar IMPLEMENTED: Implemented
+	@type IMPLEMENTED: str
+	@cvar OBSOLETE: Obsolete
+	@type OBSOLETE: str
+	"""
+	VALID = 'V'
+	NOT_TESTABLE = 'N'
+	DRAFT = 'D'
+	REVIEW = 'R'
+	REWORK = 'W'
+	FINISH = 'F'
+	IMPLEMENTED = 'I'
+	OBSOLETE = 'O'
+
+class RequirementType:
+	"""Requirement Type enum
+	@cvar INFO: Info
+	@type INFO: int
+	@cvar FEATURE: Feature
+	@type FEATURE: int
+	@cvar USE_CASE: Use Case
+	@type USE_CASE: int
+	@cvar INTERFACE: Interace
+	@type INTERFACE: int
+	@cvar NON_FUNC: Non functional
+	@type NON_FUNC: int
+	@cvar CONSTRAIN: Constrain
+	@type CONSTRAIN: int
+	@cvar SYSTEM_FUNC: System function
+	@type SYSTEM_FUNC: int
+	"""
+	INFO = 1
+	FEATURE = 2
+	USE_CASE = 3
+	INTERFACE = 4
+	NON_FUNC = 5
+	CONSTRAIN = 6
+	SYSTEM_FUNC = 7

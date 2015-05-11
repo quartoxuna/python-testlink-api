@@ -17,6 +17,9 @@ from exceptions import ConnectionError
 from enums import ExecutionType
 from enums import ImportanceLevel
 from enums import DuplicateStrategy
+from enums import RequirementSpecificationType
+from enums import RequirementStatus
+from enums import RequirementType
 
 from distutils.version import LooseVersion as Version
 from urlparse import urlparse
@@ -1540,3 +1543,102 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.getRisksForRequirement",\
 					devKey        = devkey,\
 					requirementid = requirementid )
+
+	@TLVersion("1.11-sinaqs",strict=True)
+	def createRequirementSpecification(self, testprojectid, parentid, docid, title, scope, userid, type, devkey=None):
+		"""Creates a new Requirement Specification
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param parentid: The internal ID of the parent object
+		@type parentid: int
+		@param docid: The document ID of the new Requirement Specification
+		@type docid: str
+		@param title: The title of the new Requirement Specification
+		@type title: str
+		@param scope: The scope of the new Requirement Specification
+		@type scope: str
+		@param userid: The ID of the author
+		@type userid: int
+		@param type: The type of the new Requirement Specification
+		@type type: RequirementSpecificationType
+		@returns: Server response
+		@rtype: dict
+		"""
+		return self._query("tl.createRequirementSpecification", \
+					devKey        = devkey,         \
+					testprojectid = testprojectid,  \
+					parentid      = parentid,       \
+					docid         = docid,          \
+					title         = title,          \
+					scope         = scope,          \
+					userid        = userid,         \
+					type          = type )
+
+	@TLVersion("1.11-sinaqs",strict=True)
+	def createRequirement(self, testprojectid, reqspecid, docid, title, scope, userid, status, type, coverage=1, devkey=None):
+		"""Creates a new Requirement
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testprojectid: The internal ID of the TestProject
+		@type testprojectid: int
+		@param reqspecid: The internal ID of the parent Requirement Specification
+		@type reqspecid: int
+		@param docid: The document ID of the new Requirement
+		@type docid: str
+		@param title: The title pf the new Requirement
+		@type title: str
+		@param scope: The scope of the new Requirement
+		@type scope: str
+		@param userid: The ID of the author
+		@type useid: int
+		@param status: The status of the new Requirement
+		@type status: RequirementStatus
+		@param type: The type of the new Requirement
+		@type type: RequirementType
+		@param coverage: <OPTIONAL> Expected coverage of the new Requirement (Default: 1)
+		@type coverage: int
+		@returns: Server response
+		@rtype: dict
+		"""
+		return self._query("tl.createRequirement",             \
+					devKey        = devkey,        \
+					testprojectid = testprojectid, \
+					reqspecid     = reqspecid,     \
+					docid         = docid,         \
+					title         = title,         \
+					scope         = scope,         \
+					userid        = userid,        \
+					status        = status,        \
+					type          = type,          \
+					coverage      = coverage )
+
+	@TLVersion("1.11-sinaqs",strict=True)
+	def createRisk(self, requirementid, docid, title, scope, userid, coverage=None, devkey=None):
+		"""Creates a new Risk
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param requirementid: The internal ID of the parent Requirement
+		@type requirementid: int
+		@param docid: The document ID of the new Risk
+		@type docid: str
+		@param title: The title of the new Risk
+		@type title: str
+		@param scope: The scope of the new Risk
+		@type scope: str
+		@param userid: The ID of the author
+		@type userid: int
+		@param coverage: <OPTIONAL> Inter-project TestCase coverage (Default: None)
+		@type coverage: str
+		@returns: Server response
+		@rtype: dict
+		"""
+		return self._query("tl.createRisk",                    \
+					devKey        = devkey,        \
+					requirementid = requirementid, \
+					docid         = docid,         \
+					title         = title,         \
+					scope         = scope,         \
+					userid        = userid,        \
+					coverage      = coverage )
