@@ -1174,9 +1174,9 @@ class TestCase(TestlinkObject):
 
 		# Set exec status if available
 		if ('exec_status' in kwargs):
-			self.exec_status = kwargs['exec_status']
+			self.execution_status = kwargs['exec_status']
 		else:
-			self.exec_status = None
+			self.execution_status = None
 
 		# Set exec notes if available
 		if ('execution_notes' in kwargs):
