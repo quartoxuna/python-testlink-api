@@ -951,9 +951,6 @@ class TestCase(TestlinkObject):
 
 	class Execution(object):
 		"""Testlink TestCase Execution representation
-		@cvar DATETIME_FORMAT: Format of execution timestamp
-		@type DATETIME_FORMAT: str
-
 		@ivar id: The internal ID of the Execution
 		@type id: int
 		@ivar testplan_id: The internal ID of the parent TestPlan
