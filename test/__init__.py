@@ -11,6 +11,17 @@ import string
 import random
 from mock import Mock
 
+def randint(min=0,max=9):
+	"""Generates a random number within specified range
+	@param min: Lower limit
+	@type min: int
+	@param max: Upper limit
+	@type max: int
+	@returns: Randomly generated number
+	@rtype: int
+	"""
+	return random.randint(min,max)
+
 def randput(length=10):
 	"""Generates random input with specified length
 	@param length: Length of input (Default: 10)

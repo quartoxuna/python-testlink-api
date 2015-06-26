@@ -70,6 +70,9 @@ class Testlink(object):
 		# Set devkey globally
 		self._api._devkey = devkey
 
+	def __str__(self):
+		return "Testlink %s API Version %s at %s" % (self._api_type,self.getVersion(),url)
+
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
 		@return: Version
@@ -171,7 +174,7 @@ class TestlinkObject(object):
 		self._api = api
 
 	def __str__(self):
-		return str(self.name)
+		return "TestlinkObject (%d) %s" % (self.id,self.name)
 
 	def __unicode__(self):
 		return unicode(self.name)
@@ -236,6 +239,9 @@ class TestProject(TestlinkObject):
 		self.inventory = bool(opt['inventoryEnabled'])
 		self.tc_counter = int(tc_counter)
 		self.color = color
+
+	def __str__(self):
+		return "TestProject: %s" % self.name
 
 	def iterTestPlan(self,name=None,**params):
 		"""Iterates over TestPlans specified by parameters
@@ -476,6 +482,9 @@ class TestPlan(TestlinkObject):
 		self.active = bool(active)
 		self.public = bool(is_public)
 		self._parent_testproject = parent_testproject
+
+	def __str__(self):
+		return "TestPlan: %s" % self.name
 	
 	def iterTestProject(self,*args,**kwargs):
 		yield self._parent_testproject
@@ -712,6 +721,9 @@ class Build(TestlinkObject):
 		TestlinkObject.__init__(self,id,name,api)
 		self.notes = notes
 
+	def __str__(self):
+		return "Build: %s" % self.name
+
 
 class Platform(TestlinkObject):
 	"""Testlink Platform representation
@@ -724,6 +736,9 @@ class Platform(TestlinkObject):
 	def __init__(self,id=None,name=None,notes=None,api=None,**kwargs):
 		TestlinkObject.__init__(self,id,name,api)
 		self.notes = notes
+
+	def __str__(self):
+		return "Platform: %s" % self.name
 
 
 class TestSuite(TestlinkObject):
@@ -739,6 +754,9 @@ class TestSuite(TestlinkObject):
 		self.details = details
 		self._parent_testproject = parent_testproject
 		self._parent_testsuite = parent_testsuite
+
+	def __str__(self):
+		return "TestSuite: %s" % self.name
 
 	def iterTestProject(self,*args,**kwargs):
 		yield self._parent_testproject
@@ -928,6 +946,9 @@ class TestCase(TestlinkObject):
 			self.active = bool(active)
 			self.expected_results = expected_results
 
+		def __str__(self):
+			return "Step %d:\n%s\n%s" % (self.step_number,self.actions,self.expected_results)
+
 	class Execution(object):
 		"""Testlink TestCase Execution representation
 		@cvar DATETIME_FORMAT: Format of execution timestamp
@@ -987,6 +1008,9 @@ class TestCase(TestlinkObject):
 			except ValueError:
 				self.execution_ts = datetime.min
 			self.tester_id = int(tester_id)
+
+		def __str__(self):
+			return "Execution (%d) %s" % (self.id,self.notes)
 
 		def delete(self):
 			self._api.deleteExecution(self.id)
@@ -1164,11 +1188,11 @@ class TestCase(TestlinkObject):
 			else:
 				self.steps.append(TestCase.Step(**s))
 
-	def __unicode__(self):
-		return "%s-%s %s" % (unicode(self.getTestProject().prefix),unicode(self.external_id),unicode(self.name))
-
 	def __str__(self):
-		return __unicode__(self)
+		return "TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name)
+
+	def getTestProject(self):
+		return self._parent_testproject
 
 	def iterTestProject(self,*args,**kwargs):
 		yield self._parent_testproject
@@ -1343,6 +1367,9 @@ class RequirementSpecification(TestlinkObject):
 			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
 
+	def __str__(self):
+		return "Requirement Specification %s: %s" % (self.doc_id,self.title)
+
 	def iterTestProject(self,*args,**kwargs):
 		yield self._parent_testproject
 
@@ -1447,6 +1474,9 @@ class Requirement(TestlinkObject):
 		except ValueError:
 			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
+
+		def __str__(self):
+			return "Requirement %s: %s" % (self.req_doc_id,self.title)
 
 		def iterTestProject(self,*args,**kwargs):
 			yield self._parent_testproject
