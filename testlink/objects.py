@@ -1449,5 +1449,5 @@ class Requirement(TestlinkObject):
 		self._parent_testproject = parent_testproject
 
 		def iterTestProject(self,*args,**kwargs):
-			yield seld._parent_testproject
+			yield self._parent_testproject
 			
