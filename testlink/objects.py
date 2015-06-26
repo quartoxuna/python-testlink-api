@@ -104,13 +104,21 @@ class Testlink(object):
 			response = self._api.getProjects()
 			if len(params)>0:
 				params['name'] = name
-				for project in copy.copy(response):
+				for project in response:
+					tproject = TestProject(api=self._api,**project)
 					for key,value in params.items():
-						if not (unicode(project[key]) == unicode(value)):
-							response.remove(project)
-							break
-			for project in response:
-				yield TestProject(api=self._api,**project)
+						# Skip None values
+						if value is None:
+							continue
+						try:
+							if not unicode(getattr(tproject,key)) == unicode(value):
+								tproject = None
+								break
+						except AttributeError:
+							raise AttributeError("Invalid Search Parameter for TestProject: %s" % key)
+					# Return found project
+					if tproject is not None:
+						yield tproject
 
 	def getTestProject(self,name=None,**params):
 		"""Returns all TestProjects specified by parameters
@@ -237,27 +245,27 @@ class TestProject(TestlinkObject):
 			response = self._api.getProjectTestPlans(self.id)
 			if len(params)>0:
 				params['name'] = name
-				for plan in copy.copy(response):
+				for plan in response:
 					tplan = TestPlan(api=self._api,parent_testproject=self,**plan)
 					for key,value in params.items():
 						# Skip None
 						if value is None:
 							continue
-
 						try:
-							if not unicode(getattr(tplan,key)) == unicode(value):
-								# Testplan does not match
-								tplan = None
-								break
+							try:
+								if not unicode(getattr(tplan,key)) == unicode(value):
+									tplan = None
+									break
+							except AttributeError:
+								# TestPlan has no attribute 'key'
+								# Try to treat as custom field
+								cf_val = self._api.getTestPlanCustomFieldValue(tplan.id,tplan.getTestProject().id,key)
+								if not (unicode(cf_val) == unicode(value)):
+									# No match either
+									tplan = None
+									break
 						except AttributeError:
-							# TestPlan has no attribute 'key'
-							# Try to treat as custom field
-							cf_val = self._api.getTestPlanCustomFieldValue(tplan.id,tplan.getTestProject().id,key)
-							if not (unicode(cf_val) == unicode(value)):
-								# No match either
-								tplan = None
-								break
-
+							raise AttributeError("Invalid Search Parameter for TestPlan: %s" % key)
 					if tplan is not None:
 						yield TestPlan(api=self._api,parent_testproject=self,**plan)
 
@@ -272,14 +280,12 @@ class TestProject(TestlinkObject):
 		"""
 		return normalize( [p for p in self.iterTestPlan(name,**params)] )
 
-	def iterTestSuite(self,name=None,id=None,recursive=True,**params):
+	def iterTestSuite(self,name=None,id=None,**params):
 		"""Iterates over TestSuites specified by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
 		@param id: The internal ID of the TestSuite
 		@type id: int
-		@param recursive: Enable recursive search
-		@type recursive: bool
 		@param params: Other params for TestSuite
 		@type params: dict
 		@returns: Matching TestSuites
@@ -300,42 +306,52 @@ class TestProject(TestlinkObject):
 			# This has to be done BEFORE the acutal filtering because otherwise
 			# we could not filter by the details
 			response = [self._api.getTestSuiteById(suite['id']) for suite in response]
+			suites = [TestSuite(api=self._api,parent_testproject=self,**suite) for suite in response]
 
 			# Filter by specified parameters
 			if len(params)>0 or name:
 				params['name'] = name
 				params['id'] = None
-				for suite in copy.copy(response):
+				for tsuite in suites:
 					for key,value in params.items():
-						if value and not (unicode(suite[key]) == unicode(value)):
-							response.remove(suite)
-							break
-
-			# Built TestSuite objects here to simplify recursive search
-			first_level_suites = [TestSuite(api=self._api,parent_testproject=self,**suite) for suite in response]
-			for suite in first_level_suites:
-				yield suite
-			# Recursively search in sub suites
-			for suite in first_level_suites:
-				for s in suite.getTestSuite(**params):
+						# Skip None
+						if value is None:
+							continue
+						try:
+							try:
+								if not unicode(getattr(tsuite,key)) == unicode(value):
+									tsuite = None
+									break
+							except AttributeError:
+								# Try as custom field
+								cf_val = self._api.getTestSuiteCustomFieldDesignValue(tsuite.id,tsuite.getTestProject().id,key)
+								if not unicode(cf_val) == unicode(value):
+									tsuite = None
+									break
+						except AttributeError:
+							raise AttributeError("Invalid Search Parameter for TestSuite: %s" % key)
+					if tsuite is not None:
+						yield tsuite
+			# Search recursive
+			for tsuite in suites:
+				yield tsuite
+				for s in tsuite.iterTestSuite(**params):
 					yield s
 
-	def getTestSuite(self,name=None,id=None,recursive=True,**params):
+	def getTestSuite(self,name=None,id=None,**params):
 		"""Returns all TestSuites specified by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
 		@param id: The internal ID of the TestSuite
 		@type id: int
-		@param recursive: Enable recursive search
-		@type recursive: bool
 		@param params: Other params for TestSuite
 		@type params: dict
 		@returns: Matching TestSuites
 		@rtype: mixed
 		"""
-		return normalize( [s for s in self.iterTestSuite(self,name,id,recursive,**params)] )
+		return normalize( [s for s in self.iterTestSuite(self,name,id,**params)] )
 
-	def iterTestCase(self,name=None,id=None,external_id=None,recursive=True,**params):
+	def iterTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Iterates over TestCases specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
@@ -343,8 +359,6 @@ class TestProject(TestlinkObject):
 		@type id: int
 		@param external_id: The external ID of the TestCase
 		@type external_id: int
-		@param recursive: Enable recursive search
-		@type recursive: bool
 		@param params: Other params for TestCase
 		@type params: dict
 		@returns: Matching TestCases
@@ -370,7 +384,6 @@ class TestProject(TestlinkObject):
 				response = response[0]
 
 			# Need to get testsuite to set as parent
-
 			suite_resp = self._api.getTestSuiteById(response['testsuite_id'])
 			suite = TestSuite(**suite_resp)
 
@@ -379,7 +392,7 @@ class TestProject(TestlinkObject):
 			# Get all TestCases for the TestProject
 			raise NotImplementedError("Cannot get all TestCases for a TestProject yet")
 
-	def getTestCase(self,name=None,id=None,external_id=None,recursive=True,**params):
+	def getTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Returns all TestCases specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
@@ -387,14 +400,12 @@ class TestProject(TestlinkObject):
 		@type id: int
 		@param external_id: The external ID of the TestCase
 		@type external_id: int
-		@param recursive: Enable recursive search
-		@type recursive: bool
 		@param params: Other params for TestCase
 		@type params: dict
 		@returns: Matching TestCases
 		@rtype: mixed
 		"""
-		return normalize( [c for c in self.iterTestCase(name,id,external_id,recursive,**params)] )
+		return normalize( [c for c in self.iterTestCase(name,id,external_id,**params)] )
 
 	def iterRequirementSpecification(self,title=None,**params):
 		"""Iterates over Requirement Specifications specified by parameters
@@ -409,13 +420,27 @@ class TestProject(TestlinkObject):
 		# Filter by speficied params
 		if len(params)>0 or title:
 			params['title'] = title
-			for reqspec in copy.copy(response):
+			for reqspec in response:
+				rspec = RequirementSpecification(api=self._api,parent_testproject=self,**reqspec)
 				for key,value in params.items():
-					if value and not (unicode(reqspec[key]) == unicode(value)):
-						response.remove(reqspec)
-						break
-		for reqspec in response:
-			yield RequirementSpecification(api=self._api,name=title,parent_testproject=self,**reqspec)
+					# Skip None
+					if value is None:
+						continue
+					try:
+						try:
+							if not unicode(getattr(rspec,key)) == unicode(value):
+								rspec = None
+								break
+						except AttributeError:
+							# Try to treat as custom field
+							cf_val = self._api.getReqSpecCustomFieldDesignValue(rspec.id,rspec.getTestProject().id,key)
+							if not unicode(cf_val) == unicode(value):
+								rspec = None
+								break
+					except AttributeError:
+						raise AttributeError("Invalid Search Parameter for Requirement Specification: %s" % key)
+				if rspec is not None:
+					yield rspec
 
 	def getRequirementSpecification(self,title=None,**params):
 		"""Returns all Requirement Specifications specified by parameters
@@ -477,13 +502,20 @@ class TestPlan(TestlinkObject):
 		# Filter by specified params
 		if len(params)>0 or name:
 			params['name'] = name
-			for build in copy.copy(response):
+			for build in response:
+				bd = Build(api=self._api,**build)
 				for key,value in params.items():
-					if value and not (unicode(build[key]) == unicode(value)):
-						response.remove(build)
-						break
-		for build in response:
-			yield Build(api=self._api,**build)
+					# Skip None
+					if value is None:
+						continue
+					try:
+						if not unicode(getattr(bd,key)) == unicode(value):
+							bd = None
+							break
+					except AttributeError:
+						raise AttributeError("Invalid Search Parameter for Build: %s" % key)
+				if bd is not None:
+					yield bd
 
 	def getBuild(self,name=None,**params):
 		"""Returns all Builds specified by parameters
@@ -511,13 +543,20 @@ class TestPlan(TestlinkObject):
 		# Filter by specified params
 		if len(params)>0 or name:
 			params['name'] = name
-			for platform in copy.copy(response):
+			for platform in response:
+				ptf = Platform(api=self._api,**platform)
 				for key,value in params.items():
-					if value and not (unicode(platform[key]) == unicode(value)):
-						response.remove(platform)
-						break
-		for platform in response:
-			yield Platform(api=self._api,**platform)
+					# Skip None
+					if value is None:
+						continue
+					try:
+						if not unicode(getattr(ptf,key)) == unicode(value):
+							ptf = None
+							break
+					except AttributeError:
+						raise AttributeError("Invalid Search Parameter for Platform: %s" % key)
+				if ptf is not None:
+					yield ptf
 
 	def getPlatform(self,name=None,**params):
 		"""Returns all Platforms specified by parameters
@@ -601,7 +640,7 @@ class TestPlan(TestlinkObject):
 		# Filter by specified params
 		if len(params)>0 or name:
 			params['name'] = name
-			for case in copy.copy(testcases):
+			for case in testcases:
 				# Create a testcase instance here
 				# to have normalized attributes
 				tcase = TestCase(api=self._api,parent_testproject=self.getTestProject(),**case)
@@ -609,21 +648,23 @@ class TestPlan(TestlinkObject):
 					# Skip None
 					if value is None:
 						continue
-
 					try:
-						if not unicode(getattr(tcase,key)) == unicode(value):
-							# Testcase does not match
-							tcase = None
-							break
+						try:
+							if not unicode(getattr(tcase,key)) == unicode(value):
+								# Testcase does not match
+								tcase = None
+								break
+						except AttributeError:
+							# TestCase has no attribute key
+							# Try to treat key as the name of a custom field
+							ext_id = "%s-%s" % (tcase.getTestProject().prefix,tcase.external_id)
+							cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,tcase.version,tcase.getTestProject().id,key)
+							if not unicode(cf_val) == unicode(value):
+								# No match either, try next testcase
+								tcase = None
+								break
 					except AttributeError:
-						# TestCase has no attribute key
-						# Try to treat key as the name of a custom field
-						ext_id = "%s-%s" % (tcase.getTestProject().prefix,tcase.external_id)
-						cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,tcase.version,tcase.getTestProject().id,key)
-						if not unicode(cf_val) == unicode(value):
-							# No match either, try next testcase
-							tcase = None
-							break
+						raise AttributeError("Invalid Search Parameter for TestCase: %s" % key)
 
 				# Yield matching testcase
 				if tcase is not None:
@@ -733,11 +774,8 @@ class TestSuite(TestlinkObject):
 	def __str__(self):
 		return "TestSuite: %s" % self.name
 
-	def iterTestProject(self,*args,**kwargs):
-		yield self._parent_testproject
-
-	def iterTestSuite(self):
-		yield self._parent_testsuite
+	def getTestProject(self):
+		return self._parent_testproject
 
 	def iterTestSuite(self,name=None,id=None,**params):
 		"""Iterates over TestSuites speficied by parameters
@@ -763,23 +801,35 @@ class TestSuite(TestlinkObject):
 			else:
 				response = [response]
 
+		suites = [TestSuite(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**suite) for suite in response]
 		# Filter by specified parameters
 		if len(params)>0 or name:
 			params['name'] = name
 			params['id'] = id
-			for suite in copy.copy(response):
+			for tsuite in suites:
 				for key,value in params.items():
-					if value and not (unicode(suite[key]) == unicode(value)):
-						response.remove(suite)
-						break
-
-		# Built TestSuite object here to simplify recursive search
-		sub_suites = [TestSuite(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**suite) for suite in response]
-		for suite in sub_suites:
-			yield suite
-		# Recursively search in sub suites
-		for suite in sub_suites:
-			for s in suite.getTestSuite(**params):
+					# Skip None
+					if value is None:
+						continue
+					try:
+						try:
+							if not unicode(getattr(tsuite,key)) == unicode(value):
+								tsuite = None
+								break
+						except AttributeError:
+							# Try as custom field
+							cf_val = self._api.getTestSuiteCustomFieldDesignValue(tsuite.id,tsuite.getTestProject().id,key)
+							if not unicode(cf_val) == unicode(value):
+								tsuite = None
+								break
+					except AttributeError:
+						raise AttributeError("Invalid Search Parameter for TestSuite: %s" % key)
+				if tsuite is not None:
+					yield tsuite
+		# Search recursive
+		for tsuite in suites:
+			yield tsuite
+			for s in tsuite.iterTestSuite(**params):
 				yield s
 
 	def getTestSuite(self,name=None,id=None,**params):
@@ -808,13 +858,28 @@ class TestSuite(TestlinkObject):
 		# Filter by specified parameters
 		if len(params)>0 or name:
 			params['name'] = name
-			for case in copy.copy(response):
+			for case in response:
+				tcase = TestCase(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**case)
 				for key,value in params.items():
-					if value and not (unicode(case[key]) == unicode(value)):
-						response.remove(case)
-						break
-		for case in response:
-			yield TestCase(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**case)
+					# Skip None
+					if value is None:
+						continue
+					try:
+						try:
+							if not unicode(getattr(tcase,key)) == unicode(value):
+								tcase = None
+								break
+						except AttributeError:
+							# Try as custom field
+							ext_id = "%s-%s" % (tcase.getTestProject().prefix,tcase.external_id)
+							cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,tcase.version,tcase.getTestProject().id,key)
+							if not unicode(cf_val) == unicode(value):
+								tcase = None
+								break
+					except AttributeError:
+						raise AttributeError("Invalid Search Parameter for TestCase: %s" % key)
+				if tcase is not None:
+					yield tcase
 
 	def getTestCase(self,name=None,**params):
 		"""Returns all TestCases specified by parameters
@@ -1304,13 +1369,27 @@ class RequirementSpecification(TestlinkObject):
 		# Filter by specifiec params
 		if len(params)>0 or title:
 			params['title'] = title
-			for req in copy.copy(response):
+			for req in response:
+				rq = Requirement(api=self._api,parent_testproject=self.getTestProject(),**req)
 				for key,value in params.items():
-					if value and not (unicode(req[key]) == unicode(value)):
-						response.remove(req)
-						break
-		for req in response:
-			yield Requirement(api=self._api,name=title,parent_testproject=self.getTestProject(),**req)
+					# Skip None
+					if value is None:
+						continue
+					try:
+						try:
+							if not unicode(getattr(rq,key)) == unicode(value):
+								rq = None
+								break
+						except AttributeError:
+							# Try as custom field
+							cf_val = self._api.getRequirementCustomFieldDesignValue(rq.id,rq.getTestProject().id,key)
+							if not unicode(cf_val) == unicode(value):
+								rq = None
+								break
+					except AttributeError:
+						raise AttributeError("Invalid Search Parameter for Requirement: %s" % key)
+				if rq is not None:
+					yield rq
 
 	def getRequirement(self,title=None,**params):
 		"""Returns all Requirements with the specified parameters
