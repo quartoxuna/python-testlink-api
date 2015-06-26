@@ -182,45 +182,6 @@ class TestlinkObject(object):
 	def __eq__(self,other):
 		return self.id == other.id
 
-	def getTestlink(self,*args,**kwargs):
-		raise NotImplementedError()
-
-	def iterTestProject(self,*args,**kwargs):
-		raise NotImplementedError()
-
-	def getTestProject(self,*args,**kwargs):
-		return normalize( [p for p in self.iterTestProject(*args,**kwargs)] )
-
-	def iterTestPlan(self,*args,**kwargs):
-		raise NotImplementedError()
-
-	def getTestPlan(self,*args,**kwargs):
-		return normalize( [p for p in self.iterTestPlan(*args,**kwargs)] )
-
-	def iterBuild(self,*args,**kwargs):
-		raise NotImplementedError()
-
-	def getBuild(self,*args,**kwargs):
-		return normalize( [b for b in self.iterBuild(*args,**kwargs)] )
-
-	def iterPlatform(self,*args,**kwargs):
-		raise NotImplementedError()
-
-	def getPlatform(self,*args,**kwargs):
-		return normalize( [p for p in self.iterPlatform(*args,**kwargs)] )
-
-	def iterTestSuite(self,*args,**kwargs):
-		raise NotImplementedError()
-
-	def getTestSuite(self,*args,**kwargs):
-		return normalize( [s for s in self.iterTestSuite(*args,**kwargs)] )
-
-	def iterTestCase(self,*args,**kwargs):
-		raise NotImplementedError()
-
-	def getTestCase(self,*args,**kwargs):
-		return normalize( [c for c in self.iterTestCase(*args,**kwargs)] )
-
 
 class TestProject(TestlinkObject):
 	"""Testlink TestProject representation
