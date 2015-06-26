@@ -606,8 +606,12 @@ class TestPlan(TestlinkObject):
 				# to have normalized attributes
 				tcase = TestCase(api=self._api,parent_testproject=self.getTestProject(),**case)
 				for key,value in params.items():
+					# Skip None
+					if value is None:
+						continue
+
 					try:
-						if value and not (unicode(getattr(tcase,key)) == unicode(value)):
+						if not unicode(getattr(tcase,key)) == unicode(value):
 							# Testcase does not match
 							tcase = None
 							break
@@ -616,13 +620,11 @@ class TestPlan(TestlinkObject):
 						# Try to treat key as the name of a custom field
 						ext_id = "%s-%s" % (tcase.getTestProject().prefix,tcase.external_id)
 						cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,tcase.version,tcase.getTestProject().id,key)
-						if ( \
-							(cf_val is None) or \
-							( value and not(unicode(cf_val) == unicode(value)) ) \
-						):
+						if not unicode(cf_val) == unicode(value):
 							# No match either, try next testcase
 							tcase = None
 							break
+
 				# Yield matching testcase
 				if tcase is not None:
 					yield tcase
