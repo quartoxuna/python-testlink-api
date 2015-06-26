@@ -123,26 +123,6 @@ class Testlink(object):
 		"""
 		return normalize( [p for p in self.iterTestProject(name,**params)] )
 
-	def create(self,obj,*args,**kwargs):
-		"""Create a new object using the current connected Testlink.
-		@param obj: Object to create
-		@type obj: mixed
-		@param args: Additional arguments for object creation
-		@type args: list
-		@param kwargs: Additional arguments for object creation
-		@type kwargs: dict
-		@raises TypeError: Unknown object type
-		"""
-		# Dispatch creation calls
-		if isinstance(obj,TestProject):
-			return TestProject.create(self,obj,*args,**kwargs)
-		elif isinstance(obj,TestSuite):
-			return TestSuite.create(self,obj,*args,**kwargs)
-		elif isinstance(obj,TestCase):
-			return TestCase.create(self,obj,*args,**kwargs)
-		else:
-			raise TypeError(str(obj))
-
 
 class TestlinkObject(object):
 	"""Abstract Testlink Object
@@ -430,25 +410,6 @@ class TestProject(TestlinkObject):
 		"""
 		return normalize( [r for r in self.iterRequirementSpecification(title,**params)] )
 
-	@staticmethod
-	def create(tl,project,*args,**kwargs):
-		"""Creates the specified TestProject for the specified Testlink instance.
-		@param tl: Used Testlink instance
-		@type tl: Testlink
-		@param project: Used TestProject
-		@type project: TestProject
-		"""
-		return tl._api.createTestProject(
-					name = project.name,
-					prefix = project.prefix,
-					notes = project.notes,
-					active = project.active,
-					public = project.public,
-					requirements = project.requirements,
-					priority = project.priority,
-					automation = project.automation,
-					inventory = project.inventory
-				)
 
 class TestPlan(TestlinkObject):
 	"""Testlink TestPlan representation
@@ -847,34 +808,6 @@ class TestSuite(TestlinkObject):
 		@rtype: mixed
 		"""
 		return normalize( [c for c in self.iterTestCase(name,**params)] )
-
-	@staticmethod
-	def create(tl,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
-		"""Creates the specified TestSuite for the specified Testlink instance.
-		@param tl: Used Testlink instance
-		@type tl: Testlink
-		@param project: Used TestProject
-		@type project: TestProject
-		"""
-		kwargs = {
-				'name' : suite.name,
-				'testprojectid' : suite.getTestProject().id,
-				'details' : suite.details,
-				'order' : order,
-				'actiononduplicate' : on_duplicate,
-				'parentid' : None
-		}
-
-		if suite.getTestSuite() is not None:
-			kwargs['parentid'] = suite.getTestSuite().id
-
-		response = tl._api.createTestSuite(**kwargs)
-
-		if isinstance(response,list) and len(response)==1:
-			response = response[0]
-
-		return response
-
 
 
 class TestCase(TestlinkObject):
@@ -1284,32 +1217,6 @@ class TestCase(TestlinkObject):
 				estimatedexecduration = estimatedexecduration
 			)
 
-	@staticmethod
-	def create(tl,case,order=0,on_duplicate=DuplicateStrategy.BLOCK):
-		"""Creates the specified TestCase for the specified Testlink instance.
-		@param tl: Used Testlink instance
-		@type tl: Testlink
-		@param case: Used TestCase
-		@type case: TestCase
-		"""
-		response = tl._api.createTestCase(
-						name = case.name,
-						suiteid = case.getTestSuite().id,
-						projectid = case.getTestProject().id,
-						author = case.author,
-						summary = case.summary,
-						steps = case.steps,
-						preconditions = case.preconditions,
-						importance = case.importance,
-						execution = case.execution_type,
-						customfields = case.customfields,
-						order = order,
-						actiononduplicate = on_duplicate
-					)
-		# Normalize result
-		if isinstance(response,list) and len(response)==1:
-			response = response[0]
-		return response
 
 class RequirementSpecification(TestlinkObject):
 	"""Testlink Requirement Specification representation"""
