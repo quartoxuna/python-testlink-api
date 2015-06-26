@@ -65,7 +65,7 @@ class Testlink(object):
 		self._api_type = api
 
 		# Log API Information
-		log.info("Testlink %s API Version '%s' at '%s'" % (self._api_type,self.getVersion(),url) )
+		log.info("Testlink %s API Version %s at %s" % (self._api_type,self.getVersion(),url) )
 
 		# Set devkey globally
 		self._api._devkey = devkey
