@@ -22,7 +22,7 @@ def randint(min=0,max=9):
 	"""
 	return random.randint(min,max)
 
-def randput(length=10):
+def randput(length=randint(1,10)):
 	"""Generates random input with specified length
 	@param length: Length of input (Default: 10)
 	@type length: int
@@ -40,7 +40,10 @@ def randict(*args):
 	"""
 	res = {}
 	for arg in args:
-		res[arg] = randput()
+		if randint() % 2:
+			res[arg] = randput()
+		else:
+			res[arg] = randint()
 	return res
 
 def generate(*args):
