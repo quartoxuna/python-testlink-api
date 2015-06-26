@@ -16,11 +16,7 @@ from log import log
 from api import Testlink_XML_RPC_API
 from exceptions import ConnectionError
 from exceptions import NotSupported
-from enums import APIType
-from enums import DuplicateStrategy
-from enums import ImportanceLevel
-from enums import ExecutionType
-from enums import CustomFieldDetails
+from enums import *
 
 # Global datetime format
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
