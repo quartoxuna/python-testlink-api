@@ -1322,12 +1322,12 @@ class RequirementSpecification(TestlinkObject):
 			id = -1,\
 			doc_id = '',\
 			title = '',\
-			type = None,\
+			type = RequirementSpecificationType.SECTION,\
 			scope = '',\
-			testproject_id = None,\
-			author_id = None,\
+			testproject_id = -1,\
+			author_id = -1,\
 			creation_ts = str(datetime.min),\
-			modifier_id = None,\
+			modifier_id = -1,\
 			modification_ts = str(datetime.min),\
 			total_req = 0,\
 			node_order = 0,\
@@ -1361,7 +1361,7 @@ class RequirementSpecification(TestlinkObject):
 		self._parent_testproject = parent_testproject
 
 	def __str__(self):
-		return "Requirement Specification %s: %s" % (self.doc_id,self.title)
+		return "Requirement Specification %s: %s" % (self.doc_id,self.name)
 
 	def iterTestProject(self,*args,**kwargs):
 		yield self._parent_testproject
@@ -1410,23 +1410,23 @@ class Requirement(TestlinkObject):
 			req_doc_id = '',\
 			title = '',\
 			req_spec_title = None,\
-			type = None,\
-			version = None,\
-			version_id = None,\
-			revision = None,\
-			revision_id = None,\
+			type = RequirementType.INFO,\
+			version = -1,\
+			version_id = -1,\
+			revision = -1,\
+			revision_id = -1,\
 			scope = '',\
-			status = None,\
+			status = RequirementStatus.DRAFT,\
 			node_order = 0,\
 			is_open = True,\
 			active = True,\
-			expected_coverage = None,\
+			expected_coverage = 1,\
 			testproject_id = -1,\
 			author = None,\
-			author_id = None,\
+			author_id = -1,\
 			creation_ts = str(datetime.min),\
 			modifier = None,\
-			modifier_id = None,\
+			modifier_id = -1,\
 			modification_ts = str(datetime.min),\
 			api = None,\
 			parent_testproject = None,\
@@ -1468,9 +1468,9 @@ class Requirement(TestlinkObject):
 			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
 
-		def __str__(self):
-			return "Requirement %s: %s" % (self.req_doc_id,self.title)
+	def __str__(self):
+		return "Requirement %s: %s" % (self.req_doc_id,self.name)
 
-		def iterTestProject(self,*args,**kwargs):
-			yield self._parent_testproject
+	def iterTestProject(self,*args,**kwargs):
+		yield self._parent_testproject
 			
