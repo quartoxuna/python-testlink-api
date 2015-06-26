@@ -238,12 +238,28 @@ class TestProject(TestlinkObject):
 			if len(params)>0:
 				params['name'] = name
 				for plan in copy.copy(response):
+					tplan = TestPlan(api=self._api,parent_testproject=self,**plan)
 					for key,value in params.items():
-						if not (unicode(plan[key]) == unicode(value)):
-							response.remove(plan)
-							break
-			for plan in response:
-				yield TestPlan(api=self._api,parent_testproject=self,**plan)
+						# Skip None
+						if value is None:
+							continue
+
+						try:
+							if not unicode(getattr(tplan,key)) == unicode(value):
+								# Testplan does not match
+								tplan = None
+								break
+						except AttributeError:
+							# TestPlan has no attribute 'key'
+							# Try to treat as custom field
+							cf_val = self._api.getTestPlanCustomFieldValue(tplan.id,tplan.getTestProject().id,key)
+							if not (unicode(cf_val) == unicode(value)):
+								# No match either
+								tplan = None
+								break
+
+					if tplan is not None:
+						yield TestPlan(api=self._api,parent_testproject=self,**plan)
 
 	def getTestPlan(self,name=None,**params):
 		"""Returns all TestPlans specified by parameters
