@@ -484,8 +484,8 @@ class TestPlan(TestlinkObject):
 	def __str__(self):
 		return "TestPlan: %s" % self.name
 	
-	def iterTestProject(self,*args,**kwargs):
-		yield self._parent_testproject
+	def getTestProject(self):
+		return self._parent_testproject
 
 	def iterBuild(self,name=None,**params):
 		"""Iterates over Builds specified by parameters
