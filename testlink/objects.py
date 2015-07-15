@@ -349,7 +349,11 @@ class TestProject(TestlinkObject):
 		@returns: Matching TestSuites
 		@rtype: mixed
 		"""
-		return normalize( [s for s in self.iterTestSuite(self,name,id,**params)] )
+		if name is not None:
+			params["name"] = name
+		if id is not None:
+			params["id"] = id
+		return normalize( [s for s in self.iterTestSuite(self,**params)] )
 
 	def iterTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Iterates over TestCases specified by parameters
@@ -1038,6 +1042,7 @@ class TestCase(TestlinkObject):
 			parent_testproject=None,
 			parent_testsuite=None,
 			customfields={},
+			testsuite_id=None,
 			**kwargs
 			):
 		"""Initialises a new TestCase with the specified parameters.
@@ -1183,11 +1188,17 @@ class TestCase(TestlinkObject):
 		self.preconditions = preconditions
 		self.summary = summary
 		self.active = active
+		self.testsuite_id = testsuite_id
 		
 		# Set internal attributes
 		self._parent_testproject = parent_testproject
-		self._parent_testsuite = parent_testsuite
 		self.customfields = customfields
+
+		# If parent testsuite is not given, try to get it
+		if (parent_testsuite is None) and (self.testsuite_id is not None):
+			self._parent_testsuite = self._parent_testproject.getTestSuite(id=self.testsuite_id)
+		else:
+			self._parent_testsuite = parent_testsuite
 
 		# Set steps
 		self.steps = []
