@@ -12,7 +12,7 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from log import log
 
 class TestlinkXMLRPCServer(SimpleXMLRPCServer,Thread):
-	"""Testlink conform XML-RPC automation server"""
+    """Testlink conform XML-RPC automation server"""
 
 	def __init__(self,callback,host='127.0.0.1',port=8080,verbose=False):
 		"""Initializes the Server
@@ -34,4 +34,5 @@ class TestlinkXMLRPCServer(SimpleXMLRPCServer,Thread):
 		self.start()
 
 	def run(self):
+		""" """
 		self.handle_request()
