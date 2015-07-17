@@ -1043,6 +1043,7 @@ class TestCase(TestlinkObject):
 			parent_testsuite=None,
 			customfields={},
 			testsuite_id=None,
+			tester_id=None,
 			**kwargs
 			):
 		"""Initialises a new TestCase with the specified parameters.
@@ -1189,6 +1190,7 @@ class TestCase(TestlinkObject):
 		self.summary = summary
 		self.active = active
 		self.testsuite_id = testsuite_id
+		self.tester_id = tester_id
 		
 		# Set internal attributes
 		self._parent_testproject = parent_testproject
