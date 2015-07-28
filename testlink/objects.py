@@ -472,7 +472,7 @@ class TestProject(TestlinkObject):
 		@returns: Matching TestSuites
 		@rtype: mixed
 		"""
-		return normalize( [s for s in self.iterTestSuite(self,name,id,**params)] )
+		return normalize( [s for s in self.iterTestSuite(name,id,**params)] )
 
 	def iterTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Iterates over TestCases specified by parameters
