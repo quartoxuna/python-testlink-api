@@ -403,12 +403,14 @@ class TestProject(TestlinkObject):
 		"""
 		return normalize( [p for p in self.iterTestPlan(name,**params)] )
 
-	def iterTestSuite(self,name=None,id=None,**params):
+	def iterTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Iterates over TestSuites specified by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
 		@param id: The internal ID of the TestSuite
 		@type id: int
+		@param recursive: Search recursive to get all nested TestSuites
+		@type recursive: bool
 		@param params: Other params for TestSuite
 		@type params: dict
 		@returns: Matching TestSuites
@@ -458,21 +460,24 @@ class TestProject(TestlinkObject):
 			# Search recursive
 			for tsuite in suites:
 				yield tsuite
-				for s in tsuite.iterTestSuite(**params):
-					yield s
+				if recursive:
+					for s in tsuite.iterTestSuite(**params):
+						yield s
 
-	def getTestSuite(self,name=None,id=None,**params):
+	def getTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Returns all TestSuites specified by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
 		@param id: The internal ID of the TestSuite
 		@type id: int
+		@param recursive: Search recursive to get all nested TestSuites
+		@type recursive: bool
 		@param params: Other params for TestSuite
 		@type params: dict
 		@returns: Matching TestSuites
 		@rtype: mixed
 		"""
-		return normalize( [s for s in self.iterTestSuite(name,id,**params)] )
+		return normalize( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
 
 	def iterTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Iterates over TestCases specified by parameters
