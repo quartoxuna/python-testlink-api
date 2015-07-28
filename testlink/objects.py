@@ -250,6 +250,7 @@ class Testlink(object):
 					importance = testcase.importance,
 					executiontype = testcase.execution_type,
 					order = order,
+					customfields = testcase.customfields,
 					checkduplicatedname = duplicate_check,
 					actiononduplicatedname = on_duplicate
 				)
