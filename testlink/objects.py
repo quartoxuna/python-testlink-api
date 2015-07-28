@@ -1340,11 +1340,8 @@ class TestCase(TestlinkObject):
 	def getTestProject(self):
 		return self._parent_testproject
 
-	def iterTestProject(self,*args,**kwargs):
-		yield self._parent_testproject
-
-	def iterTestSuite(self,*args,**kwargs):
-		yield self._parent_testsuite
+	def getTestSuite(self):
+		return self._parent_testsuite
 
 	def getLastExecutionResult(self,testplanid,platformid=None,platformname=None,buildid=None,buildname=None,bugs=False):
 		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
