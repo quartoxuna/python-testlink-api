@@ -240,7 +240,7 @@ class Testlink(object):
 			duplicate_check = True
 
 		return self._api.createTestCase(
-					testcasename = case.name,
+					testcasename = testcase.name,
 					testsuiteid = testsuite.id,
 					testprojectid = testproject.id,
 					authorlogin = authorlogin,
