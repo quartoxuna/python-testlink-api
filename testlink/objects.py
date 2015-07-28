@@ -1384,8 +1384,8 @@ class TestCase(TestlinkObject):
 		return self._api.getTestCaseCustomFieldDesignValue(
 					testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
 					version = int(self.version),\
-					projectid = self.getTestProject().id,\
-					fieldname = fieldname,\
+					testprojectid = self.getTestProject().id,\
+					customfieldname = fieldname,\
 					details = details\
 				)
 
