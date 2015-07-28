@@ -720,7 +720,7 @@ class Testlink_XML_RPC_API(object):
 					testplanid = planid )
 	
 	@TLVersion("1.0")
-	def createTestCase(self, testcasename, testsuiteid, testprojectid, authorlogin, summary, steps=[], preconditions=None, importance=ImportanceLevel.MEDIUM, executiontype=ExecutionType.MANUAL, order=None, checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK, devkey=None):
+	def createTestCase(self, testcasename, testsuiteid, testprojectid, authorlogin, summary, steps=[], preconditions=None, importance=ImportanceLevel.MEDIUM, executiontype=ExecutionType.MANUAL, order=None, checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK,customfields={},devkey=None):
 		"""Creates a new TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -748,6 +748,8 @@ class Testlink_XML_RPC_API(object):
 		@type checkduplicatedname: bool
 		@param actiononduplicatedname: <OPTIONAL> Action on duplicate (Default is: 'block')
 		@type actiononduplicatedname: str
+		@param customfields: <OPTIONAL> CustomFields for the TestCase
+		@type customfields: dict
 		@returns: Server response
 		@rtype: dict/list/???
 		"""
@@ -763,6 +765,7 @@ class Testlink_XML_RPC_API(object):
 					importance             = importance,      \
 					executiontype          = executiontype,   \
 					order                  = order,           \
+					customfields           = customfields,    \
 					checkduplicatedname    = checkduplicatedname, \
 					actiononduplicatedname = actiononduplicatedname\
 				)

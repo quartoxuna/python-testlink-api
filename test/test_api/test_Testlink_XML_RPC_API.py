@@ -577,12 +577,13 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 						importance = ImportanceLevel.MEDIUM,\
 						executiontype = ExecutionType.MANUAL,\
 						order = None,\
+						customfields = {},\
 						checkduplicatedname = True,\
 						actiononduplicatedname = 'block',\
 						**defaults\
 					)
 		# Check with specified parameters
-		non_defaults = randict("testcasename","testsuiteid","testprojectid","authorlogin","summary","steps","preconditions","importance","executiontype","order","checkduplicatedname","actiononduplicatedname")
+		non_defaults = randict("testcasename","testsuiteid","testprojectid","authorlogin","summary","steps","preconditions","importance","executiontype","order","checkduplicatedname","actiononduplicatedname","customfields")
 		self.assertEquals(self._api.createTestCase(**non_defaults),query.return_value)
 		query.assert_called_with('tl.createTestCase',\
 						devKey = None,\
