@@ -1340,6 +1340,8 @@ class TestCase(TestlinkObject):
 			self.external_id = kwargs['tc_external_id']
 		elif ('external_id' in kwargs):
 			self.external_id = kwargs['external_id']
+		else:
+			self.external_id = None
 
 		# Set uncommon, but necessary attributes
 		if ('platform_id' in kwargs):
