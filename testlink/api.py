@@ -612,7 +612,7 @@ class Testlink_XML_RPC_API(object):
 				"testcaseexternalid" : testcaseexternalid\
 			}
 
-		if self._tl_version >= Version("1.9.9"):
+		if (self._tl_version >= Version("1.9.9")) or TLVersion.IGNORE:
 			arguments['platformid'] = platformid
 			arguments['platformname'] = platformname
 			arguments['buildid'] = buildid
@@ -960,7 +960,7 @@ class Testlink_XML_RPC_API(object):
 					"deep"        : deep,        \
 					"details"     : details      \
 			}
-		if self._tl_version >= Version("1.9.10"):
+		if (self._tl_version >= Version("1.9.10")) or TLVersion.IGNORE:
 			arguments['getkeywords'] = getkeywords
 		return self._query("tl.getTestCasesForTestSuite", **arguments)
 	
@@ -1008,7 +1008,7 @@ class Testlink_XML_RPC_API(object):
 				"getstepsinfo"  : getstepsinfo      \
 			}
 
-		if self._tl_version >= Version("1.9.4"):
+		if (self._tl_version >= Version("1.9.4")) or TLVersion.IGNORE:
 			# Add 'details' attribute
 			arguments['details'] = details
 
