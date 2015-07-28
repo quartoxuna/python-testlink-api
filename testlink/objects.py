@@ -100,12 +100,14 @@ class Testlink(object):
 			yield TestProject(api=self._api,**response)
 
 		else:
-			# Filter by specified parameters
+			# Get all projects and convert them to TestProject instances
 			response = self._api.getProjects()
+			projects = [TestProject(api=self._api,**project) for project in response]
+
+			# Filter
 			if len(params)>0:
 				params['name'] = name
-				for project in response:
-					tproject = TestProject(api=self._api,**project)
+				for tproject in projects:
 					for key,value in params.items():
 						# Skip None values
 						if value is None:
@@ -119,6 +121,10 @@ class Testlink(object):
 					# Return found project
 					if tproject is not None:
 						yield tproject
+			# Return all found projects
+			else:
+				for tproject in projects:
+					yield tproject
 
 	def getTestProject(self,name=None,**params):
 		"""Returns all TestProjects specified by parameters
@@ -365,12 +371,14 @@ class TestProject(TestlinkObject):
 			response = self._api.getTestPlanByName(name,projectname=self.name)
 			yield TestPlan(api=self._api,parent_testproject=self,**response[0])
 		else:
-			# Filter by specified parameters
+			# Get all plans and convert them to TestPlan instances
 			response = self._api.getProjectTestPlans(self.id)
+			plans = [TestPlan(api=self._api,parent_testproject=self,**plan) for plan in response]
+
+			# Filter
 			if len(params)>0:
 				params['name'] = name
-				for plan in response:
-					tplan = TestPlan(api=self._api,parent_testproject=self,**plan)
+				for tplan in plans:
 					for key,value in params.items():
 						# Skip None
 						if value is None:
@@ -392,6 +400,10 @@ class TestProject(TestlinkObject):
 							raise AttributeError("Invalid Search Parameter for TestPlan: %s" % key)
 					if tplan is not None:
 						yield TestPlan(api=self._api,parent_testproject=self,**plan)
+			# Return all found TestPlans
+			else:
+				for tplan in plans:
+					yield tplan
 
 	def getTestPlan(self,name=None,**params):
 		"""Returns all TestPlans specified by parameters
@@ -423,7 +435,6 @@ class TestProject(TestlinkObject):
 			response = self._api.getTestSuiteById(id)
 			yield TestSuite(api=self._api,**response)
 		else:
-			# Filter by specified parameters
 			response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
 
 			# Bug !
@@ -458,12 +469,23 @@ class TestProject(TestlinkObject):
 							raise AttributeError("Invalid Search Parameter for TestSuite: %s" % key)
 					if tsuite is not None:
 						yield tsuite
-			# Search recursive
-			for tsuite in suites:
-				yield tsuite
+				# If recursive is specified,
+				# also search in nestes suites
 				if recursive:
-					for s in tsuite.iterTestSuite(**params):
-						yield s
+					# For each suite of this level
+					for tsuite in suites:
+						# Yield nested suites that match
+						for s in tsuite.iterTestSuite(**params):
+							yield s
+			# Return all TestSuites
+			else:
+				for tsuite in suites:
+					# First return the suites from this level,
+					# then return nested ones if recursive is specified
+					yield tsuite
+					if recursive:
+						for s in tsuite.iterTestSuite(**params):
+							yield s
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Returns all TestSuites specified by parameters
@@ -494,7 +516,6 @@ class TestProject(TestlinkObject):
 		@rtype: generator
 		"""
 		# Check if simple API calls can be done
-		# Since the ID is unique, try to get it in any case
 		if name and not id:
 			response = self._api.getTestCaseIdByName(name,project=self.name)
 			# If we got more than one TestCase, ignore the name
@@ -545,12 +566,12 @@ class TestProject(TestlinkObject):
 		"""
 		# No simple API call possible, get all
 		response = self._api.getRequirementSpecificationsForTestProject(self.id)
+		specs = [RequirementSpecification(api=self._api,parent_testproject=self,**reqspec) for reqspec in response]
 
-		# Filter by speficied params
+		# Filter
 		if len(params)>0 or title:
 			params['title'] = title
-			for reqspec in response:
-				rspec = RequirementSpecification(api=self._api,parent_testproject=self,**reqspec)
+			for rspec in specs:
 				for key,value in params.items():
 					# Skip None
 					if value is None:
@@ -570,6 +591,10 @@ class TestProject(TestlinkObject):
 						raise AttributeError("Invalid Search Parameter for Requirement Specification: %s" % key)
 				if rspec is not None:
 					yield rspec
+		# Return all Requirement Specifications
+		else:
+			for rspec in specs:
+				yield rspec
 
 	def getRequirementSpecification(self,title=None,**params):
 		"""Returns all Requirement Specifications specified by parameters
@@ -627,12 +652,12 @@ class TestPlan(TestlinkObject):
 		"""
 		# No simple API call possible, get all
 		response = self._api.getBuildsForTestPlan(self.id)
+		builds = [Build(api=self._api,**build) for build in response]
 
-		# Filter by specified params
+		# Filter
 		if len(params)>0 or name:
 			params['name'] = name
-			for build in response:
-				bd = Build(api=self._api,**build)
+			for bd in builds:
 				for key,value in params.items():
 					# Skip None
 					if value is None:
@@ -645,6 +670,10 @@ class TestPlan(TestlinkObject):
 						raise AttributeError("Invalid Search Parameter for Build: %s" % key)
 				if bd is not None:
 					yield bd
+		# Return all Builds
+		else:
+			for bd in builds:
+				yield bd
 
 	def getBuild(self,name=None,**params):
 		"""Returns all Builds specified by parameters
@@ -668,12 +697,12 @@ class TestPlan(TestlinkObject):
 		"""
 		# No simple API call possible, get all
 		response = self._api.getTestPlanPlatforms(self.id)
+		platforms = [Platform(api=self._api,**platform) for platform in response]
 
-		# Filter by specified params
+		# Filter
 		if len(params)>0 or name:
 			params['name'] = name
-			for platform in response:
-				ptf = Platform(api=self._api,**platform)
+			for ptf in platforms:
 				for key,value in params.items():
 					# Skip None
 					if value is None:
@@ -686,6 +715,10 @@ class TestPlan(TestlinkObject):
 						raise AttributeError("Invalid Search Parameter for Platform: %s" % key)
 				if ptf is not None:
 					yield ptf
+		# Return all Platforms
+		else:
+			for pff in platforms:
+				yield ptf
 
 	def getPlatform(self,name=None,**params):
 		"""Returns all Platforms specified by parameters
@@ -750,10 +783,6 @@ class TestPlan(TestlinkObject):
 								getstepsinfo = True\
 							)
 
-		# Check for empty response
-		if (response is None) or len(response)==0:
-			return
-
 		# Normalize result
 		testcases = []
 		for tcid,platforms in response.items():
@@ -766,13 +795,13 @@ class TestPlan(TestlinkObject):
 				for platform_id,tc in platforms.items():
 					testcases.append(tc)
 
-		# Filter by specified params
+		# Initialise TestCase Objects
+		cases = [TestCase(api=self._api,parent_testproject=self.getTestProject(),**case) for case in testcases]
+
+		# Filter
 		if len(params)>0 or name:
 			params['name'] = name
-			for case in testcases:
-				# Create a testcase instance here
-				# to have normalized attributes
-				tcase = TestCase(api=self._api,parent_testproject=self.getTestProject(),**case)
+			for tcase in cases:
 				for key,value in params.items():
 					# Skip None
 					if value is None:
@@ -798,6 +827,10 @@ class TestPlan(TestlinkObject):
 				# Yield matching testcase
 				if tcase is not None:
 					yield tcase
+		else:
+			# Return all found TestCases
+			for tcase in cases:
+				yield tcase
 
 	def getTestCase(
 			self,\
@@ -906,10 +939,14 @@ class TestSuite(TestlinkObject):
 	def getTestProject(self):
 		return self._parent_testproject
 
-	def iterTestSuite(self,name=None,id=None,**params):
+	def iterTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Iterates over TestSuites speficied by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
+		@param id: The internal ID of the TestSuite
+		@type id: int
+		@param recursive: Search recursive to get all nested TestSuites
+		@type recursive: bool
 		@param params: Other params for TestSuite
 		@type params: dict
 		@returns: Matching TestSuites
@@ -929,9 +966,9 @@ class TestSuite(TestlinkObject):
 				response = [self._api.getTestSuiteById(suite_id) for suite_id in response.keys()]
 			else:
 				response = [response]
-
 		suites = [TestSuite(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**suite) for suite in response]
-		# Filter by specified parameters
+
+		# Filter
 		if len(params)>0 or name:
 			params['name'] = name
 			params['id'] = id
@@ -955,22 +992,38 @@ class TestSuite(TestlinkObject):
 						raise AttributeError("Invalid Search Parameter for TestSuite: %s" % key)
 				if tsuite is not None:
 					yield tsuite
-		# Search recursive
-		for tsuite in suites:
-			yield tsuite
-			for s in tsuite.iterTestSuite(**params):
-				yield s
+			# If recursive is specified
+			# also serch in nested suites
+			if recursive:
+				# For each suite of this level
+				for tsuite in suites:
+					# Yield nested suites that match
+					for s in tsuite.iterTestSuite(**params):
+						yield
+		# Return all suites
+		else:
+			for tsuite in suites:
+				# First return the suites from this level,
+				# then return nested ones if recursive is specified
+				yield tsuite
+				if recursive:
+					for s in tsuite.iterTestSuite(**params):
+						yield s
 
-	def getTestSuite(self,name=None,id=None,**params):
+	def getTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Returns all TestSuites speficied by parameters
 		@param name: The name of the wanted TestSuite
 		@type name: str
+		@param id: The internal ID of the TestSuite
+		@type id: int
+		@param recursive: Search recursive to get all nested TestSuites
+		@type recursive: bool
 		@param params: Other params for TestSuite
 		@type params: dict
 		@returns: Matching TestSuites
 		@rtype: mixed
 		"""
-		return normalize( [s for s in self.iterTestSuite(name,id,**params)] )
+		return normalize( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
 
 	def iterTestCase(self,name=None,**params):
 		"""Iterates over TestCases specified by parameters
@@ -1488,8 +1541,8 @@ class RequirementSpecification(TestlinkObject):
 	def __str__(self):
 		return "Requirement Specification %s: %s" % (self.doc_id,self.name)
 
-	def iterTestProject(self,*args,**kwargs):
-		yield self._parent_testproject
+	def getTestProject(self):
+		return self._parent_testproject
 
 	def iterRequirement(self,title=None,**params):
 		"""Iterates over Requirements specified by parameters
@@ -1498,14 +1551,14 @@ class RequirementSpecification(TestlinkObject):
 		@returns: Matching Requirements
 		@rtype: generator
 		"""
-		# No Simple API Call possible, get all
+		# No Simple API Call possible, get all and convert to Requirement instances
 		response = self._api.getRequirementsForRequirementSpecification(self.id,self.getTestProject().id)
+		requirements = [Requirement(api=self._api,parent_testproject=self.getTestProject(),**req) for req in response]
 
-		# Filter by specifiec params
+		# Filter
 		if len(params)>0 or title:
 			params['title'] = title
-			for req in response:
-				rq = Requirement(api=self._api,parent_testproject=self.getTestProject(),**req)
+			for req in requirements:
 				for key,value in params.items():
 					# Skip None
 					if value is None:
@@ -1525,6 +1578,10 @@ class RequirementSpecification(TestlinkObject):
 						raise AttributeError("Invalid Search Parameter for Requirement: %s" % key)
 				if rq is not None:
 					yield rq
+		# Return all Requirements
+		else:
+			for req in requirements:
+				yield req
 
 	def getRequirement(self,title=None,**params):
 		"""Returns all Requirements with the specified parameters
@@ -1610,6 +1667,6 @@ class Requirement(TestlinkObject):
 	def __str__(self):
 		return "Requirement %s: %s" % (self.req_doc_id,self.name)
 
-	def iterTestProject(self,*args,**kwargs):
-		yield self._parent_testproject
+	def getTestProject(self):
+		return self._parent_testproject
 			
