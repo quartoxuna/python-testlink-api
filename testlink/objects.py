@@ -141,25 +141,124 @@ class Testlink(object):
 		"""
 		return normalize( [p for p in self.iterTestProject(name,**params)] )
 
-	def create(self,obj,*args,**kwargs):
-		"""Create a new object using the current connected Testlink.
-		@param obj: Object to create
-		@type obj: mixed
-		@param args: Additional arguments for object creation
-		@type args: list
-		@param kwargs: Additional arguments for object creation
-		@type kwargs: dict
-		@raises TypeError: Unknown object type
+	def createTestProject(self,project):
+		"""Creates a new TestProject using the current Testlink instance.
+		@param project: Project to create
+		@type project: TestProject
 		"""
-		# Dispatch creation calls
-		if isinstance(obj,TestProject):
-			return TestProject.create(self,obj,*args,**kwargs)
-		elif isinstance(obj,TestSuite):
-			return TestSuite.create(self,obj,*args,**kwargs)
-		elif isinstance(obj,TestCase):
-			return TestCase.create(self,obj,*args,**kwargs)
-		else:
-			raise TypeError(str(obj))
+		return self._api.createTestProject(
+					name = project.name,
+					prefix = project.prefix,
+					notes = project.notes,
+					active = project.active,
+					public = project.public,
+					requirements = project.requirements,
+					priority = project.priority,
+					automation = project.automation,
+					inventory = project.inventory
+				)
+
+	def createTestPlan(self,testplan,testproject):
+		"""Creates a new TestPlan for the specified TestProject using the current Testlink instance.
+		@param testplan: TestPlan to create
+		@type testplan: TestPlan
+		@param testproject: TestProject to add the Testplan to
+		@type testproject: TestProject
+		"""
+		return self._api.createTestPlan(
+					name = testplan.name,
+					notes = testplan.notes,
+					active = testplan.active,
+					public = testplan.public,
+					project = testproject.name
+				)
+
+	def createBuild(self,build,testplan):
+		"""Creates a new Build for the specified TestPlan using the current Testlink instance.
+		@param build: Build to create
+		@type build: Build
+		@param testplan: TestPlan to add the Build to
+		@type testplan: TestPlan
+		"""
+		return self._api.createBuild(
+					name = build.name,
+					notes = build.notes,
+					testplanid = testplan.id
+				)
+
+	def createPlatform(self,platform,testproject):
+		"""Creates a new Platform for the specified TestProject using the current Testlink instance.
+		@param platform: Platform to create
+		@type platform: Platform
+		@param testproject: TestProject to add the Platform to
+		@type testproject: TestProject
+		"""
+		return self._api.createPlatform(
+					platformname = platform.name,
+					notes = platform.notes,
+					testprojectname = testproject.name
+				)
+
+	def createTestSuite(self,suite,parent,testproject,order=0,on_duplicate=DuplicateStrategy.BLOCK):
+		"""Creates a new TestSuite for the specified parent objects using the current Testlink instance.
+		@param suite: TestSuite to create
+		@type suite: TestSuite
+		@param parent: Parent TestSuite
+		@type parent: mixed
+		@param testproject: The parent TestProject
+		@type testproject: TestProject
+		@param order: Order within the parent object
+		@type order: int
+		@param on_duplicate: Used duplicate strategy
+		@type on_duplicate: testlink.enums.DuplicateStrategy
+		"""
+		duplicate_check = False
+		if on_duplicate is not None:
+			duplicate_check = True
+
+		return self._api.createTestSuite(
+					testsuitename = suite.name,
+					details = suite.details,
+					testprojectid = testproject.id,
+					parentid = parent.id,
+					order = order,
+					checkduplicatedname = duplicate_check,
+					actiononduplicate = on_duplicate
+				)
+
+	def createTestCase(self,testcase,testsuite,testproject,authorlogin,order=0,on_duplicate=DuplicateStrategy.BLOCK):
+		"""Creates a new TestCase for the specifies parent objects using the current Testlink instance.
+		@param testcase: TestCase to create
+		@type testcase: TestCase
+		@param testsuite: Parent TestSuite
+		@type testsuite: TestSuite
+		@param testproject: Parent TestProject
+		@type testproject: TestProject
+		@param authorlogin: Author Login to use
+		@type authorlogin: str
+		@param order: Order within parent TestSuite
+		@type order: int
+		@param on_duplicate: Used duplicate strategy
+		@type on_duplicate: testlink.enums.DuplicateStrategy
+		"""
+		duplicate_check = False
+		if on_duplicate is not None:
+			duplicate_check = True
+
+		return self._api.createTestCase(
+					testcasename = case.name,
+					testsuiteid = testsuite.id,
+					testprojectid = testproject.id,
+					authorlogin = authorlogin,
+					summary = testcase.summary,
+					steps = repr(testcase.steps),
+					preconditions = testcase.preconditions,
+					importance = testcase.importance,
+					executiontype = testcase.executiontype,
+					order = order,
+					checkduplicatedname = duplicate_check,
+					actiononduplicatedname = on_duplicate
+				)
 
 
 class TestlinkObject(object):
@@ -492,25 +591,6 @@ class TestProject(TestlinkObject):
 		"""
 		return normalize( [r for r in self.iterRequirementSpecification(title,**params)] )
 
-	@staticmethod
-	def create(tl,project,*args,**kwargs):
-		"""Creates the specified TestProject for the specified Testlink instance.
-		@param tl: Used Testlink instance
-		@type tl: Testlink
-		@param project: Used TestProject
-		@type project: TestProject
-		"""
-		return tl._api.createTestProject(
-					name = project.name,
-					prefix = project.prefix,
-					notes = project.notes,
-					active = project.active,
-					public = project.public,
-					requirements = project.requirements,
-					priority = project.priority,
-					automation = project.automation,
-					inventory = project.inventory
-				)
 
 class TestPlan(TestlinkObject):
     """Testlink TestPlan representation
@@ -1006,34 +1086,6 @@ class TestSuite(TestlinkObject):
 		"""
 		return normalize( [c for c in self.iterTestCase(name,**params)] )
 
-	@staticmethod
-	def create(tl,suite,order=0,on_duplicate=DuplicateStrategy.BLOCK):
-		"""Creates the specified TestSuite for the specified Testlink instance.
-		@param tl: Used Testlink instance
-		@type tl: Testlink
-		@param project: Used TestProject
-		@type project: TestProject
-		"""
-		kwargs = {
-				'name' : suite.name,
-				'testprojectid' : suite.getTestProject().id,
-				'details' : suite.details,
-				'order' : order,
-				'actiononduplicate' : on_duplicate,
-				'parentid' : None
-		}
-
-		if suite.getTestSuite() is not None:
-			kwargs['parentid'] = suite.getTestSuite().id
-
-		response = tl._api.createTestSuite(**kwargs)
-
-		if isinstance(response,list) and len(response)==1:
-			response = response[0]
-
-		return response
-
-
 
 class TestCase(TestlinkObject):
     """Testlink TestCase representation
@@ -1444,32 +1496,6 @@ class TestCase(TestlinkObject):
 				estimatedexecduration = estimatedexecduration
 			)
 
-	@staticmethod
-	def create(tl,case,order=0,on_duplicate=DuplicateStrategy.BLOCK):
-		"""Creates the specified TestCase for the specified Testlink instance.
-		@param tl: Used Testlink instance
-		@type tl: Testlink
-		@param case: Used TestCase
-		@type case: TestCase
-		"""
-		response = tl._api.createTestCase(
-						name = case.name,
-						suiteid = case.getTestSuite().id,
-						projectid = case.getTestProject().id,
-						author = case.author,
-						summary = case.summary,
-						steps = case.steps,
-						preconditions = case.preconditions,
-						importance = case.importance,
-						execution = case.execution_type,
-						customfields = case.customfields,
-						order = order,
-						actiononduplicate = on_duplicate
-					)
-		# Normalize result
-		if isinstance(response,list) and len(response)==1:
-			response = response[0]
-		return response
 
 class RequirementSpecification(TestlinkObject):
     """Testlink Requirement Specification representation"""
