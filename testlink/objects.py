@@ -23,15 +23,14 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # Helper method
 def normalize(res):
-    """Normalizes a result list.
-    	If the specified list is empty, return None.
-    	If the specified list has only one element, return that element.
-    	Else return the list as is.
-
-    :param res: Result list
-    :type res: list
-
-    """
+	"""Normalizes a result list.
+	If the specified list is empty, return None.
+	If the specified list has only one element, return that element.
+	Else return the list as is.
+	@param res: Result list
+	@type res: list
+	@rtype: mixed
+	"""
 	if len(res)==0:
 		return None
 	elif len(res)==1:
@@ -40,11 +39,12 @@ def normalize(res):
 		return res
 
 class Testlink(object):
-    """Testlink Server implementation
-    	@ivar _url: URL of connected Testlink
-
-
-    """
+	"""Testlink Server implementation
+	@ivar _url: URL of connected Testlink
+	@type _url: str
+	@ivar _devkey: Valid Testlink developer key
+	@type _devkey: str
+	"""
 
 	def __init__(self,url,devkey,api=APIType.XML_RPC):
 		"""Initializes the Testlink Server object
@@ -71,26 +71,19 @@ class Testlink(object):
 
 	def getVersion(self):
 		"""Retrieve informations about the used Testlink API
-
-
-		:returns: Version
-
-		:rtype: str
-
+		@return: Version
+		@rtype: str
 		"""
 		return str(self._api._tl_version)
 
 	def iterTestProject(self,name=None,**params):
 		"""Iterates over TestProjects specified by parameters
-
-		:param name: The name of the TestProject (Default value = None)
-		:type name: str
-		:param params: Other params for TestProject
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestProjects
-		:rtype: generator
-
+		@param name: The name of the TestProject
+		@type name: str
+		@param params: Other params for TestProject
+		@type params: dict
+		@returns: Matching TestProjects
+		@rtype: generator
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
@@ -129,15 +122,12 @@ class Testlink(object):
 
 	def getTestProject(self,name=None,**params):
 		"""Returns all TestProjects specified by parameters
-
-		:param name: The name of the TestProject (Default value = None)
-		:type name: str
-		:param params: Other params for TestProject
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestProjects
-		:rtype: mixed
-
+		@param name: The name of the TestProject
+		@type name: str
+		@param params: Other params for TestProject
+		@type params: dict
+		@returns: Matching TestProjects
+		@rtype: mixed
 		"""
 		return normalize( [p for p in self.iterTestProject(name,**params)] )
 
@@ -262,11 +252,12 @@ class Testlink(object):
 
 
 class TestlinkObject(object):
-    """Abstract Testlink Object
-    	@ivar id: Internal Testlink Id of the object
-
-
-    """
+	"""Abstract Testlink Object
+	@ivar id: Internal Testlink Id of the object
+	@type id: int
+	@ivar name: Internal Testlink name of the object
+	@type name: str
+	"""
 
 	__slots__ = ("id","name","_api")
 
@@ -296,11 +287,27 @@ class TestlinkObject(object):
 
 
 class TestProject(TestlinkObject):
-    """Testlink TestProject representation
-    	@ivar notes: TestProject notes
-
-
-    """
+	"""Testlink TestProject representation
+	@ivar notes: TestProject notes
+	@type notes: str
+	@ivar prefix: TestCase prefix within TestProject
+	@type prefix: str
+	@ivar active: TestProject active flag
+	@type active: bool
+	@ivar public: TestProject public flag
+	@type public: bool
+	@ivar requirements_enabled: Requirement Feature flag
+	@type requirements_enabled: bool
+	@ivar priority_enabled: Test Priority feature flag
+	@type priority_enabled: bool
+	@ivar automation_enabled: Automation Feature flag
+	@type automation_enabled: bool
+	@ivar inventory_enabled: Inventory Feature flag
+	@type inventory_enabled: bool
+	@ivar tc_counter: Current amount of TestCases in TestProject
+	@type tc_counter: int
+	@ivar color: Assigned color of TestProject
+	@type color: str"""
 
 	__slots__ = ("notes","prefix","active","public","requirements",\
 			"priority","automation","inventory","tc_counter","color")
@@ -341,15 +348,12 @@ class TestProject(TestlinkObject):
 
 	def iterTestPlan(self,name=None,**params):
 		"""Iterates over TestPlans specified by parameters
-
-		:param name: The name of the TestPlan (Default value = None)
-		:type name: str
-		:param params: Other params for TestPlan
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestPlans
-		:rtype: generator
-
+		@param name: The name of the TestPlan
+		@type name: str
+		@param params: Other params for TestPlan
+		@type params: dict
+		@returns: Matching TestPlans
+		@rtype: generator
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
@@ -386,31 +390,25 @@ class TestProject(TestlinkObject):
 
 	def getTestPlan(self,name=None,**params):
 		"""Returns all TestPlans specified by parameters
-
-		:param name: The name of the TestPlan (Default value = None)
-		:type name: str
-		:param params: Other params for TestPlan
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestPlans
-		:rtype: mixed
-
+		@param name: The name of the TestPlan
+		@type name: str
+		@param params: Other params for TestPlan
+		@type params: dict
+		@returns: Matching TestPlans
+		@rtype: mixed
 		"""
 		return normalize( [p for p in self.iterTestPlan(name,**params)] )
 
 	def iterTestSuite(self,name=None,id=None,**params):
 		"""Iterates over TestSuites specified by parameters
-
-		:param name: The name of the wanted TestSuite (Default value = None)
-		:type name: str
-		:param id: The internal ID of the TestSuite (Default value = None)
-		:type id: int
-		:param params: Other params for TestSuite
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestSuites
-		:rtype: generator
-
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param id: The internal ID of the TestSuite
+		@type id: int
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: generator
 		"""
 		# Check if simple API call can be done
 		# Since the ID is unique, all other params can be ignored
@@ -461,17 +459,14 @@ class TestProject(TestlinkObject):
 
 	def getTestSuite(self,name=None,id=None,**params):
 		"""Returns all TestSuites specified by parameters
-
-		:param name: The name of the wanted TestSuite (Default value = None)
-		:type name: str
-		:param id: The internal ID of the TestSuite (Default value = None)
-		:type id: int
-		:param params: Other params for TestSuite
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestSuites
-		:rtype: mixed
-
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param id: The internal ID of the TestSuite
+		@type id: int
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: mixed
 		"""
 		if name is not None:
 			params["name"] = name
@@ -481,19 +476,16 @@ class TestProject(TestlinkObject):
 
 	def iterTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Iterates over TestCases specified by parameters
-
-		:param name: The name of the wanted TestCase (Default value = None)
-		:type name: str
-		:param id: The internal ID of the TestCase (Default value = None)
-		:type id: int
-		:param external_id: The external ID of the TestCase (Default value = None)
-		:type external_id: int
-		:param params: Other params for TestCase
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestCases
-		:rtype: generator
-
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param id: The internal ID of the TestCase
+		@type id: int
+		@param external_id: The external ID of the TestCase
+		@type external_id: int
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: generator
 		"""
 		# Check if simple API calls can be done
 		# Since the ID is unique, try to get it in any case
@@ -525,31 +517,25 @@ class TestProject(TestlinkObject):
 
 	def getTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Returns all TestCases specified by parameters
-
-		:param name: The name of the wanted TestCase (Default value = None)
-		:type name: str
-		:param id: The internal ID of the TestCase (Default value = None)
-		:type id: int
-		:param external_id: The external ID of the TestCase (Default value = None)
-		:type external_id: int
-		:param params: Other params for TestCase
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestCases
-		:rtype: mixed
-
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param id: The internal ID of the TestCase
+		@type id: int
+		@param external_id: The external ID of the TestCase
+		@type external_id: int
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: mixed
 		"""
 		return normalize( [c for c in self.iterTestCase(name,id,external_id,**params)] )
 
 	def iterRequirementSpecification(self,title=None,**params):
 		"""Iterates over Requirement Specifications specified by parameters
-
-		:param title: The title of the wanted Requirement Specification (Default value = None)
-		:type title: str
-		:param **params: 
-		:returns: s: Matching Requirement Specifications
-		:rtype: generator
-
+		@param title: The title of the wanted Requirement Specification
+		@type title: str
+		@returns: Matching Requirement Specifications
+		@rtype: generator
 		"""
 		# No simple API call possible, get all
 		response = self._api.getRequirementSpecificationsForTestProject(self.id)
@@ -581,23 +567,23 @@ class TestProject(TestlinkObject):
 
 	def getRequirementSpecification(self,title=None,**params):
 		"""Returns all Requirement Specifications specified by parameters
-
-		:param title: The title of the wanted Requirement Specification (Default value = None)
-		:type title: str
-		:param **params: 
-		:returns: s: Matching Requirement Specifications
-		:rtype: list
-
+		@param title: The title of the wanted Requirement Specification
+		@type title: str
+		@returns: Matching Requirement Specifications
+		@rtype: list
 		"""
 		return normalize( [r for r in self.iterRequirementSpecification(title,**params)] )
 
 
 class TestPlan(TestlinkObject):
-    """Testlink TestPlan representation
-    	@ivar notes: TestPlan notes
-
-
-    """
+	"""Testlink TestPlan representation
+	@ivar notes: TestPlan notes
+	@type notes: str
+	@ivar active: TestPlan active flag
+	@type active: bool
+	@ivar public: TestPlan public flag
+	@type public: bool
+	"""
 
 	__slots__ = ("notes","active","public","_parent_testproject")
 
@@ -622,20 +608,16 @@ class TestPlan(TestlinkObject):
 		return "TestPlan: %s" % self.name
 	
 	def getTestProject(self):
-		""" """
 		return self._parent_testproject
 
 	def iterBuild(self,name=None,**params):
 		"""Iterates over Builds specified by parameters
-
-		:param name: The name of the Build (Default value = None)
-		:type name: str
-		:param params: Other params for Build
-		:type params: dict
-		:param **params: 
-		:returns: s: Macthing Builds
-		:rtype: generator
-
+		@param name: The name of the Build
+		@type name: str
+		@param params: Other params for Build
+		@type params: dict
+		@returns: Macthing Builds
+		@rtype: generator
 		"""
 		# No simple API call possible, get all
 		response = self._api.getBuildsForTestPlan(self.id)
@@ -660,29 +642,23 @@ class TestPlan(TestlinkObject):
 
 	def getBuild(self,name=None,**params):
 		"""Returns all Builds specified by parameters
-
-		:param name: The name of the Build (Default value = None)
-		:type name: str
-		:param params: Other params for Build
-		:type params: dict
-		:param **params: 
-		:returns: s: Macthing Builds
-		:rtype: mixed
-
+		@param name: The name of the Build
+		@type name: str
+		@param params: Other params for Build
+		@type params: dict
+		@returns: Macthing Builds
+		@rtype: mixed
 		"""
 		return normalize( [b for b in self.iterBuild(name,**params)] )
 
 	def iterPlatform(self,name=None,**params):
 		"""Iterates over Platforms specified by parameters
-
-		:param name: The name of the Platform (Default value = None)
-		:type name: str
-		:param params: Other params for Platform
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching Platforms
-		:rtype: generator
-
+		@param name: The name of the Platform
+		@type name: str
+		@param params: Other params for Platform
+		@type params: dict
+		@returns: Matching Platforms
+		@rtype: generator
 		"""
 		# No simple API call possible, get all
 		response = self._api.getTestPlanPlatforms(self.id)
@@ -707,15 +683,12 @@ class TestPlan(TestlinkObject):
 
 	def getPlatform(self,name=None,**params):
 		"""Returns all Platforms specified by parameters
-
-		:param name: The name of the Platform (Default value = None)
-		:type name: str
-		:param params: Other params for Platform
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching Platforms
-		:rtype: mixed
-
+		@param name: The name of the Platform
+		@type name: str
+		@param params: Other params for Platform
+		@type params: dict
+		@returns: Matching Platforms
+		@rtype: mixed
 		"""
 		return normalize( [p for p in self.iterPlatform(name,**params)] )
 
@@ -733,40 +706,28 @@ class TestPlan(TestlinkObject):
 			**params
 		):
 		"""Iterates over Testcases specified by parameters
-
-		:param name: The name of the TestCase
-		:type name: str
-		:param id: The internal ID of the TestCase
-		:type id: int
-		:param buildid: The internal ID of the Build
-		:type buildid: int
-		:param keywordid: The internal ID of the used Keyword
-		:type keywordid: int
-		:param keywords: Keywords to filter for
-		:type keywords: list
-		:param executed: Checks if TestCase is executed
-		:type executed: bool
-		:param assigned_to: Filter by internal ID of assigned Tester
-		:type assigned_to: int
-		:param execution_status: Filter by execution status
-		:type execution_status: char ???
-		:param execution_type: Filter by execution type
-		:type execution_type: ExecutionType
-		:param params: Other params for TestCase
-		:type params: dict
-		:param \name:  (Default value = None)
-		:param \id:  (Default value = None)
-		:param \buildid:  (Default value = None)
-		:param \keywordid:  (Default value = None)
-		:param \keywords:  (Default value = None)
-		:param \executed:  (Default value = None)
-		:param \assigned_to:  (Default value = None)
-		:param \execution_status:  (Default value = None)
-		:param \execution_type:  (Default value = None)
-		:param \**params: 
-		:returns: s: Matching TestCases
-		:rtype: generator
-
+		@param name: The name of the TestCase
+		@type name: str
+		@param id: The internal ID of the TestCase
+		@type id: int
+		@param buildid: The internal ID of the Build
+		@type buildid: int
+		@param keywordid: The internal ID of the used Keyword
+		@type keywordid: int
+		@param keywords: Keywords to filter for
+		@type keywords: list
+		@param executed: Checks if TestCase is executed
+		@type executed: bool
+		@param assigned_to: Filter by internal ID of assigned Tester
+		@type assigned_to: int
+		@param execution_status: Filter by execution status
+		@type execution_status: char ???
+		@param execution_type: Filter by execution type
+		@type execution_type: ExecutionType
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: generator
 		"""
 		# Get all available TestCases
 		# Use all possible API params to speed up API call
@@ -846,67 +807,52 @@ class TestPlan(TestlinkObject):
 			**params
 		):
 		"""Returns all Testcases specified by parameters
-
-		:param name: The name of the TestCase
-		:type name: str
-		:param id: The internal ID of the TestCase
-		:type id: int
-		:param buildid: The internal ID of the Build
-		:type buildid: int
-		:param keywordid: The internal ID of the used Keyword
-		:type keywordid: int
-		:param keywords: Keywords to filter for
-		:type keywords: list
-		:param executed: Checks if TestCase is executed
-		:type executed: bool
-		:param assigned_to: Filter by internal ID of assigned Tester
-		:type assigned_to: int
-		:param execution_status: Filter by execution status
-		:type execution_status: char ???
-		:param execution_type: Filter by execution type
-		:type execution_type: ExecutionType
-		:param params: Other params for TestCase
-		:type params: dict
-		:param \name:  (Default value = None)
-		:param \id:  (Default value = None)
-		:param \buildid:  (Default value = None)
-		:param \keywordid:  (Default value = None)
-		:param \keywords:  (Default value = None)
-		:param \executed:  (Default value = None)
-		:param \assigned_to:  (Default value = None)
-		:param \execution_status:  (Default value = None)
-		:param \execution_type:  (Default value = None)
-		:param \**params: 
-		:returns: s: Matching TestCases
-		:rtype: mixed
-
+		@param name: The name of the TestCase
+		@type name: str
+		@param id: The internal ID of the TestCase
+		@type id: int
+		@param buildid: The internal ID of the Build
+		@type buildid: int
+		@param keywordid: The internal ID of the used Keyword
+		@type keywordid: int
+		@param keywords: Keywords to filter for
+		@type keywords: list
+		@param executed: Checks if TestCase is executed
+		@type executed: bool
+		@param assigned_to: Filter by internal ID of assigned Tester
+		@type assigned_to: int
+		@param execution_status: Filter by execution status
+		@type execution_status: char ???
+		@param execution_type: Filter by execution type
+		@type execution_type: ExecutionType
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: mixed
 		"""
 		return normalize( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executed,assigned_to,execution_status,execution_type,**params)] )
 
 	def assignTestCase(self, case, platform=None, execution_order=None, urgency=None):
 		"""Assigns the specified TestCase to the current TestPlan.
-
-		:param case: TestCase to add to current TestPlan
-		:type case: TestCase
-		:param platform: OPTIONAL> Platform to add to (Default value = None)
-		:type platform: Platform
-		:param execution_order: OPTIONAL> Desired execution order (Default value = None)
-		:type execution_order: int
-		:param urgency: OPTIONAL> Desired urgency (Default value = None)
-		:type urgency: enums.UrgencyLevel
-		:raises s: APIError: Could not add TestCase
-
+		@param case: TestCase to add to current TestPlan
+		@type case: TestCase
+		@param platform: <OPTIONAL> Platform to add to
+		@type platform: Platform
+		@param execution_order: <OPTIONAL> Desired execution order
+		@type execution_order: int
+		@param urgency: <OPTIONAL> Desired urgency
+		@type urgency: enums.UrgencyLevel
+		@raises APIError: Could not add TestCase
 		"""
 		if not platform:
 			platform = Platform(-1)
 		self._api.addTestCaseToTestPlan(self.getTestProject().id,self.id,"%s-%s" % (self.getTestProject().prefix,str(case.external_id)),case.version,platform.id,execution_order,urgency)
 
 class Build(TestlinkObject):
-    """Testlink Build representation
-    	@ivar notes: Build notes
-
-
-    """
+	"""Testlink Build representation
+	@ivar notes: Build notes
+	@type notes: str
+	"""
 
 	__slots__ = ("notes")
 
@@ -919,11 +865,10 @@ class Build(TestlinkObject):
 
 
 class Platform(TestlinkObject):
-    """Testlink Platform representation
-    	@ivar notes: Platform notes
-
-
-    """
+	"""Testlink Platform representation
+	@ivar notes: Platform notes
+	@type notes: str
+	"""
 
 	__slots__ = ("notes")
 
@@ -936,11 +881,10 @@ class Platform(TestlinkObject):
 
 
 class TestSuite(TestlinkObject):
-    """Testlink TestSuite representation
-    	@ivar notes: TestSuite notes
-
-
-    """
+	"""Testlink TestSuite representation
+	@ivar notes: TestSuite notes
+	@type notes: str
+	"""
 
 	__slots__ = ("details","_parent_testproject","_parent_testsuite")
 
@@ -954,21 +898,16 @@ class TestSuite(TestlinkObject):
 		return "TestSuite: %s" % self.name
 
 	def getTestProject(self):
-		""" """
 		return self._parent_testproject
 
 	def iterTestSuite(self,name=None,id=None,**params):
 		"""Iterates over TestSuites speficied by parameters
-
-		:param name: The name of the wanted TestSuite (Default value = None)
-		:type name: str
-		:param params: Other params for TestSuite
-		:type params: dict
-		:param id:  (Default value = None)
-		:param **params: 
-		:returns: s: Matching TestSuites
-		:rtype: generator
-
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: generator
 		"""
 		# Simple API call could be done, but
 		# we want to ensure, that only sub suites of this
@@ -1018,30 +957,23 @@ class TestSuite(TestlinkObject):
 
 	def getTestSuite(self,name=None,id=None,**params):
 		"""Returns all TestSuites speficied by parameters
-
-		:param name: The name of the wanted TestSuite (Default value = None)
-		:type name: str
-		:param params: Other params for TestSuite
-		:type params: dict
-		:param id:  (Default value = None)
-		:param **params: 
-		:returns: s: Matching TestSuites
-		:rtype: mixed
-
+		@param name: The name of the wanted TestSuite
+		@type name: str
+		@param params: Other params for TestSuite
+		@type params: dict
+		@returns: Matching TestSuites
+		@rtype: mixed
 		"""
 		return normalize( [s for s in self.iterTestSuite(name,id,**params)] )
 
 	def iterTestCase(self,name=None,**params):
 		"""Iterates over TestCases specified by parameters
-
-		:param name: The name of the wanted TestCase (Default value = None)
-		:type name: str
-		:param params: Other params for TestCase
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestCases
-		:rtype: generator
-
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: generator
 		"""
 		# No simple API call possible, get all
 		response = self._api.getTestCasesForTestSuite(self.id,details='full')
@@ -1074,31 +1006,60 @@ class TestSuite(TestlinkObject):
 
 	def getTestCase(self,name=None,**params):
 		"""Returns all TestCases specified by parameters
-
-		:param name: The name of the wanted TestCase (Default value = None)
-		:type name: str
-		:param params: Other params for TestCase
-		:type params: dict
-		:param **params: 
-		:returns: s: Matching TestCases
-		:rtype: mixed
-
+		@param name: The name of the wanted TestCase
+		@type name: str
+		@param params: Other params for TestCase
+		@type params: dict
+		@returns: Matching TestCases
+		@rtype: mixed
 		"""
 		return normalize( [c for c in self.iterTestCase(name,**params)] )
 
 
 class TestCase(TestlinkObject):
-    """Testlink TestCase representation
-    	@ivar executed: Flag if TestCase has been executed yet
+	"""Testlink TestCase representation
+	@ivar executed: Flag if TestCase has been executed yet
+	@type executed: bool
+	@ivar execution_notes: Notes for the last execution
+	@type execution_notes: unicode
+	@ivar execution_order: Order of execution
+	@type execution_order: int
+	@ivar version: Version number
+	@type version: int
+	@ivar exec_status: Execution status
+	@type exec_status: str
+	@ivar status: Status
+	@type status: ???
+	@ivar importance: ImportanceLevel
+	@type importance: ImportanceLevel
+	@ivar execution_type: Execution Type
+	@type execution_type: ExecutionType
+	@ivar active: Active flag
+	@type active: bool
+	@ivar summary: Summary of the TestCase
+	@type summary: unicode
+	@ivar platform_id: Internal ID of platform
+	@type platform_id: int
+	@ivar external_id: External ID of the TestCase
+	@type external_id: int
 
-
-    """
+	@note: No __slots__ defined, so __dict__ available
+	"""
 
 	class Step(object):
 		"""Testlink TestCase Step representation
 		@ivar id: Internal ID of the Step
-
-
+		@type id: int
+		@ivar number: Number of the step
+		@type number: int
+		@ivar actions: Actions of the step
+		@type actions: str
+		@ivar execution_type: Type of Execution
+		@type execution_type: ExecutionType
+		@ivar active: Active flag
+		@type active: bool
+		@ivar results: Expected result of the step
+		@type results: str
 		"""
 		def __init__(
 				self,\
@@ -1126,8 +1087,25 @@ class TestCase(TestlinkObject):
 	class Execution(object):
 		"""Testlink TestCase Execution representation
 		@ivar id: The internal ID of the Execution
-
-
+		@type id: int
+		@ivar testplan_id: The internal ID of the parent TestPlan
+		@type testplan_id: int
+		@ivar build_id: The internal ID of the parent Build
+		@type build_id: int
+		@ivar tcversion_id: The internal ID of the parent TestCase Version
+		@type tcversion_id: int
+		@ivar tcversion_number: The version of the parent TestCase
+		@type tcversion_number: int
+		@ivar status: The status of the Execution
+		@type status: str
+		@ivar notes: Notes of the Execution
+		@type notes: str
+		@ivar execution_type: Execution Type
+		@type execution_type: ExecutionType
+		@ivar execution_ts: Timestamp of execution
+		@type execution_ts: datetime
+		@ivar tester_id: The internal ID of the tester
+		@type tester_id: int
 		"""
 
 		__slots__ = ("id","testplan_id","platform_id","build_id","tcversion_id","tcversion_number","status",\
@@ -1167,7 +1145,6 @@ class TestCase(TestlinkObject):
 			return "Execution (%d) %s" % (self.id,self.notes)
 
 		def delete(self):
-			""" """
 			self._api.deleteExecution(self.id)
 
 	def __init__(
@@ -1356,63 +1333,26 @@ class TestCase(TestlinkObject):
 		return "TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name)
 
 	def getTestProject(self):
-		""" """
 		return self._parent_testproject
 
 	def iterTestProject(self,*args,**kwargs):
-		"""
-
-		:param *args: 
-		:param **kwargs: 
-
-		"""
 		yield self._parent_testproject
 
 	def iterTestSuite(self,*args,**kwargs):
-		"""
-
-		:param *args: 
-		:param **kwargs: 
-
-		"""
 		yield self._parent_testsuite
 
 	def getLastExecutionResult(self,testplanid,platformid=None,platformname=None,buildid=None,buildname=None,bugs=False):
-		"""
-
-		:param testplanid: 
-		:param platformid:  (Default value = None)
-		:param platformname:  (Default value = None)
-		:param buildid:  (Default value = None)
-		:param buildname:  (Default value = None)
-		:param bugs:  (Default value = False)
-
-		"""
 		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
 		if isinstance(resp,list) and len(resp)==1:
 			resp = resp[0]
 		return TestCase.Execution(**resp)
 
 	def deleteLastExecution(self,testplanid):
-		"""
-
-		:param testplanid: 
-
-		"""
 		# Update last execution
 		last = self.getLastExecutionResult(testplanid)
 		self._api.deleteExecution(last.id)
 
 	def reportResult(self,testplanid,buildid,status,notes=None,overwrite=False):
-		"""
-
-		:param testplanid: 
-		:param buildid: 
-		:param status: 
-		:param notes:  (Default value = None)
-		:param overwrite:  (Default value = False)
-
-		"""
 		self._api.reportTCResult(
 			testplanid = testplanid,\
 			status = status,\
@@ -1425,19 +1365,16 @@ class TestCase(TestlinkObject):
 		)
 
 	def getAttachments(self):
-		""" """
 		return self._api.getTestCaseAttachments(self.id,self.external_id)
 
 	def getCustomFieldDesignValue(self,fieldname,details=CustomFieldDetails.VALUE_ONLY):
 		"""Returns the custom field design value for the specified custom field
-
-		:param fieldname: The internal name of the custom field
-		:type fieldname: str
-		:param details: Granularity of the response (Default value = CustomFieldDetails.VALUE_ONLY)
-		:type details: CustomFieldDetails
-		:returns: s: Custom Field value or informations
-		:rtype: mixed
-
+		@param fieldname: The internal name of the custom field
+		@type fieldname: str
+		@param details: Granularity of the response
+		@type details: CustomFieldDetails
+		@returns: Custom Field value or informations
+		@rtype: mixed
 		"""
 		return self._api.getTestCaseCustomFieldDesignValue(
 					testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
@@ -1449,24 +1386,23 @@ class TestCase(TestlinkObject):
 
 	def update(self,testcasename=None,summary=None,preconditions=None,steps=None,importance=None,executiontype=None,status=None,estimatedexecduration=None):
 		"""Updates the the current TestCase.
-
-		:param testcasename: The name of the TestCase (Default value = None)
-		:param summary: The summary of the TestCase (Default value = None)
-		:type summary: str
-		:param preconditions: The Preconditions of the TestCase (Default value = None)
-		:type preconditions: str
-		:param steps: The steps of the TestCase (Default value = None)
-		:type steps: list
-		:param importance: The importance of the TestCase (Default value = None)
-		:type importance: enums.ImportanceLevel
-		:param executiontype: The execution type of the TestCase (Default value = None)
-		:type executiontype: enums.ExecutionType
-		:param status: The status of the TestCase (Default value = None)
-		:type status: enums.TestcaseStatus
-		:param estimatedexecduration: The estimated execution time of the TestCase (Default value = None)
-		:type estimatedexecduration: int
-		:returns: s: None
-
+		@param testcasename: The name of the TestCase
+		@type testcasname: str
+		@param summary: The summary of the TestCase
+		@type summary: str
+		@param preconditions: The Preconditions of the TestCase
+		@type preconditions: str
+		@param steps: The steps of the TestCase
+		@type steps: list
+		@param importance: The importance of the TestCase
+		@type importance: enums.ImportanceLevel
+		@param executiontype: The execution type of the TestCase
+		@type executiontype: enums.ExecutionType
+		@param status: The status of the TestCase
+		@type status: enums.TestcaseStatus
+		@param estimatedexecduration: The estimated execution time of the TestCase
+		@type estimatedexecduration: int
+		@returns: None
 		"""
 
 		if not testcasename:
@@ -1498,7 +1434,7 @@ class TestCase(TestlinkObject):
 
 
 class RequirementSpecification(TestlinkObject):
-    """Testlink Requirement Specification representation"""
+	"""Testlink Requirement Specification representation"""
 
 	__slots__ = ("doc_id","type","scope","testproject_id","author_id","creation_ts",\
 			"modifier_id","modification_ts","total_req","node_order","_parent_testproject")
@@ -1550,23 +1486,14 @@ class RequirementSpecification(TestlinkObject):
 		return "Requirement Specification %s: %s" % (self.doc_id,self.name)
 
 	def iterTestProject(self,*args,**kwargs):
-		"""
-
-		:param *args: 
-		:param **kwargs: 
-
-		"""
 		yield self._parent_testproject
 
 	def iterRequirement(self,title=None,**params):
 		"""Iterates over Requirements specified by parameters
-
-		:param title: The title of the wanted Requirement (Default value = None)
-		:type title: str
-		:param **params: 
-		:returns: s: Matching Requirements
-		:rtype: generator
-
+		@param title: The title of the wanted Requirement
+		@type title: str
+		@returns: Matching Requirements
+		@rtype: generator
 		"""
 		# No Simple API Call possible, get all
 		response = self._api.getRequirementsForRequirementSpecification(self.id,self.getTestProject().id)
@@ -1598,18 +1525,15 @@ class RequirementSpecification(TestlinkObject):
 
 	def getRequirement(self,title=None,**params):
 		"""Returns all Requirements with the specified parameters
-
-		:param title: The title of the wanted Requirement (Default value = None)
-		:type title: str
-		:param **params: 
-		:returns: s: Matching Requirements
-		:rtype: mixed
-
+		@param title: The title of the wanted Requirement
+		@type title: str
+		@returns: Matching Requirements
+		@rtype: mixed
 		"""
 		return normalize( [r for r in self.iterRequirement(title,**params)] )
 
 class Requirement(TestlinkObject):
-    """Testlink Requirement representation"""
+	"""Testlink Requirement representation"""
 
 	__slots__ = ("srs_id","req_doc_id","req_spec_title","type","version","version_id","revision","revision_id",\
 			"scope","status","node_order","is_open","active","expected_coverage","testproject_id","author",\
@@ -1684,11 +1608,5 @@ class Requirement(TestlinkObject):
 		return "Requirement %s: %s" % (self.req_doc_id,self.name)
 
 	def iterTestProject(self,*args,**kwargs):
-		"""
-
-		:param *args: 
-		:param **kwargs: 
-
-		"""
 		yield self._parent_testproject
 			
