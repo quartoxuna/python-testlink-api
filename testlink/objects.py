@@ -248,7 +248,7 @@ class Testlink(object):
 					steps = repr(testcase.steps),
 					preconditions = testcase.preconditions,
 					importance = testcase.importance,
-					executiontype = testcase.executiontype,
+					executiontype = testcase.execution_type,
 					order = order,
 					checkduplicatedname = duplicate_check,
 					actiononduplicatedname = on_duplicate
