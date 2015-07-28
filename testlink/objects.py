@@ -717,7 +717,7 @@ class TestPlan(TestlinkObject):
 					yield ptf
 		# Return all Platforms
 		else:
-			for pff in platforms:
+			for ptf in platforms:
 				yield ptf
 
 	def getPlatform(self,name=None,**params):
