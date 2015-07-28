@@ -189,7 +189,7 @@ class Testlink(object):
 					testprojectname = testproject.name
 				)
 
-	def createTestSuite(self,suite,parent,testproject,order=0,on_duplicate=DuplicateStrategy.BLOCK):
+	def createTestSuite(self,suite,testproject,parent=None,order=0,on_duplicate=DuplicateStrategy.BLOCK):
 		"""Creates a new TestSuite for the specified parent objects using the current Testlink instance.
 		@param suite: TestSuite to create
 		@type suite: TestSuite
@@ -206,11 +206,15 @@ class Testlink(object):
 		if on_duplicate is not None:
 			duplicate_check = True
 
+		parent_id = None
+		if parent is not None:
+			parent_id = parent.id
+
 		return self._api.createTestSuite(
 					testsuitename = suite.name,
 					details = suite.details,
 					testprojectid = testproject.id,
-					parentid = parent.id,
+					parentid = parent_id,
 					order = order,
 					checkduplicatedname = duplicate_check,
 					actiononduplicate = on_duplicate
