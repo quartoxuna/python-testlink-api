@@ -320,10 +320,14 @@ class Testlink_XML_RPC_API(object):
 		@type devkey: str
 		@param name: Name of the TestProject
 		@type name: str
-		@returns: Matching TestProject
-		@rtype: dict
+		@returns: Matching TestProject, None if none was found
+		@rtype: mixed
 		"""
-		return self._query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
+		resp = self._query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
+		# Return None for an empty string
+		if resp is not None and len(resp)==0:
+			resp = None
+		return resp
 
 	@TLVersion("1.0")
 	def createTestPlan(self, name, project, notes='', active=True, public=True, devkey=None):
