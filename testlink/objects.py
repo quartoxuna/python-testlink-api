@@ -1395,6 +1395,9 @@ class TestCase(TestlinkObject):
 	def __str__(self):
 		return "TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name)
 
+	def __unicode__(self):
+		return unicode(u"TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name))
+
 	def getTestProject(self):
 		return self._parent_testproject
 
