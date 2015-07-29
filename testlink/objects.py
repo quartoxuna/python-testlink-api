@@ -245,13 +245,15 @@ class Testlink(object):
 		if on_duplicate is not None:
 			duplicate_check = True
 
+		steps = [s.__dict__ for s in testcase.steps]
+
 		return self._api.createTestCase(
 					testcasename = testcase.name,
 					testsuiteid = testsuite.id,
 					testprojectid = testproject.id,
 					authorlogin = authorlogin,
 					summary = testcase.summary,
-					steps = repr(testcase.steps),
+					steps = steps,
 					preconditions = testcase.preconditions,
 					importance = testcase.importance,
 					executiontype = testcase.execution_type,
