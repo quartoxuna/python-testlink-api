@@ -542,7 +542,9 @@ class TestProject(TestlinkObject):
 			yield TestCase(api=self._api,parent_testproject=self,parent_testsuite=suite,**response)
 		else:
 			# Get all TestCases for the TestProject
-			raise NotImplementedError("Cannot get all TestCases for a TestProject yet")
+			for suite in self.iterTestSuite():
+				for case in suite.iterTestCase():
+					yield case
 
 	def getTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Returns all TestCases specified by parameters
