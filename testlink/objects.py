@@ -1038,12 +1038,12 @@ class TestSuite(TestlinkObject):
 		"""
 		# No simple API call possible, get all
 		response = self._api.getTestCasesForTestSuite(self.id,details='full')
+		cases = [TestCase(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**case) for case in response]
 
 		# Filter by specified parameters
 		if len(params)>0 or name:
 			params['name'] = name
-			for case in response:
-				tcase = TestCase(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**case)
+			for tcase in cases:
 				for key,value in params.items():
 					# Skip None
 					if value is None:
@@ -1064,6 +1064,9 @@ class TestSuite(TestlinkObject):
 						raise AttributeError("Invalid Search Parameter for TestCase: %s" % key)
 				if tcase is not None:
 					yield tcase
+		# Return all found testcases
+		for tcase in cases:
+			yield tcase
 
 	def getTestCase(self,name=None,**params):
 		"""Returns all TestCases specified by parameters
