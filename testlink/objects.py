@@ -1468,6 +1468,9 @@ class TestCase(TestlinkObject):
 		@returns: None
 		"""
 
+		# If some values are not explicitly left emtpty
+		# we have to keep update by the original value
+		# to keep it within Testlink
 		if not testcasename:
 			testcasename = self.name
 		if not summary:
