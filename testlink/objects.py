@@ -1454,7 +1454,7 @@ class TestCase(TestlinkObject):
 					details = details\
 				)
 
-	def update(self,testcasename=None,summary=None,preconditions=None,steps=None,importance=None,executiontype=None,status=None,estimatedexecduration=None):
+	def update(self,testcasename=None,summary=None,preconditions=None,steps=None,importance=None,executiontype=None,status=None,exec_duration=None):
 		"""Updates the the current TestCase.
 		@param testcasename: The name of the TestCase
 		@type testcasname: str
@@ -1470,28 +1470,30 @@ class TestCase(TestlinkObject):
 		@type executiontype: enums.ExecutionType
 		@param status: The status of the TestCase
 		@type status: enums.TestcaseStatus
-		@param estimatedexecduration: The estimated execution time of the TestCase
-		@type estimatedexecduration: int
+		@param exec_duration: The estimated execution time of the TestCase
+		@type exec_duration: int
 		@returns: None
 		"""
 
 		# If some values are not explicitly left emtpty
 		# we have to keep update by the original value
 		# to keep it within Testlink
-		if not testcasename:
+		if testcasename is None:
 			testcasename = self.name
-		if not summary:
+		if summary is None:
 			summary = self.summary
-		if not preconditions:
+		if preconditions is None:
 			preconditions = self.preconditions
-		if not steps:
+		if steps is None:
 			steps = self.steps
-		if not importance:
+		if importance is None:
 			importance = self.importance
-		if not executiontype:
+		if executiontype is None:
 			executiontype = self.execution_type
-		if not status:
+		if status is None:
 			status = self.status
+		if exec_duration is None:
+			exec_duration = self.exec_duration
 
 		self._api.updateTestCase(
 				testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
@@ -1502,7 +1504,7 @@ class TestCase(TestlinkObject):
 				importance = importance,\
 				executiontype = executiontype,\
 				status = status,\
-				estimatedexecduration = estimatedexecduration
+				estimatedexecduration = exec_duration
 			)
 
 
