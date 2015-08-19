@@ -1552,7 +1552,7 @@ class Testlink_XML_RPC_API(object):
 					requirementid = requirementid )
 
 	@TLVersion("1.11-sinaqs",strict=True)
-	def createRequirementSpecification(self, testprojectid, parentid, docid, title, scope, userid, type, devkey=None):
+	def createRequirementSpecification(self, testprojectid, parentid, docid, title, scope, userid, typ, devkey=None):
 		"""Creates a new Requirement Specification
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -1568,8 +1568,8 @@ class Testlink_XML_RPC_API(object):
 		@type scope: str
 		@param userid: The ID of the author
 		@type userid: int
-		@param type: The type of the new Requirement Specification
-		@type type: RequirementSpecificationType
+		@param typ: The type of the new Requirement Specification
+		@type typ: RequirementSpecificationType
 		@returns: Server response
 		@rtype: dict
 		"""
@@ -1581,10 +1581,10 @@ class Testlink_XML_RPC_API(object):
 					title         = title,          \
 					scope         = scope,          \
 					userid        = userid,         \
-					type          = type )
+					type          = typ )
 
 	@TLVersion("1.11-sinaqs",strict=True)
-	def createRequirement(self, testprojectid, reqspecid, docid, title, scope, userid, status, type, coverage=1, devkey=None):
+	def createRequirement(self, testprojectid, reqspecid, docid, title, scope, userid, status, typ, coverage=1, devkey=None):
 		"""Creates a new Requirement
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -1602,8 +1602,8 @@ class Testlink_XML_RPC_API(object):
 		@type useid: int
 		@param status: The status of the new Requirement
 		@type status: RequirementStatus
-		@param type: The type of the new Requirement
-		@type type: RequirementType
+		@param typ: The type of the new Requirement
+		@type typ: RequirementType
 		@param coverage: <OPTIONAL> Expected coverage of the new Requirement (Default: 1)
 		@type coverage: int
 		@returns: Server response
@@ -1618,7 +1618,7 @@ class Testlink_XML_RPC_API(object):
 					scope         = scope,         \
 					userid        = userid,        \
 					status        = status,        \
-					type          = type,          \
+					type          = typ,          \
 					coverage      = coverage )
 
 	@TLVersion("1.11-sinaqs",strict=True)

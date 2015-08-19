@@ -1511,7 +1511,7 @@ class TestCase(TestlinkObject):
 class RequirementSpecification(TestlinkObject):
 	"""Testlink Requirement Specification representation"""
 
-	__slots__ = ("doc_id","type","scope","testproject_id","author_id","creation_ts",\
+	__slots__ = ("doc_id","typ","scope","testproject_id","author_id","creation_ts",\
 			"modifier_id","modification_ts","total_req","node_order","_parent_testproject")
 
 	def __init__(\
@@ -1519,7 +1519,7 @@ class RequirementSpecification(TestlinkObject):
 			id = -1,\
 			doc_id = '',\
 			title = '',\
-			type = RequirementSpecificationType.SECTION,\
+			typ = RequirementSpecificationType.SECTION,\
 			scope = '',\
 			testproject_id = -1,\
 			author_id = -1,\
@@ -1537,7 +1537,7 @@ class RequirementSpecification(TestlinkObject):
 		"""
 		TestlinkObject.__init__(self,id,title,api)
 		self.doc_id = str(doc_id)
-		self.type = int(type)
+		self.typ = int(typ)
 		self.scope = scope
 		self.testproject_id = int(testproject_id)
 		self.author_id = int(author_id)
@@ -1614,7 +1614,7 @@ class RequirementSpecification(TestlinkObject):
 class Requirement(TestlinkObject):
 	"""Testlink Requirement representation"""
 
-	__slots__ = ("srs_id","req_doc_id","req_spec_title","type","version","version_id","revision","revision_id",\
+	__slots__ = ("srs_id","req_doc_id","req_spec_title","typ","version","version_id","revision","revision_id",\
 			"scope","status","node_order","is_open","active","expected_coverage","testproject_id","author",\
 			"author_id","creation_ts","modifier","modifier_id","modification_ts","_parent_testproject" )
 
@@ -1625,7 +1625,7 @@ class Requirement(TestlinkObject):
 			req_doc_id = '',\
 			title = '',\
 			req_spec_title = None,\
-			type = RequirementType.INFO,\
+			typ = RequirementType.INFO,\
 			version = -1,\
 			version_id = -1,\
 			revision = -1,\
@@ -1654,7 +1654,7 @@ class Requirement(TestlinkObject):
 		self.srs_id = str(srs_id)
 		self.req_doc_id = str(req_doc_id)
 		self.req_spec_title = req_spec_title
-		self.type = int(type)
+		self.typ = int(typ)
 		self.version = int(version)
 		self.version_id = int(version_id)
 		self.revision = int(revision)

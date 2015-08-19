@@ -13,7 +13,7 @@ from mock import Mock, MagicMock, patch
 from distutils.version import LooseVersion as Version
 import xmlrpclib
 
-from .. import randput, randict, ServerMock
+from .. import randint, randput, randict, ServerMock
 
 from testlink.api import Testlink_XML_RPC_API
 from testlink.exceptions import NotSupported
@@ -1208,26 +1208,40 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 	def test_createRequirementSpecification(self,query):
 		"""'createRequirementSpecification' (1.11-sinaqs)"""
 		query.return_value = randict("message")
-		test_data = randict("testprojectid","parentid","docid","title","scope","userid","type")
+		test_data = randict("testprojectid","parentid","docid","title","scope","userid","typ")
 		self.assertRaises(NotSupported,self._api.createRequirementSpecification)
 		self._api._tl_version = Version("1.11-sinaqs")
 		self.assertEquals(self._api.createRequirementSpecification(**test_data),query.return_value)
 		query.assert_called_with('tl.createRequirementSpecification',\
 						devKey = None,\
-						**test_data\
+						testprojectid = test_data["testprojectid"],\
+						parentid = test_data["parentid"],\
+						docid = test_data["docid"],\
+						title = test_data["title"],\
+						scope = test_data["scope"],\
+						userid = test_data["userid"],\
+						type = test_data["typ"]
 					)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_createRequirement(self,query):
 		"""'createRequirement' (1.11-sinaqs)"""
 		query.return_value = randict("message")
-		test_data = randict("testprojectid","reqspecid","docid","title","scope","userid","status","type","coverage")
+		test_data = randict("testprojectid","reqspecid","docid","title","scope","userid","status","typ","coverage")
 		self.assertRaises(NotSupported,self._api.createRequirement)
 		self._api._tl_version = Version("1.11-sinaqs")
 		self.assertEquals(self._api.createRequirement(**test_data),query.return_value)
 		query.assert_called_with('tl.createRequirement',\
 						devKey = None,\
-						**test_data\
+						testprojectid = test_data["testprojectid"],\
+						reqspecid = test_data["reqspecid"],\
+						docid = test_data["docid"],\
+						title = test_data["title"],\
+						scope = test_data["scope"],\
+						userid = test_data["userid"],\
+						status = test_data["status"],\
+						type = test_data["typ"],\
+						coverage = test_data["coverage"]
 					)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
