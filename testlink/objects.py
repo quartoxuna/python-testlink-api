@@ -561,10 +561,10 @@ class TestProject(TestlinkObject):
 		"""
 		return normalize( [c for c in self.iterTestCase(name,id,external_id,**params)] )
 
-	def iterRequirementSpecification(self,title=None,**params):
+	def iterRequirementSpecification(self,name=None,**params):
 		"""Iterates over Requirement Specifications specified by parameters
-		@param title: The title of the wanted Requirement Specification
-		@type title: str
+		@param name: The title of the wanted Requirement Specification
+		@type name: str
 		@returns: Matching Requirement Specifications
 		@rtype: generator
 		"""
@@ -573,8 +573,8 @@ class TestProject(TestlinkObject):
 		specs = [RequirementSpecification(api=self._api,parent_testproject=self,**reqspec) for reqspec in response]
 
 		# Filter
-		if len(params)>0 or title:
-			params['title'] = title
+		if len(params)>0 or name:
+			params['name'] = name
 			for rspec in specs:
 				for key,value in params.items():
 					# Skip None
@@ -1563,10 +1563,10 @@ class RequirementSpecification(TestlinkObject):
 	def getTestProject(self):
 		return self._parent_testproject
 
-	def iterRequirement(self,title=None,**params):
+	def iterRequirement(self,name=None,**params):
 		"""Iterates over Requirements specified by parameters
-		@param title: The title of the wanted Requirement
-		@type title: str
+		@param name: The title of the wanted Requirement
+		@type name: str
 		@returns: Matching Requirements
 		@rtype: generator
 		"""
@@ -1575,8 +1575,8 @@ class RequirementSpecification(TestlinkObject):
 		requirements = [Requirement(api=self._api,parent_testproject=self.getTestProject(),**req) for req in response]
 
 		# Filter
-		if len(params)>0 or title:
-			params['title'] = title
+		if len(params)>0 or name:
+			params['name'] = name
 			for req in requirements:
 				for key,value in params.items():
 					# Skip None
@@ -1584,32 +1584,32 @@ class RequirementSpecification(TestlinkObject):
 						continue
 					try:
 						try:
-							if not unicode(getattr(rq,key)) == unicode(value):
-								rq = None
+							if not unicode(getattr(req,key)) == unicode(value):
+								req = None
 								break
 						except AttributeError:
 							# Try as custom field
-							cf_val = self._api.getRequirementCustomFieldDesignValue(rq.id,rq.getTestProject().id,key)
+							cf_val = self._api.getRequirementCustomFieldDesignValue(req.id,req.getTestProject().id,key)
 							if not unicode(cf_val) == unicode(value):
-								rq = None
+								req = None
 								break
 					except AttributeError:
 						raise AttributeError("Invalid Search Parameter for Requirement: %s" % key)
-				if rq is not None:
-					yield rq
+				if req is not None:
+					yield req
 		# Return all Requirements
 		else:
 			for req in requirements:
 				yield req
 
-	def getRequirement(self,title=None,**params):
+	def getRequirement(self,name=None,**params):
 		"""Returns all Requirements with the specified parameters
-		@param title: The title of the wanted Requirement
-		@type title: str
+		@param name: The title of the wanted Requirement
+		@type name: str
 		@returns: Matching Requirements
 		@rtype: mixed
 		"""
-		return normalize( [r for r in self.iterRequirement(title,**params)] )
+		return normalize( [r for r in self.iterRequirement(name,**params)] )
 
 class Requirement(TestlinkObject):
 	"""Testlink Requirement representation"""
