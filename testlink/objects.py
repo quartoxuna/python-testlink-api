@@ -1802,7 +1802,7 @@ class Risk(TestlinkObject):
 	def __init__(\
 			self,
 			id = -1,\
-			doc_id = None,\
+			risk_doc_id = None,\
 			name = '',\
 			description = '',\
 			author_id = -1,\
@@ -1818,7 +1818,7 @@ class Risk(TestlinkObject):
 		@todo: doc
 		"""
 		TestlinkObject.__init__(self,id,name,api)
-		self.doc_id = str(doc_id)
+		self.doc_id = str(risk_doc_id)
 		self.description = description
 		self.author_id = int(author_id)
 		try:

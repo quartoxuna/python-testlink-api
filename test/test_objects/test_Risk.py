@@ -24,6 +24,6 @@ class RiskTests(unittest.TestCase):
 		"""String representation"""
 		risk_id = randput()
 		name = randput()
-		obj = Risk(doc_id=risk_id,name=name)
+		obj = Risk(risk_doc_id=risk_id,name=name)
 		string = str(obj)
 		self.assertEqual(string, "Risk %s: %s" % (risk_id,name))
