@@ -1746,4 +1746,91 @@ class Requirement(TestlinkObject):
 
 	def getTestProject(self):
 		return self._parent_testproject
-			
+
+	def iterRisk(self,name=None,**params):
+		"""Returns all Risks with the specified parameters.
+		@param name: The name of the wanted Risk
+		@type name: str
+		@returns: Matching Risks
+		@rtype: generator
+		"""
+		# No simple API call, so get all Risks for the current Requirement
+		response = self._api.getRisksForRequirement(self.id)
+		risks = [Risk(api=self._api,parent_testproject=self.getTestProject(),**risk) for risk in response]
+
+		# Filter
+		if len(params)>0 or name:
+			params['name'] = name
+			for rk in risks:
+				for key,value in params.items():
+					# Skip None
+					if value is None:
+						continue
+					try:
+						if not unicode(getattr(rk,key)) == unicode(value):
+							rk = None
+							break
+					except AttributeError:
+						raise AttributeError("Invalid Search Parameter for Risk: %s" % key)
+				# Return found risk
+				if rk is not None:
+					yield rk
+		# Return all found risks
+		else:
+			for rk in risks:
+				yield rk
+
+	def getRisk(self,name=None,**params):
+		"""Returns all Risks with the specified parameters
+		@param name: The name of the Risk
+		@type name: str
+		@returns: Matching Risks
+		@rtype: mixed
+		"""
+		return normalize( [r for r in self.iterRisk(name,**params)] )
+
+class Risk(TestlinkObject):
+	"""Testlink Risk representation"""
+
+	__slots__ = ["doc_id","description","author_id","creation_ts","modifier_id","modification_ts",\
+			"_requirement_id","cross_coverage"]
+
+	def __init__(\
+			self,
+			id = -1,\
+			doc_id = None,\
+			name = '',\
+			description = '',\
+			author_id = -1,\
+			creation_ts = str(datetime.min),\
+			modifier_id = -1,\
+			modification_ts = str(datetime.min),\
+			requirement_id = -1,\
+			cross_coverage = '',\
+			api = None,\
+			**kwargs
+		):
+		"""Initializes a new Risk with the specified parameters
+		@todo: doc
+		"""
+		TestlinkObject.__init__(self,id,name,api)
+		self.doc_id = str(doc_id)
+		self.description = description
+		self.author_id = int(author_id)
+		try:
+			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
+		except ValueError:
+			self.creation_ts = datetime.min
+		try:
+			self.modifier_id = int(modifier_id)
+		except ValueError:
+			self.modifier_id = -1
+		try:
+			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
+		except ValueError:
+			self.modification_ts = datetime.min
+		self._requirement_id = requirement_id
+		self.cross_coverage = str(cross_coverage)
+
+	def __str__(self):
+		return "Risk %s: %s" % (self.doc_id,self.name)
