@@ -9,10 +9,4 @@
 __version__ = '0.20'
 
 # EXPORTS
-from objects import Testlink
-from objects import TestProject
-from objects import TestSuite
-from objects import TestCase
-from objects import TestPlan
-from objects import Build
-from objects import Platform
+from objects import *

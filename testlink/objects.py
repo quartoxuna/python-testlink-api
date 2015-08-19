@@ -18,6 +18,10 @@ from exceptions import ConnectionError
 from exceptions import NotSupported
 from enums import *
 
+__all__ = ["Testlink","TestProject","TestPlan","Build","Platform",\
+		"TestSuite","TestCase","RequirementSpecification",\
+		"Requirement","Risk"]
+
 # Global datetime format
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
