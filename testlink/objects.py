@@ -263,6 +263,64 @@ class Testlink(object):
 					actiononduplicatedname = on_duplicate
 				)
 
+	def createRequirementSpecification(self,reqspec,testproject,parent=None):
+		"""Creates a new RequirementSpecification for the specified testproject using the current Testlink instance.
+		@param reqspec: ReqSpec to create
+		@type reqspec: RequirementSpecification
+		@param testproject: Parent TestProject
+		@type testproject: TestProject
+		@param parent: <OPTIONAL> Parent ReqSpec
+		@type parent: RequirementSpecification
+		"""
+		if parent:
+			parent_id = parent.id
+		else:
+			parent_id = None
+
+		return self._api.createRequirementSpecification(
+					testprojectid = testproject.id,
+					parentid = parent_id,
+					docid = reqspec.doc_id,
+					title = reqspec.name,
+					scope = reqspec.scope,
+					userid = reqspec.author_id,
+					typ = reqspec.typ
+				)
+
+	def createRequirement(self,requirement,testproject,reqspec):
+		"""Creates a new Requirement for the specified TestProject and Requirement Specification using the current Testlink instance.
+		@param requirement: Requirement to create
+		@type requirement: Requirement
+		@param testproject: Parent TestProject
+		@type testproject: TestProject
+		@param reqspec: Parent Requirement Specification
+		@type reqspec: RequirementSpecification
+		"""
+		return self._api.createRequirement(
+					testprojectid = testproject.id,
+					parentid = reqspec.id,
+					docid = requirement.req_doc_id,
+					title = requirement.name,
+					scope = requirement.scope,
+					userid = requirement.author_id,
+					typ = requirement.typ
+				)
+
+	def createRisk(self,risk,requirement):
+		"""Creates a new Risk for the specified Requirement using the current Testlink instance.
+		@param risk: Risk to create
+		@rype risk: Risk
+		@param requirement: Parent Requirement
+		@type requirement: Requirement
+		"""
+		return self._api.createRisk(
+					requirementid = requirement.id,
+					docid = risk.doc_id,
+					title = risk.name,
+					scope = risk.description,
+					userid = risk.author_id,
+					coverage = risk.cross_coverage
+				)
 
 class TestlinkObject(object):
 	"""Abstract Testlink Object
