@@ -52,9 +52,10 @@ class TestlinkTests(unittest.TestCase):
 
 	def test_getVersion(self):
 		"""Version String"""
+		test_data = randput()
 		tl = Testlink(self.url,self.devkey)
-		tl._api._tl_version = "1.2.3"
-		self.assertEquals(tl.getVersion(), "1.2.3")
+		tl._api._tl_version = test_data
+		self.assertEquals(tl.getVersion(), test_data)
 
 	@patch('testlink.objects.Testlink.iterTestProject')
 	def test_getTestProject(self,p1):
