@@ -14,44 +14,44 @@ from mock import Mock, MagicMock, patch
 from .. import *
 
 from testlink.api import Testlink_XML_RPC_API
-from testlink.objects import Testlink, TestProject
+from testlink.objects import Testlink
+from testlink.objects import TestProject
 from testlink.exceptions import *
 from testlink.enums import *
-
-URL = "http://localhost/"
-DEVKEY = randput(50)
 
 class TestlinkTests(unittest.TestCase):
 
 	def __init__(self,*args,**kwargs):
 		super(TestlinkTests,self).__init__(*args,**kwargs)
 		self._testMethodDoc = "Testlink: " + self._testMethodDoc
+		self.url = "http://localhost/"
+		self.devkey = randput(50)
 
 	def setUp(self):
 		"""Needed to connect to a mocked Server endpoint in each test"""
 		self._patcher = patch('xmlrpclib.ServerProxy',new=ServerMock,spec=True)
 		self._mock_server = self._patcher.start()
-		self._api = Testlink_XML_RPC_API(URL + "lib/api/xmlrpc.php")
+		self._api = Testlink_XML_RPC_API(self.url + "lib/api/xmlrpc.php")
 		self._api._proxy = self._mock_server
 
 	def tearDown(self):
 		self._patcher.stop()
 
 	def test_apiType(self):
-		"""API Type settings"""
-		tl = Testlink(URL,DEVKEY)
+		"""Defazlt API Type"""
+		tl = Testlink(self.url,self.devkey)
 		self.assertTrue(isinstance(tl._api,Testlink_XML_RPC_API))
-		tl = Testlink(URL,DEVKEY,APIType.XML_RPC)
+		tl = Testlink(self.url,self.devkey,APIType.XML_RPC)
 		self.assertTrue(isinstance(tl._api,Testlink_XML_RPC_API))
 
 	def test_devKeySetting(self):
 		"""DevKey Storage"""
-		tl = Testlink(URL,DEVKEY)
-		self.assertEquals(tl._api._devkey,DEVKEY)
+		tl = Testlink(self.url,self.devkey)
+		self.assertEquals(tl._api._devkey,self.devkey)
 
 	def test_getVersion(self):
 		"""Version String"""
-		tl = Testlink(URL,DEVKEY)
+		tl = Testlink(self.url,self.devkey)
 		tl._api._tl_version = "1.2.3"
 		self.assertEquals(tl.getVersion(), "1.2.3")
 
@@ -64,7 +64,7 @@ class TestlinkTests(unittest.TestCase):
 		return_value = randput()
 
 		# Init Testlink
-		tl = Testlink(URL,DEVKEY)
+		tl = Testlink(self.url,self.devkey)
 
 		# Mock the eqivalent iterator
 		p1.return_value = generate(return_value)
@@ -84,7 +84,7 @@ class TestlinkTests(unittest.TestCase):
 		test_data = [randict("name","notes"),randict("name","notes")]
 
 		# Init Testlink
-		tl = Testlink(URL,DEVKEY)
+		tl = Testlink(self.url,self.devkey)
 
 		# Mock internal methods
 		getProjects.return_value = test_data
