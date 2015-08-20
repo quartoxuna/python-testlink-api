@@ -26,7 +26,7 @@ __all__ = ["Testlink","TestProject","TestPlan","Build","Platform",\
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # Helper method
-def normalize(res):
+def normalize_list(res):
 	"""Normalizes a result list.
 	If the specified list is empty, return None.
 	If the specified list has only one element, return that element.
@@ -139,7 +139,7 @@ class Testlink(object):
 		@returns: Matching TestProjects
 		@rtype: mixed
 		"""
-		return normalize( [p for p in self.iterTestProject(name,**params)] )
+		return normalize_list( [p for p in self.iterTestProject(name,**params)] )
 
 	def createTestProject(self,project):
 		"""Creates a new TestProject using the current Testlink instance.
@@ -478,7 +478,7 @@ class TestProject(TestlinkObject):
 		@returns: Matching TestPlans
 		@rtype: mixed
 		"""
-		return normalize( [p for p in self.iterTestPlan(name,**params)] )
+		return normalize_list( [p for p in self.iterTestPlan(name,**params)] )
 
 	def iterTestSuite(self,name=None,id=None,recursive=True,**params):
 		"""Iterates over TestSuites specified by parameters
@@ -564,7 +564,7 @@ class TestProject(TestlinkObject):
 		@returns: Matching TestSuites
 		@rtype: mixed
 		"""
-		return normalize( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
+		return normalize_list( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
 
 	def iterTestCase(self,name=None,id=None,external_id=None,**params):
 		"""Iterates over TestCases specified by parameters
@@ -621,7 +621,7 @@ class TestProject(TestlinkObject):
 		@returns: Matching TestCases
 		@rtype: mixed
 		"""
-		return normalize( [c for c in self.iterTestCase(name,id,external_id,**params)] )
+		return normalize_list( [c for c in self.iterTestCase(name,id,external_id,**params)] )
 
 	def iterRequirementSpecification(self,name=None,**params):
 		"""Iterates over Requirement Specifications specified by parameters
@@ -669,7 +669,7 @@ class TestProject(TestlinkObject):
 		@returns: Matching Requirement Specifications
 		@rtype: list
 		"""
-		return normalize( [r for r in self.iterRequirementSpecification(title,**params)] )
+		return normalize_list( [r for r in self.iterRequirementSpecification(title,**params)] )
 
 
 class TestPlan(TestlinkObject):
@@ -750,7 +750,7 @@ class TestPlan(TestlinkObject):
 		@returns: Macthing Builds
 		@rtype: mixed
 		"""
-		return normalize( [b for b in self.iterBuild(name,**params)] )
+		return normalize_list( [b for b in self.iterBuild(name,**params)] )
 
 	def iterPlatform(self,name=None,**params):
 		"""Iterates over Platforms specified by parameters
@@ -795,7 +795,7 @@ class TestPlan(TestlinkObject):
 		@returns: Matching Platforms
 		@rtype: mixed
 		"""
-		return normalize( [p for p in self.iterPlatform(name,**params)] )
+		return normalize_list( [p for p in self.iterPlatform(name,**params)] )
 
 	def iterTestCase(
 			self,\
@@ -935,7 +935,7 @@ class TestPlan(TestlinkObject):
 		@returns: Matching TestCases
 		@rtype: mixed
 		"""
-		return normalize( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executed,assigned_to,execution_status,execution_type,**params)] )
+		return normalize_list( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executed,assigned_to,execution_status,execution_type,**params)] )
 
 	def assignTestCase(self, case, platform=None, execution_order=None, urgency=None):
 		"""Assigns the specified TestCase to the current TestPlan.
@@ -1089,7 +1089,7 @@ class TestSuite(TestlinkObject):
 		@returns: Matching TestSuites
 		@rtype: mixed
 		"""
-		return normalize( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
+		return normalize_list( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
 
 	def iterTestCase(self,name=None,**params):
 		"""Iterates over TestCases specified by parameters
@@ -1141,7 +1141,7 @@ class TestSuite(TestlinkObject):
 		@returns: Matching TestCases
 		@rtype: mixed
 		"""
-		return normalize( [c for c in self.iterTestCase(name,**params)] )
+		return normalize_list( [c for c in self.iterTestCase(name,**params)] )
 
 
 class TestCase(TestlinkObject):
@@ -1671,7 +1671,7 @@ class RequirementSpecification(TestlinkObject):
 		@returns: Matching Requirements
 		@rtype: mixed
 		"""
-		return normalize( [r for r in self.iterRequirement(name,**params)] )
+		return normalize_list( [r for r in self.iterRequirement(name,**params)] )
 
 class Requirement(TestlinkObject):
 	"""Testlink Requirement representation"""
@@ -1791,7 +1791,7 @@ class Requirement(TestlinkObject):
 		@returns: Matching Risks
 		@rtype: mixed
 		"""
-		return normalize( [r for r in self.iterRisk(name,**params)] )
+		return normalize_list( [r for r in self.iterRisk(name,**params)] )
 
 class Risk(TestlinkObject):
 	"""Testlink Risk representation"""
