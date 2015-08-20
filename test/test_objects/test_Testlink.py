@@ -43,6 +43,7 @@ class TestlinkTests(unittest.TestCase):
 		self.assertTrue(isinstance(tl._api,Testlink_XML_RPC_API))
 		tl = Testlink(self.url,self.devkey,APIType.XML_RPC)
 		self.assertTrue(isinstance(tl._api,Testlink_XML_RPC_API))
+		self.assertRaises(NotImplementedError,Testlink,self.url,self.devkey,APIType.REST)
 
 	def test_devKeySetting(self):
 		"""DevKey Storage"""
