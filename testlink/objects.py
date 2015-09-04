@@ -1065,7 +1065,7 @@ class TestSuite(TestlinkObject):
 				for tsuite in suites:
 					# Yield nested suites that match
 					for s in tsuite.iterTestSuite(**params):
-						yield
+						yield s
 		# Return all suites
 		else:
 			for tsuite in suites:
