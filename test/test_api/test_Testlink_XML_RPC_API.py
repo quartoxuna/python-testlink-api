@@ -68,6 +68,17 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		self._api._query("passed",**data)
 		self._mock_server.passed.assert_called_with(dict(a=data['a'],b=data['b'],c=data['c'],devKey=None))
 
+	@patch("testlink.api.Testlink_XML_RPC_API._reconnect")
+	def test_socketError(self,reconnect):
+		"""Socket Error"""
+		from socket import error as SocketError
+		# Define faulty endpoint
+		self._mock_server.socketerror = Mock(side_effect=SocketError())
+		# Do the call
+		self.assertRaises(SocketError,self._api._query,"socketerror")
+		# Check how many times _reconnect() has been called
+		self.assertEquals(reconnect.call_count,Testlink_XML_RPC_API.MAX_RECONNECTION_TRIES)
+
 	def test_globalDevKey(self):
 		"""Global DevKey setting"""
 		key = randput(20)

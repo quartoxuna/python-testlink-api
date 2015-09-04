@@ -7,6 +7,7 @@
 """
 
 # IMPORTS
+import socket
 import xmlrpclib
 from log import log
 
@@ -53,6 +54,8 @@ class Testlink_XML_RPC_API(object):
 	"""Testlink XML-RPC API
 	@cvar RPC_PATHS: Paths to Testlink's XML-RPC endpoint
 	@type RPC_PATHS: list
+	@cvar: MAX_RECONNECTION_TRIES: Maximum amount of reconnection tries
+	@type MAX_RECONNECTION_TRIES: int
 	@ivar _proxy: Used ServerProxy instance
 	@type _proxy: xmlrpclib.ServerProxy
 	@ivar _devkey: Used Developer Key
@@ -60,6 +63,7 @@ class Testlink_XML_RPC_API(object):
 	"""
 
 	RPC_PATHS = ["/lib/api/xmlrpc.php","/lib/api/xmlrpc/v1/xmlrpc.php"]
+	MAX_RECONNECTION_TRIES = 10
 
 	def __init__(self,url):
 		"""Initialize the TestlinkAPI
@@ -70,12 +74,13 @@ class Testlink_XML_RPC_API(object):
 		self._proxy = None
 		self._devkey = None
 		self._tl_version = Version("1.0")
+		self._max_connection_tries = self.MAX_RECONNECTION_TRIES
 
 		# Patch URL
 		if (url.endswith('/')):
 			url = url[:-1]
 
-		# Check if URL is correct
+		# Check if URL is correct and save it for further use
 		url_components = urlparse(url)
 		if (\
 			# Must have scheme and net location
@@ -83,24 +88,11 @@ class Testlink_XML_RPC_API(object):
 			len(url_components[1].strip())==0 \
 		):
 			raise ConnectionError("Invalid URI (%s)" % str(url))
+		else:
+			self._url = url
 
-		# Check for each possible RPC path,
-		# if a connection can be made
-		last_excpt = None
-		for path in self.RPC_PATHS:
-			tmp = url
-			try:
-				if not tmp.endswith(path):
-					tmp += path
-				self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
-				self._proxy.system.listMethods()
-				break
-			except Exception,ex:
-				last_excpt = ex
-				self._proxy = None
-				continue
-		if self._proxy is None:
-			raise ConnectionError("Cannot connect to Testlink API @ %s (%s)" % (str(url),str(last_excpt)))
+		# Establish connection
+		self._reconnect()
 
 		try:
 			# Get the version
@@ -113,6 +105,26 @@ class Testlink_XML_RPC_API(object):
 		except AttributeError,ae:
 			# Mocked _query during tests
 			return
+
+	def _reconnect(self):
+		"""Reconnects to initially specified URL"""
+		# Check for each possible RPC path,
+		# if a connection can be made
+		last_excpt = None
+		for path in self.RPC_PATHS:
+			tmp = self._url
+			try:
+				if not tmp.endswith(path):
+					tmp += path
+				self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
+				self._proxy.system.listMethods()
+				break
+			except Exception,ex:
+				last_excpt = ex
+				self._proxy = None
+				continue
+		if self._proxy is None:
+			raise ConnectionError("Cannot connect to Testlink API @ %s (%s)" % (str(self._url),str(last_excpt)))
 
 	def _query(self,method,**kwargs):
 		"""Remote calls a method on the server
@@ -140,6 +152,14 @@ class Testlink_XML_RPC_API(object):
 			# Otherwise re-raise original error
 			if (f.faultCode == NotSupported.errorCode):
 				raise NotSupported(method)
+			else:
+				raise
+		except socket.error, se:
+			# Connection is gone, try to reestablish
+			if self._max_connection_tries > 0:
+				self._reconnect()
+				self._max_connection_tries -= 1
+				self._query(method,**kwargs)
 			else:
 				raise
 		else:
