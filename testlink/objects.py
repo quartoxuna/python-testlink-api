@@ -861,8 +861,23 @@ class TestPlan(TestlinkObject):
 				for platform_id,tc in platforms.items():
 					testcases.append(tc)
 
+		# WORKAROUND
+		# At least until Testlink 1.9.11 the API call did not return step info
+		# even if it should return it. Therefor, we have to get each TestCase again.
+		tmp_cases = []
+		for tc_dict in testcases:
+			# Convert to TestCase object for easier attribute access
+			tc = TestCase(api=self._api,parent_testproject=self.getTestProject(),**tc_dict)
+			full_case = self._api.getTestCase(testcaseid=tc.id,version=tc.version)
+			# Convert returned list to single testcase
+			if isinstance(full_case,list) and len(full_case)==1:
+				full_case = full_case[0]
+			# Update the full testcase to retain testplan related infos
+			full_case.update(tc_dict)
+			tmp_cases.append(full_case)
+
 		# Initialise TestCase Objects
-		cases = [TestCase(api=self._api,parent_testproject=self.getTestProject(),**case) for case in testcases]
+		cases = [TestCase(api=self._api,parent_testproject=self.getTestProject(),**case) for case in tmp_cases]
 
 		# Filter
 		if len(params)>0 or name:
