@@ -1670,3 +1670,21 @@ class Testlink_XML_RPC_API(object):
 					scope         = scope,         \
 					userid        = userid,        \
 					coverage      = coverage )
+
+	@TLVersion("1.11-sinaqs",strict=True)
+	def assignRisks(self, testcaseexternalid, testprojectid, risks, devkey=None):
+		"""Assigns risks to a testcase.
+		@param devkey: Testlink developer key
+		@type devkey: str
+		@param testcaseexternalid: The external ID of the Testcase (with prefix!)
+		@type testcaseexternalid: str
+		@param risks: List of Risk IDs to assign to the TestCase
+		@type risks: list
+		@returns: Server response
+		@rtype: mixed
+		"""
+		return self._query("tl.assignRisks",                             \
+					devKey             = devkey,             \
+					testprojectid      = testprojectid,      \
+					testcaseexternalid = testcaseexternalid, \
+					risks              = risks )
