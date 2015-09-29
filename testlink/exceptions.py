@@ -42,6 +42,9 @@ class APIError(Exception):
 		self.errorCode = code
 		self.errorString = message
 
+	def __str__(self):
+		return "%d - %s" % (self.errorCode,self.errorString)
+
 
 class ConnectionError(Exception):
 	"""To be raised, if the connection to the XML-RPC server cannot be stablished"""
