@@ -16,6 +16,7 @@ from log import log
 from api import Testlink_XML_RPC_API
 from exceptions import ConnectionError
 from exceptions import NotSupported
+from exceptions import APIError
 from enums import *
 
 __all__ = ["Testlink","TestProject","TestPlan","Build","Platform",\
@@ -581,10 +582,16 @@ class TestProject(TestlinkObject):
 		"""
 		# Check if simple API calls can be done
 		if name and not id:
-			response = self._api.getTestCaseIdByName(name,testprojectname=self.name)
-			# If we got more than one TestCase, ignore the name
-			if len(response)==1:
-				id = response[0]['id']
+			try:
+				response = self._api.getTestCaseIdByName(name,testprojectname=self.name)
+				# If we got more than one TestCase, ignore the name
+				if len(response)==1:
+					id = response[0]['id']
+			except APIError,ae:
+				if ae.errorCode == 5030:
+					# If no testcase has been found here,
+					# there is no need, to search any further
+					return
 
 		# If we have the id or external id, try to get the testcase by that
 		if id or external_id:
