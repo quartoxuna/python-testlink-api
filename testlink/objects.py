@@ -769,7 +769,12 @@ class TestPlan(TestlinkObject):
 		@rtype: generator
 		"""
 		# No simple API call possible, get all
-		response = self._api.getTestPlanPlatforms(self.id)
+		try:
+			response = self._api.getTestPlanPlatforms(self.id)
+		except APIError,ae:
+			if ae.errorCode == 3041:
+				# No platforms linked at all
+				return
 		platforms = [Platform(api=self._api,**platform) for platform in response]
 
 		# Filter
