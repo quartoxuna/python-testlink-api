@@ -581,7 +581,7 @@ class TestProject(TestlinkObject):
 		"""
 		# Check if simple API calls can be done
 		if name and not id:
-			response = self._api.getTestCaseIdByName(name,project=self.name)
+			response = self._api.getTestCaseIdByName(name,testprojectname=self.name)
 			# If we got more than one TestCase, ignore the name
 			if len(response)==1:
 				id = response[0]['id']
