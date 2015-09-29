@@ -92,9 +92,8 @@ class Testlink(object):
 		"""
 		# Check if simple API call can be done
 		if name and len(params)==0:
-			response = self._api.getTestProjectByName(name)
-
-			if response is not None:
+			try:
+				response = self._api.getTestProjectByName(name)
 				# Since Testlink 1.9.6, the server returns already a dict
 				# before, there was a list containing a dict
 				# The getVersion() method still returns 1.0 in that case
@@ -104,6 +103,10 @@ class Testlink(object):
 				except KeyError:
 					pass
 				yield TestProject(api=self._api,**response)
+			except APIError,ae:
+				if ae.errorCode == 7011:
+					# No TestProject found at all
+					return
 		else:
 			# Get all projects and convert them to TestProject instances
 			response = self._api.getProjects()

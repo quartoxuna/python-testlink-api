@@ -80,10 +80,10 @@ class TestlinkTests(unittest.TestCase):
 
 	@patch('testlink.api.Testlink_XML_RPC_API.getTestProjectByName')
 	@patch('testlink.api.Testlink_XML_RPC_API.getProjects')
-	def test_iterTestProject(self,getProjects,getTestProjectByName):
-		"""'iterTestProject'"""
+	def test_iterTestProject_shortcut(self,getProjects,getTestProjectByName):
+		"""'iterTestProject' - Shortcut"""
 		# Generate some test data
-		test_data = [randict("name","notes"),randict("name","notes")]
+		test_data = [randict("name","notes"),randict("name","notes"),randict("name","notes")]
 
 		# Init Testlink
 		tl = Testlink(self.url,self.devkey)
@@ -91,9 +91,6 @@ class TestlinkTests(unittest.TestCase):
 		# Mock internal methods
 		getProjects.return_value = test_data
 		getTestProjectByName.return_value = test_data[1]
-
-		# Check for generator function
-		self.assertTrue(inspect.isgeneratorfunction(tl.iterTestProject))
 
 		# Check calls and result with shortcut usage
 		project = tl.iterTestProject(test_data[1]['name']).next()
@@ -103,8 +100,41 @@ class TestlinkTests(unittest.TestCase):
 		self.assertEqual(project.name, test_data[1]['name'])
 		self.assertEqual(project.notes, test_data[1]['notes'])
 
-		getProjects.reset_mock()
-		getTestProjectByName.reset_mock()
+	@patch('testlink.api.Testlink_XML_RPC_API.getTestProjectByName')
+	@patch('testlink.api.Testlink_XML_RPC_API.getProjects')
+	def test_iterTestProject_shortcut_no_result(self,getProjects,getTestProjectByName):
+		"""'iterTestProject' - Shortcut Empty Result"""
+		# Generate some test data
+		test_data = [randict("name","notes"),randict("name","notes"),randict("name","notes")]
+
+		# Init Testlink
+		tl = Testlink(self.url,self.devkey)
+
+		# Mock internal methods
+		getProjects.return_value = ''
+		getTestProjectByName.side_effect = APIError(7001,"Test Project (name: ) does not exist")
+
+		# Check with no result
+		project_iter = tl.iterTestProject(randput())
+		self.assertRaises(StopIteration,project_iter.next)
+
+	@patch('testlink.api.Testlink_XML_RPC_API.getTestProjectByName')
+	@patch('testlink.api.Testlink_XML_RPC_API.getProjects')
+	def test_iterTestProject(self,getProjects,getTestProjectByName):
+		"""'iterTestProject'"""
+		# Generate some test data
+		test_data = [randict("name","notes"),randict("name","notes"),randict("name","notes")]
+
+		# Init Testlink
+		tl = Testlink(self.url,self.devkey)
+
+		# Check with no result
+		project_iter = tl.iterTestProject()
+		self.assertRaises(StopIteration,project_iter.next)
+
+		# Mock internal methods
+		getProjects.return_value = test_data
+		getTestProjectByName.return_value = test_data[1]
 
 		project = tl.iterTestProject(**test_data[1]).next()
 		getProjects.assert_called_with()
@@ -112,3 +142,21 @@ class TestlinkTests(unittest.TestCase):
 		self.assertTrue(isinstance(project,TestProject))
 		self.assertEqual(project.name, test_data[1]['name'])
 		self.assertEqual(project.notes, test_data[1]['notes'])
+
+	@patch('testlink.api.Testlink_XML_RPC_API.getTestProjectByName')
+	@patch('testlink.api.Testlink_XML_RPC_API.getProjects')
+	def test_iterTestProject_no_result(self,getProjects,getTestProjectByName):
+		"""'iterTestProject' - Empty Result"""
+		# Generate some test data
+		test_data = [randict("name","notes"),randict("name","notes"),randict("name","notes")]
+
+		# Init Testlink
+		tl = Testlink(self.url,self.devkey)
+
+		# Mock internal methods
+		getProjects.return_value = ''
+		getTestProjectByName.side_effect = APIError(7001,"Test Project (name: ) does not exist")
+
+		# Check with no result
+		project_iter = tl.iterTestProject()
+		self.assertRaises(StopIteration,project_iter.next)
