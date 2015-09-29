@@ -1458,6 +1458,12 @@ class TestCase(TestlinkObject):
 		else:
 			self.execution_notes = None
 
+		# Set priority if available
+		if ('priority' in kwargs):
+			self.priority = kwargs['priority']
+		else:
+			self.priority = None
+
 		# Set common attributes
 		self.version = int(version)
 		self.status = status
