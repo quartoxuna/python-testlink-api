@@ -228,7 +228,7 @@ class Testlink(object):
 					parentid = parent_id,
 					order = order,
 					checkduplicatedname = duplicate_check,
-					actiononduplicate = on_duplicate
+					actiononduplicatedname = on_duplicate
 				)
 
 	def createTestCase(self,testcase,testsuite,testproject,authorlogin,order=0,on_duplicate=DuplicateStrategy.BLOCK):
