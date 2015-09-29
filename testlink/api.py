@@ -156,7 +156,7 @@ class Testlink_XML_RPC_API(object):
 				raise
 		except socket.error, se:
 			# Connection is gone, try to reestablish
-			log.warning("Connection Error: %s" + str(se))
+			log.debug("Connection Error: %s" + str(se))
 			if self._max_connection_tries > 0:
 				self._reconnect()
 				self._max_connection_tries -= 1
