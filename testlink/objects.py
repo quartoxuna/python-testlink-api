@@ -306,12 +306,13 @@ class Testlink(object):
 		"""
 		return self._api.createRequirement(
 					testprojectid = testproject.id,
-					parentid = reqspec.id,
+					reqspecid = reqspec.id,
 					docid = requirement.req_doc_id,
 					title = requirement.name,
 					scope = requirement.scope,
 					userid = requirement.author_id,
-					typ = requirement.typ
+					typ = requirement.typ,
+					status = requirement.status
 				)
 
 	def createRisk(self,risk,requirement):
