@@ -1468,6 +1468,54 @@ class TestCase(TestlinkObject):
 		else:
 			self.priority = None
 
+		# Try to get creator
+		if ('author_id' in kwargs):
+			self.author_id = int(kwargs['author_id'])
+			try:
+				user = self._api.getUserByID(kwargs['author_id'])
+				if isinstance(user,list) and len(user)==1:
+					user = user[0]
+				self.author = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
+			except NotSupported:
+				self.author = None
+		else:
+			self.author_id = None
+			self.author = None
+
+		# Try to get creation ts
+		if ('creation_ts' in kwargs):
+			try:
+				self.creation_ts = datetime.strptime(kwargs['creation_ts'],DATETIME_FORMAT)
+			except ValueError:
+				# Cannot convert
+				self.creation_ts = None
+		else:
+			self.creation_ts = None
+
+		# Try to get updater
+		if ('updater_id' in kwargs and kwargs['updater_id'].strip() != ''):
+			self.modifier_id = int(kwargs['updater_id'])
+			try:
+				user = self._api.getUserByID(kwargs['updater_id'])
+				if isinstance(user,list) and len(user)==1:
+					user = user[0]
+				self.modifier = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
+			except NotSupported:
+				self.modifier = None
+		else:
+			self.modifier_id = None
+			self.modifier = None
+
+		# Try to get modification ts
+		if ('modification_ts' in kwargs):
+			try:
+				self.modification_ts = datetime.strptime(kwargs['modification_ts'],DATETIME_FORMAT)
+			except ValueError:
+				# Cannot convert
+				self.modification_ts = None
+		else:
+			self.modification_ts = None
+
 		# Set common attributes
 		self.version = int(version)
 		self.status = status
