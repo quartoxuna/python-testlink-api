@@ -504,7 +504,12 @@ class TestProject(TestlinkObject):
 			response = self._api.getTestSuiteById(id)
 			yield TestSuite(api=self._api,**response)
 		else:
-			response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
+			try:
+				response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
+			except APIError,ae:
+				if ae.errorCode == 7008:
+					# TestProject has no TestSuites
+					return
 
 			# Bug !
 			# Since the API call to getFirstLevelTestSuites does NOT
