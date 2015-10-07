@@ -160,3 +160,20 @@ class TestlinkTests(unittest.TestCase):
 		# Check with no result
 		project_iter = tl.iterTestProject()
 		self.assertRaises(StopIteration,project_iter.next)
+
+
+class CompatTests(unittest.TestCase):
+
+	def __init__(self,*args,**kwargs):
+		super(CompatTests,self).__init__(*args,**kwargs)
+		self._testMethodDoc = "CompatTests: " + self._testMethodDoc
+
+	def test_datetime_conversion(self):
+		"""Datetime Backwards compatability Python 2.5<"""
+		from datetime import datetime
+		from testlink.objects import DATETIME_FORMAT
+		from testlink.objects import _strptime
+		date_string = "2000-12-23 12:34:45"
+		datetime_obj = datetime.strptime(date_string,DATETIME_FORMAT)
+		strptime_obj = _strptime(date_string,DATETIME_FORMAT)
+		self.assertEquals(datetime_obj,strptime_obj)

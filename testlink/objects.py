@@ -9,6 +9,7 @@
 # IMPORTS
 import re
 import copy
+import time
 from datetime import datetime
 from distutils.version import LooseVersion as Version
 
@@ -25,6 +26,13 @@ __all__ = ["Testlink","TestProject","TestPlan","Build","Platform",\
 
 # Global datetime format
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+# Backwards compatability methods
+try:
+	_strptime = _strptime
+except Exception:
+	_strptime = lambda date_string,fmt: datetime(*(time.strptime(date_string,fmt)[0:6]))
+
 
 # Helper method
 def normalize_list(res):
@@ -1300,7 +1308,7 @@ class TestCase(TestlinkObject):
 			self.notes = notes
 			self.execution_type = int(execution_type)
 			try:
-				self.execution_ts = datetime.strptime(str(execution_ts),DATETIME_FORMAT)
+				self.execution_ts = _strptime(str(execution_ts),DATETIME_FORMAT)
 			except ValueError:
 				self.execution_ts = datetime.min
 			self.tester_id = int(tester_id)
@@ -1490,7 +1498,7 @@ class TestCase(TestlinkObject):
 		# Try to get creation ts
 		if ('creation_ts' in kwargs):
 			try:
-				self.creation_ts = datetime.strptime(kwargs['creation_ts'],DATETIME_FORMAT)
+				self.creation_ts = _strptime(kwargs['creation_ts'],DATETIME_FORMAT)
 			except ValueError:
 				# Cannot convert
 				self.creation_ts = None
@@ -1514,7 +1522,7 @@ class TestCase(TestlinkObject):
 		# Try to get modification ts
 		if ('modification_ts' in kwargs):
 			try:
-				self.modification_ts = datetime.strptime(kwargs['modification_ts'],DATETIME_FORMAT)
+				self.modification_ts = _strptime(kwargs['modification_ts'],DATETIME_FORMAT)
 			except ValueError:
 				# Cannot convert
 				self.modification_ts = None
@@ -1700,11 +1708,11 @@ class RequirementSpecification(TestlinkObject):
 		self.total_req = int(total_req)
 		self.node_order = int(node_order)
 		try:
-			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
+			self.creation_ts = _strptime(str(creation_ts),DATETIME_FORMAT)
 		except ValueError:
 			self.creation_ts = datetime.min
 		try:
-			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
+			self.modification_ts = _strptime(str(modification_ts),DATETIME_FORMAT)
 		except ValueError:
 			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
@@ -1826,11 +1834,11 @@ class Requirement(TestlinkObject):
 		except ValueError:
 			self.modifier_id = -1
 		try:
-			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
+			self.creation_ts = _strptime(str(creation_ts),DATETIME_FORMAT)
 		except ValueError:
 			self.creation_ts = datetime.min
 		try:
-			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
+			self.modification_ts = _strptime(str(modification_ts),DATETIME_FORMAT)
 		except ValueError:
 			self.modification_ts = datetime.min
 		self._parent_testproject = parent_testproject
@@ -1912,7 +1920,7 @@ class Risk(TestlinkObject):
 		self.description = description
 		self.author_id = int(author_id)
 		try:
-			self.creation_ts = datetime.strptime(str(creation_ts),DATETIME_FORMAT)
+			self.creation_ts = _strptime(str(creation_ts),DATETIME_FORMAT)
 		except ValueError:
 			self.creation_ts = datetime.min
 		try:
@@ -1920,7 +1928,7 @@ class Risk(TestlinkObject):
 		except ValueError:
 			self.modifier_id = -1
 		try:
-			self.modification_ts = datetime.strptime(str(modification_ts),DATETIME_FORMAT)
+			self.modification_ts = _strptime(str(modification_ts),DATETIME_FORMAT)
 		except ValueError:
 			self.modification_ts = datetime.min
 		self._requirement_id = requirement_id
