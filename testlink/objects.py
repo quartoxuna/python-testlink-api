@@ -901,6 +901,10 @@ class TestPlan(TestlinkObject):
 			# Convert returned list to single testcase
 			if isinstance(full_case,list) and len(full_case)==1:
 				full_case = full_case[0]
+			# Remove IDs, which would clash in later TestCase.__init__()
+			tc_dict.pop("tcase_id",None)
+			tc_dict.pop("tcversion_id",None)
+			tc_dict.pop("tc_id",None)
 			# Update the full testcase to retain testplan related infos
 			full_case.update(tc_dict)
 			tmp_cases.append(full_case)
