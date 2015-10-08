@@ -1499,19 +1499,12 @@ class TestCase(TestlinkObject):
 		else:
 			self.priority = None
 
-		# Try to get creator
+		# Try to get the creator
+		self.__author = None
 		if ('author_id' in kwargs):
 			self.author_id = int(kwargs['author_id'])
-			try:
-				user = self._api.getUserByID(kwargs['author_id'])
-				if isinstance(user,list) and len(user)==1:
-					user = user[0]
-				self.author = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
-			except NotSupported:
-				self.author = None
 		else:
 			self.author_id = None
-			self.author = None
 
 		# Try to get creation ts
 		if ('creation_ts' in kwargs):
@@ -1524,18 +1517,11 @@ class TestCase(TestlinkObject):
 			self.creation_ts = None
 
 		# Try to get updater
+		self.__modifier = None
 		if ('updater_id' in kwargs and kwargs['updater_id'].strip() != ''):
 			self.modifier_id = int(kwargs['updater_id'])
-			try:
-				user = self._api.getUserByID(kwargs['updater_id'])
-				if isinstance(user,list) and len(user)==1:
-					user = user[0]
-				self.modifier = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
-			except NotSupported:
-				self.modifier = None
 		else:
 			self.modifier_id = None
-			self.modifier = None
 
 		# Try to get modification ts
 		if ('modification_ts' in kwargs):
@@ -1582,6 +1568,38 @@ class TestCase(TestlinkObject):
 
 	def __unicode__(self):
 		return unicode(u"TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name))
+
+	@property
+	def author(self):
+		if self.__author is not None:
+			return self.__author
+		else:
+			if self.author_id is not None:
+				try:
+					user = self._api.getUserByID(kwargs['author_id'])
+					if isinstance(user,list) and len(user)==1:
+						user = user[0]
+					self.__author = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
+				except NotSupported:
+					self.__author = None
+			else:
+				return None
+
+	@property
+	def modifier(self):
+		if self.__modifier is not None:
+			return self.__modifier
+		else:
+			if self.modifier_id is not None:
+				try:
+					user = self._api.getUserByID(kwargs['updater_id'])
+					if isinstance(user,list) and len(user)==1:
+						user = user[0]
+					self.__modifier = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
+				except NotSupported:
+					self.__modifier = None
+			else:
+				return None
 
 	def getTestProject(self):
 		return self._parent_testproject
