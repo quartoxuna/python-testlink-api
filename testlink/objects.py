@@ -557,7 +557,7 @@ class TestProject(TestlinkObject):
 					# For each suite of this level
 					for tsuite in suites:
 						# Yield nested suites that match
-						for s in tsuite.iterTestSuite(**params):
+						for s in tsuite.iterTestSuite(recursive=recursive,**params):
 							yield s
 			# Return all TestSuites
 			else:
@@ -566,7 +566,7 @@ class TestProject(TestlinkObject):
 					# then return nested ones if recursive is specified
 					yield tsuite
 					if recursive:
-						for s in tsuite.iterTestSuite(**params):
+						for s in tsuite.iterTestSuite(name=name,recursive=recursive,**params):
 							yield s
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
@@ -628,8 +628,11 @@ class TestProject(TestlinkObject):
 			yield TestCase(api=self._api,parent_testproject=self,parent_testsuite=suite,**response)
 		else:
 			# Get all TestCases for the TestProject
+			params["name"] = name
+			params["id"] = id
+			params["external_id"] = external_id
 			for suite in self.iterTestSuite():
-				for case in suite.iterTestCase():
+				for case in suite.iterTestCase(**params):
 					yield case
 
 	def getTestCase(self,name=None,id=None,external_id=None,**params):
@@ -1112,7 +1115,7 @@ class TestSuite(TestlinkObject):
 				# For each suite of this level
 				for tsuite in suites:
 					# Yield nested suites that match
-					for s in tsuite.iterTestSuite(**params):
+					for s in tsuite.iterTestSuite(recursive=recursive,**params):
 						yield s
 		# Return all suites
 		else:
@@ -1121,7 +1124,7 @@ class TestSuite(TestlinkObject):
 				# then return nested ones if recursive is specified
 				yield tsuite
 				if recursive:
-					for s in tsuite.iterTestSuite(**params):
+					for s in tsuite.iterTestSuite(name=name,recursive=recursive,**params):
 						yield s
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
@@ -1180,9 +1183,10 @@ class TestSuite(TestlinkObject):
 							raise
 				if tcase is not None:
 					yield tcase
-		# Return all found testcases
-		for tcase in cases:
-			yield tcase
+		else:
+			# Return all found testcases
+			for tcase in cases:
+				yield tcase
 
 	def getTestCase(self,name=None,**params):
 		"""Returns all TestCases specified by parameters
