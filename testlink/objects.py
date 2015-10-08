@@ -868,18 +868,24 @@ class TestPlan(TestlinkObject):
 		"""
 		# Get all available TestCases
 		# Use all possible API params to speed up API call
-		response = self._api.getTestCasesForTestPlan(\
-								self.id,\
-								id,\
-								buildid,\
-								keywordid,\
-								keywords,\
-								executed,\
-								assigned_to,\
-								execution_status,\
-								execution_type,\
-								getstepsinfo = True\
-							)
+		try:
+			response = self._api.getTestCasesForTestPlan(\
+									self.id,\
+									id,\
+									buildid,\
+									keywordid,\
+									keywords,\
+									executed,\
+									assigned_to,\
+									execution_status,\
+									execution_type,\
+									getstepsinfo = True\
+								)
+		except APIError,ae:
+			log.debug(str(ae))
+			if ae.errorCode == 3030:
+				# TestCase not linked to TestPlan
+				return
 
 		# Normalize result
 		testcases = []
