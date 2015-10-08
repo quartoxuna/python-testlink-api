@@ -1172,8 +1172,12 @@ class TestSuite(TestlinkObject):
 							if not unicode(cf_val) == unicode(value):
 								tcase = None
 								break
-					except AttributeError:
-						raise AttributeError("Invalid Search Parameter for TestCase: %s" % key)
+					except APIError,ae:
+						if ae.errorCode == 9000:
+							# Neither found by custom field
+							raise AttributeError("Invalid Search Parameter for TestCase: %s" % key)
+						else:
+							raise
 				if tcase is not None:
 					yield tcase
 		# Return all found testcases
