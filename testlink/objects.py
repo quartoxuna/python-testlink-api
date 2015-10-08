@@ -1541,7 +1541,7 @@ class TestCase(TestlinkObject):
 		self.version = int(version)
 		self.status = status
 		self.importance = importance
-		self.execution_type = execution_type
+		self.execution_type = int(execution_type)
 		self.preconditions = preconditions
 		self.summary = summary
 		self.active = active
