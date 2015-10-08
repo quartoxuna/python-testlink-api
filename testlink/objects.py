@@ -882,10 +882,11 @@ class TestPlan(TestlinkObject):
 									getstepsinfo = True\
 								)
 		except APIError,ae:
-			log.debug(str(ae))
 			if ae.errorCode == 3030:
 				# TestCase not linked to TestPlan
 				return
+			else:
+				raise
 
 		# Normalize result
 		testcases = []
