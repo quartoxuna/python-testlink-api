@@ -115,6 +115,8 @@ class Testlink(object):
 				if ae.errorCode == 7011:
 					# No TestProject found at all
 					return
+				else:
+					raise
 		else:
 			# Get all projects and convert them to TestProject instances
 			response = self._api.getProjects()
@@ -518,6 +520,8 @@ class TestProject(TestlinkObject):
 				if ae.errorCode == 7008:
 					# TestProject has no TestSuites
 					return
+				else:
+					raise
 
 			# Bug !
 			# Since the API call to getFirstLevelTestSuites does NOT
@@ -609,6 +613,8 @@ class TestProject(TestlinkObject):
 					# If no testcase has been found here,
 					# there is no need, to search any further
 					return
+				else:
+					raise
 
 		# If we have the id or external id, try to get the testcase by that
 		if id or external_id:
@@ -795,6 +801,9 @@ class TestPlan(TestlinkObject):
 			if ae.errorCode == 3041:
 				# No platforms linked at all
 				return
+			else:
+				raise
+
 		platforms = [Platform(api=self._api,**platform) for platform in response]
 
 		# Filter
