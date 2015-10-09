@@ -160,7 +160,7 @@ class Testlink_XML_RPC_API(object):
 			if self._max_connection_tries > 0:
 				self._reconnect()
 				self._max_connection_tries -= 1
-				self._query(method,**kwargs)
+				return self._query(method,**kwargs)
 			else:
 				raise
 		else:
