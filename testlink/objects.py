@@ -1534,6 +1534,16 @@ class TestCase(TestlinkObject):
 		else:
 			self.modification_ts = None
 
+		# Set parent Testsuite by lazy loading
+		if (parent_testsuite is not None):
+			self.__testsuite = parent_testsuite
+		else:
+			self.__testsuite = None
+		if ('testsuite_id' in kwargs):
+			self.__testsuite_id = kwargs['testsuite_id']
+		else:
+			self.__testsuite_id = None
+
 		# Set common attributes
 		self.version = int(version)
 		self.status = status
@@ -1549,12 +1559,6 @@ class TestCase(TestlinkObject):
 		# Set internal attributes
 		self._parent_testproject = parent_testproject
 		self.customfields = customfields
-
-		# If parent testsuite is not given, try to get it
-		if (parent_testsuite is None) and (self.testsuite_id is not None):
-			self._parent_testsuite = self._parent_testproject.getTestSuite(id=self.testsuite_id)
-		else:
-			self._parent_testsuite = parent_testsuite
 
 		# Set steps
 		self.steps = []
@@ -1602,11 +1606,22 @@ class TestCase(TestlinkObject):
 			else:
 				return None
 
+	@property
+	def testsuite(self):
+		if self.__testsuite is not None:
+			return self.__testsuite
+		else:
+			if self.__testsuite_id is not None:
+				ts = self._parent_testproject.getTestSuite(id=self.__testsuite_id)
+				self.__testsuite = ts
+			else:
+				return None
+
 	def getTestProject(self):
 		return self._parent_testproject
 
 	def getTestSuite(self):
-		return self._parent_testsuite
+		return self.testsuite
 
 	def getLastExecutionResult(self,testplanid,platformid=None,platformname=None,buildid=None,buildname=None,bugs=False):
 		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
