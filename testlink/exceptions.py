@@ -38,9 +38,10 @@ class APIError(Exception):
 		@param message: Testlink API Error String
 		@type message: str
 		"""
-		Exception.__init__(self,message)
+		msg = unicode(message).encode("utf-8")
+		Exception.__init__(self,msg)
 		self.errorCode = code
-		self.errorString = message
+		self.errorString = msg
 
 	def __str__(self):
 		return "%d - %s" % (self.errorCode,self.errorString)
