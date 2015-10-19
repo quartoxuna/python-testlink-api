@@ -112,7 +112,7 @@ class TestlinkTests(unittest.TestCase):
 
 		# Mock internal methods
 		getProjects.return_value = ''
-		getTestProjectByName.side_effect = APIError(7001,"Test Project (name: ) does not exist")
+		getTestProjectByName.side_effect = APIError(7011,"Test Project (name: ) does not exist")
 
 		# Check with no result
 		project_iter = tl.iterTestProject(randput())
@@ -155,7 +155,7 @@ class TestlinkTests(unittest.TestCase):
 
 		# Mock internal methods
 		getProjects.return_value = ''
-		getTestProjectByName.side_effect = APIError(7001,"Test Project (name: ) does not exist")
+		getTestProjectByName.side_effect = APIError(7011,"Test Project (name: ) does not exist")
 
 		# Check with no result
 		project_iter = tl.iterTestProject()
