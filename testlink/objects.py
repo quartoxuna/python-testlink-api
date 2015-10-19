@@ -1454,6 +1454,7 @@ class TestCase(TestlinkObject):
 		|                             |                             |  platform_id                |
 		===========================================================================================
 		"""
+
 		# Init
 		TestlinkObject.__init__(self,api = api)
 
@@ -1511,7 +1512,9 @@ class TestCase(TestlinkObject):
 
 		# Try to get the creator
 		self.__author = None
-		if ('author_id' in kwargs):
+		if ('author_first_name' in kwargs) and ('author_last_name' in kwargs):
+			self.__author = "%s %s" % (unicode(kwargs['author_first_name']),unicode(kwargs['author_last_name']))
+		elif ('author_id' in kwargs):
 			self.author_id = int(kwargs['author_id'])
 		else:
 			self.author_id = None
@@ -1528,7 +1531,9 @@ class TestCase(TestlinkObject):
 
 		# Try to get updater
 		self.__modifier = None
-		if ('updater_id' in kwargs and kwargs['updater_id'].strip() != ''):
+		if ('updater_first_name' in kwargs) and ('updater_last_name' in kwargs):
+			self.__modifier = "%s %s" % (unicode(kwargs['updater_first_name']),unicode(kwargs['updater_last_name']))
+		elif ('updater_id' in kwargs and kwargs['updater_id'].strip() != ''):
 			self.modifier_id = int(kwargs['updater_id'])
 		else:
 			self.modifier_id = None
