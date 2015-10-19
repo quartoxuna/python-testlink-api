@@ -1585,35 +1585,27 @@ class TestCase(TestlinkObject):
 
 	@property
 	def author(self):
-		if self.__author is not None:
-			return self.__author
-		else:
-			if self.author_id is not None:
-				try:
-					user = self._api.getUserByID(kwargs['author_id'])
-					if isinstance(user,list) and len(user)==1:
-						user = user[0]
-					self.__author = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
-				except NotSupported:
-					self.__author = None
-			else:
-				return None
+		if (self.__author is None) and (self.author_id is not None):
+			try:
+				user = self._api.getUserByID(self.author_id)
+				if isinstance(user,list) and len(user)==1:
+					user = user[0]
+				self.__author = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
+			except NotSupported:
+				self.__author = None
+		return self.__author
 
 	@property
 	def modifier(self):
-		if self.__modifier is not None:
-			return self.__modifier
-		else:
-			if self.modifier_id is not None:
-				try:
-					user = self._api.getUserByID(kwargs['updater_id'])
-					if isinstance(user,list) and len(user)==1:
-						user = user[0]
-					self.__modifier = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
-				except NotSupported:
-					self.__modifier = None
-			else:
-				return None
+		if (self.__modifier is None) and (self.modifier_id is not None):
+			try:
+				user = self._api.getUserByID(self.modifier_id)
+				if isinstance(user,list) and len(user)==1:
+					user = user[0]
+				self.__modifier = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
+			except NotSupported:
+				self.__modifier = None
+		return self.__modifier
 
 	@property
 	def testsuite(self):
