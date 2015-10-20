@@ -29,7 +29,7 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # Backwards compatability methods
 try:
-	_strptime = _strptime
+	_strptime = datetime.strptime
 except Exception:
 	_strptime = lambda date_string,fmt: datetime(*(time.strptime(date_string,fmt)[0:6]))
 
