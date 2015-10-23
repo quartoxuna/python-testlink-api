@@ -1630,7 +1630,7 @@ class TestCase(TestlinkObject):
 					user = user[0]
 				self.__author = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
 			except NotSupported:
-				self.__author = None
+				pass
 		return self.__author
 
 	@property
@@ -1642,7 +1642,7 @@ class TestCase(TestlinkObject):
 					user = user[0]
 				self.__modifier = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
 			except NotSupported:
-				self.__modifier = None
+				pass
 		return self.__modifier
 
 	@property
