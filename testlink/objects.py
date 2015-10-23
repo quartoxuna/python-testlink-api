@@ -1304,7 +1304,7 @@ class TestCase(TestlinkObject):
 		def __str__(self):
 			return "Step %d:\n%s\n%s" % (self.step_number,self.actions,self.expected_results)
 
-	class Execution(object):
+	class Execution(TestlinkObject):
 		"""Testlink TestCase Execution representation
 		@ivar id: The internal ID of the Execution
 		@type id: int
@@ -1329,7 +1329,7 @@ class TestCase(TestlinkObject):
 		"""
 
 		__slots__ = ("id","testplan_id","platform_id","build_id","tcversion_id","tcversion_number","status",\
-				"notes","execution_type","execution_ts","tester_id")
+				"notes","execution_type","execution_ts","tester_id","__tester")
 
 		def __init__(
 				self,\
@@ -1344,9 +1344,10 @@ class TestCase(TestlinkObject):
 				execution_type=ExecutionType.MANUAL,\
 				execution_ts=str(datetime.min),\
 				tester_id=-1,\
+				api = None,\
 				**kwargs\
 			):
-			self.id = int(id)
+			TestlinkObject.__init__(self,id,str(id),api)
 			self.testplan_id = int(testplan_id)
 			self.platform_id = int(platform_id)
 			self.build_id = int(build_id)
@@ -1666,7 +1667,11 @@ class TestCase(TestlinkObject):
 		resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
 		if isinstance(resp,list) and len(resp)==1:
 			resp = resp[0]
-		return TestCase.Execution(**resp)
+		# Check for empty Execution
+		if int(resp['id'])<0:
+			return None
+		else:
+			return TestCase.Execution(api=self._api,**resp)
 
 	def deleteLastExecution(self,testplanid):
 		# Update last execution
