@@ -1360,9 +1360,22 @@ class TestCase(TestlinkObject):
 			except ValueError:
 				self.execution_ts = datetime.min
 			self.tester_id = int(tester_id)
+			self.__tester = None
 
 		def __str__(self):
 			return "Execution (%d) %s" % (self.id,self.notes)
+
+		@property
+		def tester(self):
+			if self.__tester is None:
+				try:
+					user = self._api.getUserByID(self.tester_id)
+					if isinstance(user,list) and len(user)==1:
+						user = user[0]
+					self.__tester = "%s %s" % (unicode(user['firstName']),unicode(user['lastName']))
+				except NotSupported:
+					pass
+			return self.__tester
 
 		def delete(self):
 			self._api.deleteExecution(self.id)
