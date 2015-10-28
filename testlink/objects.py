@@ -1158,10 +1158,12 @@ class TestSuite(TestlinkObject):
 		"""
 		return normalize_list( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
 
-	def iterTestCase(self,name=None,**params):
+	def iterTestCase(self,name=None,recursive=True,**params):
 		"""Iterates over TestCases specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
+		@param recursive: Search recursive to get all nested TestCases
+		@type recursive: bool
 		@param params: Other params for TestCase
 		@type params: dict
 		@returns: Matching TestCases
@@ -1219,21 +1221,36 @@ class TestSuite(TestlinkObject):
 							raise
 				if tcase is not None:
 					yield tcase
+				# If recursive is specified,
+				# also search in nested suites
+				if recursive:
+					# For each child suite
+					for tsuite in self.iterTestSuite():
+						# Yield nested testcases that match
+						for c in tsuite.iterTestCase(recursive=recursive,**params):
+							yield c
 		else:
-			# Return all found testcases
+			# First return the cases from this testsuite,
+			# then return nested ones if recursive is specified
 			for tcase in cases:
 				yield tcase
+			if recursive:
+				for tsuite in self.iterTestSuite():
+					for c in tsuite.iterTestCase(recursive=recursive,**params):
+						yield c
 
-	def getTestCase(self,name=None,**params):
+	def getTestCase(self,name=None,recursive=True,**params):
 		"""Returns all TestCases specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
+		@param recursive: Search recursive to get all nested TestCases
+		@type recursive: bool
 		@param params: Other params for TestCase
 		@type params: dict
 		@returns: Matching TestCases
 		@rtype: mixed
 		"""
-		return normalize_list( [c for c in self.iterTestCase(name,**params)] )
+		return normalize_list( [c for c in self.iterTestCase(name,recursive,**params)] )
 
 
 class TestCase(TestlinkObject):
