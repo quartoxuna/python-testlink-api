@@ -512,7 +512,7 @@ class TestProject(TestlinkObject):
 		# Since the ID is unique, all other params can be ignored
 		if id:
 			response = self._api.getTestSuiteById(id)
-			yield TestSuite(api=self._api,**response)
+			yield TestSuite(api=self._api,parent_testproject=self,**response)
 		else:
 			try:
 				response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
