@@ -897,6 +897,10 @@ class TestPlan(TestlinkObject):
 			else:
 				raise
 
+		# Check if we have a repsonse
+		if len(response)==0:
+			return
+
 		# Normalize result
 		testcases = []
 		for tcid,platforms in response.items():
