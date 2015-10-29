@@ -1130,7 +1130,7 @@ class TestSuite(TestlinkObject):
 				if tsuite is not None:
 					yield tsuite
 			# If recursive is specified
-			# also search in nested suites
+			# also serch in nested suites
 			if recursive:
 				# For each suite of this level
 				for tsuite in suites:
@@ -1144,7 +1144,7 @@ class TestSuite(TestlinkObject):
 				# then return nested ones if recursive is specified
 				yield tsuite
 				if recursive:
-					for s in tsuite.iterTestSuite(recursive=recursive,**params):
+					for s in tsuite.iterTestSuite(name=name,recursive=recursive,**params):
 						yield s
 
 	def getTestSuite(self,name=None,id=None,recursive=True,**params):
@@ -1162,7 +1162,7 @@ class TestSuite(TestlinkObject):
 		"""
 		return normalize_list( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
 
-	def iterTestCase(self,name=None,recursive=True,**params):
+	def iterTestCase(self,name=None,**params):
 		"""Iterates over TestCases specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
@@ -1223,24 +1223,10 @@ class TestSuite(TestlinkObject):
 							raise
 				if tcase is not None:
 					yield tcase
-			# If recusrive is specified
-			# also search in nested suites
-			if recursive:
-				# For earch suite of this level
-				for tsuite in self.iterTestSuite():
-					# Yield nested cases that match
-					for c in tsuite.iterTestCase(recursive=recursive,**params):
-						yield c
 		else:
 			# Return all found testcases
 			for tcase in cases:
 				yield tcase
-			# Return recursive matches if specified
-			if recursive:
-				for tsuite in self.iterTestSuite():
-					# Yield nested cases that match
-					for c in tsuite.iterTestCase(recursive=recursive,**params):
-						yield c
 
 	def getTestCase(self,name=None,**params):
 		"""Returns all TestCases specified by parameters
