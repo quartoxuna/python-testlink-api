@@ -47,6 +47,9 @@ class TLVersion(object):
 					sign = ">="
 				raise NotSupported("Method '%s' requires Testlink version %s %s but is %s" % (str(fn.__name__),str(sign),str(self.version),str(parent._tl_version)))
 			return fn(parent,*args,**kwargs)
+		_wrapped.__name__ = fn.__name__
+		_wrapped.__doc__ = fn.__doc__
+		_wrapped.__dict__.update(fn.__dict__)
 		return _wrapped
 
 
