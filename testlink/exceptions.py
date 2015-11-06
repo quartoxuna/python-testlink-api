@@ -31,7 +31,7 @@ class APIError(Exception):
 	@ivar errorString: Testlink API Error String
 	@type errorString: str
 	"""
-	def __init__(self,code,message):
+	def __init__(self,code='-1',message=''):
 		"""Initializes the Exception
 		@param code: Testlink API Error Code
 		@type code: int
@@ -39,9 +39,11 @@ class APIError(Exception):
 		@type message: str
 		"""
 		msg = unicode(message).encode("utf-8")
-		Exception.__init__(self,msg)
-		self.errorCode = code
-		self.errorString = msg
+		Exception.__init__(self,str(msg))
+		if not str(code).isdigit():
+			code = -1
+		self.errorCode = int(code)
+		self.errorString = str(msg)
 
 	def __str__(self):
 		return "%d - %s" % (self.errorCode,self.errorString)
