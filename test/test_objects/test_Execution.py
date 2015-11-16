@@ -26,11 +26,12 @@ class ExecutionTests(unittest.TestCase):
 	def test__str__(self):
 		"""String representation"""
 		id_ = randint()
+		status = randput(1)
 		notes = randput()
 
-		obj = TestCase.Execution(id=id_,notes=notes)
+		obj = TestCase.Execution(id=id_,status=status,notes=notes)
 		string = str(obj)
-		self.assertEqual(string, "Execution (%d) %s" % (id_,notes))
+		self.assertEqual(string, "Execution (%d) [%s] %s" % (id_,status,notes))
 
 	def test_datetime_conversion(self):
 		"""Datetime Conversion"""
