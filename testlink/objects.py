@@ -1356,7 +1356,7 @@ class TestCase(TestlinkObject):
 			self.__tester = None
 
 		def __str__(self):
-			return "Execution (%d) %s" % (self.id,self.notes)
+			return "Execution (%d) [%s] %s" % (self.id,self.status,self.notes)
 
 		@property
 		def tester(self):
