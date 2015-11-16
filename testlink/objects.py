@@ -370,7 +370,7 @@ class TestlinkObject(object):
 		return "TestlinkObject (%d) %s" % (self.id,self.name)
 
 	def __unicode__(self):
-		return unicode(self.name)
+		return unicode(str(self))
 
 	def __eq__(self,other):
 		return self.id == other.id
