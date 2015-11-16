@@ -1241,34 +1241,12 @@ class TestSuite(TestlinkObject):
 
 
 class TestCase(TestlinkObject):
-	"""Testlink TestCase representation
-	@ivar executed: Flag if TestCase has been executed yet
-	@type executed: bool
-	@ivar execution_notes: Notes for the last execution
-	@type execution_notes: unicode
-	@ivar execution_order: Order of execution
-	@type execution_order: int
-	@ivar version: Version number
-	@type version: int
-	@ivar exec_status: Execution status
-	@type exec_status: str
-	@ivar status: Status
-	@type status: ???
-	@ivar importance: ImportanceLevel
-	@type importance: ImportanceLevel
-	@ivar execution_type: Execution Type
-	@type execution_type: ExecutionType
-	@ivar active: Active flag
-	@type active: bool
-	@ivar summary: Summary of the TestCase
-	@type summary: unicode
-	@ivar platform_id: Internal ID of platform
-	@type platform_id: int
-	@ivar external_id: External ID of the TestCase
-	@type external_id: int
+	"""Testlink TestCase representation"""
 
-	@note: No __slots__ defined, so __dict__ available
-	"""
+	__slots__ = ["id","tc_version_id","name","external_id","platform_id","execution_status","execution_notes","priority",\
+			"__author","author_id","creation_ts","__modifier","modifier_id","modification_ts",\
+			"__testsuite","__testsuite_id","version","status","importance","execution_type","preconditions",\
+			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields","steps"]
 
 	class Step(object):
 		"""Testlink TestCase Step representation
