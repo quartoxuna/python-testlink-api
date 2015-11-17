@@ -1668,6 +1668,20 @@ class TestCase(TestlinkObject):
 			else:
 				raise
 
+	def getExecutions(self,testplanid,platformid=None,platformname=None,buildid=None,buildname=None,bugs=False):
+		try:
+			resp = self._api.getExecutions(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
+			if len(resp)==0:
+				return []
+			else:
+				return [TestCase.Execution(api=self._api,**exc) for exec_id,exc in resp.items()]
+		except APIError,ae:
+			if ae.errorCode == 3030:
+				# Testcase not linked to testplan
+				return
+			else:
+				raise
+
 	def deleteLastExecution(self,testplanid):
 		# Update last execution
 		last = self.getLastExecutionResult(testplanid)
