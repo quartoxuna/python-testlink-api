@@ -25,4 +25,4 @@ class TestProjectTests(unittest.TestCase):
 		name = randput()
 		obj = TestProject(name=name)
 		string = str(obj)
-		self.assertEqual(string, "TestProject: %s" % name)
+		self.assertEqual(string, "%s" % name)
