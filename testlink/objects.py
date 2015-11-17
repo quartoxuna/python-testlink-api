@@ -1678,7 +1678,7 @@ class TestCase(TestlinkObject):
 		except APIError,ae:
 			if ae.errorCode == 3030:
 				# Testcase not linked to testplan
-				return
+				return []
 			else:
 				raise
 
