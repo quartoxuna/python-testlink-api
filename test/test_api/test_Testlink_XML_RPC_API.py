@@ -1281,3 +1281,38 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 						devKey = None,\
 						**test_data\
 					)
+
+	@patch("testlink.api.Testlink_XML_RPC_API._query")
+	def test_getExecutions(self,query):
+		"""'getExecutions' (1.11-sinaqs)"""
+		query.return_value = randict("id","name","status")
+		self.assertRaises(NotSupported,self._api.getExecutions)
+		self._api._tl_version = Version("1.11-sinaqs")
+		# Check default params
+		defaults = randict("testplanid")
+		self.assertEquals(self._api.getExecutions(**defaults),query.return_value)
+		query.assert_called_with('tl.getExecutions',\
+						devKey = None,\
+						testcaseid = None,\
+						testcaseexternalid = None,\
+						platformid = None,\
+						platformname = None,\
+						buildid = None,\
+						buildname = None,\
+						options = {'getBugs':False},\
+						**defaults\
+					)
+		# Check non defaults
+		non_defaults = randict("testplanid","testcaseid","testcaseexternalid","platformid","platformname","buildid","buildname","bugs")
+		self.assertEquals(self._api.getExecutions(**non_defaults),query.return_value)
+		query.assert_called_with('tl.getExecutions',\
+						devKey = None,\
+						testplanid = non_defaults['testplanid'],\
+						testcaseid = non_defaults['testcaseid'],\
+						testcaseexternalid = non_defaults['testcaseexternalid'],\
+						platformid = non_defaults['platformid'],\
+						platformname = non_defaults['platformname'],\
+						buildid = non_defaults['buildid'],\
+						buildname = non_defaults['buildname'],\
+						options = {'getBugs':non_defaults['bugs']}\
+					)
