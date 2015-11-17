@@ -370,7 +370,7 @@ class TestlinkObject(object):
 		return "TestlinkObject (%d) %s" % (self.id,self.name)
 
 	def __unicode__(self):
-		return unicode(str(self))
+		return unicode(self.__str__())
 
 	def __eq__(self,other):
 		return self.id == other.id
@@ -434,7 +434,7 @@ class TestProject(TestlinkObject):
 		self.color = color
 
 	def __str__(self):
-		return "TestProject: %s" % self.name
+		return "%s" % self.name
 
 	def iterTestPlan(self,name=None,**params):
 		"""Iterates over TestPlans specified by parameters
