@@ -408,14 +408,14 @@ class TestProject(TestlinkObject):
 			name="",\
 			notes="",\
 			prefix="",\
-			active=False,\
-			is_public=False,\
+			active="0",\
+			is_public="0",\
 			tc_counter=0,\
 			opt={
-				'requirementsEnabled':False,
-				'testPriorityEnabled':False,
-				'automationEnabled':False,
-				'inventoryEnabled':False
+				'requirementsEnabled':"0",
+				'testPriorityEnabled':"0",
+				'automationEnabled':"0",
+				'inventoryEnabled':"0"
 			},\
 			color="",\
 			api=None,\
@@ -424,12 +424,12 @@ class TestProject(TestlinkObject):
 		TestlinkObject.__init__(self,id,name,api)
 		self.notes = notes
 		self.prefix = prefix
-		self.active = bool(active)
-		self.public = bool(is_public)
-		self.requirements = bool(opt['requirementsEnabled'])
-		self.priority = bool(opt['testPriorityEnabled'])
-		self.automation = bool(opt['automationEnabled'])
-		self.inventory = bool(opt['inventoryEnabled'])
+		self.active = bool(int(active))
+		self.public = bool(int(is_public))
+		self.requirements = bool(int(opt['requirementsEnabled']))
+		self.priority = bool(int(opt['testPriorityEnabled']))
+		self.automation = bool(int(opt['automationEnabled']))
+		self.inventory = bool(int(opt['inventoryEnabled']))
 		self.tc_counter = int(tc_counter)
 		self.color = color
 
@@ -722,16 +722,16 @@ class TestPlan(TestlinkObject):
 			id=-1,\
 			name="",\
 			notes="",\
-			is_public=False,\
-			active=False,\
+			is_public="0",\
+			active="0",\
 			parent_testproject=None,\
 			api=None,\
 			**kwargs
 		):
 		TestlinkObject.__init__(self,id,name,api)
 		self.notes = notes
-		self.active = bool(active)
-		self.public = bool(is_public)
+		self.active = bool(int(active))
+		self.public = bool(int(is_public))
 		self._parent_testproject = parent_testproject
 
 	def __str__(self):
@@ -1268,7 +1268,7 @@ class TestCase(TestlinkObject):
 				step_number=1,\
 				actions="",\
 				execution_type=ExecutionType.MANUAL,\
-				active=False,\
+				active="0",\
 				id=None,\
 				expected_results="",\
 				**kwargs\
@@ -1280,7 +1280,7 @@ class TestCase(TestlinkObject):
 			self.step_number = int(step_number)
 			self.actions = actions
 			self.execution_type = int(execution_type)
-			self.active = bool(active)
+			self.active = bool(int(active))
 			self.expected_results = expected_results
 
 		def to_dict(self):
@@ -1898,8 +1898,8 @@ class Requirement(TestlinkObject):
 			scope = '',\
 			status = RequirementStatus.DRAFT,\
 			node_order = 0,\
-			is_open = True,\
-			active = True,\
+			is_open = "1",\
+			active = "1",\
 			expected_coverage = 1,\
 			testproject_id = -1,\
 			author = None,\
@@ -1927,8 +1927,8 @@ class Requirement(TestlinkObject):
 		self.scope = scope
 		self.status = str(status)
 		self.node_order = int(node_order)
-		self.is_open = bool(is_open)
-		self.active = bool(active)
+		self.is_open = bool(int(is_open))
+		self.active = bool(int(active))
 		self.expected_coverage = int(expected_coverage)
 		self.testproject_id = int(testproject_id)
 		self.author = str(author)
