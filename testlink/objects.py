@@ -704,6 +704,27 @@ class TestProject(TestlinkObject):
 		"""
 		return normalize_list( [r for r in self.iterRequirementSpecification(title,**params)] )
 
+	def iterRequirement(self,name=None,**params):
+		"""Returns all Requirements specified by paramaters
+		@param name: The title of the wanted Requirements
+		@type name: str
+		@param returns: Matching Requirements
+		@rtype: generator
+		"""
+		params['name'] = name
+		for spec in self.iterRequirementSpecification():
+			for req in spec.iterRequirement(**params):
+				yield req
+
+	def getRequirement(self,name=None,**params):
+		"""Returns all Requirements specified by paramaters
+		@param name: The title of the wanted Requirements
+		@type name: str
+		@param returns: Matching Requirements
+		@rtype: list
+		"""
+		return normalize_list( [r for r in self.iterRequirement(name,**params)] )
+
 
 class TestPlan(TestlinkObject):
 	"""Testlink TestPlan representation
