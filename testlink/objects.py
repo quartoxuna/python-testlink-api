@@ -900,15 +900,20 @@ class TestPlan(TestlinkObject):
 		# Use all possible API params to speed up API call
 		try:
 			response = self._api.getTestCasesForTestPlan(\
-									self.id,\
-									id,\
-									buildid,\
-									keywordid,\
-									keywords,\
-									executed,\
-									assigned_to,\
-									execution_status,\
-									execution_type,\
+									testplanid = self.id,\
+									testcaseid = id,\
+									buildid = buildid,\
+									keywordid = keywordid,\
+									keywords = keywords,\
+									executed = executed,\
+									assignedto = assigned_to,\
+
+									# Testlink >1.9.2 does not return proper results
+									# if API call is made with this values, but we can
+									# filter for it afterwards
+									#executestatus = execution_status,\
+
+									executiontype = execution_type,\
 									getstepsinfo = True\
 								)
 		except APIError,ae:
