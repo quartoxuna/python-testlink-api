@@ -1389,7 +1389,6 @@ class TestCase(TestlinkObject):
 			preconditions="",
 			summary="",
 			active=True,
-			steps=[],
 			api=None,
 			parent_testproject=None,
 			parent_testsuite=None,
@@ -1591,6 +1590,12 @@ class TestCase(TestlinkObject):
 		else:
 			self.__testsuite_id = None
 
+		# Set steps by lazy loading
+		if ('steps' in kwargs):
+			self.__steps = [TestCase.Step(**s) for s in kwargs['steps']]
+		else:
+			self.__steps = None
+
 		# Set common attributes
 		self.version = int(version)
 		self.status = status
@@ -1606,7 +1611,6 @@ class TestCase(TestlinkObject):
 		# Set internal attributes
 		self._parent_testproject = parent_testproject
 		self.customfields = customfields
-		self.__steps = None
 
 	def __str__(self):
 		return "TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name)
@@ -1654,10 +1658,8 @@ class TestCase(TestlinkObject):
 		if self.__steps is not None:
 			return self.__steps
 		else:
-			self.__steps = []
 			case = self.getTestProject().getTestCase(id=self.id)
-			for s in case['steps']:
-				self.__steps.append(TestCase.Step(**s))
+			self.__steps = case.__steps
 			return self.__steps
 
 	def getTestProject(self):
