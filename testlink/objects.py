@@ -868,7 +868,6 @@ class TestPlan(TestlinkObject):
 			keywords = None,\
 			executed = None,\
 			assigned_to = None,\
-			execution_status = None,\
 			execution_type = None,\
 			**params
 		):
@@ -887,8 +886,6 @@ class TestPlan(TestlinkObject):
 		@type executed: bool
 		@param assigned_to: Filter by internal ID of assigned Tester
 		@type assigned_to: int
-		@param execution_status: Filter by execution status
-		@type execution_status: char ???
 		@param execution_type: Filter by execution type
 		@type execution_type: ExecutionType
 		@param params: Other params for TestCase
@@ -896,6 +893,14 @@ class TestPlan(TestlinkObject):
 		@returns: Matching TestCases
 		@rtype: generator
 		"""
+		# Testlink >1.9.2 does not return proper results
+		# if API call is made with execution_status='n', but we can
+		# filter for it afterwards
+		execution_status = None
+		if ('execution_status' in params) and (params['execution_status'] != 'n'):
+			execution_status = params['execution_status']
+			del params['execution_status']
+
 		# Get all available TestCases
 		# Use all possible API params to speed up API call
 		try:
@@ -907,12 +912,7 @@ class TestPlan(TestlinkObject):
 									keywords = keywords,\
 									executed = executed,\
 									assignedto = assigned_to,\
-
-									# Testlink >1.9.2 does not return proper results
-									# if API call is made with this values, but we can
-									# filter for it afterwards
-									#executestatus = execution_status,\
-
+									executestatus = execution_status,\
 									executiontype = execution_type,\
 									getstepsinfo = True\
 								)
@@ -985,7 +985,6 @@ class TestPlan(TestlinkObject):
 			keywords = None,\
 			executed = None,\
 			assigned_to = None,\
-			execution_status = None,\
 			execution_type = None,\
 			**params
 		):
@@ -1004,8 +1003,6 @@ class TestPlan(TestlinkObject):
 		@type executed: bool
 		@param assigned_to: Filter by internal ID of assigned Tester
 		@type assigned_to: int
-		@param execution_status: Filter by execution status
-		@type execution_status: char ???
 		@param execution_type: Filter by execution type
 		@type execution_type: ExecutionType
 		@param params: Other params for TestCase
@@ -1013,7 +1010,7 @@ class TestPlan(TestlinkObject):
 		@returns: Matching TestCases
 		@rtype: mixed
 		"""
-		return normalize_list( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executed,assigned_to,execution_status,execution_type,**params)] )
+		return normalize_list( [c for c in self.iterTestCase(name,id,buildid,keywordid,keywords,executed,assigned_to,execution_type,**params)] )
 
 	def assignTestCase(self, case, platform=None, execution_order=None, urgency=None):
 		"""Assigns the specified TestCase to the current TestPlan.
