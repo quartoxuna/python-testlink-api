@@ -1253,7 +1253,8 @@ class TestCase(TestlinkObject):
 	__slots__ = ["id","tc_version_id","name","external_id","platform_id","execution_status","execution_notes","priority",\
 			"__author","author_id","creation_ts","__modifier","modifier_id","modification_ts",\
 			"__testsuite","__testsuite_id","version","status","importance","execution_type","preconditions",\
-			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields","__steps"]
+			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields",\
+			"__steps","__preconditions"]
 
 	class Step(object):
 		"""Testlink TestCase Step representation
@@ -1386,7 +1387,6 @@ class TestCase(TestlinkObject):
 			status=None,
 			importance=ImportanceLevel.MEDIUM,
 			execution_type=ExecutionType.MANUAL,
-			preconditions="",
 			summary="",
 			active=True,
 			api=None,
@@ -1596,12 +1596,17 @@ class TestCase(TestlinkObject):
 		else:
 			self.__steps = None
 
+		# Set preconditions by lazy loading
+		if ('preconditions' in kwargs):
+			self.__preconditions = kwargs['preconditions']
+		else:
+			self.__preconditions = None
+
 		# Set common attributes
 		self.version = int(version)
 		self.status = status
 		self.importance = importance
 		self.execution_type = int(execution_type)
-		self.preconditions = preconditions
 		self.summary = summary
 		self.active = active
 		self.testsuite_id = testsuite_id
@@ -1661,6 +1666,15 @@ class TestCase(TestlinkObject):
 			case = self.getTestProject().getTestCase(id=self.id)
 			self.__steps = case.__steps
 			return self.__steps
+
+	@property
+	def preconditions(self):
+		if self.__preconditions is not None:
+			return self.__preconditions
+		else:
+			case = self.getTestProject().getTestCase(id=self.id)
+			self.__preconditions = case.__preconditions
+			return self.__preconditions
 
 	def getTestProject(self):
 		return self._parent_testproject
