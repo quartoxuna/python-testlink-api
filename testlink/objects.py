@@ -1272,7 +1272,7 @@ class TestCase(TestlinkObject):
 	__slots__ = ["id","tc_version_id","name","external_id","platform_id","execution_status","execution_notes","priority",\
 			"__author","author_id","creation_ts","__modifier","modifier_id","modification_ts",\
 			"__testsuite","__testsuite_id","version","status","importance","execution_type","preconditions",\
-			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields","steps"]
+			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields","__steps"]
 
 	class Step(object):
 		"""Testlink TestCase Step representation
@@ -1625,14 +1625,7 @@ class TestCase(TestlinkObject):
 		# Set internal attributes
 		self._parent_testproject = parent_testproject
 		self.customfields = customfields
-
-		# Set steps
-		self.steps = []
-		for s in steps:
-			if isinstance(s,TestCase.Step):
-				self.steps.append(s)
-			else:
-				self.steps.append(TestCase.Step(**s))
+		self.__steps = None
 
 	def __str__(self):
 		return "TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name)
@@ -1674,6 +1667,17 @@ class TestCase(TestlinkObject):
 				self.__testsuite = ts
 			else:
 				return None
+
+	@property
+	def steps(self):
+		if self.__steps is not None:
+			return self.__steps
+		else:
+			self.__steps = []
+			case = self.getTestProject().getTestCase(id=self.id)
+			for s in case['steps']:
+				self.__steps.append(TestCase.Step(**s))
+			return self.__steps
 
 	def getTestProject(self):
 		return self._parent_testproject
