@@ -57,6 +57,12 @@ class TestlinkTests(unittest.TestCase):
 		tl._api._tl_version = test_data
 		self.assertEquals(tl.getVersion(), test_data)
 
+	def test_str(self):
+		"""String representation"""
+		ref = "Testlink XML-RPC API Version 1.0 at %s" % str(self.url)
+		tl = Testlink(self.url,self.devkey)
+		self.assertEqual(ref,str(tl))
+
 	@patch('testlink.objects.Testlink.iterTestProject')
 	def test_getTestProject(self,p1):
 		"""'getTestProject'"""
