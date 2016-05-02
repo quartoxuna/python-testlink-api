@@ -1656,6 +1656,10 @@ class TestCase(TestlinkObject):
 			else:
 				return None
 
+	@testsuite.setter
+	def testsuite(self,suite):
+		self.__testsuite = suite
+
 	@property
 	def steps(self):
 		if self.__steps is not None:
@@ -1665,6 +1669,10 @@ class TestCase(TestlinkObject):
 			self.__steps = case.__steps
 			return self.__steps
 
+	@steps.setter
+	def steps(self,steps):
+		self.__steps = steps
+
 	@property
 	def preconditions(self):
 		if self.__preconditions is not None:
@@ -1673,6 +1681,10 @@ class TestCase(TestlinkObject):
 			case = self.getTestProject().getTestCase(id=self.id)
 			self.__preconditions = case.__preconditions
 			return self.__preconditions
+
+	@preconditions.setter
+	def preconditions(self,preconditions):
+		self.__preconditions = preconditions
 
 	def getTestProject(self):
 		return self._parent_testproject
