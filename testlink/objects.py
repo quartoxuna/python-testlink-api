@@ -1665,7 +1665,7 @@ class TestCase(TestlinkObject):
 		if self.__steps is not None:
 			return self.__steps
 		else:
-			case = self.getTestProject().getTestCase(id=self.id)
+			case = self.getTestProject().getTestCase(id=self.id,external_id=self.external_id)
 			self.__steps = case.__steps
 			return self.__steps
 
