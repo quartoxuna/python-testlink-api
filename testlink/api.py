@@ -692,7 +692,7 @@ class Testlink_XML_RPC_API(object):
 					actiononduplicatedname = actiononduplicatedname )
 	
 	@TLVersion("1.0")
-	def getTestSuiteById(self, testsuiteid, devkey=None):
+	def getTestSuiteById(self, testprojectid, testsuiteid, devkey=None):
 		"""Returns a single TestSuite specified by the internal ID
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -702,8 +702,9 @@ class Testlink_XML_RPC_API(object):
 		@rtype: dict
 		"""
 		return self._query("tl.getTestSuiteByID",    \
-					devKey      = devkey, \
-					testsuiteid = testsuiteid )
+					devKey        = devkey, \
+					testprojectid = testprojectid, \
+					testsuiteid   = testsuiteid )
 	
 	@TLVersion("1.0")
 	def getTestSuitesForTestSuite(self, testsuiteid, devkey=None):

@@ -512,7 +512,7 @@ class TestProject(TestlinkObject):
 		# Check if simple API call can be done
 		# Since the ID is unique, all other params can be ignored
 		if id:
-			response = self._api.getTestSuiteById(id)
+			response = self._api.getTestSuiteById(self.getTestProject().id,id)
 			yield TestSuite(api=self._api,parent_testproject=self,**response)
 		else:
 			try:
@@ -529,7 +529,7 @@ class TestProject(TestlinkObject):
 			# return the details, we have to get it with another API call
 			# This has to be done BEFORE the acutal filtering because otherwise
 			# we could not filter by the details
-			response = [self._api.getTestSuiteById(suite['id']) for suite in response]
+			response = [self._api.getTestSuiteById(self.id, suite['id']) for suite in response]
 			suites = [TestSuite(api=self._api,parent_testproject=self,**suite) for suite in response]
 
 			# Filter by specified parameters
@@ -629,7 +629,7 @@ class TestProject(TestlinkObject):
 				response = response[0]
 
 			# Need to get testsuite to set as parent
-			suite_resp = self._api.getTestSuiteById(response['testsuite_id'])
+			suite_resp = self._api.getTestSuiteById(self.id,response['testsuite_id'])
 			suite = TestSuite(**suite_resp)
 
 			yield TestCase(api=self._api,parent_testproject=self,parent_testsuite=suite,**response)
@@ -1105,7 +1105,7 @@ class TestSuite(TestlinkObject):
 		elif isinstance(response,dict):
 			# Check for nested dict
 			if isinstance(response[response.keys()[0]],dict):
-				response = [self._api.getTestSuiteById(suite_id) for suite_id in response.keys()]
+				response = [self._api.getTestSuiteById(self.getTestProject().id, suite_id) for suite_id in response.keys()]
 			else:
 				response = [response]
 		suites = [TestSuite(api=self._api,parent_testproject=self.getTestProject(),parent_testsuite=self,**suite) for suite in response]
