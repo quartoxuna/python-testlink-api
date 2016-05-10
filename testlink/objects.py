@@ -1724,7 +1724,7 @@ class TestCase(TestlinkObject):
 		last = self.getLastExecutionResult(testplanid)
 		self._api.deleteExecution(last.id)
 
-	def reportResult(self,testplanid,buildid,status,notes=None,overwrite=False):
+	def reportResult(self,testplanid,buildid,status,notes=None,overwrite=False,execduration=None):
 		self._api.reportTCResult(
 			testplanid = testplanid,\
 			status = status,\
@@ -1733,7 +1733,8 @@ class TestCase(TestlinkObject):
 			notes = notes,\
 			platformid = self.platform_id,\
 			overwrite = overwrite,\
-			buildid = buildid\
+			buildid = buildid,
+			execduration = execduration\
 		)
 
 	def getAttachments(self):

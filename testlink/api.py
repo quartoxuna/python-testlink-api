@@ -556,7 +556,7 @@ class Testlink_XML_RPC_API(object):
 					testplanid = testplanid )
 	
 	@TLVersion("1.0")
-	def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False, devkey=None):
+	def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False,execduration=None,devkey=None):
 		"""Sets the execution result for a specified TestCase
 		@param devkey: Testlink developer key
 		@type devkey: str
@@ -585,9 +585,15 @@ class Testlink_XML_RPC_API(object):
 		@type customfields: dict
 		@param overwrite: <OPTIONAL> Overwrites the latest result (Default is: False)
 		@type overwrite: bool
+		@param execduration: <OPTIONAL> Execution duration (since Testlink 1.9.14)
+		@type execduration: int
 		@returns: Server response
 		@rtype: dict
 		"""
+		arguments = {}
+		if (self._tl_version >= Version("1.9.14")) or TLVersion.IGNORE:
+			arguments['execduration'] = execduration
+
 		return self._query("tl.reportTCResult",                         \
 					devKey             = devkey,             \
 					testplanid         = testplanid,         \
@@ -602,7 +608,8 @@ class Testlink_XML_RPC_API(object):
 					platformid         = platformid,         \
 					platformname       = platformname,       \
 					customfields       = customfields,       \
-					overwrite          = overwrite )
+					overwrite          = overwrite,          \
+					**arguments )
 	setTestCaseExecutionResult = reportTCResult
 
 	@TLVersion("1.0")

@@ -460,6 +460,31 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 					)
 		self._api._tl_version = Version("0.9")
 		self.assertRaises(NotSupported,self._api.reportTCResult)
+		# Check new arguments since 1.9.14
+		self._api._tl_version = Version("1.9.14")
+		self.assertEquals(self._api.reportTCResult(**defaults),query.return_value)
+		query.assert_called_with('tl.reportTCResult',\
+						devKey = None,\
+						testcaseid = None,\
+						testcaseexternalid = None,\
+						buildid = None,\
+						buildname = None,\
+						notes = None,\
+						guess = True,\
+						bugid = None,\
+						platformid = None,\
+						platformname = None,\
+						customfields = None,\
+						overwrite = False,\
+						execduration = None,\
+						**defaults\
+					)
+		non_defaults.update(randict("execduration"))
+		self.assertEquals(self._api.reportTCResult(**non_defaults),query.return_value)
+		query.assert_called_with('tl.reportTCResult',\
+						devKey = None,\
+						**non_defaults\
+					)
 
 	@patch("testlink.api.Testlink_XML_RPC_API._query")
 	def test_getLastExecutionResult(self,query):
