@@ -512,7 +512,7 @@ class TestProject(TestlinkObject):
 		# Check if simple API call can be done
 		# Since the ID is unique, all other params can be ignored
 		if id:
-			response = self._api.getTestSuiteById(self.getTestProject().id,id)
+			response = self._api.getTestSuiteById(self.id,id)
 			yield TestSuite(api=self._api,parent_testproject=self,**response)
 		else:
 			try:
