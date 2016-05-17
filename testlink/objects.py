@@ -589,7 +589,7 @@ class TestProject(TestlinkObject):
 		"""
 		return normalize_list( [s for s in self.iterTestSuite(name,id,recursive,**params)] )
 
-	def iterTestCase(self,name=None,id=None,external_id=None,**params):
+	def iterTestCase(self,name=None,id=None,external_id=None,version=None,**params):
 		"""Iterates over TestCases specified by parameters
 		@param name: The name of the wanted TestCase
 		@type name: str
@@ -618,12 +618,12 @@ class TestProject(TestlinkObject):
 					raise
 
 		# If we have the id or external id, try to get the testcase by that
-		if id or external_id:
+		if id or external_id or version:
 			if external_id:
 				ext = "%s-%s" % (str(self.prefix),str(external_id))
 			else:
 				ext = None
-			response = self._api.getTestCase(id,ext)
+			response = self._api.getTestCase(id,ext,version)
 			# Server response is a list
 			if len(response)==1:
 				response = response[0]
@@ -638,6 +638,7 @@ class TestProject(TestlinkObject):
 			params["name"] = name
 			params["id"] = id
 			params["external_id"] = external_id
+			params["version"] = version
 			for suite in self.iterTestSuite():
 				for case in suite.iterTestCase(**params):
 					yield case
@@ -1662,7 +1663,7 @@ class TestCase(TestlinkObject):
 		if self.__steps is not None:
 			return self.__steps
 		else:
-			case = self.getTestProject().getTestCase(id=self.id,external_id=self.external_id)
+			case = self.getTestProject().getTestCase(id=self.id,external_id=self.external_id,version=self.version)
 			self.__steps = case.__steps
 			return self.__steps
 	def _set_steps(self,steps):
@@ -1673,7 +1674,7 @@ class TestCase(TestlinkObject):
 		if self.__preconditions is not None:
 			return self.__preconditions
 		else:
-			case = self.getTestProject().getTestCase(id=self.id)
+			case = self.getTestProject().getTestCase(id=self.id,version=self.version)
 			self.__preconditions = case.__preconditions
 			return self.__preconditions
 	def _set_preconditions(self,preconditions):
