@@ -1252,7 +1252,7 @@ class TestCase(TestlinkObject):
 	__slots__ = ["id","tc_version_id","name","external_id","platform_id","execution_status","execution_notes","priority",\
 			"__author","author_id","creation_ts","__modifier","modifier_id","modification_ts",\
 			"__testsuite","__testsuite_id","version","status","importance","execution_type","preconditions",\
-			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields",\
+			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields","requirements",\
 			"__steps","__preconditions"]
 
 	class Step(object):
@@ -1392,6 +1392,7 @@ class TestCase(TestlinkObject):
 			parent_testproject=None,
 			parent_testsuite=None,
 			customfields={},
+			requirements=[],
 			testsuite_id=None,
 			tester_id=None,
 			estimated_exec_duration=None,
@@ -1615,6 +1616,7 @@ class TestCase(TestlinkObject):
 		# Set internal attributes
 		self._parent_testproject = parent_testproject
 		self.customfields = customfields
+		self.requirements = requirements
 
 	def __str__(self):
 		return "TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name)
@@ -1798,13 +1800,43 @@ class TestCase(TestlinkObject):
 				testcasename = testcasename,\
 				summary = summary,\
 				preconditions = preconditions,\
-				steps = [step.to_dict() for step in steps],\
+				steps = [step.to_dict() for step in self.steps],\
 				importance = importance,\
 				executiontype = executiontype,\
 				status = status,\
 				estimatedexecduration = exec_duration
 			)
 
+	def assignRequirements(self,requirements=None):
+		"""Assign all specified requirements to current TestCase.
+		@param requirements: All requirements of testcase
+		@type requirements:list
+		"""
+		
+		if requirements is None: 
+			requirements = self.requirements
+			
+		return self._api.assignRequirements(
+					testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
+					testprojectid = self.getTestProject().id,\
+					requirements = requirements\
+				)
+
+	def updateCustomFieldDesignValue(self,customfields=None):
+		"""Updates all custom fields of current TestCase.
+		@param customfields: All customfields of testcase
+		@type customfields:list
+		"""
+		
+		if customfields is None: 
+			customfields = self.customfields
+			
+		return self._api.updateTestCaseCustomFieldDesignValue(
+					testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
+					version = int(self.version),\
+					testprojectid = self.getTestProject().id,\
+					customfields = customfields\
+				)
 
 class RequirementSpecification(TestlinkObject):
 	"""Testlink Requirement Specification representation"""
