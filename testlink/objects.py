@@ -1328,7 +1328,7 @@ class TestCase(TestlinkObject):
 		"""
 
 		__slots__ = ("id","testplan_id","platform_id","build_id","tcversion_id","tcversion_number","status",\
-				"notes","execution_type","execution_ts","tester_id","__tester")
+				"notes","execution_type","execution_ts","tester_id","__tester","duration")
 
 		def __init__(
 				self,\
@@ -1343,6 +1343,7 @@ class TestCase(TestlinkObject):
 				execution_type=ExecutionType.MANUAL,\
 				execution_ts=str(datetime.min),\
 				tester_id=-1,\
+				execution_duration=0.0,\
 				api = None,\
 				**kwargs\
 			):
@@ -1361,6 +1362,10 @@ class TestCase(TestlinkObject):
 				self.execution_ts = datetime.min
 			self.tester_id = int(tester_id)
 			self.__tester = None
+			try:
+				self.duration = float(execution_duration)
+			except ValueError:
+				self.duration = float(0.0)
 
 		def __str__(self):
 			return "Execution (%d) [%s] %s" % (self.id,self.status,self.notes)
