@@ -1301,7 +1301,7 @@ class TestCase(TestlinkObject):
 			return res
 			
 		def __str__(self):
-			return "Step %d [%d]:\n%s\n%s" % (self.step_number,self.execution_type,self.actions,self.expected_results)
+			return "Step %d:\n%s\n%s" % (self.step_number,self.actions,self.expected_results)
 
 	class Execution(TestlinkObject):
 		"""Testlink TestCase Execution representation
