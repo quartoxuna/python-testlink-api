@@ -1805,7 +1805,7 @@ class TestCase(TestlinkObject):
 				testcasename = testcasename,\
 				summary = summary,\
 				preconditions = preconditions,\
-				steps = [step.to_dict() for step in self.steps],\
+				steps = steps,\
 				importance = importance,\
 				executiontype = executiontype,\
 				status = status,\
