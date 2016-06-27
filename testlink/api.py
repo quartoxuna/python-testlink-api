@@ -77,7 +77,6 @@ class Testlink_XML_RPC_API(object):
 		self._proxy = None
 		self._devkey = None
 		self._tl_version = Version("1.0")
-		self._max_connection_tries = self.MAX_RECONNECTION_TRIES
 
 		# Patch URL
 		if (url.endswith('/')):
@@ -111,25 +110,34 @@ class Testlink_XML_RPC_API(object):
 
 	def _reconnect(self):
 		"""Reconnects to initially specified URL"""
+		if self._proxy is not None:
+			log.debug("Reconnecting to '%s'" % str(self._url))
+
 		# Check for each possible RPC path,
 		# if a connection can be made
 		last_excpt = None
-		for path in self.RPC_PATHS:
-			tmp = self._url
-			try:
-				if not tmp.endswith(path):
-					tmp += path
-				self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
-				self._proxy.system.listMethods()
+		for i in range(self.MAX_RECONNECTION_TRIES):
+			for path in self.RPC_PATHS:
+				tmp = self._url
+				try:
+					if not tmp.endswith(path):
+						tmp += path
+					self._proxy = xmlrpclib.ServerProxy(tmp,encoding='UTF-8',allow_none=True)
+					self._proxy.system.listMethods()
+					break
+				except Exception,ex:
+					last_excpt = ex
+					self._proxy = None
+					continue
+			if self._proxy is None:
+				log.debug("Connection attempt %d failed: '%s'" % (i+1,str(ex)))
+			else:
 				break
-			except Exception,ex:
-				last_excpt = ex
-				self._proxy = None
-				continue
+
 		if self._proxy is None:
 			raise ConnectionError("Cannot connect to Testlink API @ %s (%s)" % (str(self._url),str(last_excpt)))
 
-	def _query(self,method,**kwargs):
+	def _query(self,method,_reconnect=True,**kwargs):
 		"""Remote calls a method on the server
 		@param method: Method to call
 		@type method: str
@@ -160,10 +168,9 @@ class Testlink_XML_RPC_API(object):
 		except socket.error, se:
 			# Connection is gone, try to reestablish
 			log.debug("Connection Error: %s" + str(se))
-			if self._max_connection_tries > 0:
+			if _reconnect:
 				self._reconnect()
-				self._max_connection_tries -= 1
-				return self._query(method,**kwargs)
+				return self._query(method,_reconnect=False,**kwargs)
 			else:
 				raise
 		else:

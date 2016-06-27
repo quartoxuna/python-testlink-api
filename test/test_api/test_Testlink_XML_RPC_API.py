@@ -76,8 +76,8 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		self._mock_server.socketerror = Mock(side_effect=SocketError())
 		# Do the call
 		self.assertRaises(SocketError,self._api._query,"socketerror")
-		# Check how many times _reconnect() has been called
-		self.assertEquals(reconnect.call_count,Testlink_XML_RPC_API.MAX_RECONNECTION_TRIES)
+		# Check that reconnect has been called
+		self.assertTrue(reconnect.called)
 
 	def test_globalDevKey(self):
 		"""Global DevKey setting"""
