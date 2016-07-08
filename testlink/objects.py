@@ -1886,10 +1886,9 @@ class TestCase(TestlinkObject):
 		@param customfields: All customfields of testcase
 		@type customfields:list
 		"""
-		
-		if customfields is None: 
+		if customfields is None:
 			customfields = self.customfields
-			
+
 		return self._api.updateTestCaseCustomFieldDesignValue(
 					testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
 					version = int(self.version),\
