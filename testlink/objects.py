@@ -1185,9 +1185,17 @@ class TestSuite(TestlinkObject):
 		# Therefore, we have to get each TestCase again.
 		tmp_cases = []
 		for tc_dict in response:
-			# Convert to TestCase object for easier attribute access
+			# Get internal ID and version for easier attribute access
 			tc = TestCase(api=self._api,parent_testproject=self.getTestProject(),**tc_dict)
-			full_case = self._api.getTestCase(testcaseid=tc.id,version=tc.version)
+			if 'version' in tc_dict.keys():
+				tc_version = int(tc_dict['version'])
+			if ('id' in tc_dict) and ('tcversion_id' in tc_dict):
+				tc_id = int(tc_dict['id'])
+			elif ('id' in tc_dict) and ('testcase_id' in tc_dict):
+				tc_id = int(tc_dict['testcase_id'])
+			elif ('tc_id' in tc_dict) and ('tcversion_id' in tc_dict):
+				tc_id = int(tc_dict['tc_id'])
+			full_case = self._api.getTestCase(testcaseid=tc_id,version=tc_version)
 			# Convert returned list to single testcase
 			if isinstance(full_case,list) and len(full_case)==1:
 				full_case = full_case[0]
