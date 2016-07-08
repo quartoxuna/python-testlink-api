@@ -1443,7 +1443,6 @@ class TestCase(TestlinkObject):
 			parent_testsuite=None,
 			customfields={},
 			requirements=[],
-			testsuite_id=None,
 			tester_id=None,
 			estimated_exec_duration=None,
 			keywords={},
@@ -1663,7 +1662,6 @@ class TestCase(TestlinkObject):
 		self.execution_type = int(execution_type)
 		self.summary = summary
 		self.active = active
-		self.testsuite_id = testsuite_id
 		self.tester_id = tester_id
 		self.exec_duration = estimated_exec_duration
 		
@@ -1710,7 +1708,10 @@ class TestCase(TestlinkObject):
 				ts = self._parent_testproject.getTestSuite(id=self.__testsuite_id)
 				self.__testsuite = ts
 			else:
-				return None
+				# We have to get ourself
+				this = self.getTestProject().getTestCase(id=self.id)
+				self.__testsuite = this.testsuite
+				return self.__testsuite
 	def _set_testsuite(self,suite):
 		self.__testsuite = suite
 	testsuite = property(_get_testsuite,_set_testsuite)
