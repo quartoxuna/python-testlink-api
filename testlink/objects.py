@@ -1596,7 +1596,7 @@ class TestCase(TestlinkObject):
 		self.__author = None
 		if ('author_first_name' in kwargs) and ('author_last_name' in kwargs):
 			self.__author = "%s %s" % (unicode(kwargs['author_first_name']),unicode(kwargs['author_last_name']))
-		elif ('author_id' in kwargs):
+		if ('author_id' in kwargs):
 			self.author_id = int(kwargs['author_id'])
 		else:
 			self.author_id = None
