@@ -1562,9 +1562,9 @@ class TestCase(TestlinkObject):
 
 		# Set the "correct" external id
 		if ('tc_external_id' in kwargs):
-			self.external_id = kwargs['tc_external_id']
+			self.external_id = int(kwargs['tc_external_id'])
 		elif ('external_id' in kwargs):
-			self.external_id = kwargs['external_id']
+			self.external_id = int(kwargs['external_id'])
 		else:
 			self.external_id = None
 
