@@ -1178,7 +1178,7 @@ class TestSuite(TestlinkObject):
 		@rtype: generator
 		"""
 		# No simple API call possible, get all
-		response = self._api.getTestCasesForTestSuite(self.id,details='full')
+		response = self._api.getTestCasesForTestSuite(self.id,details='full',getkeywords=True)
 
 		# WORKAROUND
 		# At least until Testlink 1.9.11 the API call did not return author/modifier info.
@@ -1261,7 +1261,7 @@ class TestCase(TestlinkObject):
 			"__author","author_id","creation_ts","__modifier","modifier_id","modification_ts",\
 			"__testsuite","__testsuite_id","version","status","importance","execution_type","preconditions",\
 			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields","requirements",\
-			"__steps","__preconditions"]
+			"__steps","__preconditions","keywords"]
 
 	class Step(object):
 		"""Testlink TestCase Step representation
@@ -1393,6 +1393,43 @@ class TestCase(TestlinkObject):
 		def delete(self):
 			self._api.deleteExecution(self.id)
 
+	class Keyword(TestlinkObject):
+		"""Testlink TestCase Keyword representation
+		@ivar id: The internal ID of the Keyword
+		@type id: int
+		@ivar notes: Notes of the keyword
+		@type notes: str
+		@ivar testcase_id: <OPTIONAL> Related TestCase ID
+		@type testcase_id: int
+		@ivar _keyword: The actual keyword
+		@type: str
+		"""
+
+		__slots__ = ["id","notes","testcase_id","_keyword"]
+
+		def __init__(
+				self,\
+				keyword_id = -1,\
+				notes = None,\
+				testcase_id = None,\
+				keyword = None,\
+				api = None,\
+				**kwargs
+		):
+			TestlinkObject.__init__(self,keyword_id,keyword,api)
+			self.notes = notes
+			self.testcase_id = int(testcase_id)
+			self._keyword = keyword
+
+		def __str__(self):
+			return str(self._keyword)
+
+		def __eq__(self,other):
+			return (self._keyword == other)
+
+		def __ne__(self,other):
+			return not (self._keyword == other)
+
 	def __init__(
 			self,
 			version=1,
@@ -1409,8 +1446,9 @@ class TestCase(TestlinkObject):
 			testsuite_id=None,
 			tester_id=None,
 			estimated_exec_duration=None,
+			keywords={},
 			**kwargs
-			):
+		):
 		"""Initialises a new TestCase with the specified parameters.
 		@param name: The name of the TestCase
 		@type name: str
@@ -1614,6 +1652,9 @@ class TestCase(TestlinkObject):
 			self.__preconditions = kwargs['preconditions']
 		else:
 			self.__preconditions = None
+
+		# Set keywords
+		self.keywords = [TestCase.Keyword(**k) for k in keywords.values()]
 
 		# Set common attributes
 		self.version = int(version)
