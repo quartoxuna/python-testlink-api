@@ -1671,10 +1671,10 @@ class TestCase(TestlinkObject):
 		self.requirements = requirements
 
 	def __str__(self):
-		return "TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name)
+		return "Testcase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name)
 
 	def __unicode__(self):
-		return unicode(u"TestCase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name))
+		return unicode(u"Testcase %s-%s: %s" % (self.getTestProject().prefix,self.external_id,self.name))
 
 	@property
 	def author(self):
