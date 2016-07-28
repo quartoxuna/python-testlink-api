@@ -1298,7 +1298,10 @@ class TestCase(TestlinkObject):
 			self.active = bool(int(active))
 			self.expected_results = expected_results
 
-		def to_dict(self):
+		def __repr__(self):
+			return str(self.as_dict())
+
+		def as_dict(self):
 			res = {}
 			res["step_number"] = self.step_number
 			res["actions"] = self.actions
@@ -1307,7 +1310,7 @@ class TestCase(TestlinkObject):
 			res["id"] = self.id
 			res["expected_results"] = self.expected_results
 			return res
-			
+
 		def __str__(self):
 			return "Step %d:\n%s\n%s" % (self.step_number,self.actions,self.expected_results)
 
@@ -1844,7 +1847,7 @@ class TestCase(TestlinkObject):
 		if preconditions is None:
 			preconditions = self.preconditions
 		if steps is None:
-			steps = [step.to_dict() for step in self.steps]
+			steps = self.steps
 		if importance is None:
 			importance = self.importance
 		if executiontype is None:
@@ -1859,7 +1862,7 @@ class TestCase(TestlinkObject):
 				testcasename = testcasename,\
 				summary = summary,\
 				preconditions = preconditions,\
-				steps = steps,\
+				steps = [step.as_dict() for step in steps],\
 				importance = importance,\
 				executiontype = executiontype,\
 				status = status,\
