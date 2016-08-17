@@ -1230,7 +1230,7 @@ class TestSuite(TestlinkObject):
 class TestCase(TestlinkObject):
 	"""Testlink TestCase representation"""
 
-	__slots__ = ["id","tc_version_id","name","external_id","platform_id","execution_status","execution_notes","priority",\
+	__slots__ = ["tc_id","external_id","platform_id","execution_status","execution_notes","priority",\
 			"__author","author_id","creation_ts","__modifier","modifier_id","modification_ts",\
 			"__testsuite","__testsuite_id","version","status","importance","execution_type","preconditions",\
 			"summary","active","testsuite_id","tester_id","exec_duration","_parent_testproject","customfields","requirements",\
@@ -1512,29 +1512,28 @@ class TestCase(TestlinkObject):
 		|                             |                             |  platform_id                |
 		===========================================================================================
 		"""
-
-		# Init
-		TestlinkObject.__init__(self,api = api)
-
 		# Get the "correct" id
 		if ('id' in kwargs) and ('tcversion_id' in kwargs):
 			# getTestCasesForTestSuite()
-			self.id = kwargs['id']
-			self.tc_version_id = kwargs['tcversion_id']
+			_id = kwargs['tcversion_id']
+			self.tc_id = kwargs['id']
 		elif ('id' in kwargs) and ('testcase_id' in kwargs):
 			# getTestCase()
-			self.id = kwargs['testcase_id']
-			self.tc_version_id = kwargs['id']
+			_id = kwargs['id']
+			self.tc_id = kwargs['testcase_id']
 		elif ('tc_id' in kwargs) and ('tcversion_id' in kwargs):
 			# getTestCasesForTestPlan
-			self.id = kwargs['tc_id']
-			self.tc_version_id = kwargs['tcversion_id']
+			_id = kwargs['tcversion_id']
+			self.tc_id = kwargs['tc_id']
 
 		# Get the "correct" name
 		if ('name' in kwargs):
-			self.name = kwargs['name']
+			_name = kwargs['name']
 		elif ('tcase_name' in kwargs):
-			self.name = kwargs['tcase_name']
+			_name = kwargs['tcase_name']
+
+		# Init
+		TestlinkObject.__init__(self,_id,_name,api = api)
 
 		# Set the "correct" external id
 		if ('tc_external_id' in kwargs):
@@ -1722,7 +1721,7 @@ class TestCase(TestlinkObject):
 
 	def getLastExecutionResult(self,testplanid,platformid=None,platformname=None,buildid=None,buildname=None,bugs=False):
 		try:
-			resp = self._api.getLastExecutionResult(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
+			resp = self._api.getLastExecutionResult(testplanid,self.tc_id,self.external_id,platformid,platformname,buildid,buildname,bugs)
 			if isinstance(resp,list) and len(resp)==1:
 				resp = resp[0]
 			return TestCase.Execution(api=self._api,**resp)
@@ -1735,7 +1734,7 @@ class TestCase(TestlinkObject):
 
 	def getExecutions(self,testplanid,platformid=None,platformname=None,buildid=None,buildname=None,bugs=False):
 		try:
-			resp = self._api.getExecutions(testplanid,self.id,self.external_id,platformid,platformname,buildid,buildname,bugs)
+			resp = self._api.getExecutions(testplanid,self.tc_id,self.external_id,platformid,platformname,buildid,buildname,bugs)
 			if len(resp)==0:
 				return []
 			else:
@@ -1750,13 +1749,13 @@ class TestCase(TestlinkObject):
 	def deleteLastExecution(self,testplanid):
 		# Update last execution
 		last = self.getLastExecutionResult(testplanid)
-		self._api.deleteExecution(last.id)
+		self._api.deleteExecution(last.tc_id)
 
 	def reportResult(self,testplanid,buildid,status,notes=None,overwrite=False,execduration=None):
 		self._api.reportTCResult(
 			testplanid = testplanid,\
 			status = status,\
-			testcaseid = self.id,\
+			testcaseid = self.tc_id,\
 			testcaseexternalid = self.external_id,\
 			notes = notes,\
 			platformid = self.platform_id,\
@@ -1766,7 +1765,7 @@ class TestCase(TestlinkObject):
 		)
 
 	def getAttachments(self):
-		return self._api.getTestCaseAttachments(self.id,self.external_id)
+		return self._api.getTestCaseAttachments(self.tc_id,self.external_id)
 
 	def getCustomFieldDesignValue(self,fieldname,details=CustomFieldDetails.VALUE_ONLY):
 		"""Returns the custom field design value for the specified custom field
