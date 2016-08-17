@@ -157,7 +157,7 @@ class Testlink_XML_RPC_API(object):
 			# Call the actual method
 			fn = getattr(self._proxy,method)
 			resp = fn(kwargs)
-			log.debug("Response: %s" % str(resp))
+			log.debug(u"Response: %s" % unicode(resp))
 		except xmlrpclib.Fault,f:
 			# If method is not supported, raise NotSupported
 			# Otherwise re-raise original error
