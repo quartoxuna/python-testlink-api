@@ -1785,7 +1785,7 @@ class TestCase(TestlinkObject):
 					details = details\
 				)
 		# If retrieved the value only, we can cache it
-		if details == CustomFieldDetails.VALUE_ONLY:
+		if value is not None and (details == CustomFieldDetails.VALUE_ONLY):
 			self.customfields[fieldname] = value
 		return value
 
