@@ -907,6 +907,7 @@ class TestPlan(TestlinkObject):
 		# Use all possible API params to speed up API call
 		try:
 			response = self._api.getTestCasesForTestPlan(\
+									testprojectid = self.getTestProject().id,\
 									testplanid = self.id,\
 									testcaseid = id,\
 									buildid = buildid,\

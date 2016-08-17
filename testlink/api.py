@@ -710,6 +710,8 @@ class Testlink_XML_RPC_API(object):
 		"""Returns a single TestSuite specified by the internal ID
 		@param devkey: Testlink developer key
 		@type devkey: str
+		@param testprojectid: The internal ID of the parent TestProject
+		@type testprojectid: int
 		@param testsuiteid: The internal ID of the TestSuite
 		@type testsuiteid: int
 		@returns: Matching TestSuite
@@ -1004,10 +1006,12 @@ class Testlink_XML_RPC_API(object):
 		return self._query("tl.getTestCasesForTestSuite", **arguments)
 	
 	@TLVersion("1.0")
-	def getTestCasesForTestPlan(self, testplanid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executestatus=None, executiontype=None, getstepsinfo=False, details='full', devkey=None):
+	def getTestCasesForTestPlan(self, testprojectid, testplanid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executestatus=None, executiontype=None, getstepsinfo=False, details='full', devkey=None):
 		"""Returns all TestCases for a specified TestPlan
 		@param devkey: Testlink developer key
 		@type devkey: str
+		@param testprojectid: The internal ID of the parent TestProject
+		@type testprojectid: int
 		@param testplanid: The internal ID of the TestPlan
 		@type testplanid: int
 		@param testcaseid: <OPTIONAL> The internal ID of the TestCase
@@ -1035,6 +1039,7 @@ class Testlink_XML_RPC_API(object):
 		"""
 		arguments = {
 				"devKey"        : devkey,          \
+				"testprojectid" : testprojectid,   \
 				"testplanid"    : testplanid,      \
 				"testcaseid"    : testcaseid,      \
 				"buildid"       : buildid,         \
