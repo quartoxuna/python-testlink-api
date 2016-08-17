@@ -1047,9 +1047,9 @@ class Testlink_XML_RPC_API(object):
 				"keywords"      : keywords,        \
 				"executed"      : executed,        \
 				"assignedto"    : assignedto,      \
-				"executestatus" : executestatus, \
+				"executestatus" : executestatus,   \
 				"executiontype" : executiontype,   \
-				"getstepsinfo"  : getstepsinfo      \
+				"getstepsinfo"  : getstepsinfo     \
 			}
 
 		if (self._tl_version >= Version("1.9.4")) or TLVersion.IGNORE:
