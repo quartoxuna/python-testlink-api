@@ -33,4 +33,4 @@ class TestCaseTests(unittest.TestCase):
 
 		obj = TestCase(name=name,external_id=ext_id)
 		string = str(obj)
-		self.assertEqual(string, "TestCase %s-%s: %s" % (project.prefix,ext_id,name))
+		self.assertEqual(string, "Testcase %s-%s: %s" % (project.prefix,ext_id,name))

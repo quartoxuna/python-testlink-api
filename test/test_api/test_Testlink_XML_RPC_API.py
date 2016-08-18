@@ -808,7 +808,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 		"""'getTesTCasesForTestPlan' (1.0 /1.9.4)"""
 		query.return_value = [randict("name","id"),randict("name","id"),randict("name","id")]
 		# Check default params
-		defaults = randict("testplanid")
+		defaults = randict("testprojectid","testplanid")
 		self.assertEquals(self._api.getTestCasesForTestPlan(**defaults),query.return_value)
 		query.assert_called_with('tl.getTestCasesForTestPlan',\
 						devKey = None,\
@@ -824,7 +824,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 						**defaults\
 					)
 		# Check with specified parameters
-		non_defaults = randict("testplanid","testcaseid","buildid","keywordid","keywords","executed","assignedto","executestatus","executiontype","getstepsinfo")
+		non_defaults = randict("testprojectid","testplanid","testcaseid","buildid","keywordid","keywords","executed","assignedto","executestatus","executiontype","getstepsinfo")
 		self.assertEquals(self._api.getTestCasesForTestPlan(**non_defaults),query.return_value)
 		query.assert_called_with('tl.getTestCasesForTestPlan',\
 						devKey = None,\
