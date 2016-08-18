@@ -1525,12 +1525,16 @@ class TestCase(TestlinkObject):
 			# getTestCasesForTestPlan
 			_id = kwargs['tcversion_id']
 			self.tc_id = kwargs['tc_id']
+		else:
+			_id = None
 
 		# Get the "correct" name
 		if ('name' in kwargs):
 			_name = kwargs['name']
 		elif ('tcase_name' in kwargs):
 			_name = kwargs['tcase_name']
+		else:
+			_name = None
 
 		# Init
 		TestlinkObject.__init__(self,_id,_name,api = api)
