@@ -1780,17 +1780,18 @@ class TestCase(TestlinkObject):
 		@returns: Custom Field value or informations
 		@rtype: mixed
 		"""
-		value = self._api.getTestCaseCustomFieldDesignValue(
-					testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
-					version = int(self.version),\
-					testprojectid = self.getTestProject().id,\
-					customfieldname = fieldname,\
-					details = details\
-				)
-		# If retrieved the value only, we can cache it
-		if value is not None and (details == CustomFieldDetails.VALUE_ONLY):
-			self.customfields[fieldname] = value
-		return value
+		if fieldname not in self.customfields.keys():
+			value = self._api.getTestCaseCustomFieldDesignValue(
+						testcaseexternalid = "%s-%s" % (str(self.getTestProject().prefix),str(self.external_id)),\
+						version = int(self.version),\
+						testprojectid = self.getTestProject().id,\
+						customfieldname = fieldname,\
+						details = details\
+					)
+			# If retrieved the value only, we can cache it
+			if value is not None and (details == CustomFieldDetails.VALUE_ONLY):
+				self.customfields[fieldname] = value
+		return self.customfields[fieldname]
 
 	def update(self,testcasename=None,summary=None,preconditions=None,steps=None,importance=None,executiontype=None,status=None,exec_duration=None):
 		"""Updates the the current TestCase.
