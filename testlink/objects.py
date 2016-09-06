@@ -1728,7 +1728,9 @@ class TestCase(TestlinkObject):
 			resp = self._api.getLastExecutionResult(testplanid,self.tc_id,self.external_id,platformid,platformname,buildid,buildname,bugs)
 			if isinstance(resp,list) and len(resp)==1:
 				resp = resp[0]
-			return TestCase.Execution(api=self._api,**resp)
+			execution = TestCase.Execution(api=self._api,**resp)
+			if execution.id > 0:
+				return execution
 		except APIError,ae:
 			if ae.errorCode == 3030:
 				# Testcase not linked to testplan
