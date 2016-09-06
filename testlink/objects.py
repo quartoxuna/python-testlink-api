@@ -479,7 +479,7 @@ class TestProject(TestlinkObject):
 						except AttributeError:
 							raise AttributeError("Invalid Search Parameter for TestPlan: %s" % key)
 					if tplan is not None:
-						yield TestPlan(api=self._api,parent_testproject=self,**plan)
+						yield tplan
 			# Return all found TestPlans
 			else:
 				for tplan in plans:
