@@ -1688,7 +1688,7 @@ class TestCase(TestlinkObject):
 				self.__testsuite = ts
 			else:
 				# We have to get ourself
-				this = self.getTestProject().getTestCase(id=self.id)
+				this = self.getTestProject().getTestCase(id=self.tc_id)
 				self.__testsuite = this.testsuite
 				return self.__testsuite
 	def _set_testsuite(self,suite):
@@ -1699,7 +1699,7 @@ class TestCase(TestlinkObject):
 		if self.__steps is not None:
 			return self.__steps
 		else:
-			case = self.getTestProject().getTestCase(id=self.id,external_id=self.external_id,version=self.version)
+			case = self.getTestProject().getTestCase(id=self.tc_id,external_id=self.external_id,version=self.version)
 			self.__steps = case.__steps
 			return self.__steps
 	def _set_steps(self,steps):
