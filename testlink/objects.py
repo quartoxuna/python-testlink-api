@@ -1710,7 +1710,7 @@ class TestCase(TestlinkObject):
 		if self.__preconditions is not None:
 			return self.__preconditions
 		else:
-			case = self.getTestProject().getTestCase(id=self.id,version=self.version)
+			case = self.getTestProject().getTestCase(id=self.tc_id,version=self.version)
 			self.__preconditions = case.__preconditions
 			return self.__preconditions
 	def _set_preconditions(self,preconditions):
