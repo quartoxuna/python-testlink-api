@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103
+# pylint: disable=C0301
 
 """
 @author: Kai Borowiak
@@ -8,29 +10,29 @@
 
 # IMPORTS
 import unittest
-import inspect
 from mock import patch, Mock
 
-from .. import randint, randput, randict
+from .. import randint, randput
 
 from testlink.objects import TestCase
 
 class TestCaseTests(unittest.TestCase):
+    """TestCase Object Tests"""
 
-	def __init__(self,*args,**kwargs):
-		super(TestCaseTests,self).__init__(*args,**kwargs)
-		self._testMethodDoc = "TestCase: " + self._testMethodDoc
+    def __init__(self, *args, **kwargs):
+        super(TestCaseTests, self).__init__(*args, **kwargs)
+        self._testMethodDoc = "TestCase: " + self._testMethodDoc
 
-	@patch('testlink.objects.TestCase.getTestProject')
-	def test__str__(self,patch):
-		"""String representation"""
-		ext_id = randint()
-		name = randput()
-		
-		project = Mock()
-		project.prefix = randput()
-		patch.return_value = project
+    @patch('testlink.objects.TestCase.getTestProject')
+    def test__str__(self, _patch):
+        """String representation"""
+        ext_id = randint()
+        name = randput()
 
-		obj = TestCase(name=name,external_id=ext_id)
-		string = str(obj)
-		self.assertEqual(string, "Testcase %s-%s: %s" % (project.prefix,ext_id,name))
+        project = Mock()
+        project.prefix = randput()
+        _patch.return_value = project
+
+        obj = TestCase(name=name, external_id=ext_id)
+        string = str(obj)
+        self.assertEqual(string, "Testcase %s-%s: %s" % (project.prefix, ext_id, name))

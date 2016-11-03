@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103
+# pylint: disable=C0301
 
 """
 @author: Kai Borowiak
@@ -8,25 +10,24 @@
 
 # IMPORTS
 import unittest
-import inspect
-from mock import patch, Mock
 
-from .. import randint, randput, randict
+from .. import randput, randint
 
 from testlink.objects import TestCase
 
 class StepTests(unittest.TestCase):
+    """Step Object Tests"""
 
-	def __init__(self,*args,**kwargs):
-		super(StepTests,self).__init__(*args,**kwargs)
-		self._testMethodDoc = "TestCase.Step: " + self._testMethodDoc
+    def __init__(self, *args, **kwargs):
+        super(StepTests, self).__init__(*args, **kwargs)
+        self._testMethodDoc = "TestCase.Step: " + self._testMethodDoc
 
-	def test__str__(self):
-		"""String representation"""
-		number = randint()
-		actions = randput()
-		results = randput()
+    def test__str__(self):
+        """String representation"""
+        number = randint()
+        actions = randput()
+        results = randput()
 
-		obj = TestCase.Step(step_number=number,actions=actions,expected_results = results)
-		string = str(obj)
-		self.assertEqual(string, "Step %d:\n%s\n%s" % (number,actions,results))
+        obj = TestCase.Step(step_number=number, actions=actions, expected_results=results)
+        string = str(obj)
+        self.assertEqual(string, "Step %d:\n%s\n%s" % (number, actions, results))

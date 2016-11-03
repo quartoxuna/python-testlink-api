@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103
+# pylint: disable=C0301
 
 """
 @author: Kai Borowiak
@@ -8,35 +10,34 @@
 
 # IMPORTS
 import unittest
-import inspect
 import datetime
-from mock import patch, Mock
 
-from .. import randint, randput, randict
+from .. import randput, randint
 
 from testlink.objects import TestCase
 from testlink.objects import DATETIME_FORMAT
 
 class ExecutionTests(unittest.TestCase):
+    """Execution Object Tests"""
 
-	def __init__(self,*args,**kwargs):
-		super(ExecutionTests,self).__init__(*args,**kwargs)
-		self._testMethodDoc = "TestCase.Execution: " + self._testMethodDoc
+    def __init__(self, *args, **kwargs):
+        super(ExecutionTests, self).__init__(*args, **kwargs)
+        self._testMethodDoc = "TestCase.Execution: " + self._testMethodDoc
 
-	def test__str__(self):
-		"""String representation"""
-		id_ = randint()
-		status = randput(1)
-		notes = randput()
+    def test__str__(self):
+        """String representation"""
+        id_ = randint()
+        status = randput(1)
+        notes = randput()
 
-		obj = TestCase.Execution(id=id_,status=status,notes=notes)
-		string = str(obj)
-		self.assertEqual(string, "Execution (%d) [%s] %s" % (id_,status,notes))
+        obj = TestCase.Execution(id=id_, status=status, notes=notes)
+        string = str(obj)
+        self.assertEqual(string, "Execution (%d) [%s] %s" % (id_, status, notes))
 
-	def test_datetime_conversion(self):
-		"""Datetime Conversion"""
-		date = "2020-10-20 12:34:45"
-		ts = datetime.datetime.strptime(date,DATETIME_FORMAT)
+    def test_datetime_conversion(self):
+        """Datetime Conversion"""
+        date = "2020-10-20 12:34:45"
+        ts = datetime.datetime.strptime(date, DATETIME_FORMAT)
 
-		execution = TestCase.Execution(execution_ts=date)
-		self.assertEquals(ts,execution.execution_ts)
+        execution = TestCase.Execution(execution_ts=date)
+        self.assertEquals(ts, execution.execution_ts)
