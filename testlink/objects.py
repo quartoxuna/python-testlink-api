@@ -18,7 +18,15 @@ from api import Testlink_XML_RPC_API
 from exceptions import ConnectionError
 from exceptions import NotSupported
 from exceptions import APIError
-from enums import *
+
+from enums import API_TYPE as APIType
+from enums import EXECUTION_TYPE as ExecutionType
+from enums import IMPORTANCE_LEVEL as ImportanceLevel
+from enums import CUSTOM_FIELD_DETAILS as CustomFieldDetails
+from enums import DUPLICATE_STRATEGY as DuplicateStrategy
+from enums import REQSPEC_TYPE as RequirementSpecificationType
+from enums import REQ_STATUS as RequirementStatus
+from enums import REQ_TYPE as RequirementType
 
 __all__ = ["Testlink","TestProject","TestPlan","Build","Platform",\
 		"TestSuite","TestCase","RequirementSpecification",\

@@ -19,8 +19,8 @@ from testlink.api import Testlink_XML_RPC_API
 from testlink.exceptions import NotSupported
 from testlink.exceptions import APIError
 from testlink.exceptions import ConnectionError
-from testlink.enums import ExecutionType
-from testlink.enums import ImportanceLevel
+from testlink.enums import EXECUTION_TYPE as ExecutionType
+from testlink.enums import IMPORTANCE_LEVEL as ImportanceLevel
 
 class Testlink_XML_RPC_API_Tests(unittest.TestCase):
 

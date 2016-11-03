@@ -17,7 +17,7 @@ from testlink.api import Testlink_XML_RPC_API
 from testlink.objects import Testlink
 from testlink.objects import TestProject
 from testlink.exceptions import *
-from testlink.enums import *
+from testlink.enums import API_TYPE as APIType
 
 class TestlinkTests(unittest.TestCase):
 

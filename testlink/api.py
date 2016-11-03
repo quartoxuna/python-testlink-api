@@ -15,12 +15,12 @@ from exceptions import NotSupported
 from exceptions import APIError
 from exceptions import ConnectionError
 
-from enums import ExecutionType
-from enums import ImportanceLevel
-from enums import DuplicateStrategy
-from enums import RequirementSpecificationType
-from enums import RequirementStatus
-from enums import RequirementType
+from enums import EXECUTION_TYPE as ExecutionType
+from enums import IMPORTANCE_LEVEL as ImportanceLevel
+from enums import DUPLICATE_STRATEGY as DuplicateStrategy
+from enums import REQSPEC_TYPE as RequirementSpecificationType
+from enums import REQ_STATUS as RequirementStatus
+from enums import REQ_TYPE as RequirementType
 
 from distutils.version import LooseVersion as Version
 from urlparse import urlparse
