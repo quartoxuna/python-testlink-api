@@ -13,7 +13,7 @@ import time
 from datetime import datetime
 from distutils.version import LooseVersion as Version
 
-from log import log
+from log import LOGGER as log
 from api import Testlink_XML_RPC_API
 from exceptions import ConnectionError
 from exceptions import NotSupported
@@ -121,7 +121,7 @@ class Testlink(object):
 					pass
 				yield TestProject(api=self._api,**response)
 			except APIError,ae:
-				if ae.errorCode == 7011:
+				if ae.error_code == 7011:
 					# No TestProject found at all
 					return
 				else:

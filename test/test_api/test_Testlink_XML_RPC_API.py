@@ -68,8 +68,8 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
         try:
             self._api._query("error")
         except APIError, error:
-            self.assertEquals(error.errorCode, 1337)
-            self.assertEquals(error.errorString, "SPAM!")
+            self.assertEquals(error.error_code, 1337)
+            self.assertEquals(error.error_msg, "SPAM!")
 
         # Check correct variable forwarding
         data = randict("a", "b", "c")
@@ -619,12 +619,12 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
         self.assertEquals(self._api.createTestCase(**defaults), query.return_value)
         query.assert_called_with('tl.createTestCase',\
                         devKey=None,\
-                        steps=[],\
+                        steps=None,\
                         preconditions=None,\
                         importance=ImportanceLevel.MEDIUM,\
                         executiontype=ExecutionType.MANUAL,\
                         order=None,\
-                        customfields={},\
+                        customfields=None,\
                         checkduplicatedname=True,\
                         actiononduplicatedname='block',\
                         **defaults\
