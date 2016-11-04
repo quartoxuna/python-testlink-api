@@ -15,7 +15,6 @@ import datetime
 from .. import randput, randint
 
 from testlink.objects import TestCase
-from testlink.objects import DATETIME_FORMAT
 
 class ExecutionTests(unittest.TestCase):
     """Execution Object Tests"""
@@ -37,7 +36,7 @@ class ExecutionTests(unittest.TestCase):
     def test_datetime_conversion(self):
         """Datetime Conversion"""
         date = "2020-10-20 12:34:45"
-        ts = datetime.datetime.strptime(date, DATETIME_FORMAT)
+        ts = datetime.datetime.strptime(date, TestCase.DATETIME_FORMAT)
 
         execution = TestCase.Execution(execution_ts=date)
         self.assertEquals(ts, execution.execution_ts)

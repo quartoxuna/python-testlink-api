@@ -17,6 +17,8 @@ from mock import patch
 
 from .. import randput, randict, ServerMock, generate
 
+from testlink.objects.tl_object import TestlinkObject
+
 from testlink.api import Testlink_XML_RPC_API
 from testlink.objects import Testlink
 from testlink.objects import TestProject
@@ -177,9 +179,9 @@ class CompatTests(unittest.TestCase):
     def test_datetime_conversion(self):
         """Datetime Backwards compatability Python 2.5<"""
         from datetime import datetime
-        from testlink.objects import DATETIME_FORMAT
-        from testlink.objects import _strptime
+        from testlink.objects.tl_object import TestlinkObject
+        from testlink.objects.tl_object import _strptime
         date_string = "2000-12-23 12:34:45"
-        datetime_obj = datetime.strptime(date_string, DATETIME_FORMAT)
-        strptime_obj = _strptime(date_string, DATETIME_FORMAT)
+        datetime_obj = datetime.strptime(date_string, TestlinkObject.DATETIME_FORMAT)
+        strptime_obj = _strptime(date_string, TestlinkObject.DATETIME_FORMAT)
         self.assertEquals(datetime_obj, strptime_obj)

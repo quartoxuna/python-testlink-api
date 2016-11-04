@@ -12,7 +12,7 @@ import unittest
 
 from .. import randint, randput
 
-from testlink.objects import TestlinkObject
+from testlink.objects.tl_object import TestlinkObject
 
 class TestlinkObjectTests(unittest.TestCase):
     """TestlinkObject Object Tests"""
