@@ -162,7 +162,7 @@ class TestProject(TestlinkObject):
             try:
                 response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
             except APIError, ae:
-                if ae.errorCode == 7008:
+                if ae.error_code == 7008:
                     # TestProject has no TestSuites
                     return
                 else:
@@ -254,7 +254,7 @@ class TestProject(TestlinkObject):
                 if len(response) == 1:
                     _id = response[0]['id']
             except APIError, ae:
-                if ae.errorCode == 5030:
+                if ae.error_code == 5030:
                     # If no testcase has been found here,\
                     # there is no need, to search any further
                     return

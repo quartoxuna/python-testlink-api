@@ -156,7 +156,7 @@ class TestSuite(TestlinkObject):
                                 tcase = None
                                 break
                     except APIError, ae:
-                        if ae.errorCode == 9000:
+                        if ae.error_code == 9000:
                             # Neither found by custom field
                             raise AttributeError("Invalid Search Parameter for TestCase: %s" % key)
                         else:

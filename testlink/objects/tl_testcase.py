@@ -552,7 +552,7 @@ class TestCase(TestlinkObject):
             if execution.id > 0:
                 return execution
         except APIError, ae:
-            if ae.errorCode == 3030:
+            if ae.error_code == 3030:
                 # Testcase not linked to testplan
                 return
             else:
@@ -567,7 +567,7 @@ class TestCase(TestlinkObject):
             else:
                 return [TestCase.Execution(api=self._api, **exc) for exc in resp.values()]
         except APIError, ae:
-            if ae.errorCode == 3030:
+            if ae.error_code == 3030:
                 # Testcase not linked to testplan
                 return []
             else:

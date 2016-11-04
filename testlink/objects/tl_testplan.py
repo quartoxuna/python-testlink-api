@@ -114,7 +114,7 @@ class TestPlan(TestlinkObject):
         try:
             response = self._api.getTestPlanPlatforms(self.id)
         except APIError, ae:
-            if ae.errorCode == 3041:
+            if ae.error_code == 3041:
                 # No platforms linked at all
                 return
             else:
@@ -214,7 +214,7 @@ class TestPlan(TestlinkObject):
                                     getstepsinfo=True\
                                 )
         except APIError, ae:
-            if ae.errorCode == 3030:
+            if ae.error_code == 3030:
                 # TestCase not linked to TestPlan
                 return
             else:

@@ -8,10 +8,10 @@
 
 class NotSupported(Exception):
     """To be raised, if Testlink does not support the requested method
-    @cvar errorName: Method, that is not supported
-    @type errorName: str
-    @cvar errorCode: Default xmlrpclib.Fault code -32601
-    @type errorCode: int
+    @cvar error_msg: Method, that is not supported
+    @type error_msg: str
+    @cvar error_code: Default xmlrpclib.Fault code -32601
+    @type error_code: int
     """
     error_code = -32601
     def __init__(self, fn_name):
@@ -26,10 +26,10 @@ class NotSupported(Exception):
 class APIError(Exception):
     """To be raised, if the Testlink API returns an error struct
     @note: Default error struct {'code':'123','message':'foo'}
-    @ivar errorCode: Testlink API Error Code
-    @type errorCode: int
-    @ivar errorString: Testlink API Error String
-    @type errorString: str
+    @ivar error_code: Testlink API Error Code
+    @type error_code: int
+    @ivar error_msg: Testlink API Error String
+    @type error_msg: str
     """
     def __init__(self, code='-1', message=''):
         """Initializes the Exception
