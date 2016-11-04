@@ -1,7 +1,25 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=star-args
+# -*- coding: utf-8 -*-
+
+"""TestPlan Object"""
 
 # IMPORTS
+from testlink.log import LOGGER as log
+
 from testlink.objects.tl_object import TestlinkObject
+from testlink.objects.tl_object import normalize_list
+
+from testlink.objects.tl_build import Build
+from testlink.objects.tl_platform import Platform
+from testlink.objects.tl_testcase import TestCase
+
+from testlink.exceptions import APIError
 
 class TestPlan(TestlinkObject):
     """Testlink TestPlan representation

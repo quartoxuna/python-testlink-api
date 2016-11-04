@@ -1,7 +1,24 @@
 #!/usr/bin/env python
+# pylint: disable=invalid-name
+# pylint: disable=line-too-long
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-branches
+# pylint: disable=star-args
+# -*- coding: utf-8 -*.
+
+"""TestProject Object"""
 
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObject
+from testlink.objects.tl_object import normalize_list
+
+from testlink.objects.tl_testsuite import TestSuite
+from testlink.objects.tl_testcase import TestCase
+from testlink.objects.tl_reqspec import RequirementSpecification
+from testlink.objects.tl_testplan import TestPlan
+
+from testlink.exceptions import APIError
 
 class TestProject(TestlinkObject):
     """Testlink TestProject representation

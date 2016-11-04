@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# pylint: disable=C0103
+# pylint: disable=C0301
+# pylint: disable=R0912
+# pylint: disable=W0142
+
+"""Testlink Object Wrapper"""
 
 # IMPORTS
 from testlink.log import LOGGER as log
@@ -9,15 +16,14 @@ from testlink.enums import API_TYPE as APIType
 from testlink.enums import DUPLICATE_STRATEGY as DuplicateStrategy
 
 from testlink.objects.tl_object import normalize_list
-from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_testproject import TestProject
 
 class Testlink(object):
     """Testlink Server implementation
     @ivar _url: URL of connected Testlink
     @type _url: str
-    @ivar _devkey: Valid Testlink developer key
-    @type _devkey: str
+    @ivar devkey: Valid Testlink developer key
+    @type devkey: str
     """
 
     def __init__(self, url, devkey, api=APIType.XML_RPC):
@@ -36,11 +42,10 @@ class Testlink(object):
         self._api_type = api
 
         # Log API Information
-        log_msg = "Testlink %s API Version %s at %s" % (self._api_type, self.getVersion(), self._url)
-        log.info(log_msg)
+        log.info("Testlink %s API Version %s at %s", self._api_type, self.getVersion(), self._url)
 
         # Set devkey globally
-        self._api._devkey = devkey
+        self._api.devkey = devkey
 
     def __str__(self):
         return "Testlink %s API Version %s at %s" % (self._api_type, self.getVersion(), self._url)
@@ -50,7 +55,7 @@ class Testlink(object):
         @return: Version
         @rtype: str
         """
-        return str(self._api._tl_version)
+        return str(self._api.tl_version)
 
     def iterTestProject(self, name=None, **params):
         """Iterates over TestProjects specified by parameters
@@ -176,7 +181,7 @@ class Testlink(object):
                     testprojectname=testproject.name\
                 )
 
-    def createTestSuite(self, suite, testproject, parent=None, order=0, on_duplicate=DuplicateStrategy.BLOCK):
+    def createTestSuite(self, suite, testproject, **kwargs):
         """Creates a new TestSuite for the specified parent objects using the current Testlink instance.
         @param suite: TestSuite to create
         @type suite: TestSuite
@@ -184,11 +189,14 @@ class Testlink(object):
         @type parent: mixed
         @param testproject: The parent TestProject
         @type testproject: TestProject
-        @param order: Order within the parent object
-        @type order: int
-        @param on_duplicate: Used duplicate strategy
-        @type on_duplicate: testlink.enums.DuplicateStrategy
+        @keyword parent: Parent testsuite ID
+        @keyword order: Order within the parent object
+        @keyword on_duplicate: Used duplicate strategy
         """
+        parent = kwargs.get('parent', None)
+        order = kwargs.get('order', 0)
+        on_duplicate = kwargs.get('on_duplicate', DuplicateStrategy.BLOCK)
+
         duplicate_check = False
         if on_duplicate is not None:
             duplicate_check = True
@@ -207,7 +215,7 @@ class Testlink(object):
                     actiononduplicatedname=on_duplicate\
                 )
 
-    def createTestCase(self, testcase, testsuite, testproject, authorlogin, order=0, on_duplicate=DuplicateStrategy.BLOCK):
+    def createTestCase(self, testcase, testsuite, testproject, authorlogin, **kwargs):
         """Creates a new TestCase for the specifies parent objects using the current Testlink instance.
         @param testcase: TestCase to create
         @type testcase: TestCase
@@ -217,11 +225,12 @@ class Testlink(object):
         @type testproject: TestProject
         @param authorlogin: Author Login to use
         @type authorlogin: str
-        @param order: Order within parent TestSuite
-        @type order: int
-        @param on_duplicate: Used duplicate strategy
-        @type on_duplicate: testlink.enums.DuplicateStrategy
+        @keyword order: Order within parent TestSuite
+        @keyword on_duplicate: Used duplicate strategy
         """
+        order = kwargs.get('order', 0)
+        on_duplicate = kwargs.get('on_duplicate', DuplicateStrategy.BLOCK)
+
         duplicate_check = False
         if on_duplicate is not None:
             duplicate_check = True

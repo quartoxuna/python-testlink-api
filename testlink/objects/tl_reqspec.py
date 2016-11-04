@@ -1,10 +1,22 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=star-args
+# -*- coding: utf-8 -*-
+
+"""ReqSpec Object"""
 
 # IMPORTS
 import datetime
 
-from tl_object import TestlinkObject
-from tl_object import _strptime
+from testlink.objects.tl_object import TestlinkObject
+from testlink.objects.tl_object import normalize_list
+from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+
+from testlink.objects.tl_req import Requirement
+
 from testlink.enums import REQSPEC_TYPE as RequirementSpecificationType
 
 class RequirementSpecification(TestlinkObject):
@@ -46,11 +58,11 @@ class RequirementSpecification(TestlinkObject):
         self.total_req = int(total_req)
         self.node_order = int(node_order)
         try:
-            self.creation_ts = _strptime(str(creation_ts), TestlinkObject.DATETIME_FORMAT)
+            self.creation_ts = strptime(str(creation_ts), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.creation_ts = datetime.datetime.min
         try:
-            self.modification_ts = _strptime(str(modification_ts), TestlinkObject.DATETIME_FORMAT)
+            self.modification_ts = strptime(str(modification_ts), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.modification_ts = datetime.datetime.min
         self._parent_testproject = parent_testproject

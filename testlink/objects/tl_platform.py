@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+"""Platform representation"""
+
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObject
 
+# pylint: disable=too-few-public-methods
 class Platform(TestlinkObject):
     """Testlink Platform representation
     @ivar notes: Platform notes

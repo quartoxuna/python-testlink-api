@@ -113,6 +113,24 @@ class Testlink_XML_RPC_API(object):
             # Mocked _query during tests
             return
 
+    @property
+    def devkey(self):
+        """Getter for _devkey"""
+        return self._devkey
+
+    @devkey.setter
+    def devkey(self, value):
+        """Setter for _devkey"""
+        if self._devkey is None:
+            self._devkey = value
+        else:
+            raise AttributeError("Cannot overwrite current Developer Key!")
+
+    @property
+    def tl_version(self):
+        """Getter for _tl_version"""
+        return self._tl_version
+
     def _reconnect(self):
         """Reconnects to initially specified URL"""
         if self._proxy is not None:

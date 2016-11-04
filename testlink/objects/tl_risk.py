@@ -1,10 +1,17 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
+# pylint: disable=too-few-public-methods
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-arguments
+# -*- coding: utf-8 -*-
+
+"""Risk Object"""
 
 # IMPORTS
 import datetime
 
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import _strptime
+from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
 
 class Risk(TestlinkObject):
     """Testlink Risk representation"""
@@ -34,7 +41,7 @@ class Risk(TestlinkObject):
         self.description = description
         self.author_id = int(author_id)
         try:
-            self.creation_ts = _strptime(str(creation_ts), TestlinkObject.DATETIME_FORMAT)
+            self.creation_ts = strptime(str(creation_ts), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.creation_ts = datetime.datetime.min
         try:
@@ -42,7 +49,7 @@ class Risk(TestlinkObject):
         except ValueError:
             self.modifier_id = -1
         try:
-            self.modification_ts = _strptime(str(modification_ts), TestlinkObject.DATETIME_FORMAT)
+            self.modification_ts = strptime(str(modification_ts), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.modification_ts = datetime.datetime.min
         self._requirement_id = requirement_id

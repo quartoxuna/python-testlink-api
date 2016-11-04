@@ -1,14 +1,25 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=star-args
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
+
+"""Requirement Object"""
 
 # IMPORTS
 import datetime
 
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import _strptime
+from testlink.objects.tl_object import normalize_list
+from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+
+from testlink.objects.tl_risk import Risk
 
 from testlink.enums import REQ_TYPE as RequirementType
 from testlink.enums import REQ_STATUS as RequirementStatus
 
+# pylint: disable=too-many-instance-attributes
 class Requirement(TestlinkObject):
     """Testlink Requirement representation"""
 
@@ -71,11 +82,11 @@ class Requirement(TestlinkObject):
         except ValueError:
             self.modifier_id = -1
         try:
-            self.creation_ts = _strptime(str(creation_ts), TestlinkObject.DATETIME_FORMAT)
+            self.creation_ts = strptime(str(creation_ts), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.creation_ts = datetime.datetime.min
         try:
-            self.modification_ts = _strptime(str(modification_ts), TestlinkObject.DATETIME_FORMAT)
+            self.modification_ts = strptime(str(modification_ts), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.modification_ts = datetime.datetime.min
         self._parent_testproject = parent_testproject

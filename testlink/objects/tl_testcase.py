@@ -1,10 +1,26 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=star-args
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-few-public-methods
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
+# pylint: disable=protected-access
+# -*- coding: utf-8 -*-
+
+"""TestCase Object"""
 
 # IMPORTS
 import datetime
 
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import _strptime
+from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+
+from testlink.exceptions import APIError
+from testlink.exceptions import NotSupported
 
 from testlink.enums import EXECUTION_TYPE as ExecutionType
 from testlink.enums import IMPORTANCE_LEVEL as ImportanceLevel
@@ -124,7 +140,7 @@ class TestCase(TestlinkObject):
             self.notes = notes
             self.execution_type = int(execution_type)
             try:
-                self.execution_ts = _strptime(str(execution_ts), TestlinkObject.DATETIME_FORMAT)
+                self.execution_ts = strptime(str(execution_ts), TestlinkObject.DATETIME_FORMAT)
             except ValueError:
                 self.execution_ts = datetime.datetime.min
             self.tester_id = int(tester_id)
@@ -368,7 +384,7 @@ class TestCase(TestlinkObject):
         # Try to get creation ts
         if 'creation_ts' in kwargs:
             try:
-                self.creation_ts = _strptime(kwargs['creation_ts'], TestlinkObject.DATETIME_FORMAT)
+                self.creation_ts = strptime(kwargs['creation_ts'], TestlinkObject.DATETIME_FORMAT)
             except ValueError:
                 # Cannot convert
                 self.creation_ts = None
@@ -387,7 +403,7 @@ class TestCase(TestlinkObject):
         # Try to get modification ts
         if 'modification_ts' in kwargs:
             try:
-                self.modification_ts = _strptime(kwargs['modification_ts'], TestlinkObject.DATETIME_FORMAT)
+                self.modification_ts = strptime(kwargs['modification_ts'], TestlinkObject.DATETIME_FORMAT)
             except ValueError:
                 # Cannot convert
                 self.modification_ts = None

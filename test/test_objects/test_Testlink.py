@@ -180,8 +180,8 @@ class CompatTests(unittest.TestCase):
         """Datetime Backwards compatability Python 2.5<"""
         from datetime import datetime
         from testlink.objects.tl_object import TestlinkObject
-        from testlink.objects.tl_object import _strptime
+        from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
         date_string = "2000-12-23 12:34:45"
         datetime_obj = datetime.strptime(date_string, TestlinkObject.DATETIME_FORMAT)
-        strptime_obj = _strptime(date_string, TestlinkObject.DATETIME_FORMAT)
+        strptime_obj = strptime(date_string, TestlinkObject.DATETIME_FORMAT)
         self.assertEquals(datetime_obj, strptime_obj)

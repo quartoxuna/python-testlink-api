@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
 
-__all__ = ["_strptime","TestlinkObject","normalize_list"]
+"""Helper Methods and Classes"""
+
+__all__ = ["_STRPTIME_FUNC", "TestlinkObject", "normalize_list"]
 
 # IMPORTS
 import time
@@ -8,9 +11,9 @@ import datetime
 
 # Backwards compatability methods
 try:
-    _strptime = datetime.datetime.strptime
+    _STRPTIME_FUNC = datetime.datetime.strptime
 except AttributeError:
-    _strptime = lambda date_string, fmt: datetime.datetime(*(time.strptime(date_string, fmt)[0:6]))
+    _STRPTIME_FUNC = lambda date_string, fmt: datetime.datetime((time.strptime(date_string, fmt)[0:6]).values())
 
 # Helper method
 def normalize_list(res):
@@ -29,7 +32,7 @@ def normalize_list(res):
     else:
         return res
 
-class TestlinkObject(object):
+class TestlinkObject(object): # pylint: disable=too-few-public-methods
     """Abstract Testlink Object
     @ivar id: Internal Testlink Id of the object
     @type id: int
@@ -51,7 +54,7 @@ class TestlinkObject(object):
         @keyword kwargs: Additonal attributes
         """
         if _id is not None:
-            self.id = int(_id)
+            self.id = int(_id) # pylint: disable=invalid-name
         else:
             self.id = _id
         self.name = name

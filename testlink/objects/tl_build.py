@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# pylint: disable=too-few-public-methods
+
+"""Build Object"""
 
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObject
@@ -16,5 +19,6 @@ class Build(TestlinkObject):
         self.notes = notes
 
     def __str__(self):
+        """Returns string representation"""
         return "Build: %s" % self.name
 
