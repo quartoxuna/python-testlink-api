@@ -43,8 +43,9 @@ class TestProject(TestlinkObject):
     @ivar color: Assigned color of TestProject
     @type color: str"""
 
-    __slots__ = ("notes", "prefix", "active", "public", "requirements",\
-            "priority", "automation", "inventory", "tc_counter", "color")
+    __slots__ = ("notes", "prefix", "active", "public", "requirements_enabled",\
+            "priority_enabled", "automation_enabled", "inventory_enabled",\
+            "tc_counter", "color")
 
     def __init__(
             self,\
@@ -66,16 +67,16 @@ class TestProject(TestlinkObject):
             opt['automationEnabled'] = 0
             opt['inventoryEnabled'] = 0
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
-        self.notes = notes
-        self.prefix = prefix
+        self.notes = unicode(notes)
+        self.prefix = str(prefix)
         self.active = bool(int(active))
         self.public = bool(int(is_public))
-        self.requirements = bool(int(opt['requirementsEnabled']))
-        self.priority = bool(int(opt['testPriorityEnabled']))
-        self.automation = bool(int(opt['automationEnabled']))
-        self.inventory = bool(int(opt['inventoryEnabled']))
+        self.requirements_enabled = bool(int(opt['requirementsEnabled']))
+        self.priority_enabled = bool(int(opt['testPriorityEnabled']))
+        self.automation_enabled = bool(int(opt['automationEnabled']))
+        self.inventory_enabled = bool(int(opt['inventoryEnabled']))
         self.tc_counter = int(tc_counter)
-        self.color = color
+        self.color = str(color)
 
     def __str__(self):
         return "%s" % self.name
