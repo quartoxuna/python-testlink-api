@@ -33,7 +33,7 @@ class Testlink(object):
         @param devkey: Testlink developer key
         @type devkey: str
         """
-        self._url = url
+        self._url = str(url)
         # Init raw API
         if api == APIType.XML_RPC:
             self._api = Testlink_XML_RPC_API(url)
@@ -45,7 +45,7 @@ class Testlink(object):
         log.info("Testlink %s API Version %s at %s", self._api_type, self.getVersion(), self._url)
 
         # Set devkey globally
-        self._api.devkey = devkey
+        self._api.devkey = str(devkey)
 
     def __str__(self):
         return "Testlink %s API Version %s at %s" % (self._api_type, self.getVersion(), self._url)
