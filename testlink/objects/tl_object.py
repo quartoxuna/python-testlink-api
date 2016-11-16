@@ -56,8 +56,8 @@ class TestlinkObject(object): # pylint: disable=too-few-public-methods
         if _id is not None:
             self.id = int(_id) # pylint: disable=invalid-name
         else:
-            self.id = _id
-        self.name = name
+            self.id = -1
+        self.name = unicode(name)
         self._api = api
 
     def __str__(self):
