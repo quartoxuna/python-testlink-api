@@ -25,6 +25,7 @@ from testlink.exceptions import NotSupported
 from testlink.enums import EXECUTION_TYPE as ExecutionType
 from testlink.enums import IMPORTANCE_LEVEL as ImportanceLevel
 from testlink.enums import CUSTOM_FIELD_DETAILS as CustomFieldDetails
+from testlink.enums import TESTCASE_STATUS as TestcaseStatus
 
 class TestCase(TestlinkObject):
     """Testlink TestCase representation"""
@@ -210,7 +211,7 @@ class TestCase(TestlinkObject):
     def __init__(
             self,\
             version=1,\
-            status=None,\
+            status=TestcaseStatus.DRAFT,\
             importance=ImportanceLevel.MEDIUM,\
             execution_type=ExecutionType.MANUAL,\
             summary="",\
@@ -220,8 +221,8 @@ class TestCase(TestlinkObject):
             parent_testsuite=None,\
             customfields=None,\
             requirements=None,\
-            tester_id=None,\
-            estimated_exec_duration=None,\
+            tester_id=-1,\
+            estimated_exec_duration=0.0,\
             keywords=None,\
             **kwargs
         ):
@@ -439,13 +440,13 @@ class TestCase(TestlinkObject):
 
         # Set common attributes
         self.version = int(version)
-        self.status = status
-        self.importance = importance
+        self.status = int(status)
+        self.importance = int(importance)
         self.execution_type = int(execution_type)
-        self.summary = summary
-        self.active = active
-        self.tester_id = tester_id
-        self.exec_duration = estimated_exec_duration
+        self.summary = unicode(summary)
+        self.active = bool(int(active))
+        self.tester_id = int(tester_id)
+        self.exec_duration = float(estimated_exec_duration)
 
         # Set internal attributes
         self._parent_testproject = parent_testproject
