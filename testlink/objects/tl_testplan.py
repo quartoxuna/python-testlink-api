@@ -44,7 +44,7 @@ class TestPlan(TestlinkObject):
             **kwargs\
     ):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
-        self.notes = notes
+        self.notes = unicode(notes)
         self.active = bool(int(active))
         self.public = bool(int(is_public))
         self._parent_testproject = parent_testproject
@@ -55,6 +55,10 @@ class TestPlan(TestlinkObject):
     def getTestProject(self):
         """Returns associated TestProject"""
         return self._parent_testproject
+
+    def iterTestProject(self):
+        """Returns associated TestProject"""
+        yield self._parent_testproject
 
     def iterBuild(self, name=None, **params):
         """Iterates over Builds specified by parameters
@@ -67,7 +71,7 @@ class TestPlan(TestlinkObject):
         """
         # No simple API call possible, get all
         response = self._api.getBuildsForTestPlan(self.id)
-        builds = [Build(api=self._api, **build) for build in response]
+        builds = [Build(parent_testplan=self, api=self._api, **build) for build in response]
 
         # Filter
         if len(params) > 0 or name:
@@ -120,7 +124,7 @@ class TestPlan(TestlinkObject):
             else:
                 raise
 
-        platforms = [Platform(api=self._api, **platform) for platform in response]
+        platforms = [Platform(parent_testplan=self, api=self._api, **platform) for platform in response]
 
         # Filter
         if len(params) > 0 or name:
