@@ -39,19 +39,20 @@ def randput(length=randint(1, 10)):
                     ) for _ in range(length)\
                 )
 
-def randict(*args):
+def randict(*args, **kwargs):
     """Genrates a dictionary with random values.
     @param args: Keys of the resulting dict
     @type args: list
     @returns: Dictionary with *args as keys and random values
     @rtype: dict
     """
+    if '_type' in kwargs:
+        convert = kwargs['_type']
+    else:
+        convert = str
     res = {}
     for arg in args:
-        if randint() % 2:
-            res[arg] = randput()
-        else:
-            res[arg] = randint()
+        res[arg] = convert(randint(_max=1000))
     return res
 
 def generate(*args):
