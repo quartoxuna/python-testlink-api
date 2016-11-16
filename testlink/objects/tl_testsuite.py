@@ -26,7 +26,7 @@ class TestSuite(TestlinkObject):
 
     def __init__(self, name="", details="", parent_testproject=None, parent_testsuite=None, api=None, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
-        self.details = details
+        self.details = unicode(details)
         self._parent_testproject = parent_testproject
         self._parent_testsuite = parent_testsuite
 
