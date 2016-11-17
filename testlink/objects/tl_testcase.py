@@ -446,7 +446,11 @@ class TestCase(TestlinkObject):
         self.summary = unicode(summary)
         self.active = bool(int(active))
         self.tester_id = int(tester_id)
-        self.exec_duration = float(estimated_exec_duration)
+
+        try:
+            self.exec_duration = float(estimated_exec_duration)
+        except ValueError:
+            self.exec_duration = 0.0
 
         # Set internal attributes
         self._parent_testproject = parent_testproject
