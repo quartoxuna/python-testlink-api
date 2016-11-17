@@ -45,6 +45,9 @@ class TestlinkObject(object): # pylint: disable=too-few-public-methods
     # Global datetime format
     DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+    # Default ID
+    DEFAULT_ID = 0
+
     def __init__(self, _id=None, name="", api=None):
         """Initialises base Testlink object
         @param id: Internal Testlink Id of the object
@@ -56,7 +59,7 @@ class TestlinkObject(object): # pylint: disable=too-few-public-methods
         if _id is not None:
             self.id = int(_id) # pylint: disable=invalid-name
         else:
-            self.id = -1
+            self.id = TestlinkObject.DEFAULT_ID
         self.name = unicode(name)
         self._api = api
 
