@@ -7,6 +7,7 @@
 """
 
 from testlink.objects.tl_testlink import Testlink
+from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_testproject import TestProject
 from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
