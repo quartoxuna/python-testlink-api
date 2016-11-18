@@ -56,3 +56,7 @@ REQ_TYPE = nt("RequirementType",\
               "NON_FUNC", "CONSTRAIN", "SYSTEM_FUNC"))\
              (INFO=1, FEATURE=2, USE_CASE=3, INTERFACE=4,\
               NON_FUNC=5, CONSTRAIN=6, SYSTEM_FUNC=7)
+
+EXECUTION_STATUS = nt("ExecutionStatus",\
+                      ("NOT_RUN", "PASSED", "FAILED", "BLOCKED"))\
+                      (NOT_RUN='n', PASSED='p', FAILED='f', BLOCKED='b')
