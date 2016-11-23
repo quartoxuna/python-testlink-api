@@ -1770,3 +1770,21 @@ class Testlink_XML_RPC_API(object):
                     buildname=buildname,\
                     options={'getBugs':bugs}\
                )
+
+    @TLVersion("1.11-sinaqs", strict=True)
+    def getAttachments(self, fkid, fktable, devkey=None):
+        """Returns an attachment for the specified ID in the specified table.
+        @param devkey: Testlink developer key
+        @type devkey: str
+        @param fkid: Foreign Key ID of the wanted object in Testlink
+        @type fkid: int
+        @param fktable: Internal Table of the object in Testlink
+        @type fktable: str
+        @returns: Matching result
+        @rtype: dict
+        """
+        return self._query("tl.getAttachments",\
+                    devKey=devkey,\
+                    fkid=fkid,\
+                    fktable=fktable\
+            )
