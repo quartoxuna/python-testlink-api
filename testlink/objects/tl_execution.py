@@ -110,6 +110,8 @@ class Execution(TestlinkObject):
         """
         # Get all attachments for this object
         response = self._api.getAttachments(self.id, "executions")
+        if len(response) == 0:
+            return
         attachments = [Attachment(api=self._api, **a) for a in response.values()]
 
         # Filter
