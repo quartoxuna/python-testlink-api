@@ -11,6 +11,9 @@ from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_testproject import TestProject
 from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
+from testlink.objects.tl_step import Step
+from testlink.objects.tl_keyword import Keyword
+from testlink.objects.tl_execution import Execution
 from testlink.objects.tl_testplan import TestPlan
 from testlink.objects.tl_build import Build
 from testlink.objects.tl_platform import Platform
