@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+# pylint: disable=line-too-long
+# pylint: disable=invalid-name
+# pylint: disable=too-many-arguments
+# pylint: disable=too-few-public-methods
+# -*- coding: utf-8 -*-
+
+"""TestCase Step Object"""
+
+# IMPORTS
+from testlink.enums import EXECUTION_TYPE as ExecutionType
+
+class Step(object):
+    """Testlink TestCase Step representation
+    @ivar id: Internal ID of the Step
+    @type id: int
+    @ivar number: Number of the step
+    @type number: int
+    @ivar actions: Actions of the step
+    @type actions: str
+    @ivar execution_type: Type of Execution
+    @type execution_type: ExecutionType
+    @ivar active: Active flag
+    @type active: bool
+    @ivar results: Expected result of the step
+    @type results: str
+    """
+    def __init__(
+            self,\
+            step_number=1,\
+            actions="",\
+            execution_type=ExecutionType.MANUAL,\
+            active="0",\
+            expected_results="",\
+            **kwargs\
+        ):
+        if 'id' in kwargs.keys():
+            self.id = int(kwargs['id'])
+        else:
+            self.id = None
+        self.step_number = int(step_number)
+        self.actions = actions
+        self.execution_type = int(execution_type)
+        self.active = bool(int(active))
+        self.expected_results = expected_results
+
+    def __repr__(self):
+        """Returns parsable representation"""
+        return str(self.as_dict())
+
+    def as_dict(self):
+        """Returns dict representation"""
+        res = {}
+        res["step_number"] = self.step_number
+        res["actions"] = self.actions
+        res["execution_type"] = self.execution_type
+        res["active"] = self.active
+        res["id"] = self.id
+        res["expected_results"] = self.expected_results
+        return res
+
+    def __str__(self):
+        return "Step %d:\n%s\n%s" % (self.step_number, self.actions, self.expected_results)
+

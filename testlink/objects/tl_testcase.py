@@ -14,10 +14,11 @@
 """TestCase Object"""
 
 # IMPORTS
-import datetime
-
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+from testlink.objects.tl_step import Step
+from testlink.objects.tl_keyword import Keyword
+from testlink.objects.tl_execution import Execution
 
 from testlink.exceptions import APIError
 from testlink.exceptions import NotSupported
@@ -35,178 +36,6 @@ class TestCase(TestlinkObject):
             "__testsuite", "__testsuite_id", "version", "status", "importance", "execution_type", "preconditions",\
             "summary", "active", "testsuite_id", "tester_id", "exec_duration", "_parent_testproject", "customfields", "requirements",\
             "__steps", "__preconditions", "keywords"]
-
-    class Step(object):
-        """Testlink TestCase Step representation
-        @ivar id: Internal ID of the Step
-        @type id: int
-        @ivar number: Number of the step
-        @type number: int
-        @ivar actions: Actions of the step
-        @type actions: str
-        @ivar execution_type: Type of Execution
-        @type execution_type: ExecutionType
-        @ivar active: Active flag
-        @type active: bool
-        @ivar results: Expected result of the step
-        @type results: str
-        """
-        def __init__(
-                self,\
-                step_number=1,\
-                actions="",\
-                execution_type=ExecutionType.MANUAL,\
-                active="0",\
-                expected_results="",\
-                **kwargs\
-            ):
-            if 'id' in kwargs.keys():
-                self.id = int(kwargs['id'])
-            else:
-                self.id = None
-            self.step_number = int(step_number)
-            self.actions = actions
-            self.execution_type = int(execution_type)
-            self.active = bool(int(active))
-            self.expected_results = expected_results
-
-        def __repr__(self):
-            """Returns parsable representation"""
-            return str(self.as_dict())
-
-        def as_dict(self):
-            """Returns dict representation"""
-            res = {}
-            res["step_number"] = self.step_number
-            res["actions"] = self.actions
-            res["execution_type"] = self.execution_type
-            res["active"] = self.active
-            res["id"] = self.id
-            res["expected_results"] = self.expected_results
-            return res
-
-        def __str__(self):
-            return "Step %d:\n%s\n%s" % (self.step_number, self.actions, self.expected_results)
-
-    class Execution(TestlinkObject):
-        """Testlink TestCase Execution representation
-        @ivar id: The internal ID of the Execution
-        @type id: int
-        @ivar testplan_id: The internal ID of the parent TestPlan
-        @type testplan_id: int
-        @ivar build_id: The internal ID of the parent Build
-        @type build_id: int
-        @ivar tcversion_id: The internal ID of the parent TestCase Version
-        @type tcversion_id: int
-        @ivar tcversion_number: The version of the parent TestCase
-        @type tcversion_number: int
-        @ivar status: The status of the Execution
-        @type status: str
-        @ivar notes: Notes of the Execution
-        @type notes: str
-        @ivar execution_type: Execution Type
-        @type execution_type: ExecutionType
-        @ivar execution_ts: Timestamp of execution
-        @type execution_ts: datetime
-        @ivar tester_id: The internal ID of the tester
-        @type tester_id: int
-        """
-
-        __slots__ = ("id", "testplan_id", "platform_id", "build_id", "tcversion_id", "tcversion_number", "status",\
-                "notes", "execution_type", "execution_ts", "tester_id", "__tester", "duration")
-
-        def __init__(
-                self,\
-                testplan_id=-1,\
-                platform_id=-1,\
-                build_id=-1,\
-                tcversion_id=-1,\
-                tcversion_number=0,\
-                status='',\
-                notes="",\
-                execution_type=ExecutionType.MANUAL,\
-                execution_ts=str(datetime.datetime.min),\
-                tester_id=-1,\
-                execution_duration=0.0,\
-                api=None,\
-                **kwargs\
-            ):
-            TestlinkObject.__init__(self, kwargs.get('id'), kwargs.get('id', "None"), api)
-            self.testplan_id = int(testplan_id)
-            self.platform_id = int(platform_id)
-            self.build_id = int(build_id)
-            self.tcversion_id = int(tcversion_id)
-            self.tcversion_number = int(tcversion_number)
-            self.status = status
-            self.notes = notes
-            self.execution_type = int(execution_type)
-            try:
-                self.execution_ts = strptime(str(execution_ts), TestlinkObject.DATETIME_FORMAT)
-            except ValueError:
-                self.execution_ts = datetime.datetime.min
-            self.tester_id = int(tester_id)
-            self.__tester = None
-            try:
-                self.duration = float(execution_duration)
-            except ValueError:
-                self.duration = float(0.0)
-
-        def __str__(self):
-            """String representaion"""
-            return "Execution (%d) [%s] %s" % (self.id, self.status, self.notes)
-
-        @property
-        def tester(self):
-            """Tester of this execution"""
-            if self.__tester is None:
-                try:
-                    user = self._api.getUserByID(self.tester_id)
-                    if isinstance(user, list) and len(user) == 1:
-                        user = user[0]
-                    self.__tester = "%s %s" % (unicode(user['firstName']), unicode(user['lastName']))
-                except NotSupported:
-                    pass
-            return self.__tester
-
-        def delete(self):
-            """Delete this execution"""
-            self._api.deleteExecution(self.id)
-
-    class Keyword(TestlinkObject):
-        """Testlink TestCase Keyword representation
-        @ivar id: The internal ID of the Keyword
-        @type id: int
-        @ivar notes: Notes of the keyword
-        @type notes: str
-        @ivar testcase_id: <OPTIONAL> Related TestCase ID
-        @type testcase_id: int
-        @ivar _keyword: The actual keyword
-        @type: str
-        """
-
-        __slots__ = ["id", "notes", "testcase_id", "_keyword"]
-
-        def __init__(
-                self,\
-                keyword_id=-1,\
-                notes=None,\
-                testcase_id=None,\
-                keyword=None,\
-                api=None,\
-        ):
-            TestlinkObject.__init__(self, keyword_id, keyword, api)
-            self.notes = notes
-            self.testcase_id = int(testcase_id)
-            self._keyword = keyword
-
-        def __str__(self):
-            return str(self._keyword)
-
-        def __eq__(self, other):
-            return self._keyword == other
-
-        def __ne__(self, other):
-            return not self._keyword == other
 
     def __init__(
             self,\
@@ -423,7 +252,7 @@ class TestCase(TestlinkObject):
 
         # Set steps by lazy loading
         if 'steps' in kwargs:
-            self.__steps = [TestCase.Step(**s) for s in kwargs['steps']]
+            self.__steps = [Step(**s) for s in kwargs['steps']]
         else:
             self.__steps = None
 
@@ -436,7 +265,7 @@ class TestCase(TestlinkObject):
         # Set keywords
         self.keywords = []
         if keywords is not None:
-            self.keywords = [TestCase.Keyword(**k) for k in keywords.values()]
+            self.keywords = [Keyword(**k) for k in keywords.values()]
 
         # Set common attributes
         self.version = int(version)
@@ -553,7 +382,7 @@ class TestCase(TestlinkObject):
             resp = self._api.getLastExecutionResult(testplanid, self.tc_id, self.external_id, platformid, platformname, buildid, buildname, bugs)
             if isinstance(resp, list) and len(resp) == 1:
                 resp = resp[0]
-            execution = TestCase.Execution(api=self._api, **resp)
+            execution = Execution(api=self._api, **resp)
             if execution.id > 0:
                 return execution
         except APIError, ae:
@@ -570,7 +399,7 @@ class TestCase(TestlinkObject):
             if len(resp) == 0:
                 return []
             else:
-                return [TestCase.Execution(api=self._api, **exc) for exc in resp.values()]
+                return [Execution(api=self._api, **exc) for exc in resp.values()]
         except APIError, ae:
             if ae.error_code == 3030:
                 # Testcase not linked to testplan
