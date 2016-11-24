@@ -13,7 +13,7 @@ import unittest
 
 from .. import randput
 
-from testlink.objects import RequirementSpecification
+from testlink.objects.tl_reqspec import RequirementSpecification
 
 class RequirementSpecificationTests(unittest.TestCase):
     """Requirement Specification Object Tests"""

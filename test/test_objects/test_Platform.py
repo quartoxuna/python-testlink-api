@@ -12,7 +12,7 @@ import unittest
 
 from .. import randput
 
-from testlink.objects import Platform
+from testlink.objects.tl_platform import Platform
 
 class PlatformTests(unittest.TestCase):
     """Platform Object Tests"""

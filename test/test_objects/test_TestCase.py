@@ -14,7 +14,7 @@ from mock import patch, Mock
 
 from .. import randint, randput
 
-from testlink.objects import TestCase
+from testlink.objects.tl_testcase import TestCase
 
 class TestCaseTests(unittest.TestCase):
     """TestCase Object Tests"""

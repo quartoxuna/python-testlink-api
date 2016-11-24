@@ -12,7 +12,7 @@ import unittest
 
 from .. import randput
 
-from testlink.objects import Risk
+from testlink.objects.tl_risk import Risk
 
 class RiskTests(unittest.TestCase):
     """Risk Object Tests"""

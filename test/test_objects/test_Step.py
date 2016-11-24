@@ -13,7 +13,7 @@ import unittest
 
 from .. import randput, randint
 
-from testlink.objects import TestCase
+from testlink.objects.tl_step import Step
 
 class StepTests(unittest.TestCase):
     """Step Object Tests"""
@@ -28,6 +28,6 @@ class StepTests(unittest.TestCase):
         actions = randput()
         results = randput()
 
-        obj = TestCase.Step(step_number=number, actions=actions, expected_results=results)
+        obj = Step(step_number=number, actions=actions, expected_results=results)
         string = str(obj)
         self.assertEqual(string, "Step %d:\n%s\n%s" % (number, actions, results))

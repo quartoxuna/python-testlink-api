@@ -12,7 +12,7 @@ import unittest
 
 from .. import randput
 
-from testlink.objects import Build
+from testlink.objects.tl_build import Build
 
 class BuildTests(unittest.TestCase):
     """Build Object Tests"""

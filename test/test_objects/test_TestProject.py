@@ -12,7 +12,7 @@ import unittest
 
 from .. import randput
 
-from testlink.objects import TestProject
+from testlink.objects.tl_testproject import TestProject
 
 class TestProjectTests(unittest.TestCase):
     """TestProject Object Tests"""
