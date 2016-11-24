@@ -26,10 +26,13 @@ class Attachment(TestlinkObject):
             self.content = base64.b64decode(str(content))
         except TypeError:
             self.content = None
+        self.length = 0
+        if self.content is not None:
+            self.length = len(self.content)
         try:
             self.date_added = strptime(str(date_added), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.date_added = datetime.datetime.min
 
     def __str__(self):
-        return "Attachment %d: %s - %s (%s) %s" % (self.id, self.title, self.name, self.file_type, str(self.date_added))
+        return "Attachment %d: %s - %s (%s) [%d Bytes] %s" % (self.id, self.title, self.name, self.file_type, self.length, str(self.date_added))
