@@ -220,8 +220,9 @@ class TestPlan(TestlinkObject):
                                     getstepsinfo=True\
                                 )
         except APIError, ae:
-            if ae.error_code == 3030:
-                # TestCase not linked to TestPlan
+            # TestCase not linked to TestPlan
+            # Build does not exist in TestPlan
+            if ae.error_code in (3030, 3032):
                 return
             else:
                 raise
