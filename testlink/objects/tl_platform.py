@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
+# pylint: disable=invalid-name
+# -*- coding: utf-8 -*-
 
 """Platform representation"""
 
@@ -12,7 +15,7 @@ class Platform(TestlinkObject):
     @type notes: str
     """
 
-    __slots__ = ("notes","_parent_testplan")
+    __slots__ = ("notes", "_parent_testplan")
 
     def __init__(self, name=None, notes=None, parent_testplan=None, api=None, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)

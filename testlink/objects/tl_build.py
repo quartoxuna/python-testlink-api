@@ -1,11 +1,16 @@
 #!/usr/bin/env python
+# pylint: disable=line-too-long
 # pylint: disable=too-few-public-methods
+# pylint: disable=too-many-arguments
+# pylint: disable=invalid-name
+# -*- coding: utf-8 -*-
 
 """Build Object"""
 
 # IMPORTS
 import datetime
-from testlink.objects.tl_object import *
+from testlink.objects.tl_object import TestlinkObject
+from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
 
 class Build(TestlinkObject):
     """Testlink Build representation
@@ -22,15 +27,15 @@ class Build(TestlinkObject):
         self.open = bool(int(is_open))
         self.notes = unicode(notes)
         try:
-            self.creation_ts = _STRPTIME_FUNC(str(creation_ts), TestlinkObject.DATETIME_FORMAT)
+            self.creation_ts = strptime(str(creation_ts), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.creation_ts = datetime.datetime.min
         try:
-            self.release_date = _STRPTIME_FUNC(str(release_date), TestlinkObject.DATETIME_FORMAT)
+            self.release_date = strptime(str(release_date), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.release_date = datetime.datetime.min
         try:
-            self.closed_on_date = _STRPTIME_FUNC(str(closed_on_date), TestlinkObject.DATETIME_FORMAT)
+            self.closed_on_date = strptime(str(closed_on_date), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.closed_on_date = datetime.datetime.min
         self._parent_testplan = parent_testplan
