@@ -6,7 +6,7 @@
 @summary: Testlink API Wrapper
 """
 
-__version__ = '0.33.1'
+__version__ = '0.34.0'
 
 # EXPORTS
 from testlink.objects import Testlink
