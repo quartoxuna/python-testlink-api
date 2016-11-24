@@ -19,7 +19,7 @@ class Attachment(TestlinkObject):
     slots = ["title", "file_type", "content", "date_added"]
 
     def __init__(self, title, file_type, content="", date_added=None, api=None, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id'), kwargs.get('name', "None", api))
+        TestlinkObject.__init__(self, kwargs.get('id'), kwargs.get('name', "None"), api)
         self.title = str(title)
         self.file_type = str(file_type)
         try:
