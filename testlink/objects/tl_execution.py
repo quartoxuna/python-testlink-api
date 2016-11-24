@@ -11,6 +11,9 @@ import datetime
 
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+from testlink.objects.tl_object import normalize_list
+
+from testlink.objects.tl_attachment import Attachment
 
 from testlink.exceptions import NotSupported
 
@@ -100,3 +103,38 @@ class Execution(TestlinkObject):
         """Delete this execution"""
         self._api.deleteExecution(self.id)
 
+    def iterAttachment(self, **params):
+        """Iterated over Execution attachments specified by parameters
+        @returns: Matching Attachments
+        @rtype: generator
+        """
+        # Get all attachments for this object
+        response = self._api.getAttachments(self.id, "executions")
+        attachments = [Attachment(api=self._api, **a) for a in response.values()]
+
+        # Filter
+        if len(params)>0:
+            for attach in attachments:
+                for key, value in params.items():
+                    # Skip None
+                    if value is None:
+                        continue
+                    try:
+                        if not unicode(getattr(attach, key)) == unicode(value):
+                            attach = None
+                            break
+                    except AttributeError:
+                        raise AttributeError("Invalid Search Parameter for Attachment: %s" % key)
+                if attach is not None:
+                    yield attach
+        else:
+            # Return all found attachments
+            for attach in attachments:
+                yield attach
+
+    def getAttachment(self, **params):
+        """Returns all Attachments specified by parameters
+        @returns: Matching Attachments
+        @rtype: mixed
+        """
+        return normalize_list([p for p in self.iterAttachment(**params)])
