@@ -19,6 +19,7 @@ from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
 from testlink.objects.tl_step import Step
 from testlink.objects.tl_keyword import Keyword
 from testlink.objects.tl_execution import Execution
+from testlink.objects.tl_execution import Attachment
 from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.exceptions import APIError
@@ -429,10 +430,6 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             execduration=execduration\
         )
 
-    def getAttachments(self):
-        """Returns attachments for this testcase"""
-        return self._api.getTestCaseAttachments(self.tc_id, self.external_id)
-
     def getCustomFieldDesignValue(self, fieldname, details=CustomFieldDetails.VALUE_ONLY):
         """Returns the custom field design value for the specified custom field
         @param fieldname: The internal name of the custom field
@@ -536,4 +533,37 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                     testprojectid=self.getTestProject().id,\
                     customfields=customfields\
                 )
+
+    def iterAttachment(self, **params):
+        """Iterates over TestlinkObject's attachments specified by parameters
+        @returns: Matching attachments
+        @rtype: generator
+        """
+        # Get all attachments for this object
+        response = self._api.getTestCaseAttachments(self.tc_id, self.external_id)
+
+        # Check for empty result
+        if len(response) == 0:
+            return
+        attachments = [Attachment(api=self._api, **resp) for resp in response.values()]
+
+        # Filter
+        if len(params)>0:
+            for attach in attachments:
+                for key, value in params.items():
+                    # Skip None
+                    if value is None:
+                        continue
+                    try:
+                        if not unicode(getattr(attach, key)) == unicode(value):
+                            attach = None
+                            break
+                    except AttributeError:
+                        raise AttributeError("Invalid Search Paramater for Attachment: %s" % key)
+                if attach is not None:
+                    yield attach
+        else:
+            # Return all found attachments
+            for attach in attachments:
+                yield attach
 
