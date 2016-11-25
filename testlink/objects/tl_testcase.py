@@ -19,6 +19,7 @@ from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
 from testlink.objects.tl_step import Step
 from testlink.objects.tl_keyword import Keyword
 from testlink.objects.tl_execution import Execution
+from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.exceptions import APIError
 from testlink.exceptions import NotSupported
@@ -28,7 +29,7 @@ from testlink.enums import IMPORTANCE_LEVEL as ImportanceLevel
 from testlink.enums import CUSTOM_FIELD_DETAILS as CustomFieldDetails
 from testlink.enums import TESTCASE_STATUS as TestcaseStatus
 
-class TestCase(TestlinkObject):
+class TestCase(TestlinkObject, IAttachmentGetter):
     """Testlink TestCase representation"""
 
     __slots__ = ["tc_id", "external_id", "platform_id", "execution_status", "execution_notes", "priority",\
@@ -169,6 +170,7 @@ class TestCase(TestlinkObject):
 
         # Init
         TestlinkObject.__init__(self, _id, _name, api=api)
+        IAttachmentGetter.__init__(self)
 
         # Set the "correct" external id
         if 'tc_external_id' in kwargs:

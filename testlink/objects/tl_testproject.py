@@ -17,10 +17,11 @@ from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
 from testlink.objects.tl_reqspec import RequirementSpecification
 from testlink.objects.tl_testplan import TestPlan
+from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.exceptions import APIError
 
-class TestProject(TestlinkObject):
+class TestProject(TestlinkObject, IAttachmentGetter):
     """Testlink TestProject representation
     @ivar notes: TestProject notes
     @type notes: str
@@ -67,6 +68,7 @@ class TestProject(TestlinkObject):
             opt['automationEnabled'] = 0
             opt['inventoryEnabled'] = 0
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
+        IAttachmentGetter.__init__(self)
         self.notes = unicode(notes)
         self.prefix = str(prefix)
         self.active = bool(int(active))

@@ -13,10 +13,11 @@ from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
 
 from testlink.objects.tl_testcase import TestCase
+from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.exceptions import APIError
 
-class TestSuite(TestlinkObject):
+class TestSuite(TestlinkObject, IAttachmentGetter):
     """Testlink TestSuite representation
     @ivar notes: TestSuite notes
     @type notes: str
@@ -26,6 +27,7 @@ class TestSuite(TestlinkObject):
 
     def __init__(self, name="", details="", parent_testproject=None, parent_testsuite=None, api=None, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
+        IAttachmentGetter.__init__(self)
         self.details = unicode(details)
         self._parent_testproject = parent_testproject
         self._parent_testsuite = parent_testsuite

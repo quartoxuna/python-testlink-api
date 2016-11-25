@@ -16,10 +16,11 @@ from testlink.objects.tl_object import normalize_list
 from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
 
 from testlink.objects.tl_req import Requirement
+from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.enums import REQSPEC_TYPE as RequirementSpecificationType
 
-class RequirementSpecification(TestlinkObject):
+class RequirementSpecification(TestlinkObject, IAttachmentGetter):
     """Testlink Requirement Specification representation"""
 
     __slots__ = ("doc_id", "typ", "scope", "testproject_id", "author_id", "creation_ts",\
@@ -46,6 +47,7 @@ class RequirementSpecification(TestlinkObject):
         @todo: doc
         """
         TestlinkObject.__init__(self, kwargs.get('id'), title, api)
+        IAttachmentGetter.__init__(self)
         self.doc_id = str(doc_id)
         self.typ = int(typ)
         self.scope = scope

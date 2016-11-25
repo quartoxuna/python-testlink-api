@@ -4,6 +4,8 @@
 # pylint: disable=star-args
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
+# pylint: disable=too-many-instance-attributes
+# -*- coding: utf-8 -*-
 
 """Requirement Object"""
 
@@ -15,12 +17,12 @@ from testlink.objects.tl_object import normalize_list
 from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
 
 from testlink.objects.tl_risk import Risk
+from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.enums import REQ_TYPE as RequirementType
 from testlink.enums import REQ_STATUS as RequirementStatus
 
-# pylint: disable=too-many-instance-attributes
-class Requirement(TestlinkObject):
+class Requirement(TestlinkObject, IAttachmentGetter):
     """Testlink Requirement representation"""
 
     __slots__ = ("srs_id", "req_doc_id", "req_spec_title", "typ", "version", "version_id", "revision", "revision_id",\
@@ -59,6 +61,7 @@ class Requirement(TestlinkObject):
         @todo: doc
         """
         TestlinkObject.__init__(self, kwargs.get('id'), title, api)
+        IAttachmentGetter.__init__(self)
         self.srs_id = str(srs_id)
         self.req_doc_id = str(req_doc_id)
         self.req_spec_title = req_spec_title
