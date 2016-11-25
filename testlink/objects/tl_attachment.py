@@ -7,7 +7,6 @@
 """Attachment Object"""
 
 # IMPORTS
-import base64
 import datetime
 
 from testlink.objects.tl_object import TestlinkObject
@@ -23,10 +22,7 @@ class Attachment(TestlinkObject):
         TestlinkObject.__init__(self, kwargs.get('id'), kwargs.get('name', "None"), api)
         self.title = str(title)
         self.file_type = str(file_type)
-        try:
-            self.content = base64.b64decode(str(content))
-        except TypeError:
-            self.content = None
+        self.content = str(content)
         self.length = 0
         if self.content is not None:
             self.length = len(self.content)
