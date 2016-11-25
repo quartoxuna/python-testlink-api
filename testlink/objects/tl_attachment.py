@@ -19,8 +19,8 @@ class Attachment(TestlinkObject):
     slots = ["title", "file_type", "content", "date_added"]
 
     def __init__(self, title, file_type, content="", date_added=None, api=None, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id'), kwargs.get('name', "None"), api)
-        self.title = str(title)
+        TestlinkObject.__init__(self, kwargs.get('id'), title, api)
+        self.file_name = kwargs.get("name","")
         self.file_type = str(file_type)
         self.content = str(content)
         self.length = 0
@@ -32,7 +32,7 @@ class Attachment(TestlinkObject):
             self.date_added = datetime.datetime.min
 
     def __str__(self):
-        return "Attachment %d: %s - %s (%s) [%d Bytes] %s" % (self.id, self.title, self.name, self.file_type, self.length, str(self.date_added))
+        return "Attachment %d: %s - %s (%s) [%d Bytes] %s" % (self.id, self.name, self.file_name, self.file_type, self.length, str(self.date_added))
 
 
 class IAttachmentGetter(object):
