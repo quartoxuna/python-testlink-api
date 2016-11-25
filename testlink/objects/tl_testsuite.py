@@ -25,10 +25,11 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
 
     __slots__ = ("details", "_parent_testproject", "_parent_testsuite")
 
-    def __init__(self, name="", details="", parent_testproject=None, parent_testsuite=None, api=None, **kwargs):
+    def __init__(self, name="", details="", parent_testproject=None, parent_testsuite=None, api=None, _level=0, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
         IAttachmentGetter.__init__(self)
         self.details = unicode(details)
+        self._level = _level
         self._parent_testproject = parent_testproject
         self._parent_testsuite = parent_testsuite
 
@@ -66,7 +67,7 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
                 response = [self._api.getTestSuiteById(self.getTestProject().id, suite_id) for suite_id in response.keys()]
             else:
                 response = [response]
-        suites = [TestSuite(api=self._api, parent_testproject=self.getTestProject(), parent_testsuite=self, **suite) for suite in response]
+        suites = [TestSuite(api=self._api, parent_testproject=self.getTestProject(), parent_testsuite=self, _level=self._level+1, **suite) for suite in response]
 
         # Filter
         if len(params) > 0 or name:
