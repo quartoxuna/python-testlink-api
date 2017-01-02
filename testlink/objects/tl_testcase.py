@@ -85,7 +85,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         @note: All other attributes depend on the called API method
         -------------------------------------------------------------------------------------------
         | getTestCaseForTestSuite()   | getTestCase()               | getTestCasesForTestPlan()   |
-        |                          |                             |                             |
+        |                             |                             |                             |
         |  node_order                 |  node_order                 |                             |
         |  is_open                    |  is_open                    |                             |
         |  id # Testcase ID           |  id  # Version ID           |                             |
@@ -201,9 +201,15 @@ class TestCase(TestlinkObject, IAttachmentGetter):
 
         # Set priority if available
         if 'priority' in kwargs:
-            self.priority = kwargs['priority']
+            self.priority = int(kwargs['priority'])
         else:
-            self.priority = None
+            self.priority = 0
+
+        # Set urgency if available
+        if 'urgency' in kwargs:
+            self.urgency = int(kwargs['urgency'])
+        else:
+            self.urgency = 0
 
         # Try to get the creator
         self.__author = None
