@@ -192,8 +192,10 @@ class TestPlan(TestlinkObject):
         @rtype: generator
         """
         # Get id if specified and remove from params
-        _id = params.get('id')
-        params.update({'id': None})
+        _id = None
+        if 'id' in params.keys():
+            _id = params['id']
+            del params['id']
 
         # Testlink >1.9.2 does not return proper results
         # if API call is made with execution_status='n', but we can
