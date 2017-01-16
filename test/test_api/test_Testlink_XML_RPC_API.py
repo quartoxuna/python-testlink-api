@@ -218,7 +218,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
         query.return_value = randput()
         test_data = randput()
         self.assertEquals(self._api.getFullPath(test_data), query.return_value)
-        query.assert_called_with('tl.getFullPath', nodeID=test_data, devKey=None)
+        query.assert_called_with('tl.getFullPath', nodeid=test_data, devKey=None)
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getFullPath)
 
