@@ -40,7 +40,7 @@ class TestlinkObject(object): # pylint: disable=too-few-public-methods
     @type name: str
     """
 
-    __slots__ = ("id", "name", "_api")
+    __slots__ = ("id", "name", "_api", "path")
 
     # Global datetime format
     DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -73,3 +73,14 @@ class TestlinkObject(object): # pylint: disable=too-few-public-methods
     def __eq__(self, other):
         return self.id == other.id
 
+    @property
+    def path(self):
+        """Returns the full path of a testlink object.
+        @returns: List
+        @rtype: list
+        """
+        res = self._api.getFullPath(self.id)
+        if len(res) > 0:
+            return res[str(self.id)]
+        else:
+            return []
