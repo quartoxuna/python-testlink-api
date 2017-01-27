@@ -573,3 +573,8 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             for attach in attachments:
                 yield attach
 
+    def uploadAttachment(self, *args, **kwargs):
+        """Upload an Attachment for the TestCase, see IAttachmentGetter.uploadAttachment"""
+        # Update ID to TestCase ID rather than TestCase Version ID
+        kwargs.update({'id': self.tc_id})
+        IAttachmentGetter.uploadAttachment(self, *args, **kwargs)

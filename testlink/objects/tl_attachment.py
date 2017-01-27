@@ -7,6 +7,8 @@
 """Attachment Object"""
 
 # IMPORTS
+import base64
+import mimetypes
 import datetime
 
 from testlink.objects.tl_object import TestlinkObject
@@ -80,3 +82,38 @@ class IAttachmentGetter(object):
         @rtype: mixed
         """
         return normalize_list([p for p in self.iterAttachment(**params)])
+
+    def uploadAttachment(self, filename, filetype, content, title=None, description=None, **kwargs):
+        """Upload an Attachment for the current object
+        @param filename: Filename of the attached file
+        @type filename: str
+        @param filetype: MIME Type of the attached file
+        @type filetype: str
+        @param content: Contents of the file as Base64 encoded string
+        @type content: str
+        @param title: <optional> Title of the attachment
+        @type title: str
+        @param description: <optional> Description of the attachment
+        @type description: str
+        @keyword id: <optional> ID Override (used for TestCases)
+        @returns: Server response
+        @rtype: dict
+        """
+        # Check if the MIME type is correct
+        if filetype not in mimetypes.types_map.values():
+            raise TypeError("Invalid MIME Type %s" % str(filetype))
+
+        # Check which ID to use
+        _id = self.id
+        if 'id' in kwargs:
+            _id = kwargs['id']
+
+        self._api.uploadAttachment(\
+                                    fkid=_id,\
+                                    fktable=self._foreign_key_table,\
+                                    filename=str(filename),\
+                                    filetype=str(filetype),\
+                                    content=content,\
+                                    title=title,\
+                                    description=description\
+                                  )
