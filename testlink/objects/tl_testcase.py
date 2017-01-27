@@ -456,7 +456,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             # If retrieved the value only, we can cache it
             if value is not None and (details == CustomFieldDetails.VALUE_ONLY):
                 self.customfields[fieldname] = value
-        return self.customfields[fieldname]
+        return self.customfields.get(fieldname, None)
 
     def update(self, testcasename=None, summary=None, preconditions=None, steps=None, importance=None, executiontype=None, status=None, exec_duration=None):
         """Updates the the current TestCase.
