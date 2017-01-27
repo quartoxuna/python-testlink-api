@@ -293,10 +293,10 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         # Set internal attributes
         self._parent_testproject = parent_testproject
         self.customfields = {}
-        if self.customfields is not None:
+        if customfields is not None:
             self.customfields = customfields
         self.requirements = []
-        if self.requirements is not None:
+        if requirements is not None:
             self.requirements = requirements
 
     def __str__(self):
