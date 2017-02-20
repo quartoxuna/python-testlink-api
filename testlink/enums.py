@@ -2,9 +2,15 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: Kai Borowiak
-@summary: Common Enumerations
+.. Sphinx Autodoc
+
+Enumerations
+==============
+
+Within the *testlink.enums* module there are several commonly used
+enumerations. They are defined as :func:`python:collections.namedtuple`.
 """
+
 
 # IMPORTS
 from collections import namedtuple as nt
@@ -12,10 +18,18 @@ from collections import namedtuple as nt
 EXECUTION_TYPE = nt("ExecutionType",\
                    ("MANUAL", "AUTOMATIC"))\
                    (MANUAL=1, AUTOMATIC=2)
+"""
+Execution Type of a TestCase.
+"""
 
 IMPORTANCE_LEVEL = nt("ImportanceLevel",\
                      ("HIGH", "MEDIUM", "LOW"))\
                      (HIGH=3, MEDIUM=2, LOW=1)
+
+"""
+Importance Level of a TestCase. The Importance Level is
+visible at Test Specification View.
+"""
 
 URGENCY_LEVEL = nt("UrgencyLeveL",\
                   ("HIGH", "MEDIUM", "LOW"))\

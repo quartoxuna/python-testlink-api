@@ -1,0 +1,2 @@
+.. automodule:: testlink.enums
+   :members:
