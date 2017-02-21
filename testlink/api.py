@@ -11,8 +11,10 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: Kai Borowiak
-@summary: Raw API Wrapper for Testlink
+testlink.api
+============
+
+API Wrapper for Testlink XML-RPC/REST API.
 """
 
 # IMPORTS
@@ -32,9 +34,35 @@ from distutils.version import LooseVersion as Version
 from urlparse import urlparse
 
 class TLVersion(object):
-    """Function decorator for Testlink version requirements.
-    @raises NotSupported: Called method is not supported by current Testlink API
     """
+    Function decorator for Testlink version requirements
+
+    :param version: Version to be checked
+    :type version: str
+    :param strict: Strict check
+    :type strict: bool
+    :cvar IGNORE: Ignore version checking at all
+    :type IGNORE: bool
+
+    :Examples:
+
+    >>> @TLVersion("1.0")
+    >>> # Default function
+    >>> def function1():
+    >>>     pass
+
+    >>> @TLVersion("1.9.11")
+    >>> # Function available in Testlink 1.9.11 and higher
+    >>> def function2():
+    >>>     pass
+
+    >>> @TLVersion("1.9.11-alpha", strict=True)
+    >>> # Function ONLY avaialble in Testlink 1.9.11-alpha
+    >>> def function3():
+    >>>     pass
+
+    """
+
     IGNORE = False
     def __init__(self, version, strict=False):
         self.version = Version(version)
@@ -62,14 +90,11 @@ class TLVersion(object):
 
 class Testlink_XML_RPC_API(object):
     """Testlink XML-RPC API
-    @cvar RPC_PATHS: Paths to Testlink's XML-RPC endpoint
-    @type RPC_PATHS: list
-    @cvar: MAX_RECONNECTION_TRIES: Maximum amount of reconnection tries
-    @type MAX_RECONNECTION_TRIES: int
-    @ivar _proxy: Used ServerProxy instance
-    @type _proxy: xmlrpclib.ServerProxy
-    @ivar _devkey: Used Developer Key
-    @type _devkey: str
+
+    .. py:attribute:: MAX_RECONNECTION_TRIES
+
+    Maximal amount of reconnection tries in case of connection loss.
+
     """
 
     RPC_PATHS = ["/lib/api/xmlrpc.php", "/lib/api/xmlrpc/v1/xmlrpc.php"]

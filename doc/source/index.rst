@@ -13,7 +13,7 @@ Contents:
 
    api
    enums
-
+   exceptions
 
 Indices and tables
 ==================
