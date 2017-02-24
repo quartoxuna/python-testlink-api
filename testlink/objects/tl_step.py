@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-# pylint: disable=line-too-long
-# pylint: disable=invalid-name
-# pylint: disable=too-many-arguments
-# pylint: disable=too-few-public-methods
 # -*- coding: utf-8 -*-
 
 """TestCase Step Object"""

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=C0103
-# pylint: disable=C0301
 
 """
 @author: Kai Borowiak

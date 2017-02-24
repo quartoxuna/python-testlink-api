@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# pylint: disable=line-too-long
-# pylint: disable=too-many-arguments
-# pylint: disable=too-few-public-methods
 # -*- coding: utf-8 -*-
 
 """Attachment Object"""
@@ -22,7 +19,7 @@ class Attachment(TestlinkObject):
 
     def __init__(self, title, file_type, content="", date_added=None, api=None, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), title, api)
-        self.file_name = kwargs.get("name","")
+        self.file_name = kwargs.get("name", "")
         self.file_type = str(file_type)
         self.content = str(content)
         self.length = 0
@@ -57,7 +54,7 @@ class IAttachmentGetter(object):
         attachments = [Attachment(api=self._api, **resp) for resp in response.values()]
 
         # Filter
-        if len(params)>0:
+        if len(params) > 0:
             for attach in attachments:
                 for key, value in params.items():
                     # Skip None

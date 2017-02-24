@@ -1,10 +1,4 @@
 #!/usr/bin/env python
-# pylint: disable=invalid-name
-# pylint: disable=line-too-long
-# pylint: disable=too-many-instance-attributes
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-branches
-# pylint: disable=star-args
 # -*- coding: utf-8 -*.
 
 """TestProject Object"""

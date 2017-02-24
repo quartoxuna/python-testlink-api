@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-# pylint: disable=line-too-long
-# pylint: disable=invalid-name
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-branches
-# pylint: disable=star-args
 # -*- coding: utf-8 -*-
 
 """TestSuite Object"""

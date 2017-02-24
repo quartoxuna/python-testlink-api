@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# pylint: disable=line-too-long
-# pylint: disable=too-many-instance-attributes
-# pylint: disable=too-many-arguments
 # -*- coding: utf-8 -*-
 
 """Execution Object"""

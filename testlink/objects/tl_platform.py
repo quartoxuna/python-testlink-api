@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# pylint: disable=line-too-long
-# pylint: disable=invalid-name
 # -*- coding: utf-8 -*-
 
 """Platform representation"""
@@ -8,7 +6,6 @@
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObject
 
-# pylint: disable=too-few-public-methods
 class Platform(TestlinkObject):
     """Testlink Platform representation
     @ivar notes: Platform notes

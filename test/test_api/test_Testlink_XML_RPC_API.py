@@ -1,9 +1,3 @@
-# pylint: disable = C0302
-# pylint: disable = C0301
-# pylint: disable = C0103
-# pylint: disable = W0142
-# pylint: disable = R0904
-# pylint: disable = W0212
 # -*- coding: utf-8 -*-
 
 """

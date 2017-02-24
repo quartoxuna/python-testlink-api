@@ -1,10 +1,4 @@
 #!/usr/bin/env python
-# pylint: disable=line-too-long
-# pylint: disable=invalid-name
-# pylint: disable=star-args
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-instance-attributes
 # -*- coding: utf-8 -*-
 
 """Requirement Object"""

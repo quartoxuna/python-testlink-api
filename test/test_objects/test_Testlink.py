@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# pylint: disable=C0103
-# pylint: disable=C0301
-# pylint: disable=R0904
-# pylint: disable=W0212
-# pylint: disable=W0142
 
 """
 @author: Kai Borowiak

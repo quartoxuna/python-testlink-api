@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# pylint: disable=line-too-long
 
 """Helper Methods and Classes"""
 
@@ -32,7 +31,7 @@ def normalize_list(res):
     else:
         return res
 
-class TestlinkObject(object): # pylint: disable=too-few-public-methods
+class TestlinkObject:
     """Abstract Testlink Object
     @ivar id: Internal Testlink Id of the object
     @type id: int
@@ -57,7 +56,7 @@ class TestlinkObject(object): # pylint: disable=too-few-public-methods
         @keyword kwargs: Additonal attributes
         """
         if _id is not None:
-            self.id = int(_id) # pylint: disable=invalid-name
+            self.id = _id
         else:
             self.id = TestlinkObject.DEFAULT_ID
         self.name = unicode(name)
