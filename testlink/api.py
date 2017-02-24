@@ -209,7 +209,7 @@ class Testlink_XML_RPC_API(object):
         except xmlrpclib.Fault, f:
             # If method is not supported, raise NotSupported
             # Otherwise re-raise original error
-            if f.faultCode == NotSupported.error_code:
+            if f.faultCode == -32601:
                 raise NotSupported(method)
             else:
                 raise

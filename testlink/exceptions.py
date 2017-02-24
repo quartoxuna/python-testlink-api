@@ -9,7 +9,6 @@ Exceptions
 
 class NotSupported(Exception):
     """Method is not supported within the Testlink version"""
-    error_code = -32601
     def __init__(self, fn_name):
         Exception.__init__(self, fn_name)
         self.error_msg = fn_name
