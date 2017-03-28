@@ -56,7 +56,7 @@ class TestlinkObject:
         @keyword kwargs: Additonal attributes
         """
         if _id is not None:
-            self.id = _id
+            self.id = int(_id)
         else:
             self.id = TestlinkObject.DEFAULT_ID
         self.name = unicode(name)
