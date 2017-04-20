@@ -23,6 +23,14 @@ class Platform(TestlinkObject):
         """Returns string representation"""
         return "Platform: %s" % self.name
 
+    def getTestProject(self):
+        """Returns associated TestProject"""
+        return self._parent_testplan.getTestProject()
+
+    def iterTestProject(self):
+        """Returns associated TestProject"""
+        yield self._parent_testplan.getTestProject()
+
     def getTestPlan(self):
         """Returns associated TestPlan"""
         return self._parent_testplan
