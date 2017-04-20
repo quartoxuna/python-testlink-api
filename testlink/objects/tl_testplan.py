@@ -118,7 +118,7 @@ class TestPlan(TestlinkObject):
             else:
                 raise
 
-        platforms = [Platform(parent_testplan=self, api=self._api, **platform) for platform in response]
+        platforms = [Platform(parent_testproject=self, api=self._api, **platform) for platform in response]
 
         # Filter
         if len(params) > 0 or name:

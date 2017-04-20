@@ -12,12 +12,12 @@ class Platform(TestlinkObject):
     @type notes: str
     """
 
-    __slots__ = ("notes", "_parent_testplan")
+    __slots__ = ("notes", "_parent_testproject")
 
-    def __init__(self, name=None, notes=None, parent_testplan=None, api=None, **kwargs):
+    def __init__(self, name=None, notes=None, parent_testproject=None, api=None, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
         self.notes = unicode(notes)
-        self._parent_testplan = parent_testplan
+        self._parent_testproject = parent_testproject
 
     def __str__(self):
         """Returns string representation"""
@@ -25,17 +25,8 @@ class Platform(TestlinkObject):
 
     def getTestProject(self):
         """Returns associated TestProject"""
-        return self._parent_testplan.getTestProject()
+        return self._parent_testproject
 
     def iterTestProject(self):
         """Returns associated TestProject"""
-        yield self._parent_testplan.getTestProject()
-
-    def getTestPlan(self):
-        """Returns associated TestPlan"""
-        return self._parent_testplan
-
-    def iterTestPlan(self):
-        """Returns associated TestPlan"""
-        yield self._parent_testplan
-
+        yield self._parent_testproject
