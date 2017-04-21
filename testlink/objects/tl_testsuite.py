@@ -31,6 +31,10 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
     def __str__(self):
         return "TestSuite: %s" % self.name
 
+    def iterTestProject(self):
+        """Returns associated TestProject"""
+        yield self._parent_testproject
+
     def getTestProject(self):
         """Returns associated TestProject"""
         return self._parent_testproject
