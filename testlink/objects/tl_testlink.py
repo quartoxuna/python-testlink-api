@@ -66,14 +66,10 @@ class Testlink(object):
         if name and len(params) == 0:
             try:
                 response = self._api.getTestProjectByName(name)
-                # Since Testlink 1.9.6, the server returns already a dict
+                # Since Testlink 1.9.6, the server already returns a dict
                 # before, there was a list containing a dict
-                # The getVersion() method still returns 1.0 in that case
-                # so we have to check by trial and error
-                try:
+                if isinstance(response, list):
                     response = response[0]
-                except KeyError:
-                    pass
                 yield TestProject(api=self._api, **response)
             except APIError, api_error:
                 if api_error.error_code == 7011:
