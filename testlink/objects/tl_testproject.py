@@ -170,7 +170,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
             # return the details, we have to get it with another API call
             # This has to be done BEFORE the acutal filtering because otherwise
             # we could not filter by the details
-            response = [self._api.getTestSuiteById(self.id, suite['id']) for suite in response]
+            response = [self._api.getTestSuiteById(suite['id']) for suite in response]
             suites = [TestSuite(api=self._api, parent_testproject=self, **suite) for suite in response]
 
             # Filter by specified parameters
@@ -270,7 +270,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
                 response = response[0]
 
             # Need to get testsuite to set as parent
-            suite_resp = self._api.getTestSuiteById(self.id, response['testsuite_id'])
+            suite_resp = self._api.getTestSuiteById(response['testsuite_id'])
             suite = TestSuite(**suite_resp)
 
             yield TestCase(api=self._api, parent_testproject=self, parent_testsuite=suite, **response)

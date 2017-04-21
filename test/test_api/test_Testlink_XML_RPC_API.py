@@ -578,7 +578,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
     def test_get_testsuite_by_id(self, query):
         """'getTestSuiteById' (1.0)"""
         query.return_value = randict("name", "id")
-        test_data = randict("testprojectid", "testsuiteid")
+        test_data = randict("testsuiteid")
         self.assertEquals(self._api.getTestSuiteById(**test_data), query.return_value)
         query.assert_called_with('tl.getTestSuiteByID', devKey=None, **test_data)
         self._api._tl_version = Version("0.9")
