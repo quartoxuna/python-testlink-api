@@ -151,12 +151,18 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         @returns: Matching TestSuites
         @rtype: generator
         """
-        _id = params.get('id')
         # Check if simple API call can be done
         # Since the ID is unique, all other params can be ignored
+        _id = params.get('id')
         if _id:
-            response = self._api.getTestSuiteById(self.id, _id)
-            yield TestSuite(api=self._api, parent_testproject=self, **response)
+            response = self._api.getTestSuiteById(_id)
+            # We cannot be sure that the found TestSuite resides within the
+            # current TestProject, so we have to do a small check using the
+            # name of the current TestProject
+            # API call returns a dictionary
+            node_path = self._api.getFullPath(_id).values()[0]
+            if node_path[0] == self.name:
+                yield TestSuite(api=self._api, parent_testproject=self, **response)
         else:
             try:
                 response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
