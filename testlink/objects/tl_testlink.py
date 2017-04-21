@@ -14,6 +14,7 @@ from testlink.enums import DUPLICATE_STRATEGY as DuplicateStrategy
 from testlink.objects.tl_object import normalize_list
 from testlink.objects.tl_testproject import TestProject
 from testlink.objects.tl_testsuite import TestSuite
+from testlink.objects.tl_testsuite import TestCase
 
 class Testlink(object):
     """Testlink Server implementation
@@ -162,6 +163,43 @@ class Testlink(object):
         @rtype: mixed
         """
         return normalize_list([s for s in self.iterTestSuite(name, recursive, **params)])
+
+    def iterTestCase(self, **params):
+        """Iterates over TestCases specified by parameters
+        @param id: The internal ID of the TestCase
+        @type id: int
+        @returns: Matching TestCases
+        @rtype: generator
+        """
+        # Check if simple API call can be done
+        # Since the internal ID is unique all other paras can be ignored
+        _id = params.get('id')
+        if _id:
+            response = self._api.getTestCase(_id)
+            # Servers respones is a list
+            if isinstance(response, list) and len(response) > 0:
+                response = response[0]
+
+            # Need to get testsuite to set as parent
+            suite = self.getTestSuite(**{'id':  int(response['testsuite_id'])})
+
+            # Yield matching TestCase
+            yield TestCase(api=self._api, parent_testproject=suite.getTestProject(), parent_testsuite=suite, **response)
+        else:
+            # Simply iterator over all projects and yield
+            # all matching testcases
+            for project in self.iterTestProject():
+                for case in project.iterTestCase(**params):
+                    yield case
+
+    def getTestCase(self, **params):
+        """Returns all TestCases specified by parameters
+        @param id: The internal ID of the TestCase
+        @type id: int
+        @returns: Matching TestCases
+        @rtype: mixed
+        """
+        return normalize_list([c for c in self.iterTestCase(**params)])
 
     def createTestProject(self, project):
         """Creates a new TestProject using the current Testlink instance.
