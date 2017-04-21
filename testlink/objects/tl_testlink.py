@@ -13,6 +13,7 @@ from testlink.enums import DUPLICATE_STRATEGY as DuplicateStrategy
 
 from testlink.objects.tl_object import normalize_list
 from testlink.objects.tl_testproject import TestProject
+from testlink.objects.tl_testsuite import TestSuite
 
 class Testlink(object):
     """Testlink Server implementation
@@ -114,6 +115,53 @@ class Testlink(object):
         @rtype: mixed
         """
         return normalize_list([p for p in self.iterTestProject(name, **params)])
+
+    def iterTestSuite(self, name=None, recursive=True, **params):
+        """Iterates over TestSuites specified by parameters
+        @param name: The name of the wanted TestSuite
+        @type name: str
+        @param id: The internal ID of the TestSuite
+        @type id: int
+        @param recursive: Search recursive to get all nested TestSuites
+        @type recursive: bool
+        @param params: Other params for TestSuite
+        @type params: dict
+        @returns: Matching TestSuites
+        @rtype: generator
+        """
+        # Check if simple API call can be done
+        # Since the ID is unique, all other params can be ignored
+        _id = params.get('id')
+        if _id:
+            response = self._api.getTestSuiteById(_id)
+            # Since this testsuite is not linked to a testproject
+            # we have to set the _parent_testproject attribute directly
+            # Alternatively, we could implement _parent_testsuite as
+            # dynamic property, but then we would getTestSuite() within
+            # Testproject class, but we do not know the testproject :-) so yay
+            project_name = self._api.getFullPath(_id).values()[0][0]
+            yield TestSuite(api=self._api, parent_testproject=self.getTestProject(project_name), **response)
+        else:
+            # Simply iterate over all projects and yield
+            # all matching testsuites
+            for project in self.iterTestProject():
+                for suite in project.iterTestSuite(name, recursive, **params):
+                    yield suite
+
+    def getTestSuite(self, name=None, recursive=True, **params):
+        """Returns all TestSuites specified by parameters
+        @param name: The name of the wanted TestSuite
+        @type name: str
+        @param id: The internal ID of the TestSuite
+        @type id: int
+        @param recursive: Search recursive to get all nested TestSuites
+        @type recursive: bool
+        @param params: Other params for TestSuite
+        @type params: dict
+        @returns: Matching TestSuites
+        @rtype: mixed
+        """
+        return normalize_list([s for s in self.iterTestSuite(name, recursive, **params)])
 
     def createTestProject(self, project):
         """Creates a new TestProject using the current Testlink instance.
