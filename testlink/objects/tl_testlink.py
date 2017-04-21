@@ -80,7 +80,7 @@ class Testlink(object):
         else:
             # Get all projects and convert them to TestProject instances
             response = self._api.getProjects()
-            projects = [TestProject(api=self._api, **project) for project in response]
+            projects = [TestProject(api=self._api, parent_testlink=self, **project) for project in response]
 
             # Filter
             if len(params) > 0:

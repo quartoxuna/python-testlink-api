@@ -40,7 +40,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
 
     __slots__ = ("notes", "prefix", "active", "public", "requirements_enabled",\
             "priority_enabled", "automation_enabled", "inventory_enabled",\
-            "tc_counter", "color")
+            "tc_counter", "color", "_parent_testlink")
 
     def __init__(
             self,\
@@ -53,6 +53,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
             opt=None,\
             color="",\
             api=None,\
+            parent_testlink=None,\
             **kwargs\
     ):
         if opt is None:
@@ -73,6 +74,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         self.inventory_enabled = bool(int(opt['inventoryEnabled']))
         self.tc_counter = int(tc_counter)
         self.color = str(color)
+        self._parent_testlink = parent_testlink
 
     def __str__(self):
         return "%s" % self.name
