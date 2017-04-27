@@ -414,17 +414,26 @@ class TestCase(TestlinkObject, IAttachmentGetter):
 
     def reportResult(self, testplanid, buildid, status, notes=None, overwrite=False, execduration=None):
         """Reports TC result"""
-        self._api.reportTCResult(\
-            testplanid=testplanid,\
-            status=status,\
-            testcaseid=self.tc_id,\
-            testcaseexternalid=self.external_id,\
-            notes=notes,\
-            platformid=self.platform_id,\
-            overwrite=overwrite,\
-            buildid=buildid,\
-            execduration=execduration\
-        )
+        response = self._api.reportTCResult(\
+                       testplanid=testplanid,\
+                       status=status,\
+                       testcaseid=self.tc_id,\
+                       testcaseexternalid=self.external_id,\
+                       notes=notes,\
+                       platformid=self.platform_id,\
+                       overwrite=overwrite,\
+                       buildid=buildid,\
+                       execduration=execduration\
+            )
+
+        # Return actual execution object
+        if isinstance(response, list) and len(response) == 1:
+            response = response[0]
+
+        executions = self.getExecutions(testplanid, self.platform_id, buildid=buildid)
+        for execution in executions:
+            if execution.id == int(response['id']):
+                return execution
 
     def getCustomFieldDesignValue(self, fieldname, details=CustomFieldDetails.VALUE_ONLY):
         """Returns the custom field design value for the specified custom field
