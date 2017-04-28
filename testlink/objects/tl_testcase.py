@@ -27,7 +27,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             "__author", "author_id", "creation_ts", "__modifier", "modifier_id", "modification_ts",\
             "__testsuite", "__testsuite_id", "version", "status", "importance", "execution_type", "preconditions",\
             "summary", "active", "testsuite_id", "tester_id", "exec_duration", "_parent_testproject", "customfields", "requirements",\
-            "__steps", "__preconditions", "keywords"]
+            "__steps", "__preconditions", "keywords", "linked_by", "linked_ts"]
 
     def __init__(
             self,\
@@ -239,6 +239,22 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         else:
             self.modification_ts = None
 
+        # Try get get linked_by
+        if ('linked_by' in kwargs) and (kwargs['linked_by'].strip() != ''):
+            self.linked_by = int(kwargs['linked_by'])
+        else:
+            self.linked_by = None
+
+        # Try to get linked_ts
+        if 'linked_ts' in kwargs:
+            try:
+                self.linked_ts = strptime(kwargs['linked_ts'], TestlinkObject.DATETIME_FORMAT)
+            except ValueError:
+                # Cannot convert
+                self.linked_ts = None
+        else:
+            self.linked_ts = None
+
         # Set parent Testsuite by lazy loading
         if parent_testsuite is not None:
             self.__testsuite = parent_testsuite
@@ -322,6 +338,20 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             except NotSupported:
                 pass
         return self.__modifier
+
+    @property
+    def linker(self):
+        """Linker of this testcase"""
+        # Do not cache
+        if self.linked_by is not None:
+            try:
+                user = self._api.getUserByID(self.linked_by)
+                if isinstance(user, list) and len(user) == 1:
+                    user = user[0]
+                return "%s %s" % (unicode(user['firstName']), unicode(user['lastName']))
+            except NotSupported:
+                pass
+        return None
 
     def _get_testsuite(self):
         """Lazy-loading testsuite getter"""
