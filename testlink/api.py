@@ -77,6 +77,13 @@ class TLVersion(object):
         _wrapped.__dict__.update(fn.__dict__)
         return _wrapped
 
+class ThreadSafeTransport(xmlrpclib.Transport):
+    """Create single connection for each request"""
+    def make_connection(self, host):
+        import httplib
+        chost, extra_headers, x509 = self.get_host_info(host)
+        self._connection = host, httplib.HTTPConnection(chost)
+        return self._connection[1]
 
 class Testlink_XML_RPC_API(object):
     """Testlink XML-RPC API
@@ -160,7 +167,7 @@ class Testlink_XML_RPC_API(object):
                 try:
                     if not tmp.endswith(path):
                         tmp += path
-                    self._proxy = xmlrpclib.ServerProxy(tmp, encoding='UTF-8', allow_none=True)
+                    self._proxy = xmlrpclib.ServerProxy(tmp, encoding='UTF-8', allow_none=True, transport=ThreadSafeTransport(use_datetime=False))
                     self._proxy.system.listMethods()
                     break
                 except xmlrpclib.Error, error:
