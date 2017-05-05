@@ -81,9 +81,8 @@ class ThreadSafeTransport(xmlrpclib.Transport):
     """Create single connection for each request"""
     def make_connection(self, host):
         import httplib
-        chost, extra_headers, x509 = self.get_host_info(host)
-        self._connection = host, httplib.HTTPConnection(chost)
-        return self._connection[1]
+        host, extra_headers, x509 = self.get_host_info(host)
+        return httplib.HTTP(host)
 
 class Testlink_XML_RPC_API(object):
     """Testlink XML-RPC API
