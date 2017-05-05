@@ -140,3 +140,34 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         """
         return normalize_list([r for r in self.iterRisk(name, **params)])
 
+    def iterCoverage(self, testplan=None, platform=None):
+        """Returns Requirement Coverage within the specified context
+        @param testplan: <OPTIONAL> Regard coverage within this testplan
+        @type testplan: TestPlan
+        @param platform: <OPTIONAL> Regard coverage within this platform
+        @type platform: Platform
+        @returns: TestCases covering this Requirement within the given context
+        @rtype: generator
+        """
+        testplan_id = None
+        platform_id = None
+        if testplan is not None:
+            testplan_id = testplan.id
+        if platform is not None:
+            platform_id = platform.id
+
+        response = self._api.getRequirementCoverage(self.id, testplan_id, platform_id)
+        if isinstance(response, list):
+            for r in response:
+                yield self.getTestProject().getTestCase(external_id=r['tc_external_id'])
+
+    def getCoverage(self, testplan=None, platform=None):
+        """Returns Requirement Coverage within the specified context
+        @param testplan: <OPTIONAL> Regard coverage within this testplan
+        @type testplan: TestPlan
+        @param platform: <OPTIONAL> Regard coverage within this platform
+        @type platform: Platform
+        @returns: TestCases covering this Requirement within the given context
+        @rtype: mixed
+        """
+        return normalize_list([c for c in self.iterCoverage(testplan, platform)])

@@ -1807,3 +1807,24 @@ class Testlink_XML_RPC_API(object):
                     fkid=fkid,\
                     fktable=fktable\
             )
+
+    @TLVersion("1.11-sinaqs", strict=True)
+    def getRequirementCoverage(self, requirementid, testplanid=None, platformid=None, devkey=None):
+        """Returns the coverage for a specified Requirement within a given context.
+        @param devkey: Testlink developer key
+        @type devkey: str
+        @param requirement_id: The internal ID of the Requirement
+        @type requirement_id: int
+        @param testplan_id: <OPTIONAL> The internal ID of the contextual TestPlan
+        @type testplan_id: int
+        @param platform_id: <OPTIONAL> The internal ID of the contextual Platform
+        @type platform_id: int
+        @returns: Matching result
+        @rtype: mixed
+        """
+        return self._query('tl.getRequirementCoverage',\
+                    devKey=devkey,\
+                    requirementid=requirementid,\
+                    testplanid=testplanid,\
+                    platformid=platformid\
+            )

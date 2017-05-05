@@ -1346,3 +1346,26 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
                         buildname=non_defaults['buildname'],\
                         options={'getBugs':non_defaults['bugs']}\
                     )
+
+    @patch("testlink.api.Testlink_XML_RPC_API._query")
+    def test_get_requirement_coverage(self, query):
+        """'getRequirementCoverage' (1.11-sinaqs)"""
+        query.return_value = [{"tc_external_id": randint()}, {"tc_external_id": randint()}]
+        self.assertRaises(NotSupported, self._api.getRequirementCoverage)
+        self._api._tl_version = Version("1.11-sinaqs")
+        # Check default params
+        defaults = randict("requirementid")
+        self.assertEquals(self._api.getRequirementCoverage(**defaults), query.return_value)
+        query.assert_called_with('tl.getRequirementCoverage',\
+                        devKey=None,\
+                        testplanid=None,\
+                        platformid=None,\
+                        **defaults\
+                    )
+        # Check non defaults
+        non_defaults = randict("requirementid", "testplanid", "platformid")
+        self.assertEquals(self._api.getRequirementCoverage(**non_defaults), query.return_value)
+        query.assert_called_with('tl.getRequirementCoverage',\
+                        devKey=None,\
+                        **non_defaults\
+                    )
