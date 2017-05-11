@@ -94,6 +94,13 @@ class Requirement(TestlinkObject, IAttachmentGetter):
     def __unicode__(self):
         return unicode(u"Requirement %s: %s" % (self.req_doc_id, self.name))
 
+    def iterTestProject(self):
+        """Returns the associated TestProject"
+        @returns: TestProject
+        @rtype: generator
+        """
+        yield self._parent_testproject
+
     def getTestProject(self):
         """Returns the associated TestProject"
         @returns: TestProject
