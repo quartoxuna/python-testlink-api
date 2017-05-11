@@ -71,9 +71,9 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         self.active = bool(int(active))
         self.expected_coverage = int(expected_coverage)
         self.testproject_id = int(testproject_id)
-        self.author = str(author)
+        self.author = unicode(author)
         self.author_id = int(author_id)
-        self.modifier = str(modifier)
+        self.modifier = unicode(modifier)
         try:
             self.modifier_id = int(modifier_id)
         except ValueError:
@@ -90,6 +90,9 @@ class Requirement(TestlinkObject, IAttachmentGetter):
 
     def __str__(self):
         return "Requirement %s: %s" % (self.req_doc_id, self.name)
+
+    def __unicode__(self):
+        return unicode(u"Requirement %s: %s" % (self.req_doc_id, self.name))
 
     def getTestProject(self):
         """Returns the associated TestProject"
