@@ -80,7 +80,7 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
         """
         # No Simple API Call possible, get all and convert to Requirement instances
         response = self._api.getRequirementsForRequirementSpecification(self.id, self.getTestProject().id)
-        requirements = [Requirement(api=self._api, parent_testproject=self.getTestProject(), **req) for req in response]
+        requirements = [Requirement(api=self._api, parent_testproject=self.getTestProject(), parent_requirement_specification=self, **req) for req in response]
 
         # Filter
         if len(params) > 0 or name:

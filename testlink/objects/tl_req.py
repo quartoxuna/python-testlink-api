@@ -21,7 +21,7 @@ class Requirement(TestlinkObject, IAttachmentGetter):
 
     __slots__ = ("srs_id", "req_doc_id", "req_spec_title", "typ", "version", "version_id", "revision", "revision_id",\
             "scope", "status", "node_order", "is_open", "active", "expected_coverage", "testproject_id", "author",\
-            "author_id", "creation_ts", "modifier", "modifier_id", "modification_ts", "_parent_testproject")
+            "author_id", "creation_ts", "modifier", "modifier_id", "modification_ts", "_parent_testproject", "_parent_req_spec")
 
     def __init__(\
             self,\
@@ -49,6 +49,7 @@ class Requirement(TestlinkObject, IAttachmentGetter):
             modification_ts=str(datetime.datetime.min),\
             api=None,\
             parent_testproject=None,\
+            parent_requirement_specification=None,\
             **kwargs\
     ):
         """Initializes a new Requirement with the specified parameters
@@ -87,6 +88,7 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         except ValueError:
             self.modification_ts = datetime.datetime.min
         self._parent_testproject = parent_testproject
+        self._parent_requirement_specification = parent_requirement_specification
 
     def __str__(self):
         return "Requirement %s: %s" % (self.req_doc_id, self.name)
@@ -107,6 +109,20 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         @rtype: TestProject
         """
         return self._parent_testproject
+
+    def iterRequirementSpecification(self):
+        """Returns the parent Requirement Specification
+        @returns: RequirementSpecification
+        @rtype: generator
+        """
+        yield self._parent_requirement_specification
+
+    def getRequirementSpecification(self):
+        """Returns the parent Requirement Specification
+        @returns: RequirementSpecification
+        @rtype: generator
+        """
+        return self._parent_requirement_specification
 
     def iterRisk(self, name=None, **params):
         """Returns all Risks with the specified parameters.
