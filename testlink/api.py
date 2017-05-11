@@ -80,9 +80,9 @@ class TLVersion(object):
 class ThreadSafeTransport(xmlrpclib.Transport):
     """Create single connection for each request"""
     def make_connection(self, host):
-        import httplib
-        host, extra_headers, x509 = self.get_host_info(host)
-        return httplib.HTTP(host)
+        # Disable connection caching in Python >= 2.7
+        self._connection = None
+        return xmlrpclib.Transport.make_connection(self, host)
 
 class Testlink_XML_RPC_API(object):
     """Testlink XML-RPC API
