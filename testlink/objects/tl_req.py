@@ -185,7 +185,7 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         response = self._api.getRequirementCoverage(self.id, testplan_id, platform_id)
         if isinstance(response, list):
             for r in response:
-                yield self.getTestProject().getTestCase(external_id=r['tc_external_id'])
+                yield self.getTestProject().getTestCase(id=r['id'])
 
     def getCoverage(self, testplan=None, platform=None):
         """Returns Requirement Coverage within the specified context
