@@ -277,11 +277,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
             if len(response) == 1:
                 response = response[0]
 
-            # Need to get testsuite to set as parent
-            suite_resp = self._api.getTestSuiteById(response['testsuite_id'])
-            suite = TestSuite(**suite_resp)
-
-            yield TestCase(api=self._api, parent_testproject=self, parent_testsuite=suite, **response)
+            yield TestCase(api=self._api, parent_testproject=self, **response)
         else:
             # Get all TestCases for the TestProject
             params["name"] = name
