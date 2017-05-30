@@ -364,8 +364,8 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             else:
                 # We have to get ourself
                 this = self.getTestProject().getTestCase(id=self.tc_id)
-                self.__testsuite = this.testsuite
-                return self.__testsuite
+                self.__testsuite = this.getTestSuite()
+            return self.__testsuite
     def _set_testsuite(self, suite):
         """Lazy-loading testsuite setter"""
         self.__testsuite = suite
