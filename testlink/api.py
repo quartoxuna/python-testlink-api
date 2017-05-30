@@ -750,10 +750,12 @@ class Testlink_XML_RPC_API(object):
                     actiononduplicatedname=actiononduplicatedname)
 
     @TLVersion("1.0")
-    def getTestSuiteById(self, testsuiteid, devkey=None):
+    def getTestSuiteById(self, testprojectid, testsuiteid, devkey=None):
         """Returns a single TestSuite specified by the internal ID
         @param devkey: Testlink developer key
         @type devkey: str
+        @param testprojectid: The internal ID of the parent TestProject
+        @type testprojectid: int
         @param testsuiteid: The internal ID of the TestSuite
         @type testsuiteid: int
         @returns: Matching TestSuite
@@ -761,6 +763,7 @@ class Testlink_XML_RPC_API(object):
         """
         return self._query("tl.getTestSuiteByID",\
                     devKey=devkey,\
+                    testprojectid=testprojectid,\
                     testsuiteid=testsuiteid)
 
     @TLVersion("1.0")

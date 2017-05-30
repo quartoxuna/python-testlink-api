@@ -63,7 +63,7 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
         elif isinstance(response, dict):
             # Check for nested dict
             if isinstance(response[response.keys()[0]], dict):
-                response = [self._api.getTestSuiteById(suite_id) for suite_id in response.keys()]
+                response = [self._api.getTestSuiteById(self.getTestProject().id, suite_id) for suite_id in response.keys()]
             else:
                 response = [response]
         suites = [TestSuite(api=self._api, parent_testproject=self.getTestProject(), parent_testsuite=self, _level=self._level+1, **suite) for suite in response]

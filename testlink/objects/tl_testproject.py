@@ -155,7 +155,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         # Since the ID is unique, all other params can be ignored
         _id = params.get('id')
         if _id:
-            response = self._api.getTestSuiteById(_id)
+            response = self._api.getTestSuiteById(self.id, _id)
             # We cannot be sure that the found TestSuite resides within the
             # current TestProject, so we have to do a small check using the
             # name of the current TestProject
@@ -178,7 +178,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
             # return the details, we have to get it with another API call
             # This has to be done BEFORE the acutal filtering because otherwise
             # we could not filter by the details
-            response = [self._api.getTestSuiteById(suite['id']) for suite in response]
+            response = [self._api.getTestSuiteById(self.id, suite['id']) for suite in response]
             suites = [TestSuite(api=self._api, parent_testproject=self, **suite) for suite in response]
 
             # Filter by specified parameters
