@@ -330,7 +330,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Hierarchical path of the object
         @rtype: str
         """
-        return self._query("tl.getFullPath", devKey=devkey, nodeid=nodeid)
+        return self._query("tl.getFullPath", devKey=devkey, nodeid=int(nodeid))
 
     @TLVersion("1.0")
     def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False, priority=False, automation=False, inventory=False, devkey=None):

@@ -210,7 +210,7 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
     def test_get_full_path(self, query):
         """'getFullPath' (1.0)"""
         query.return_value = randput()
-        test_data = randput()
+        test_data = randint()
         self.assertEquals(self._api.getFullPath(test_data), query.return_value)
         query.assert_called_with('tl.getFullPath', nodeid=test_data, devKey=None)
         self._api._tl_version = Version("0.9")
