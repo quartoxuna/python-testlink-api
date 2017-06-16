@@ -19,7 +19,8 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
     """Testlink Requirement Specification representation"""
 
     __slots__ = ("doc_id", "typ", "scope", "testproject_id", "author_id", "creation_ts",\
-            "modifier_id", "modification_ts", "total_req", "node_order", "_parent_testproject")
+            "modifier_id", "modification_ts", "total_req", "node_order", "_parent_testproject",
+            "_parent_requirement_specification")
 
     def __init__(\
             self,\
@@ -36,6 +37,7 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
             node_order=0,\
             api=None,\
             parent_testproject=None,\
+            parent_requirement_specification=None,\
             **kwargs\
             ):
         """Initializes a new Requirement Specification with the specified parameters.
@@ -63,6 +65,7 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
         except ValueError:
             self.modification_ts = datetime.datetime.min
         self._parent_testproject = parent_testproject
+        self._parent_requirement_specification = parent_requirement_specification
 
     def __str__(self):
         return "Requirement Specification %s: %s" % (self.doc_id, self.name)
@@ -70,6 +73,71 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
     def getTestProject(self):
         """Returns associated TestProject"""
         return self._parent_testproject
+
+    def iterRequirementSpecification(self, name=None, recursive=False, **params):
+        """Returns all Requirement Specifications specified by parameters
+        @param name: The name of the Requirement Specification
+        @type name: str
+        @param recursive: Search recursive to get all nested Requirement Specifications
+        @type recursive: bool
+        @returns: Matching Requirement Specifications
+        @rtype: generator
+        """
+        # Simple API call not possible
+        response = self._api.getRequirementSpecificationsForRequirementSpecification(self.id)
+        specs = [RequirementSpecification(api=self._api, parent_testproject=self.getTestProject(), parent_requirement_specification=self, **reqspec) for reqspec in response]
+
+        # Filter
+        if len(params) > 0 or name:
+            params['name'] = name
+            for rspec in specs:
+                for key, value in params.items():
+                    # Skip None
+                    if value is None:
+                        continue
+                    try:
+                        try:
+                            if not unicode(getattr(rspec, key)) == unicode(value):
+                                rspec = None
+                                break
+                        except AttributeError:
+                            # Try to treat as custom field
+                            cf_val = self._api.getReqSpecCustomFieldDesignValue(rspec.id, rspec.getTestProject().id, key)
+                            if not unicode(cf_val) == unicode(value):
+                                rspec = None
+                                break
+                    except AttributeError:
+                        raise AttributeError("Invalid Search Parameter for Requirement Specification: %s" % key)
+                if rspec is not None:
+                    yield rspec
+            # If recursive is specified,
+            # also search in nested specs
+            if recursive:
+                # For each reqspec of this level
+                for rspec in specs:
+                    # Yield nested specs that match
+                    for r in rspec.iterRequirementSpecification(recursive=recursive, **params):
+                        yield s
+        # Return all Requirement Specifications
+        else:
+            for rspec in specs:
+                # First return the reqspecs from this level,
+                # then return nested ones if recursive is specified
+                yield rspec
+                if recursive:
+                    for r in rspec.iterRequirementSpecification(name=name, recursive=recursive, **params):
+                        yield r
+
+    def getRequirementSpecification(self, name=None, recursive=False, **params):
+        """Returns all Requirement Specifications specified by parameters
+        @param name: The name of the Requirement Specification
+        @type name: str
+        @param recursive: Search recursive to get all nested Requirement Specifications
+        @type recursive: bool
+        @returns: Matching Requirement Specifications
+        @rtype: mixed
+        """
+        return normalize_list([r for r in self.iterRequirementSpecification(name, recursive, **params)])
 
     def iterRequirement(self, name=None, **params):
         """Iterates over Requirements specified by parameters

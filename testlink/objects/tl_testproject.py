@@ -302,7 +302,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """
         return normalize_list([c for c in self.iterTestCase(name, external_id, **params)])
 
-    def iterRequirementSpecification(self, name=None, **params):
+    def iterRequirementSpecification(self, name=None, recursive=False, **params):
         """Iterates over Requirement Specifications specified by parameters
         @param name: The title of the wanted Requirement Specification
         @type name: str
@@ -336,19 +336,32 @@ class TestProject(TestlinkObject, IAttachmentGetter):
                         raise AttributeError("Invalid Search Parameter for Requirement Specification: %s" % key)
                 if rspec is not None:
                     yield rspec
+            # If recursive is specified,
+            # also search in nested specs
+            if recursive:
+                # For each reqspec of this level
+                for rspec in specs:
+                    # Yield nested specs that match
+                    for r in rspec.iterRequirementSpecification(recursive=recursive, **params):
+                        yield s
         # Return all Requirement Specifications
         else:
             for rspec in specs:
+                # First return the reqspecs from this level,
+                # then return nested ones if recursive is specified
                 yield rspec
+                if recursive:
+                    for r in rspec.iterRequirementSpecification(name=name, recursive=recursive, **params):
+                        yield r
 
-    def getRequirementSpecification(self, title=None, **params):
+    def getRequirementSpecification(self, name=None, recursive=False, **params):
         """Returns all Requirement Specifications specified by parameters
-        @param title: The title of the wanted Requirement Specification
-        @type title: str
+        @param name: The title of the wanted Requirement Specification
+        @type name: str
         @returns: Matching Requirement Specifications
         @rtype: list
         """
-        return normalize_list([r for r in self.iterRequirementSpecification(title, **params)])
+        return normalize_list([r for r in self.iterRequirementSpecification(name, recursive, **params)])
 
     def iterRequirement(self, name=None, **params):
         """Returns all Requirements specified by paramaters
