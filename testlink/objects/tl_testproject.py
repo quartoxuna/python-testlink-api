@@ -371,7 +371,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         @rtype: generator
         """
         params['name'] = name
-        for spec in self.iterRequirementSpecification():
+        for spec in self.iterRequirementSpecification(recursive=True):
             for req in spec.iterRequirement(**params):
                 yield req
 
