@@ -1403,6 +1403,21 @@ class Testlink_XML_RPC_API(object):
                     title=title,\
                     description=description)
 
+    @TLVersion("1.11-sinaqs", strict=True)
+    def deleteAttachment(self, attachment_id, devkey=None):
+        """Deletes the specified attachment
+        @param devkey: Testlink developer key
+        @type devkey: str
+        @param attachment_id: The internal ID of the attachment
+        @type attachment_id: int
+        @returns: Server response
+        @rtype: dict
+        """
+        return self._query("tl.deleteAttachment",\
+                    devKey=devkey,\
+                    attachmentid=attachment_id)
+
+
     @TLVersion("1.0")
     def uploadRequirementSpecificationAttachment(self, reqspecid, filename, filetype, content, title=None, description=None, devkey=None):
         """Uploads the specified Attachment for the specified Requirement Specification

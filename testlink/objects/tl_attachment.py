@@ -33,6 +33,16 @@ class Attachment(TestlinkObject):
     def __str__(self):
         return "Attachment %d: %s - %s (%s) [%d Bytes] %s" % (self.id, self.name, self.file_name, self.file_type, self.length, str(self.date_added))
 
+    def delete(self):
+        """Deletes the current attchment
+        @returns: Success state
+        @rtype: bool
+        """
+        resp = self._api.deleteAttachment(self.id)
+        if isinstance(resp,list) and len(resp) == 1:
+            resp = resp[0]
+        return resp['status_ok']
+
 
 class IAttachmentGetter(object):
     """Interface class for getting attachments of various Testlink Objects"""
