@@ -58,7 +58,7 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         TestlinkObject.__init__(self, kwargs.get('id'), title, api)
         IAttachmentGetter.__init__(self)
         self.srs_id = str(srs_id)
-        self.req_doc_id = str(req_doc_id)
+        self.req_doc_id = unicode(req_doc_id)
         self.req_spec_title = req_spec_title
         self.typ = int(typ)
         self.version = int(version)

@@ -33,7 +33,7 @@ class Risk(TestlinkObject):
         @todo: doc
         """
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
-        self.doc_id = str(risk_doc_id)
+        self.doc_id = unicode(risk_doc_id)
         self.description = description
         self.author_id = int(author_id)
         try:

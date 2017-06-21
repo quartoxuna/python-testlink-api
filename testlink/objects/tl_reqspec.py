@@ -45,7 +45,7 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
         """
         TestlinkObject.__init__(self, kwargs.get('id'), title, api)
         IAttachmentGetter.__init__(self)
-        self.doc_id = str(doc_id)
+        self.doc_id = unicode(doc_id)
         self.typ = int(typ)
         self.scope = scope
         self.testproject_id = int(testproject_id)
