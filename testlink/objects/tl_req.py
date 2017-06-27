@@ -21,7 +21,7 @@ class Requirement(TestlinkObject, IAttachmentGetter):
 
     __slots__ = ("srs_id", "req_doc_id", "req_spec_title", "type", "version", "version_id", "revision", "revision_id",\
             "scope", "status", "node_order", "is_open", "active", "expected_coverage", "testproject_id", "author",\
-            "author_id", "creation_ts", "modifier", "modifier_id", "modification_ts", "_parent_testproject", "_parent_req_spec")
+            "author_id", "creation_ts", "modifier", "modifier_id", "modification_ts", "_parent_testproject", "_parent_requirement_specification")
 
     def __init__(\
             self,\
