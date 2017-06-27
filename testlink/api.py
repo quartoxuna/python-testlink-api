@@ -11,6 +11,7 @@ API Wrapper for Testlink XML-RPC/REST API.
 import socket
 import xmlrpclib
 import httplib
+import time
 from testlink.log import LOGGER as log
 
 from testlink.exceptions import NotSupported
@@ -88,14 +89,15 @@ class ThreadSafeTransport(xmlrpclib.Transport):
 class Testlink_XML_RPC_API(object):
     """Testlink XML-RPC API
 
-    .. py:attribute:: MAX_RECONNECTION_TRIES
+    .. py:attribute:: MAX_RECONNECTION_ATTEMPTS
 
     Maximal amount of reconnection tries in case of connection loss.
 
     """
 
-    RPC_PATHS = ["/lib/api/xmlrpc.php", "/lib/api/xmlrpc/v1/xmlrpc.php"]
-    MAX_RECONNECTION_TRIES = 10
+    RPC_PATHS = ["/lib/api/xmlrpc.php", "/lib/api/xmlrpc/v1/xmlrpc.php"] # RPC endpoints
+    WAIT_BEFORE_RECONNECT = 5   # Time (seconds) to wait before reconnect
+    MAX_RECONNECTION_ATTEMPTS = 5 # Max amout of reconnection attempts
 
     def __init__(self, url):
         """Initialize the TestlinkAPI
@@ -169,7 +171,7 @@ class Testlink_XML_RPC_API(object):
         # Check for each possible RPC path,
         # if a connection can be made
         last_excpt = None
-        for i in range(self.MAX_RECONNECTION_TRIES):
+        for i in range(self.MAX_RECONNECTION_ATTEMPTS):
             for path in possible_rpc_paths:
                 tmp = self._url
                 try:
@@ -185,12 +187,15 @@ class Testlink_XML_RPC_API(object):
                     self._rpc_path_cache = path
 
                     break
-                except xmlrpclib.Error, error:
-                    last_excpt = error
+                except Exception, ex:
+                    last_excpt = ex
                     self._proxy = None
                     continue
             if self._proxy is None:
-                log.debug("Connection attempt %d failed: '%s'" % (i+1, str(error)))
+                log.debug("Connection attempt %d failed: '%s'" % (i+1, str(last_excpt)))
+
+                # Wait a moment before retry
+                time.sleep(5)
             else:
                 break
 
@@ -225,13 +230,9 @@ class Testlink_XML_RPC_API(object):
                 raise NotSupported(method)
             else:
                 raise
-        except (httplib.CannotSendRequest, httplib.ResponseNotReady), http_error:
-            # Something was wrong with the request, simply repeat
-            log.debug("Connection Error: %s" + str(http_error))
-            return self._query(method, **kwargs)
-        except socket.error, se:
-            # Connection is gone, try to reestablish
-            log.debug("Connection Error: %s" + str(se))
+        except (Exception, socket.error), ex:
+            # Something was wrong with the request, try to reestablish
+            log.debug("Connection Error: %s" + str(ex))
             if _reconnect:
                 self._reconnect()
                 return self._query(method, _reconnect=False, **kwargs)
