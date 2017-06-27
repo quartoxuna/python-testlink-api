@@ -106,6 +106,7 @@ class Testlink_XML_RPC_API(object):
         self._proxy = None
         self._devkey = None
         self._tl_version = Version("1.0")
+        self._rpc_path_cache = None
 
         # Patch URL
         if url.endswith('/'):
@@ -158,17 +159,31 @@ class Testlink_XML_RPC_API(object):
         if self._proxy is not None:
             log.debug("Reconnecting to '%s'" % str(self._url))
 
+        # Get possinle RPC paths either
+        # cached one or all available
+        if not self._rpc_path_cache:
+            possible_rpc_paths = Testlink_XML_RPC_API.RPC_PATHS
+        else:
+            possible_rpc_paths = [self._rpc_path_cache]
+
         # Check for each possible RPC path,
         # if a connection can be made
         last_excpt = None
         for i in range(self.MAX_RECONNECTION_TRIES):
-            for path in self.RPC_PATHS:
+            for path in possible_rpc_paths:
                 tmp = self._url
                 try:
+                    # Check if path is valid
                     if not tmp.endswith(path):
                         tmp += path
+
+                    # Connect and test connection by retrieving remote methods
                     self._proxy = xmlrpclib.ServerProxy(tmp, encoding='UTF-8', allow_none=True, transport=ThreadSafeTransport(use_datetime=False))
                     self._proxy.system.listMethods()
+
+                    # Cache fitting RPC path for later reconnection attempts
+                    self._rpc_path_cache = path
+
                     break
                 except xmlrpclib.Error, error:
                     last_excpt = error
