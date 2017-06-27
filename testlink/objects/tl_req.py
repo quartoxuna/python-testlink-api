@@ -59,7 +59,7 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         self.srs_id = str(srs_id)
         self.req_doc_id = unicode(req_doc_id)
         self.req_spec_title = req_spec_title
-        self.type = int(kwargs.get('type',0))
+        self.type = int(kwargs.get('type',RequirementType.INFO))
         self.version = int(version)
         self.version_id = int(version_id)
         self.revision = int(revision)
