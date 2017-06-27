@@ -19,7 +19,7 @@ from testlink.enums import REQ_STATUS as RequirementStatus
 class Requirement(TestlinkObject, IAttachmentGetter):
     """Testlink Requirement representation"""
 
-    __slots__ = ("srs_id", "req_doc_id", "req_spec_title", "typ", "version", "version_id", "revision", "revision_id",\
+    __slots__ = ("srs_id", "req_doc_id", "req_spec_title", "type", "version", "version_id", "revision", "revision_id",\
             "scope", "status", "node_order", "is_open", "active", "expected_coverage", "testproject_id", "author",\
             "author_id", "creation_ts", "modifier", "modifier_id", "modification_ts", "_parent_testproject", "_parent_req_spec")
 
@@ -29,7 +29,6 @@ class Requirement(TestlinkObject, IAttachmentGetter):
             req_doc_id='',\
             title='',\
             req_spec_title=None,\
-            typ=RequirementType.INFO,\
             version=-1,\
             version_id=-1,\
             revision=-1,\
@@ -60,7 +59,7 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         self.srs_id = str(srs_id)
         self.req_doc_id = unicode(req_doc_id)
         self.req_spec_title = req_spec_title
-        self.typ = int(typ)
+        self.type = int(kwargs.get('type',0))
         self.version = int(version)
         self.version_id = int(version_id)
         self.revision = int(revision)
