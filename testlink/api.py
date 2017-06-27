@@ -210,13 +210,9 @@ class Testlink_XML_RPC_API(object):
                 raise NotSupported(method)
             else:
                 raise
-        except httplib.CannotSendRequest, csr:
-            # Something was wrong with the request, simply repeat
-            log.debug("Connection Error: %s" + str(csr))
-            return self._query(method, **kwargs)
-        except socket.error, se:
-            # Connection is gone, try to reestablish
-            log.debug("Connection Error: %s" + str(se))
+        except (httplib.ResponseNotReady, httplib.CannotSendRequest, socket.error), conn_error:
+            # Something was wrong with the request, try to reestablish and repeat
+            log.debug("Connection Error: %s" + str(conn_error))
             if _reconnect:
                 self._reconnect()
                 return self._query(method, _reconnect=False, **kwargs)
