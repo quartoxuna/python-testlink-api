@@ -83,14 +83,6 @@ class Testlink_XML_RPC_API_Tests(unittest.TestCase):
         # Check that reconnect has been called
         self.assertTrue(reconnect.called)
 
-    @patch("testlink.api.Testlink_XML_RPC_API._query")
-    def test_httplib_cannot_send_request(self, query):
-        from httplib import CannotSendRequest
-        # Define faulty endpoint
-        self._mock_server.cannot_send_request = Mock(side_effect=CannotSendRequest())
-        # Do the call
-        self._api._query("cannot_send_request")
-
     def test_global_devkey(self):
         """Global DevKey setting"""
         key = randput(20)

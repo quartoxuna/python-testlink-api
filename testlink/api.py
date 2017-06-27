@@ -10,7 +10,6 @@ API Wrapper for Testlink XML-RPC/REST API.
 # IMPORTS
 import socket
 import xmlrpclib
-import httplib
 from testlink.log import LOGGER as log
 
 from testlink.exceptions import NotSupported
@@ -210,9 +209,9 @@ class Testlink_XML_RPC_API(object):
                 raise NotSupported(method)
             else:
                 raise
-        except (httplib.ResponseNotReady, httplib.CannotSendRequest, socket.error), conn_error:
-            # Something was wrong with the request, try to reestablish and repeat
-            log.debug("Connection Error: %s" + str(conn_error))
+        except socket.error, se:
+            # Connection is gone, try to reestablish
+            log.debug("Connection Error: %s" + str(se))
             if _reconnect:
                 self._reconnect()
                 return self._query(method, _reconnect=False, **kwargs)
