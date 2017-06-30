@@ -11,4 +11,3 @@ import logging
 
 # Define logger before importing the rest
 LOGGER = logging.getLogger('testlink')
-

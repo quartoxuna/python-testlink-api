@@ -4,7 +4,8 @@
 """TestCase Step Object"""
 
 # IMPORTS
-from testlink.enums import EXECUTION_TYPE as ExecutionType
+from testlink.enums import EXECUTION_TYPE
+
 
 class Step(object):
     """Testlink TestCase Step representation
@@ -15,21 +16,14 @@ class Step(object):
     @ivar actions: Actions of the step
     @type actions: str
     @ivar execution_type: Type of Execution
-    @type execution_type: ExecutionType
+    @type execution_type: EXECUTION_TYPE
     @ivar active: Active flag
     @type active: bool
     @ivar results: Expected result of the step
     @type results: str
     """
-    def __init__(
-            self,\
-            step_number=1,\
-            actions="",\
-            execution_type=ExecutionType.MANUAL,\
-            active="0",\
-            expected_results="",\
-            **kwargs\
-        ):
+    def __init__(self, step_number=1, actions="", execution_type=EXECUTION_TYPE.MANUAL, active="0",
+                 expected_results="", **kwargs):
         if 'id' in kwargs.keys():
             self.id = int(kwargs['id'])
         else:
@@ -46,7 +40,7 @@ class Step(object):
 
     def as_dict(self):
         """Returns dict representation"""
-        res = {}
+        res = dict()
         res["step_number"] = self.step_number
         res["actions"] = self.actions
         res["execution_type"] = self.execution_type
@@ -57,4 +51,3 @@ class Step(object):
 
     def __str__(self):
         return "Step %d:\n%s\n%s" % (self.step_number, self.actions, self.expected_results)
-

@@ -1,18 +1,22 @@
 #!/usr/bin/env python
-
-"""Helper Methods and Classes"""
-
-__all__ = ["_STRPTIME_FUNC", "TestlinkObject", "normalize_list"]
+# -*- coding: utf-8 -*-
 
 # IMPORTS
 import time
 import datetime
 
+__all__ = ["strptime", "TestlinkObject", "normalize_list"]
+
+
 # Backwards compatability methods
+def strptime(date_string, fmt):
+    date = time.strptime(date_string, fmt)
+    return datetime.datetime(*(date[0:6]))
 try:
-    _STRPTIME_FUNC = datetime.datetime.strptime
+    strptime = datetime.datetime.strptime
 except AttributeError:
-    _STRPTIME_FUNC = lambda date_string, fmt: datetime.datetime((time.strptime(date_string, fmt)[0:6]).values())
+    pass
+
 
 # Helper method
 def normalize_list(res):
@@ -31,7 +35,8 @@ def normalize_list(res):
     else:
         return res
 
-class TestlinkObject:
+
+class TestlinkObject(object):
     """Abstract Testlink Object
     @ivar id: Internal Testlink Id of the object
     @type id: int
@@ -49,11 +54,12 @@ class TestlinkObject:
 
     def __init__(self, _id=None, name="", api=None):
         """Initialises base Testlink object
-        @param id: Internal Testlink Id of the object
-        @type id: int
+        @param _id: Internal Testlink Id of the object
+        @type _id: int
         @param name: Internal Testlink name of the object
         @type name: str
-        @keyword kwargs: Additonal attributes
+        @param api: Testlink API instance
+        @type api: testlink.api.TestlinkXMLRPCAPI
         """
         if _id is not None:
             self.id = int(_id)

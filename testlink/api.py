@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=N802
 
 """
 testlink.api
@@ -10,20 +11,21 @@ API Wrapper for Testlink XML-RPC/REST API.
 # IMPORTS
 import socket
 import xmlrpclib
-import httplib
 import time
-from testlink.log import LOGGER as log
+
+from testlink.log import LOGGER
+
+from testlink.enums import IMPORTANCE_LEVEL
+from testlink.enums import EXECUTION_TYPE
+from testlink.enums import DUPLICATE_STRATEGY
 
 from testlink.exceptions import NotSupported
 from testlink.exceptions import APIError
 from testlink.exceptions import ConnectionError
 
-from testlink.enums import EXECUTION_TYPE as ExecutionType
-from testlink.enums import IMPORTANCE_LEVEL as ImportanceLevel
-from testlink.enums import DUPLICATE_STRATEGY as DuplicateStrategy
-
 from distutils.version import LooseVersion as Version
 from urlparse import urlparse
+
 
 class TLVersion(object):
     """
@@ -48,7 +50,7 @@ class TLVersion(object):
     >>> def function2():
     >>>     pass
 
-    >>> @TLVersion("1.9.11-alpha", strict=True)
+    >>> @TLVersion("1.9.11-alpha", strict=1)
     >>> # Function ONLY avaialble in Testlink 1.9.11-alpha
     >>> def function3():
     >>>     pass
@@ -56,6 +58,7 @@ class TLVersion(object):
     """
 
     IGNORE = False
+
     def __init__(self, version, strict=False):
         self.version = Version(version)
         self.strict = strict
@@ -64,20 +67,22 @@ class TLVersion(object):
         def _wrapped(parent, *args, **kwargs):
             """Decorator Wrapper"""
             # Check version
-            if not TLVersion.IGNORE and (\
-                (self.strict and self.version != parent._tl_version) or\
-                (self.version > parent._tl_version)\
-           ):
+            if not TLVersion.IGNORE and (
+                (self.strict and self.version != parent.tl_version) or
+                (self.version > parent.tl_version)
+            ):
                 if self.strict:
                     sign = "=="
                 else:
                     sign = ">="
-                raise NotSupported("Method '%s' requires Testlink version %s %s but is %s" % (str(fn.__name__), str(sign), str(self.version), str(parent._tl_version)))
+                raise NotSupported("Method '%s' requires Testlink version %s %s but is %s" %
+                                   (str(fn.__name__), str(sign), str(self.version), str(parent.tl_version)))
             return fn(parent, *args, **kwargs)
         _wrapped.__name__ = fn.__name__
         _wrapped.__doc__ = fn.__doc__
         _wrapped.__dict__.update(fn.__dict__)
         return _wrapped
+
 
 class ThreadSafeTransport(xmlrpclib.Transport):
     """Create single connection for each request"""
@@ -86,7 +91,8 @@ class ThreadSafeTransport(xmlrpclib.Transport):
         self._connection = None
         return xmlrpclib.Transport.make_connection(self, host)
 
-class Testlink_XML_RPC_API(object):
+
+class TestlinkXMLRPCAPI(object):
     """Testlink XML-RPC API
 
     .. py:attribute:: MAX_RECONNECTION_ATTEMPTS
@@ -95,9 +101,9 @@ class Testlink_XML_RPC_API(object):
 
     """
 
-    RPC_PATHS = ["/lib/api/xmlrpc.php", "/lib/api/xmlrpc/v1/xmlrpc.php"] # RPC endpoints
+    RPC_PATHS = ["/lib/api/xmlrpc.php", "/lib/api/xmlrpc/v1/xmlrpc.php"]  # RPC endpoints
     WAIT_BEFORE_RECONNECT = 5   # Time (seconds) to wait before reconnect
-    MAX_RECONNECTION_ATTEMPTS = 5 # Max amout of reconnection attempts
+    MAX_RECONNECTION_ATTEMPTS = 5  # Max amout of reconnection attempts
 
     def __init__(self, url):
         """Initialize the TestlinkAPI
@@ -117,8 +123,7 @@ class Testlink_XML_RPC_API(object):
         # Check if URL is correct and save it for further use
         url_components = urlparse(url)
         # Must have scheme and net location
-        if  len(url_components[0].strip()) == 0 or\
-            len(url_components[1].strip()) == 0:
+        if len(url_components[0].strip()) == 0 or len(url_components[1].strip()) == 0:
             raise ConnectionError("Invalid URI (%s)" % str(url))
         else:
             self._url = url
@@ -159,12 +164,12 @@ class Testlink_XML_RPC_API(object):
     def _reconnect(self):
         """Reconnects to initially specified URL"""
         if self._proxy is not None:
-            log.debug("Reconnecting to '%s'" % str(self._url))
+            LOGGER.debug("Reconnecting to '%s'" % str(self._url))
 
         # Get possinle RPC paths either
         # cached one or all available
         if not self._rpc_path_cache:
-            possible_rpc_paths = Testlink_XML_RPC_API.RPC_PATHS
+            possible_rpc_paths = TestlinkXMLRPCAPI.RPC_PATHS
         else:
             possible_rpc_paths = [self._rpc_path_cache]
 
@@ -180,7 +185,8 @@ class Testlink_XML_RPC_API(object):
                         tmp += path
 
                     # Connect and test connection by retrieving remote methods
-                    self._proxy = xmlrpclib.ServerProxy(tmp, encoding='UTF-8', allow_none=True, transport=ThreadSafeTransport(use_datetime=False))
+                    self._proxy = xmlrpclib.ServerProxy(tmp, encoding='UTF-8', allow_none=True,
+                                                        transport=ThreadSafeTransport(use_datetime=False))
                     self._proxy.system.listMethods()
 
                     # Cache fitting RPC path for later reconnection attempts
@@ -192,7 +198,7 @@ class Testlink_XML_RPC_API(object):
                     self._proxy = None
                     continue
             if self._proxy is None:
-                log.debug("Connection attempt %d failed: '%s'" % (i+1, str(last_excpt)))
+                LOGGER.debug("Connection attempt %d failed: '%s'" % (i+1, str(last_excpt)))
 
                 # Wait a moment before retry
                 time.sleep(5)
@@ -217,12 +223,12 @@ class Testlink_XML_RPC_API(object):
         if not method or method.strip() == "":
             raise NotSupported("Empty method name")
 
-        log.debug("Query: %s(%s)" % (str(method), str(kwargs)))
+        LOGGER.debug("Query: %s(%s)" % (str(method), str(kwargs)))
         try:
             # Call the actual method
             fn = getattr(self._proxy, method)
             resp = fn(kwargs)
-            log.debug(u"Response: %s" % unicode(resp))
+            LOGGER.debug(u"Response: %s" % unicode(resp))
         except xmlrpclib.Fault, f:
             # If method is not supported, raise NotSupported
             # Otherwise re-raise original error
@@ -232,7 +238,7 @@ class Testlink_XML_RPC_API(object):
                 raise
         except (Exception, socket.error), ex:
             # Something was wrong with the request, try to reestablish
-            log.debug("Connection Error: %s" + str(ex))
+            LOGGER.debug("Connection Error: %s" + str(ex))
             if _reconnect:
                 self._reconnect()
                 return self._query(method, _reconnect=False, **kwargs)
@@ -262,11 +268,10 @@ class Testlink_XML_RPC_API(object):
     @TLVersion("1.0")
     def about(self):
         """Returns informations about the current Testlink API
-        @returns: 'Testlink API Version: x.x initially written by Asial Brumfield with contributions by Testlink development Team'
+        @returns: 'Testlink API Version: x.x initially written by ...'
         @rtype: str
         """
         return self._query("tl.about")
-
 
     @TLVersion("1.0")
     def sayHello(self):
@@ -321,9 +326,7 @@ class Testlink_XML_RPC_API(object):
         @returns: User Information array
         @rtype: dict
         """
-        return self._query("tl.getUserByLogin",\
-                devKey=devkey,\
-                user=user)
+        return self._query("tl.getUserByLogin", devKey=devkey, user=user)
 
     @TLVersion("1.9.8")
     def getUserByID(self, userid, devkey=None):
@@ -337,9 +340,7 @@ class Testlink_XML_RPC_API(object):
         @returns: User Information array
         @rtype: dict
         """
-        return self._query("tl.getUserByID",\
-                devKey=devkey,\
-                userid=userid)
+        return self._query("tl.getUserByID", devKey=devkey, userid=userid)
 
     @TLVersion("1.0")
     def getFullPath(self, nodeid, devkey=None):
@@ -349,12 +350,13 @@ class Testlink_XML_RPC_API(object):
         @param nodeid: The internal ID of the object
         @type nodeid: int
         @returns: Hierarchical path of the object
-        @rtype: str
+        @rtype: dict
         """
         return self._query("tl.getFullPath", devKey=devkey, nodeid=int(nodeid))
 
     @TLVersion("1.0")
-    def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False, priority=False, automation=False, inventory=False, devkey=None):
+    def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False,
+                          priority=False, automation=False, inventory=False, devkey=None):
         """Creates a new TestProject
         @param devkey: Testlink developer key
         @type devkey: str
@@ -383,21 +385,19 @@ class Testlink_XML_RPC_API(object):
         @todo: Specify return value
         """
 
-        opts = {\
-            'requirementsEnabled': requirements,\
-            'testPriorityEnabled': priority,\
-            'automationEnabled': automation,\
-            'inventoryEnabled': inventory\
-            }
+        opts = {'requirementsEnabled': requirements,
+                'testPriorityEnabled': priority,
+                'automationEnabled': automation,
+                'inventoryEnabled': inventory}
 
-        return self._query("tl.createTestProject",\
-                    devKey=devkey,\
-                    name=name,\
-                    prefix=prefix,\
-                    notes=notes,\
-                    active=active,\
-                    public=public,\
-                    options=opts)
+        return self._query("tl.createTestProject",
+                           devKey=devkey,
+                           name=name,
+                           prefix=prefix,
+                           notes=notes,
+                           active=active,
+                           public=public,
+                           options=opts)
 
     @TLVersion("1.0")
     def getProjects(self, devkey=None):
@@ -446,13 +446,13 @@ class Testlink_XML_RPC_API(object):
         @todo: Refactor optional arguments -> static values?
         @todo: Specify return value
         """
-        return self._query("tl.createTestPlan",\
-                    devKey=devkey,\
-                    testplanname=name,\
-                    testprojectname=project,\
-                    notes=notes,\
-                    active=active,\
-                    public=public)
+        return self._query("tl.createTestPlan",
+                           devKey=devkey,
+                           testplanname=name,
+                           testprojectname=project,
+                           notes=notes,
+                           active=active,
+                           public=public)
 
     @TLVersion("1.0")
     def getTestPlanByName(self, name, projectname, devkey=None):
@@ -466,10 +466,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestPlan
         @rtype: dict
         """
-        return self._query("tl.getTestPlanByName",\
-                    devKey=devkey,\
-                    testplanname=name,\
-                    testprojectname=projectname)
+        return self._query("tl.getTestPlanByName", devKey=devkey, testplanname=name, testprojectname=projectname)
 
     @TLVersion("1.0")
     def getProjectTestPlans(self, projectid, devkey=None):
@@ -481,9 +478,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestPlans
         @rtype: list
         """
-        return self._query("tl.getProjectTestPlans",\
-                    devKey=devkey,\
-                    testprojectid=projectid)
+        return self._query("tl.getProjectTestPlans", devKey=devkey, testprojectid=projectid)
 
     @TLVersion("1.9.4")
     def getTestPlanCustomFieldValue(self, testplanid, testprojectid, fieldname, devkey=None):
@@ -501,11 +496,11 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.getTestPlanCustomFieldValue",\
-                    devKey=devkey,\
-                    customfieldname=fieldname,\
-                    testprojectid=testprojectid,\
-                    testplanid=testplanid)
+        return self._query("tl.getTestPlanCustomFieldValue",
+                           devKey=devkey,
+                           customfieldname=fieldname,
+                           testprojectid=testprojectid,
+                           testplanid=testplanid)
 
     @TLVersion("1.0")
     def createBuild(self, testplanid, name, notes='', devkey=None):
@@ -523,11 +518,11 @@ class Testlink_XML_RPC_API(object):
 
         @todo: Specify return value type
         """
-        return self._query("tl.createBuild",\
-                    devKey=devkey,\
-                    testplanid=testplanid,\
-                    buildname=name,\
-                    buildnotes=notes)
+        return self._query("tl.createBuild",
+                           devKey=devkey,
+                           testplanid=testplanid,
+                           buildname=name,
+                           buildnotes=notes)
 
     @TLVersion("1.0")
     def getLatestBuildForTestPlan(self, testplanid, devkey=None):
@@ -539,9 +534,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching Build
         @rtype: list
         """
-        return self._query("tl.getLatestBuildForTestPlan",\
-                    devKey=devkey,\
-                    testplanid=testplanid)
+        return self._query("tl.getLatestBuildForTestPlan", devKey=devkey, testplanid=testplanid)
 
     @TLVersion("1.0")
     def getBuildsForTestPlan(self, testplanid, devkey=None):
@@ -553,9 +546,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching Builds
         @rtype: list
         """
-        return self._query("tl.getBuildsForTestPlan",\
-                    devKey=devkey,\
-                    testplanid=testplanid)
+        return self._query("tl.getBuildsForTestPlan", devKey=devkey, testplanid=testplanid)
 
     @TLVersion("1.9.4")
     def getExecCountersByBuild(self, testplanid, devkey=None):
@@ -569,9 +560,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.getExecCountersByBuild",\
-                    devKey=devkey,\
-                    testplanid=testplanid)
+        return self._query("tl.getExecCountersByBuild", devKey=devkey, testplanid=testplanid)
 
     @TLVersion("1.9.6")
     def createPlatform(self, testprojectname, platformname, notes="", devkey=None):
@@ -591,11 +580,11 @@ class Testlink_XML_RPC_API(object):
 
         @todo: Normalize return type
         """
-        return self._query("tl.createPlatform",\
-                    devKey=devkey,\
-                    testprojectname=testprojectname,\
-                    platformname=platformname,\
-                    notes=notes)
+        return self._query("tl.createPlatform",
+                           devKey=devkey,
+                           testprojectname=testprojectname,
+                           platformname=platformname,
+                           notes=notes)
 
     @TLVersion("1.9.6")
     def getProjectPlatforms(self, testprojectid, devkey=None):
@@ -609,9 +598,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.getProjectPlatforms",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid)
+        return self._query("tl.getProjectPlatforms", devKey=devkey, testprojectid=testprojectid)
 
     @TLVersion("1.0")
     def getTestPlanPlatforms(self, testplanid, devkey=None):
@@ -623,12 +610,12 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching Platforms
         @rtype: list
         """
-        return self._query("tl.getTestPlanPlatforms",\
-                    devKey=devkey,\
-                    testplanid=testplanid)
+        return self._query("tl.getTestPlanPlatforms", devKey=devkey, testplanid=testplanid)
 
     @TLVersion("1.0")
-    def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None, buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None, customfields=None, overwrite=False, execduration=None, devkey=None):
+    def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None,
+                       buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None,
+                       customfields=None, overwrite=False, execduration=None, devkey=None):
         """Sets the execution result for a specified TestCase
         @param devkey: Testlink developer key
         @type devkey: str
@@ -666,26 +653,27 @@ class Testlink_XML_RPC_API(object):
         if (self._tl_version >= Version("1.9.14")) or TLVersion.IGNORE:
             arguments['execduration'] = execduration
 
-        return self._query("tl.reportTCResult",\
-                    devKey=devkey,\
-                    testplanid=testplanid,\
-                    status=status,\
-                    testcaseid=testcaseid,\
-                    testcaseexternalid=testcaseexternalid,\
-                    buildid=buildid,\
-                    buildname=buildname,\
-                    notes=notes,\
-                    guess=guess,\
-                    bugid=bugid,\
-                    platformid=platformid,\
-                    platformname=platformname,\
-                    customfields=customfields,\
-                    overwrite=overwrite,\
-                    **arguments)
+        return self._query("tl.reportTCResult",
+                           devKey=devkey,
+                           testplanid=testplanid,
+                           status=status,
+                           testcaseid=testcaseid,
+                           testcaseexternalid=testcaseexternalid,
+                           buildid=buildid,
+                           buildname=buildname,
+                           notes=notes,
+                           guess=guess,
+                           bugid=bugid,
+                           platformid=platformid,
+                           platformname=platformname,
+                           customfields=customfields,
+                           overwrite=overwrite,
+                           **arguments)
     setTestCaseExecutionResult = reportTCResult
 
     @TLVersion("1.0")
-    def getLastExecutionResult(self, testplanid, testcaseid=None, testcaseexternalid=None, platformid=None, platformname=None, buildid=None, buildname=None, bugs=False, devkey=None):
+    def getLastExecutionResult(self, testplanid, testcaseid=None, testcaseexternalid=None, platformid=None,
+                               platformname=None, buildid=None, buildname=None, bugs=False, devkey=None):
         """Returns the execution result for a specified TestCase and TestPlan
         @param devkey: Testlink developer key
         @type devkey: str
@@ -708,19 +696,17 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching result
         @rtype: dict
         """
-        arguments = {\
-                "devKey"             : devkey,\
-                "testplanid"         : testplanid,\
-                "testcaseid"         : testcaseid,\
-                "testcaseexternalid" : testcaseexternalid\
-            }
+        arguments = {"devKey": devkey,
+                     "testplanid": testplanid,
+                     "testcaseid": testcaseid,
+                     "testcaseexternalid": testcaseexternalid}
 
         if (self._tl_version >= Version("1.9.9")) or TLVersion.IGNORE:
             arguments['platformid'] = platformid
             arguments['platformname'] = platformname
             arguments['buildid'] = buildid
             arguments['buildname'] = buildname
-            arguments['options'] = {'getBugs':bugs}
+            arguments['options'] = {'getBugs': bugs}
 
         return self._query("tl.getLastExecutionResult", **arguments)
 
@@ -734,12 +720,11 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.deleteExecution",\
-                    devKey=devkey,\
-                    executionid=executionid)
+        return self._query("tl.deleteExecution", devKey=devkey, executionid=executionid)
 
     @TLVersion("1.0")
-    def createTestSuite(self, testsuitename, testprojectid, details=None, parentid=None, order=None, checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK, devkey=None):
+    def createTestSuite(self, testsuitename, testprojectid, details=None, parentid=None, order=None,
+                        checkduplicatedname=True, actiononduplicatedname=DUPLICATE_STRATEGY.BLOCK, devkey=None):
         """Creates a new TestSuite
         @param devkey: Testlink developer key
         @type devkey: str
@@ -760,15 +745,15 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.createTestSuite",\
-                    devKey=devkey,\
-                    testsuitename=testsuitename,\
-                    testprojectid=testprojectid,\
-                    details=details,\
-                    parentid=parentid,\
-                    order=order,\
-                    checkduplicatedname=checkduplicatedname,\
-                    actiononduplicatedname=actiononduplicatedname)
+        return self._query("tl.createTestSuite",
+                           devKey=devkey,
+                           testsuitename=testsuitename,
+                           testprojectid=testprojectid,
+                           details=details,
+                           parentid=parentid,
+                           order=order,
+                           checkduplicatedname=checkduplicatedname,
+                           actiononduplicatedname=actiononduplicatedname)
 
     @TLVersion("1.0")
     def getTestSuiteById(self, testprojectid, testsuiteid, devkey=None):
@@ -782,10 +767,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestSuite
         @rtype: dict
         """
-        return self._query("tl.getTestSuiteByID",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid,\
-                    testsuiteid=testsuiteid)
+        return self._query("tl.getTestSuiteByID", devKey=devkey, testprojectid=testprojectid, testsuiteid=testsuiteid)
 
     @TLVersion("1.0")
     def getTestSuitesForTestSuite(self, testsuiteid, devkey=None):
@@ -797,9 +779,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestSuites
         @rtype: dict/list/???
         """
-        return self._query("tl.getTestSuitesForTestSuite",\
-                    devKey=devkey,\
-                    testsuiteid=testsuiteid)
+        return self._query("tl.getTestSuitesForTestSuite", devKey=devkey, testsuiteid=testsuiteid)
 
     @TLVersion("1.0")
     def getFirstLevelTestSuitesForTestProject(self, testprojectid, devkey=None):
@@ -811,9 +791,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestSuites
         @rtype: dict/list/???
         """
-        return self._query("tl.getFirstLevelTestSuitesForTestProject",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid)
+        return self._query("tl.getFirstLevelTestSuitesForTestProject", devKey=devkey, testprojectid=testprojectid)
 
     @TLVersion("1.0")
     def getTestSuitesForTestPlan(self, planid, devkey=None):
@@ -825,12 +803,13 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestSuites
         @rtype: dict/list/???
         """
-        return self._query("tl.getTestSuitesForTestPlan",\
-                    devKey=devkey,\
-                    testplanid=planid)
+        return self._query("tl.getTestSuitesForTestPlan", devKey=devkey, testplanid=planid)
 
     @TLVersion("1.0")
-    def createTestCase(self, testcasename, testsuiteid, testprojectid, authorlogin, summary, steps=None, preconditions=None, importance=ImportanceLevel.MEDIUM, executiontype=ExecutionType.MANUAL, order=None, checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK, customfields=None, devkey=None):
+    def createTestCase(self, testcasename, testsuiteid, testprojectid, authorlogin, summary, steps=None,
+                       preconditions=None, importance=IMPORTANCE_LEVEL.MEDIUM, executiontype=EXECUTION_TYPE.MANUAL,
+                       order=None, checkduplicatedname=True, actiononduplicatedname=DUPLICATE_STRATEGY.BLOCK,
+                       customfields=None, devkey=None):
         """Creates a new TestCase
         @param devkey: Testlink developer key
         @type devkey: str
@@ -863,25 +842,26 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict/list/???
         """
-        return self._query("tl.createTestCase",\
-                    devKey=devkey,\
-                    testcasename=testcasename,\
-                    testsuiteid=testsuiteid,\
-                    testprojectid=testprojectid,\
-                    authorlogin=authorlogin,\
-                    summary=summary,\
-                    steps=steps,\
-                    preconditions=preconditions,\
-                    importance=importance,\
-                    executiontype=executiontype,\
-                    order=order,\
-                    customfields=customfields,\
-                    checkduplicatedname=checkduplicatedname,\
-                    actiononduplicatedname=actiononduplicatedname\
-               )
+        return self._query("tl.createTestCase",
+                           devKey=devkey,
+                           testcasename=testcasename,
+                           testsuiteid=testsuiteid,
+                           testprojectid=testprojectid,
+                           authorlogin=authorlogin,
+                           summary=summary,
+                           steps=steps,
+                           preconditions=preconditions,
+                           importance=importance,
+                           executiontype=executiontype,
+                           order=order,
+                           customfields=customfields,
+                           checkduplicatedname=checkduplicatedname,
+                           actiononduplicatedname=actiononduplicatedname)
 
     @TLVersion("1.9.8")
-    def updateTestCase(self, testcaseexternalid, version=None, testcasename=None, summary=None, preconditions=None, steps=None, importance=None, executiontype=None, status=None, estimatedexecduration=None, user=None, devkey=None):
+    def updateTestCase(self, testcaseexternalid, version=None, testcasename=None, summary=None, preconditions=None,
+                       steps=None, importance=None, executiontype=None, status=None, estimatedexecduration=None,
+                       user=None, devkey=None):
         """Updates a specified TestCase
         @since: Testlink 1.9.8
 
@@ -912,19 +892,19 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict/list/???
         """
-        return self._query("tl.updateTestCase",\
-                    devKey=devkey,\
-                    testcaseexternalid=testcaseexternalid,\
-                    version=version,\
-                    testcasename=testcasename,\
-                    summary=summary,\
-                    preconditions=preconditions,\
-                    steps=steps,\
-                    importance=importance,\
-                    executiontype=executiontype,\
-                    status=status,\
-                    estimatedexecduration=estimatedexecduration,\
-                    user=user)
+        return self._query("tl.updateTestCase",
+                           devKey=devkey,
+                           testcaseexternalid=testcaseexternalid,
+                           version=version,
+                           testcasename=testcasename,
+                           summary=summary,
+                           preconditions=preconditions,
+                           steps=steps,
+                           importance=importance,
+                           executiontype=executiontype,
+                           status=status,
+                           estimatedexecduration=estimatedexecduration,
+                           user=user)
 
     @TLVersion("1.9.4")
     def setTestCaseExecutionType(self, testcaseexternalid, version, testprojectid, executiontype, devkey=None):
@@ -940,16 +920,16 @@ class Testlink_XML_RPC_API(object):
         @param testprojectid: The internal ID of the TestProject
         @type testprojectid: int
         @param executiontype: The execution type
-        @type executiontype: testlink.ExecutionType
+        @type executiontype: testlink.EXECUTON_TYPE
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.setTestCaseExecutionType",\
-                    devKey=devkey,\
-                    testcaseexternalid=testcaseexternalid,\
-                    version=version,\
-                    testprojectid=testprojectid,\
-                    executiontype=executiontype)
+        return self._query("tl.setTestCaseExecutionType",
+                           devKey=devkey,
+                           testcaseexternalid=testcaseexternalid,
+                           version=version,
+                           testprojectid=testprojectid,
+                           executiontype=executiontype)
 
     @TLVersion("1.9.4")
     def createTestCaseSteps(self, steps, action, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
@@ -960,24 +940,25 @@ class Testlink_XML_RPC_API(object):
         @type devkey: str
         @param steps: Steps to create, keys are: step_number,actions,expected,results,execution_type
         @type steps: list
-        @param action: {'create' : If step exist, nothing will be done, 'update' : If step does not exist, will be created, else will be updated, 'push' : NOT IMPLEMENTED}
+        @param action: Action to perform
         @type action: str
         @param testcaseid: <OPTIONAL> The internal ID of the TestCase. If not given, external ID must be set.
         @type testcaseid: int
         @param testcaseexternalid: <OPTIONAL> The external IF of the TestCase. If not given, internal ID must be set.
         @type testcaseexternalid: int
-        @param version: <OPTIONAL> Version of the TestCase, If not given, last active version will be used. If all versions are inactive, the latest version will be used.
+        @param version: <OPTIONAL> Version of the TestCase, If not given, last active version will be used.
+                        If all versions are inactive, the latest version will be used.
         @type version: int
         @returns: Server response
         @rtype: dict/list/???
         """
-        return self._query("tl.createTestCaseStep",\
-                    devKey=devkey,\
-                    testcaseexternalid=testcaseexternalid,\
-                    testcaseid=testcaseid,\
-                    version=version,\
-                    action=action,\
-                    steps=steps)
+        return self._query("tl.createTestCaseStep",
+                           devKey=devkey,
+                           testcaseexternalid=testcaseexternalid,
+                           testcaseid=testcaseid,
+                           version=version,
+                           action=action,
+                           steps=steps)
 
     @TLVersion("1.9.4")
     def deleteTestCaseSteps(self, testcaseexternalid, steps, version=None, devkey=None):
@@ -995,11 +976,11 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict/list/???
         """
-        return self._query("tl.deleteTestCaseSteps",\
-                    devKey=devkey,\
-                    testcaseexternalid=testcaseexternalid,\
-                    steps=steps,\
-                    version=version)
+        return self._query("tl.deleteTestCaseSteps",
+                           devKey=devkey,
+                           testcaseexternalid=testcaseexternalid,
+                           steps=steps,
+                           version=version)
 
     @TLVersion("1.0")
     def getTestCase(self, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
@@ -1015,14 +996,15 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestCase
         @rtype: list/dict/???
         """
-        return self._query("tl.getTestCase",\
-                    devKey=devkey,\
-                    testcaseid=testcaseid,\
-                    testcaseexternalid=testcaseexternalid,\
-                    version=version)
+        return self._query("tl.getTestCase",
+                           devKey=devkey,
+                           testcaseid=testcaseid,
+                           testcaseexternalid=testcaseexternalid,
+                           version=version)
 
     @TLVersion("1.0")
-    def getTestCaseIdByName(self, testcasename, testsuitename=None, testprojectname=None, testcasepathname=None, devkey=None):
+    def getTestCaseIdByName(self, testcasename, testsuitename=None, testprojectname=None,
+                            testcasepathname=None, devkey=None):
         """Returns the internal ID of a specified TestCase
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1037,12 +1019,12 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestCase ID
         @rtype: int?
         """
-        return self._query("tl.getTestCaseIDByName",\
-                    devKey=devkey,\
-                    testcasename=testcasename,\
-                    testsuitename=testsuitename,\
-                    testprojectname=testprojectname,\
-                    testcasepathname=testcasepathname)
+        return self._query("tl.getTestCaseIDByName",
+                           devKey=devkey,
+                           testcasename=testcasename,
+                           testsuitename=testsuitename,
+                           testprojectname=testprojectname,
+                           testcasepathname=testcasepathname)
 
     @TLVersion("1.0")
     def getTestCasesForTestSuite(self, testsuiteid, deep=False, details='simple', getkeywords=False, devkey=None):
@@ -1060,18 +1042,17 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestCases
         @rtype: list/dict/???
         """
-        arguments = {\
-                    "devKey"      : devkey,\
-                    "testsuiteid" : testsuiteid,\
-                    "deep"        : deep,\
-                    "details"     : details\
-            }
+        arguments = {"testsuiteid": testsuiteid,
+                     "deep": deep,
+                     "details": details}
         if (self._tl_version >= Version("1.9.10")) or TLVersion.IGNORE:
             arguments['getkeywords'] = getkeywords
-        return self._query("tl.getTestCasesForTestSuite", **arguments)
+        return self._query("tl.getTestCasesForTestSuite", devKey=devkey, **arguments)
 
     @TLVersion("1.0")
-    def getTestCasesForTestPlan(self, testprojectid, testplanid, testcaseid=None, buildid=None, keywordid=None, keywords=None, executed=None, assignedto=None, executestatus=None, executiontype=None, getstepsinfo=False, details='full', devkey=None):
+    def getTestCasesForTestPlan(self, testprojectid, testplanid, testcaseid=None, buildid=None, keywordid=None,
+                                keywords=None, executed=None, assignedto=None, executestatus=None, executiontype=None,
+                                getstepsinfo=False, details='full', devkey=None):
         """Returns all TestCases for a specified TestPlan
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1102,20 +1083,18 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching TestCases
         @rtype: list/dict/???
         """
-        arguments = {\
-                "devKey"        : devkey,\
-                "testprojectid" : testprojectid,\
-                "testplanid"    : testplanid,\
-                "testcaseid"    : testcaseid,\
-                "buildid"       : buildid,\
-                "keywordid"     : keywordid,\
-                "keywords"      : keywords,\
-                "executed"      : executed,\
-                "assignedto"    : assignedto,\
-                "executestatus" : executestatus,\
-                "executiontype" : executiontype,\
-                "getstepsinfo"  : getstepsinfo\
-            }
+        arguments = {"devKey": devkey,
+                     "testprojectid": testprojectid,
+                     "testplanid": testplanid,
+                     "testcaseid": testcaseid,
+                     "buildid": buildid,
+                     "keywordid": keywordid,
+                     "keywords": keywords,
+                     "executed": executed,
+                     "assignedto": assignedto,
+                     "executestatus": executestatus,
+                     "executiontype": executiontype,
+                     "getstepsinfo": getstepsinfo}
 
         if (self._tl_version >= Version("1.9.4")) or TLVersion.IGNORE:
             # Add 'details' attribute
@@ -1124,7 +1103,8 @@ class Testlink_XML_RPC_API(object):
         return self._query("tl.getTestCasesForTestPlan", **arguments)
 
     @TLVersion("1.0")
-    def addTestCaseToTestPlan(self, testprojectid, testplanid, testcaseexternalid, version, platformid=None, executionorder=None, urgency=None, devkey=None):
+    def addTestCaseToTestPlan(self, testprojectid, testplanid, testcaseexternalid, version, platformid=None,
+                              executionorder=None, urgency=None, devkey=None):
         """Adds a specified TestCase to a specified TestPlan
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1147,15 +1127,15 @@ class Testlink_XML_RPC_API(object):
 
         @todo: Set valid values for urgency
         """
-        return self._query("tl.addTestCaseToTestPlan",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid,\
-                    testplanid=testplanid,\
-                    testcaseexternalid=testcaseexternalid,\
-                    version=version,\
-                    platformid=platformid,\
-                    executionorder=executionorder,\
-                    urgency=urgency)
+        return self._query("tl.addTestCaseToTestPlan",
+                           devKey=devkey,
+                           testprojectid=testprojectid,
+                           testplanid=testplanid,
+                           testcaseexternalid=testcaseexternalid,
+                           version=version,
+                           platformid=platformid,
+                           executionorder=executionorder,
+                           urgency=urgency)
 
     @TLVersion("1.9.6")
     def addPlatformToTestPlan(self, testplanid, platformname, devkey=None):
@@ -1171,10 +1151,10 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict/list/???
         """
-        return self._query("tl.addPlatformToTestPlan",\
-                    devKey=devkey,\
-                    testplanid=testplanid,\
-                    platformname=platformname)
+        return self._query("tl.addPlatformToTestPlan",
+                           devKey=devkey,
+                           testplanid=testplanid,
+                           platformname=platformname)
 
     @TLVersion("1.9.6")
     def removePlatformFromTestPlan(self, testplanid, platformname, devkey=None):
@@ -1190,10 +1170,10 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict/list/???
         """
-        return self._query("tl.removePlatformFromTestPlan",\
-                    devKey=devkey,\
-                    testplanid=testplanid,\
-                    platformname=platformname)
+        return self._query("tl.removePlatformFromTestPlan",
+                           devKey=devkey,
+                           testplanid=testplanid,
+                           platformname=platformname)
 
     @TLVersion("1.0")
     def assignRequirements(self, testcaseexternalid, testprojectid, requirements, devkey=None):
@@ -1209,11 +1189,11 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.assignRequirements",\
-                    devKey=devkey,\
-                    testcaseexternalid=testcaseexternalid,\
-                    testprojectid=testprojectid,\
-                    requirements=requirements)
+        return self._query("tl.assignRequirements",
+                           devKey=devkey,
+                           testcaseexternalid=testcaseexternalid,
+                           testprojectid=testprojectid,
+                           requirements=requirements)
 
     @TLVersion("1.9.4")
     def getReqSpecCustomFieldDesignValue(self, reqspecid, testprojectid, customfieldname, devkey=None):
@@ -1231,11 +1211,11 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.getReqSpecCustomFieldDesignValue",\
-                    devKey=devkey,\
-                    customfieldname=customfieldname,\
-                    testprojectid=testprojectid,\
-                    reqspecid=reqspecid)
+        return self._query("tl.getReqSpecCustomFieldDesignValue",
+                           devKey=devkey,
+                           customfieldname=customfieldname,
+                           testprojectid=testprojectid,
+                           reqspecid=reqspecid)
 
     @TLVersion("1.9.4")
     def getRequirementCustomFieldDesignValue(self, requirementid, testprojectid, customfieldname, devkey=None):
@@ -1253,11 +1233,11 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.getRequirementCustomFieldDesignValue",\
-                    devKey=devkey,\
-                    customfieldname=customfieldname,\
-                    testprojectid=testprojectid,\
-                    requirementid=requirementid)
+        return self._query("tl.getRequirementCustomFieldDesignValue",
+                           devKey=devkey,
+                           customfieldname=customfieldname,
+                           testprojectid=testprojectid,
+                           requirementid=requirementid)
 
     @TLVersion("1.9.4")
     def getTestSuiteCustomFieldDesignValue(self, testsuiteid, testprojectid, customfieldname, devkey=None):
@@ -1275,14 +1255,15 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.getTestSuiteCustomFieldDesignValue",\
-                    devKey=devkey,\
-                    customfieldname=customfieldname,\
-                    testprojectid=testprojectid,\
-                    testsuiteid=testsuiteid)
+        return self._query("tl.getTestSuiteCustomFieldDesignValue",
+                           devKey=devkey,
+                           customfieldname=customfieldname,
+                           testprojectid=testprojectid,
+                           testsuiteid=testsuiteid)
 
     @TLVersion("1.0")
-    def getTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfieldname, details='value', devkey=None):
+    def getTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfieldname,
+                                          details='value', devkey=None):
         """Returns the value of a specified CustomField for a specified TestCase
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1299,20 +1280,21 @@ class Testlink_XML_RPC_API(object):
         @returns: Single value, information about specified field, information about all fields
         @rtype: mixed
         """
-        resp = self._query("tl.getTestCaseCustomFieldDesignValue",\
-                    devKey=devkey,\
-                    testcaseexternalid=testcaseexternalid,\
-                    version=version,\
-                    testprojectid=testprojectid,\
-                    customfieldname=customfieldname,\
-                    details=details)
+        resp = self._query("tl.getTestCaseCustomFieldDesignValue",
+                           devKey=devkey,
+                           testcaseexternalid=testcaseexternalid,
+                           version=version,
+                           testprojectid=testprojectid,
+                           customfieldname=customfieldname,
+                           details=details)
         # Return None for an empty string
         if resp is not None and len(resp) == 0:
             resp = None
         return resp
 
     @TLVersion("1.9.4")
-    def updateTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfields=None, devkey=None):
+    def updateTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfields=None,
+                                             devkey=None):
         """Updates values of CustomFields for a specified TestCase
         @since: Testlink 1.9.4
 
@@ -1329,15 +1311,16 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.updateTestCaseCustomFieldDesignValue",\
-                    devKey=devkey,\
-                    testcaseexternalid=testcaseexternalid,\
-                    version=version,\
-                    testprojectid=testprojectid,\
-                    customfields=customfields)
+        return self._query("tl.updateTestCaseCustomFieldDesignValue",
+                           devKey=devkey,
+                           testcaseexternalid=testcaseexternalid,
+                           version=version,
+                           testprojectid=testprojectid,
+                           customfields=customfields)
 
     @TLVersion("1.9.4")
-    def getTestCaseCustomFieldExecutionValue(self, executionid, testplanid, version, testprojectid, customfieldname, devkey=None):
+    def getTestCaseCustomFieldExecutionValue(self, executionid, testplanid, version, testprojectid, customfieldname,
+                                             devkey=None):
         """Returns the value of a specified CustomField for a specified Execution
         @since: Testlink 1.9.4
 
@@ -1356,16 +1339,17 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.getTestCaseCustomFieldExecutionValue",\
-                    devKey=devkey,\
-                    customfieldname=customfieldname,\
-                    testprojectid=testprojectid,\
-                    version=version,\
-                    executionid=executionid,\
-                    testplanid=testplanid)
+        return self._query("tl.getTestCaseCustomFieldExecutionValue",
+                           devKey=devkey,
+                           customfieldname=customfieldname,
+                           testprojectid=testprojectid,
+                           version=version,
+                           executionid=executionid,
+                           testplanid=testplanid)
 
     @TLVersion("1.9.4")
-    def getTestCaseCustomFieldTestPlanDesignValue(self, linkid, testplanid, version, testprojectid, customfieldname, devkey=None):
+    def getTestCaseCustomFieldTestPlanDesignValue(self, linkid, testplanid, version, testprojectid, customfieldname,
+                                                  devkey=None):
         """Returns the value of the specified CustomField for a specified TestCase within a specified TestPlan
         @since: Testlink 1.9.4
 
@@ -1384,13 +1368,13 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: list/dict/???
         """
-        return self._query("tl.getTestCaseCustomFieldTestPlanDesignValue",\
-                    devKey=devkey,\
-                    customfieldname=customfieldname,\
-                    testprojectid=testprojectid,\
-                    version=version,\
-                    testplanid=testplanid,\
-                    linkid=linkid)
+        return self._query("tl.getTestCaseCustomFieldTestPlanDesignValue",
+                           devKey=devkey,
+                           customfieldname=customfieldname,
+                           testprojectid=testprojectid,
+                           version=version,
+                           testplanid=testplanid,
+                           linkid=linkid)
 
     @TLVersion("1.0")
     def uploadAttachment(self, fkid, fktable, filename, filetype, content, title=None, description=None, devkey=None):
@@ -1414,15 +1398,15 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.uploadAttachment",\
-                    devKey=devkey,\
-                    fkid=fkid,\
-                    fktable=fktable,\
-                    filename=filename,\
-                    filetype=filetype,\
-                    content=content,\
-                    title=title,\
-                    description=description)
+        return self._query("tl.uploadAttachment",
+                           devKey=devkey,
+                           fkid=fkid,
+                           fktable=fktable,
+                           filename=filename,
+                           filetype=filetype,
+                           content=content,
+                           title=title,
+                           description=description)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def deleteAttachment(self, attachment_id, devkey=None):
@@ -1434,13 +1418,11 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.deleteAttachment",\
-                    devKey=devkey,\
-                    attachmentid=attachment_id)
-
+        return self._query("tl.deleteAttachment", devKey=devkey, attachmentid=attachment_id)
 
     @TLVersion("1.0")
-    def uploadRequirementSpecificationAttachment(self, reqspecid, filename, filetype, content, title=None, description=None, devkey=None):
+    def uploadRequirementSpecificationAttachment(self, reqspecid, filename, filetype, content, title=None,
+                                                 description=None, devkey=None):
         """Uploads the specified Attachment for the specified Requirement Specification
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1459,17 +1441,18 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.uploadRequirementSpecificationAttachment",\
-                    devKey=devkey,\
-                    reqspecid=reqspecid,\
-                    filename=filename,\
-                    filetype=filetype,\
-                    content=content,\
-                    title=title,\
-                    description=description)
+        return self._query("tl.uploadRequirementSpecificationAttachment",
+                           devKey=devkey,
+                           reqspecid=reqspecid,
+                           filename=filename,
+                           filetype=filetype,
+                           content=content,
+                           title=title,
+                           description=description)
 
     @TLVersion("1.0")
-    def uploadRequirementAttachment(self, requirementid, filename, filetype, content, title=None, description=None, devkey=None):
+    def uploadRequirementAttachment(self, requirementid, filename, filetype, content, title=None, description=None,
+                                    devkey=None):
         """Uploads the specified Attachment for the specified Requirement
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1488,17 +1471,18 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.uploadRequirementAttachment",\
-                    devKey=devkey,\
-                    requirementid=requirementid,\
-                    filename=filename,\
-                    filetype=filetype,\
-                    content=content,\
-                    title=title,\
-                    description=description)
+        return self._query("tl.uploadRequirementAttachment",
+                           devKey=devkey,
+                           requirementid=requirementid,
+                           filename=filename,
+                           filetype=filetype,
+                           content=content,
+                           title=title,
+                           description=description)
 
     @TLVersion("1.0")
-    def uploadTestProjectAttachment(self, testprojectid, filename, filetype, content, title=None, description=None, devkey=None):
+    def uploadTestProjectAttachment(self, testprojectid, filename, filetype, content, title=None, description=None,
+                                    devkey=None):
         """Uploads the specified Attachment for the specified TestProject
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1517,17 +1501,18 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.uploadTestProjectAttachment",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid,\
-                    filename=filename,\
-                    filetype=filetype,\
-                    content=content,\
-                    title=title,\
-                    description=description)
+        return self._query("tl.uploadTestProjectAttachment",
+                           devKey=devkey,
+                           testprojectid=testprojectid,
+                           filename=filename,
+                           filetype=filetype,
+                           content=content,
+                           title=title,
+                           description=description)
 
     @TLVersion("1.0")
-    def uploadTestSuiteAttachment(self, testsuiteid, filename, filetype, content, title=None, description=None, devkey=None):
+    def uploadTestSuiteAttachment(self, testsuiteid, filename, filetype, content, title=None, description=None,
+                                  devkey=None):
         """Uploads the specified Attachment for the specified TestSuite
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1546,17 +1531,18 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.uploadTestSuiteAttachment",\
-                    devKey=devkey,\
-                    testsuiteid=testsuiteid,\
-                    filename=filename,\
-                    filetype=filetype,\
-                    content=content,\
-                    title=title,\
-                    description=description)
+        return self._query("tl.uploadTestSuiteAttachment",
+                           devKey=devkey,
+                           testsuiteid=testsuiteid,
+                           filename=filename,
+                           filetype=filetype,
+                           content=content,
+                           title=title,
+                           description=description)
 
     @TLVersion("1.0")
-    def uploadTestCaseAttachment(self, testcaseid, filename, filetype, content, title=None, description=None, devkey=None):
+    def uploadTestCaseAttachment(self, testcaseid, filename, filetype, content, title=None, description=None,
+                                 devkey=None):
         """Uploads the specified Attachment for the specified TestCase
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1575,17 +1561,18 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.uploadTestCaseAttachment",\
-                    devKey=devkey,\
-                    testcaseid=testcaseid,\
-                    filename=filename,\
-                    filetype=filetype,\
-                    content=content,\
-                    title=title,\
-                    description=description)
+        return self._query("tl.uploadTestCaseAttachment",
+                           devKey=devkey,
+                           testcaseid=testcaseid,
+                           filename=filename,
+                           filetype=filetype,
+                           content=content,
+                           title=title,
+                           description=description)
 
     @TLVersion("1.0")
-    def uploadExecutionAttachment(self, executionid, filename, filetype, content, title=None, description=None, devkey=None):
+    def uploadExecutionAttachment(self, executionid, filename, filetype, content, title=None, description=None,
+                                  devkey=None):
         """Uploads the specified Attachment for the specified Execution
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1604,14 +1591,14 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.uploadExecutionAttachment",\
-                    devKey=devkey,\
-                    executionid=executionid,\
-                    filename=filename,\
-                    filetype=filetype,\
-                    content=content,\
-                    title=title,\
-                    description=description)
+        return self._query("tl.uploadExecutionAttachment",
+                           devKey=devkey,
+                           executionid=executionid,
+                           filename=filename,
+                           filetype=filetype,
+                           content=content,
+                           title=title,
+                           description=description)
 
     @TLVersion("1.0")
     def getTestCaseAttachments(self, testcaseid=None, testcaseexternalid=None, devkey=None):
@@ -1625,10 +1612,10 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching attachments
         @rtype: dict
         """
-        return self._query("tl.getTestCaseAttachments",\
-                    devKey=devkey,\
-                    testcaseid=testcaseid,\
-                    testcaseexternalid=testcaseexternalid)
+        return self._query("tl.getTestCaseAttachments",
+                           devKey=devkey,
+                           testcaseid=testcaseid,
+                           testcaseexternalid=testcaseexternalid)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def getRequirementSpecificationsForTestProject(self, testprojectid, devkey=None):
@@ -1640,9 +1627,9 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching requirement specifications
         @rtype: list
         """
-        return self._query("tl.getRequirementSpecificationsForTestProject",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid)
+        return self._query("tl.getRequirementSpecificationsForTestProject",
+                           devKey=devkey,
+                           testprojectid=testprojectid)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def getRequirementSpecificationsForRequirementSpecification(self, reqspecid, devkey=None):
@@ -1654,9 +1641,9 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching requirement specifications
         @rtype: list
         """
-        return self._query("tl.getRequirementSpecificationsForRequirementSpecification",\
-                    devKey=devkey,\
-                    reqspecid=reqspecid)
+        return self._query("tl.getRequirementSpecificationsForRequirementSpecification",
+                           devKey=devkey,
+                           reqspecid=reqspecid)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def getRequirementsForRequirementSpecification(self, reqspecid, testprojectid, devkey=None):
@@ -1670,10 +1657,10 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching requirements
         @rtype: list
         """
-        return self._query("tl.getRequirementsForRequirementSpecification",\
-                    devKey=devkey,\
-                    reqspecid=reqspecid,\
-                    testprojectid=testprojectid)
+        return self._query("tl.getRequirementsForRequirementSpecification",
+                           devKey=devkey,
+                           reqspecid=reqspecid,
+                           testprojectid=testprojectid)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def getRisksForRequirement(self, requirementid, devkey=None):
@@ -1685,9 +1672,7 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching risks
         @rtype: list
         """
-        return self._query("tl.getRisksForRequirement",\
-                    devKey=devkey,\
-                    requirementid=requirementid)
+        return self._query("tl.getRisksForRequirement", devKey=devkey, requirementid=requirementid)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def createRequirementSpecification(self, testprojectid, parentid, docid, title, scope, userid, typ, devkey=None):
@@ -1711,18 +1696,19 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.createRequirementSpecification",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid,\
-                    parentid=parentid,\
-                    docid=docid,\
-                    title=title,\
-                    scope=scope,\
-                    userid=userid,\
-                    type=typ)
+        return self._query("tl.createRequirementSpecification",
+                           devKey=devkey,
+                           testprojectid=testprojectid,
+                           parentid=parentid,
+                           docid=docid,
+                           title=title,
+                           scope=scope,
+                           userid=userid,
+                           type=typ)
 
     @TLVersion("1.11-sinaqs", strict=True)
-    def createRequirement(self, testprojectid, reqspecid, docid, title, scope, userid, status, typ, coverage=1, devkey=None):
+    def createRequirement(self, testprojectid, reqspecid, docid, title, scope, userid, status, typ, coverage=1,
+                          devkey=None):
         """Creates a new Requirement
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1737,7 +1723,7 @@ class Testlink_XML_RPC_API(object):
         @param scope: The scope of the new Requirement
         @type scope: str
         @param userid: The ID of the author
-        @type useid: int
+        @type userid: int
         @param status: The status of the new Requirement
         @type status: RequirementStatus
         @param typ: The type of the new Requirement
@@ -1747,17 +1733,17 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.createRequirement",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid,\
-                    reqspecid=reqspecid,\
-                    docid=docid,\
-                    title=title,\
-                    scope=scope,\
-                    userid=userid,\
-                    status=status,\
-                    type=typ,\
-                    coverage=coverage)
+        return self._query("tl.createRequirement",
+                           devKey=devkey,
+                           testprojectid=testprojectid,
+                           reqspecid=reqspecid,
+                           docid=docid,
+                           title=title,
+                           scope=scope,
+                           userid=userid,
+                           status=status,
+                           type=typ,
+                           coverage=coverage)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def createRisk(self, requirementid, docid, title, scope, userid, coverage=None, devkey=None):
@@ -1779,14 +1765,14 @@ class Testlink_XML_RPC_API(object):
         @returns: Server response
         @rtype: dict
         """
-        return self._query("tl.createRisk",\
-                    devKey=devkey,\
-                    requirementid=requirementid,\
-                    docid=docid,\
-                    title=title,\
-                    scope=scope,\
-                    userid=userid,\
-                    coverage=coverage)
+        return self._query("tl.createRisk",
+                           devKey=devkey,
+                           requirementid=requirementid,
+                           docid=docid,
+                           title=title,
+                           scope=scope,
+                           userid=userid,
+                           coverage=coverage)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def assignRisks(self, testcaseexternalid, testprojectid, risks, devkey=None):
@@ -1795,19 +1781,22 @@ class Testlink_XML_RPC_API(object):
         @type devkey: str
         @param testcaseexternalid: The external ID of the Testcase (with prefix!)
         @type testcaseexternalid: str
+        @param testprojectid: The internal ID of the TestProject
+        @type testprojectid: int
         @param risks: List of Risk IDs to assign to the TestCase
         @type risks: list
         @returns: Server response
         @rtype: mixed
         """
-        return self._query("tl.assignRisks",\
-                    devKey=devkey,\
-                    testprojectid=testprojectid,\
-                    testcaseexternalid=testcaseexternalid,\
-                    risks=risks)
+        return self._query("tl.assignRisks",
+                           devKey=devkey,
+                           testprojectid=testprojectid,
+                           testcaseexternalid=testcaseexternalid,
+                           risks=risks)
 
     @TLVersion("1.11-sinaqs", strict=True)
-    def getExecutions(self, testplanid, testcaseid=None, testcaseexternalid=None, platformid=None, platformname=None, buildid=None, buildname=None, bugs=False, devkey=None):
+    def getExecutions(self, testplanid, testcaseid=None, testcaseexternalid=None, platformid=None, platformname=None,
+                      buildid=None, buildname=None, bugs=False, devkey=None):
         """Returns all execution results for a specified TestCase and TestPlan
         @param devkey: Testlink developer key
         @type devkey: str
@@ -1830,17 +1819,16 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching result
         @rtype: dict
         """
-        return self._query("tl.getExecutions",\
-                    devKey=devkey,\
-                    testplanid=testplanid,\
-                    testcaseid=testcaseid,\
-                    testcaseexternalid=testcaseexternalid,\
-                    platformid=platformid,\
-                    platformname=platformname,\
-                    buildid=buildid,\
-                    buildname=buildname,\
-                    options={'getBugs':bugs}\
-               )
+        return self._query("tl.getExecutions",
+                           devKey=devkey,
+                           testplanid=testplanid,
+                           testcaseid=testcaseid,
+                           testcaseexternalid=testcaseexternalid,
+                           platformid=platformid,
+                           platformname=platformname,
+                           buildid=buildid,
+                           buildname=buildname,
+                           options={'getBugs': bugs})
 
     @TLVersion("1.11-sinaqs", strict=True)
     def getAttachments(self, fkid, fktable, devkey=None):
@@ -1854,29 +1842,27 @@ class Testlink_XML_RPC_API(object):
         @returns: Matching result
         @rtype: dict
         """
-        return self._query("tl.getAttachments",\
-                    devKey=devkey,\
-                    fkid=fkid,\
-                    fktable=fktable\
-            )
+        return self._query("tl.getAttachments",
+                           devKey=devkey,
+                           fkid=fkid,
+                           fktable=fktable)
 
     @TLVersion("1.11-sinaqs", strict=True)
     def getRequirementCoverage(self, requirementid, testplanid=None, platformid=None, devkey=None):
         """Returns the coverage for a specified Requirement within a given context.
         @param devkey: Testlink developer key
         @type devkey: str
-        @param requirement_id: The internal ID of the Requirement
-        @type requirement_id: int
-        @param testplan_id: <OPTIONAL> The internal ID of the contextual TestPlan
-        @type testplan_id: int
-        @param platform_id: <OPTIONAL> The internal ID of the contextual Platform
-        @type platform_id: int
+        @param requirementid: The internal ID of the Requirement
+        @type requirementid: int
+        @param testplanid: <OPTIONAL> The internal ID of the contextual TestPlan
+        @type testplanid: int
+        @param platformid: <OPTIONAL> The internal ID of the contextual Platform
+        @type platformid: int
         @returns: Matching result
         @rtype: mixed
         """
-        return self._query('tl.getRequirementCoverage',\
-                    devKey=devkey,\
-                    requirementid=requirementid,\
-                    testplanid=testplanid,\
-                    platformid=platformid\
-            )
+        return self._query('tl.getRequirementCoverage',
+                           devKey=devkey,
+                           requirementid=requirementid,
+                           testplanid=testplanid,
+                           platformid=platformid)

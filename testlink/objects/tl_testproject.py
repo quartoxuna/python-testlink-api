@@ -15,6 +15,7 @@ from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.exceptions import APIError
 
+
 class TestProject(TestlinkObject, IAttachmentGetter):
     """Testlink TestProject representation
     @ivar notes: TestProject notes
@@ -38,32 +39,19 @@ class TestProject(TestlinkObject, IAttachmentGetter):
     @ivar color: Assigned color of TestProject
     @type color: str"""
 
-    __slots__ = ("notes", "prefix", "active", "public", "requirements_enabled",\
-            "priority_enabled", "automation_enabled", "inventory_enabled",\
-            "tc_counter", "color", "_parent_testlink")
+    __slots__ = ("notes", "prefix", "active", "public", "requirements_enabled", "priority_enabled",
+                 "automation_enabled", "inventory_enabled", "tc_counter", "color", "_parent_testlink")
 
-    def __init__(
-            self,\
-            name="",\
-            notes="",\
-            prefix="",\
-            active="0",\
-            is_public="0",\
-            tc_counter=0,\
-            opt=None,\
-            color="",\
-            api=None,\
-            parent_testlink=None,\
-            **kwargs\
-    ):
+    def __init__(self, name="", notes="", prefix="", active="0", is_public="0", tc_counter=0, opt=None, color="",
+                 api=None, parent_testlink=None, **kwargs):
         if opt is None:
-            opt = {}
+            opt = dict()
             opt['requirementsEnabled'] = 0
             opt['testPriorityEnabled'] = 0
             opt['automationEnabled'] = 0
             opt['inventoryEnabled'] = 0
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
-        IAttachmentGetter.__init__(self)
+        IAttachmentGetter.__init__(self, kwargs.get('id'), api)
         self.notes = unicode(notes)
         self.prefix = str(prefix)
         self.active = bool(int(active))
@@ -142,8 +130,6 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """Iterates over TestSuites specified by parameters
         @param name: The name of the wanted TestSuite
         @type name: str
-        @param id: The internal ID of the TestSuite
-        @type id: int
         @param recursive: Search recursive to get all nested TestSuites
         @type recursive: bool
         @param params: Other params for TestSuite
@@ -196,7 +182,9 @@ class TestProject(TestlinkObject, IAttachmentGetter):
                                     break
                             except AttributeError:
                                 # Try as custom field
-                                cf_val = self._api.getTestSuiteCustomFieldDesignValue(tsuite.id, tsuite.getTestProject().id, key)
+                                cf_val = self._api.getTestSuiteCustomFieldDesignValue(tsuite.id,
+                                                                                      tsuite.getTestProject().id,
+                                                                                      key)
                                 if not unicode(cf_val) == unicode(value):
                                     tsuite = None
                                     break
@@ -204,7 +192,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
                             raise AttributeError("Invalid Search Parameter for TestSuite: %s" % key)
                     if tsuite is not None:
                         yield tsuite
-                # If recursive is specified,\
+                # If recursive is specified,
                 # also search in nestes suites
                 if recursive:
                     # For each suite of this level
@@ -215,7 +203,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
             # Return all TestSuites
             else:
                 for tsuite in suites:
-                    # First return the suites from this level,\
+                    # First return the suites from this level,
                     # then return nested ones if recursive is specified
                     yield tsuite
                     if recursive:
@@ -226,8 +214,6 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """Returns all TestSuites specified by parameters
         @param name: The name of the wanted TestSuite
         @type name: str
-        @param id: The internal ID of the TestSuite
-        @type id: int
         @param recursive: Search recursive to get all nested TestSuites
         @type recursive: bool
         @param params: Other params for TestSuite
@@ -241,10 +227,10 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """Iterates over TestCases specified by parameters
         @param name: The name of the wanted TestCase
         @type name: str
-        @param id: The internal ID of the TestCase
-        @type id: int
         @param external_id: The external ID of the TestCase
         @type external_id: int
+        @param version: Version of the TestCase
+        @type version: int
         @param params: Other params for TestCase
         @type params: dict
         @returns: Matching TestCases
@@ -260,7 +246,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
                     _id = response[0]['id']
             except APIError, ae:
                 if ae.error_code == 5030:
-                    # If no testcase has been found here,\
+                    # If no testcase has been found here,
                     # there is no need, to search any further
                     return
                 else:
@@ -291,8 +277,6 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """Returns all TestCases specified by parameters
         @param name: The name of the wanted TestCase
         @type name: str
-        @param id: The internal ID of the TestCase
-        @type id: int
         @param external_id: The external ID of the TestCase
         @type external_id: int
         @param params: Other params for TestCase
@@ -306,6 +290,8 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """Iterates over Requirement Specifications specified by parameters
         @param name: The title of the wanted Requirement Specification
         @type name: str
+        @param recursive: Get Specifications recursively
+        @type recursive: bool
         @returns: Matching Requirement Specifications
         @rtype: generator
         """
@@ -328,7 +314,9 @@ class TestProject(TestlinkObject, IAttachmentGetter):
                                 break
                         except AttributeError:
                             # Try to treat as custom field
-                            cf_val = self._api.getReqSpecCustomFieldDesignValue(rspec.id, rspec.getTestProject().id, key)
+                            cf_val = self._api.getReqSpecCustomFieldDesignValue(rspec.id,
+                                                                                rspec.getTestProject().id,
+                                                                                key)
                             if not unicode(cf_val) == unicode(value):
                                 rspec = None
                                 break
@@ -343,7 +331,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
                 for rspec in specs:
                     # Yield nested specs that match
                     for r in rspec.iterRequirementSpecification(recursive=recursive, **params):
-                        yield s
+                        yield r
         # Return all Requirement Specifications
         else:
             for rspec in specs:
@@ -358,6 +346,8 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """Returns all Requirement Specifications specified by parameters
         @param name: The title of the wanted Requirement Specification
         @type name: str
+        @param recursive: Get Specifications recursively
+        @type recursive: bool
         @returns: Matching Requirement Specifications
         @rtype: list
         """
@@ -367,7 +357,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """Returns all Requirements specified by paramaters
         @param name: The title of the wanted Requirements
         @type name: str
-        @param returns: Matching Requirements
+        @returns: Matching Requirements
         @rtype: generator
         """
         params['name'] = name
@@ -379,8 +369,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         """Returns all Requirements specified by paramaters
         @param name: The title of the wanted Requirements
         @type name: str
-        @param returns: Matching Requirements
+        @returns: Matching Requirements
         @rtype: list
         """
         return normalize_list([r for r in self.iterRequirement(name, **params)])
-

@@ -6,7 +6,8 @@
 # IMPORTS
 import datetime
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+from testlink.objects.tl_object import strptime
+
 
 class Build(TestlinkObject):
     """Testlink Build representation
@@ -14,10 +15,11 @@ class Build(TestlinkObject):
     @type notes: str
     """
 
-    __slots__ = ("active", "open", "notes", "creation_ts", "release_date",\
+    __slots__ = ("active", "open", "notes", "creation_ts", "release_date",
                  "closed_on_date", "_parent_testplan")
 
-    def __init__(self, name=None, notes=None, is_open=False, active=False, creation_ts=None, closed_on_date=None, release_date=None, parent_testplan=None, api=None, **kwargs):
+    def __init__(self, name=None, notes=None, is_open=False, active=False, creation_ts=None, closed_on_date=None,
+                 release_date=None, parent_testplan=None, api=None, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
         self.active = bool(int(active))
         self.open = bool(int(is_open))
@@ -47,4 +49,3 @@ class Build(TestlinkObject):
     def iterTestPlan(self):
         """Returns associated TestPlan"""
         yield self._parent_testplan
-

@@ -9,7 +9,8 @@
 # IMPORTS
 from threading import Thread
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from testlink.log import LOGGER as log
+from testlink.log import LOGGER
+
 
 class TestlinkXMLRPCServer(SimpleXMLRPCServer, Thread):
     """Testlink conform XML-RPC automation server"""
@@ -29,9 +30,9 @@ class TestlinkXMLRPCServer(SimpleXMLRPCServer, Thread):
         Thread.__init__(self)
         self.register_introspection_functions()
         start_msg = "Starting Testlink compatible XML-RPC Server at http://%s:%d/" % (str(host), int(port))
-        log.info(start_msg)
+        LOGGER.info(start_msg)
         register_msg = "Registering '%s' as callback" % str(callback.__name__)
-        log.info(register_msg)
+        LOGGER.info(register_msg)
         self.register_function(callback, "executeTestCase")
         self.start()
 

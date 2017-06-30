@@ -8,58 +8,38 @@ import datetime
 
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
-from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+from testlink.objects.tl_object import strptime
 
 from testlink.objects.tl_risk import Risk
 from testlink.objects.tl_attachment import IAttachmentGetter
 
-from testlink.enums import REQ_TYPE as RequirementType
-from testlink.enums import REQ_STATUS as RequirementStatus
+from testlink.enums import REQUIREMENT_TYPE as REQUIREMENT_TYPE
+from testlink.enums import REQUIREMENT_STATUS as REQUIREMENT_STATUS
+
 
 class Requirement(TestlinkObject, IAttachmentGetter):
     """Testlink Requirement representation"""
 
-    __slots__ = ("srs_id", "req_doc_id", "req_spec_title", "type", "version", "version_id", "revision", "revision_id",\
-            "scope", "status", "node_order", "is_open", "active", "expected_coverage", "testproject_id", "author",\
-            "author_id", "creation_ts", "modifier", "modifier_id", "modification_ts", "_parent_testproject", "_parent_requirement_specification")
+    __slots__ = ("srs_id", "req_doc_id", "req_spec_title", "type", "version", "version_id", "revision",
+                 "revision_id", "scope", "status", "node_order", "is_open", "active", "expected_coverage",
+                 "testproject_id", "author", "author_id", "creation_ts", "modifier", "modifier_id", "modification_ts",
+                 "_parent_testproject", "_parent_requirement_specification")
 
-    def __init__(\
-            self,\
-            srs_id=None,\
-            req_doc_id='',\
-            title='',\
-            req_spec_title=None,\
-            version=-1,\
-            version_id=-1,\
-            revision=-1,\
-            revision_id=-1,\
-            scope='',\
-            status=RequirementStatus.DRAFT,\
-            node_order=0,\
-            is_open="1",\
-            active="1",\
-            expected_coverage=1,\
-            testproject_id=-1,\
-            author=None,\
-            author_id=-1,\
-            creation_ts=str(datetime.datetime.min),\
-            modifier=None,\
-            modifier_id=-1,\
-            modification_ts=str(datetime.datetime.min),\
-            api=None,\
-            parent_testproject=None,\
-            parent_requirement_specification=None,\
-            **kwargs\
-    ):
+    def __init__(self, srs_id=None, req_doc_id='', title='', req_spec_title=None, version=-1, version_id=-1,
+                 revision=-1, revision_id=-1, scope='', status=REQUIREMENT_STATUS.DRAFT, node_order=0, is_open="1",
+                 active="1", expected_coverage=1, testproject_id=-1, author=None, author_id=-1,
+                 creation_ts=str(datetime.datetime.min), modifier=None, modifier_id=-1,
+                 modification_ts=str(datetime.datetime.min), api=None, parent_testproject=None,
+                 parent_requirement_specification=None, **kwargs):
         """Initializes a new Requirement with the specified parameters
         @todo: doc
         """
         TestlinkObject.__init__(self, kwargs.get('id'), title, api)
-        IAttachmentGetter.__init__(self)
+        IAttachmentGetter.__init__(self, kwargs.get('id'), api)
         self.srs_id = str(srs_id)
         self.req_doc_id = unicode(req_doc_id)
         self.req_spec_title = req_spec_title
-        self.type = int(kwargs.get('type',RequirementType.INFO))
+        self.type = int(kwargs.get('type', REQUIREMENT_TYPE.INFO))
         self.version = int(version)
         self.version_id = int(version_id)
         self.revision = int(revision)

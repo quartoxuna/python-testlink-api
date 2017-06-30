@@ -6,10 +6,9 @@
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObject
 
+
 class Keyword(TestlinkObject):
-    """Testlink TestCase Keyword representation
-    @ivar id: The internal ID of the Keyword
-    @type id: int
+    """Testlink TestCase Keyword representation    
     @ivar notes: Notes of the keyword
     @type notes: str
     @ivar testcase_id: <OPTIONAL> Related TestCase ID
@@ -20,14 +19,7 @@ class Keyword(TestlinkObject):
 
     __slots__ = ["id", "notes", "testcase_id", "_keyword"]
 
-    def __init__(
-            self,\
-            keyword_id=-1,\
-            notes=None,\
-            testcase_id=None,\
-            keyword=None,\
-            api=None,\
-    ):
+    def __init__(self, keyword_id=-1, notes=None, testcase_id=None, keyword=None, api=None):
         TestlinkObject.__init__(self, keyword_id, keyword, api)
         self.notes = notes
         self.testcase_id = int(testcase_id)
@@ -41,4 +33,3 @@ class Keyword(TestlinkObject):
 
     def __ne__(self, other):
         return not self._keyword == other
-

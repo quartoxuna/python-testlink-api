@@ -142,54 +142,43 @@ when using the objects provided by the wrapper.
 # IMPORTS
 from collections import namedtuple as nt
 
-EXECUTION_TYPE = nt("ExecutionType",\
-                   ("MANUAL", "AUTOMATIC"))\
-                   (MANUAL=1, AUTOMATIC=2)
+EXECUTION_TYPE = nt("ExecutionType", ("MANUAL", "AUTOMATIC"))(MANUAL=1, AUTOMATIC=2)
 
-IMPORTANCE_LEVEL = nt("ImportanceLevel",\
-                     ("HIGH", "MEDIUM", "LOW"))\
-                     (HIGH=3, MEDIUM=2, LOW=1)
+IMPORTANCE_LEVEL = nt("ImportanceLevel", ("HIGH", "MEDIUM", "LOW"))(HIGH=3, MEDIUM=2, LOW=1)
 
-URGENCY_LEVEL = nt("UrgencyLeveL",\
-                  ("HIGH", "MEDIUM", "LOW"))\
-                  (HIGH=3, MEDIUM=2, LOW=1)
+URGENCY_LEVEL = nt("UrgencyLeveL", ("HIGH", "MEDIUM", "LOW"))(HIGH=3, MEDIUM=2, LOW=1)
 
-DUPLICATE_STRATEGY = nt("DuplicateStrategy",\
-                       ("NEW_VERSION", "GENERATE_NEW", "BLOCK"))\
-                       (NEW_VERSION='create_new_version',\
-                        GENERATE_NEW='generate_new',\
-                        BLOCK='block')
+DUPLICATE_STRATEGY = nt("DuplicateStrategy",
+                        ("NEW_VERSION", "GENERATE_NEW", "BLOCK"))(NEW_VERSION='create_new_version',
+                                                                  GENERATE_NEW='generate_new', BLOCK='block')
 
-CUSTOM_FIELD_DETAILS = nt("CustomFieldDetails",\
-                         ("VALUE_ONLY"))\
-                         (VALUE_ONLY='value')
+CUSTOM_FIELD_DETAILS = nt("CustomFieldDetails", "VALUE_ONLY")(VALUE_ONLY='value')
 
-API_TYPE = nt("APIType",\
-             ("XML_RPC", "REST"))\
-             (XML_RPC='XML-RPC', REST='REST')
+API_TYPE = nt("APIType", ("XML_RPC", "REST"))(XML_RPC='XML-RPC', REST='REST')
 
-TESTCASE_STATUS = nt("TestcaseStatus",\
-                    ("DRAFT", "READY_FOR_REVIEW", "REVIEW_IN_PROGRESS",\
-                     "REWORK", "OBSOLETE", "FUTURE", "FINAL"))\
-                    (DRAFT=1, READY_FOR_REVIEW=2, REVIEW_IN_PROGRESS=3,\
-                     REWORK=4, OBSOLETE=5, FUTURE=6, FINAL=7)
+TESTCASE_STATUS = nt("TestcaseStatus",
+                     ("DRAFT", "READY_FOR_REVIEW", "REVIEW_IN_PROGRESS",
+                      "REWORK", "OBSOLETE", "FUTURE", "FINAL"))(DRAFT=1, READY_FOR_REVIEW=2,
+                                                                REVIEW_IN_PROGRESS=3, REWORK=4,
+                                                                OBSOLETE=5, FUTURE=6, FINAL=7)
 
-REQSPEC_TYPE = nt("RequirementSpecificationType",\
-                 ("SECTION", "USER", "SYSTEM"))\
-                 (SECTION=1, USER=2, SYSTEM=3)
+REQSPEC_TYPE = nt("RequirementSpecificationType",
+                  ("SECTION", "USER", "SYSTEM"))(SECTION=1, USER=2, SYSTEM=3)
 
-REQ_STATUS = nt("RequirementStatus",\
-               ("VALID", "NOT_TESTABLE", "DRAFT", "REVIEW",\
-                "REWORK", "FINISH", "IMPLEMENTED", "OBSOLETE"))\
-               (VALID='V', NOT_TESTABLE='N', DRAFT='D', REVIEW='R',\
-                REWORK='W', FINISH='F', IMPLEMENTED='I', OBSOLETE='O')
+REQUIREMENT_STATUS = nt("RequirementStatus",
+                        ("VALID", "NOT_TESTABLE", "DRAFT", "REVIEW",
+                         "REWORK", "FINISH", "IMPLEMENTED", "OBSOLETE"))(VALID='V', NOT_TESTABLE='N',
+                                                                         DRAFT='D', REVIEW='R', REWORK='W',
+                                                                         FINISH='F', IMPLEMENTED='I',
+                                                                         OBSOLETE='O')
 
-REQ_TYPE = nt("RequirementType",\
-             ("INFO", "FEATURE", "USE_CASE", "INTERFACE",\
-              "NON_FUNC", "CONSTRAIN", "SYSTEM_FUNC"))\
-             (INFO=1, FEATURE=2, USE_CASE=3, INTERFACE=4,\
-              NON_FUNC=5, CONSTRAIN=6, SYSTEM_FUNC=7)
+REQUIREMENT_TYPE = nt("RequirementType",
+                      ("INFO", "FEATURE", "USE_CASE",
+                       "INTERFACE", "NON_FUNC",
+                       "CONSTRAIN", "SYSTEM_FUNC"))(INFO=1, FEATURE=2, USE_CASE=3,
+                                                    INTERFACE=4, NON_FUNC=5,
+                                                    CONSTRAIN=6, SYSTEM_FUNC=7)
 
-EXECUTION_STATUS = nt("ExecutionStatus",\
-                      ("NOT_RUN", "PASSED", "FAILED", "BLOCKED"))\
-                      (NOT_RUN='n', PASSED='p', FAILED='f', BLOCKED='b')
+EXECUTION_STATUS = nt("ExecutionStatus",
+                      ("NOT_RUN", "PASSED", "FAILED", "BLOCKED"))(NOT_RUN='n', PASSED='p',
+                                                                  FAILED='f', BLOCKED='b')

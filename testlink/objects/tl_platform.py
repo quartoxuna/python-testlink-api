@@ -6,6 +6,7 @@
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObject
 
+
 class Platform(TestlinkObject):
     """Testlink Platform representation
     @ivar notes: Platform notes

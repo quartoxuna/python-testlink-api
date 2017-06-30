@@ -15,7 +15,7 @@ from testlink.api import NotSupported
 class TLVersionDecoratorTests(unittest.TestCase):
     """Tests of TLVersion decorator"""
 
-    _tl_version = "1.0"
+    tl_version = "1.0"
 
     def __init__(self, *args, **kwargs):
         super(TLVersionDecoratorTests, self).__init__(*args, **kwargs)
@@ -32,7 +32,7 @@ class TLVersionDecoratorTests(unittest.TestCase):
 
     def test_equal(self):
         """Equal version"""
-        decorated = TLVersion(self._tl_version)
+        decorated = TLVersion(self.tl_version)
         decorated(self.dummy)(self)
 
     def test_lower(self):
@@ -54,7 +54,7 @@ class TLVersionDecoratorTests(unittest.TestCase):
             decorated = TLVersion(version, strict=True)
             self.assertRaises(NotSupported, decorated(self.dummy), self)
         # Check if call can be done if version is exactly the same
-        decorated = TLVersion(self._tl_version, strict=True)
+        decorated = TLVersion(self.tl_version, strict=True)
         decorated(self.dummy)(self)
 
     def test_ignore(self):

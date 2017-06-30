@@ -4,13 +4,12 @@
 """Attachment Object"""
 
 # IMPORTS
-import base64
-import mimetypes
 import datetime
 
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+from testlink.objects.tl_object import strptime
 from testlink.objects.tl_object import normalize_list
+
 
 class Attachment(TestlinkObject):
     """Testlink Attachment representation"""
@@ -31,7 +30,8 @@ class Attachment(TestlinkObject):
             self.date_added = datetime.datetime.min
 
     def __str__(self):
-        return "Attachment %d: %s - %s (%s) [%d Bytes] %s" % (self.id, self.name, self.file_name, self.file_type, self.length, str(self.date_added))
+        return "Attachment %d: %s - %s (%s) [%d Bytes] %s" %\
+               (self.id, self.name, self.file_name, self.file_type, self.length, str(self.date_added))
 
     def delete(self):
         """Deletes the current attchment
@@ -39,7 +39,7 @@ class Attachment(TestlinkObject):
         @rtype: bool
         """
         resp = self._api.deleteAttachment(self.id)
-        if isinstance(resp,list) and len(resp) == 1:
+        if isinstance(resp, list) and len(resp) == 1:
             resp = resp[0]
         return resp['status_ok']
 
@@ -47,7 +47,9 @@ class Attachment(TestlinkObject):
 class IAttachmentGetter(object):
     """Interface class for getting attachments of various Testlink Objects"""
 
-    def __init__(self, foreign_key_table="nodes_hierarchy", *args, **kwargs):
+    def __init__(self, _id, api, foreign_key_table="nodes_hierarchy"):
+        self.id = _id
+        self._api = api
         self._foreign_key_table = foreign_key_table
 
     def iterAttachment(self, **params):
@@ -106,21 +108,15 @@ class IAttachmentGetter(object):
         @returns: Server response
         @rtype: dict
         """
-        # Check if the MIME type is correct
-        if filetype not in mimetypes.types_map.values():
-            raise TypeError("Invalid MIME Type %s" % str(filetype))
-
         # Check which ID to use
         _id = self.id
         if 'id' in kwargs:
             _id = kwargs['id']
 
-        self._api.uploadAttachment(\
-                                    fkid=_id,\
-                                    fktable=self._foreign_key_table,\
-                                    filename=str(filename),\
-                                    filetype=str(filetype),\
-                                    content=content,\
-                                    title=title,\
-                                    description=description\
-                                  )
+        self._api.uploadAttachment(fkid=_id,
+                                   fktable=self._foreign_key_table,
+                                   filename=str(filename),
+                                   filetype=str(filetype),
+                                   content=content,
+                                   title=title,
+                                   description=description)

@@ -7,6 +7,7 @@ Exceptions
 :module: testlink.exceptions
 """
 
+
 class NotSupported(Exception):
     """Method is not supported within the Testlink version"""
     def __init__(self, fn_name):

@@ -12,7 +12,7 @@ import string
 import unittest
 import mock
 
-from testlink.api import Testlink_XML_RPC_API
+from testlink.api import TestlinkXMLRPCAPI
 from testlink.enums import API_TYPE
 from testlink.exceptions import APIError
 from testlink.objects import TestProject
@@ -56,7 +56,7 @@ class TestlinkTests(unittest.TestCase):
         """Needed to connect to a mocked Server endpoint in each test"""
         self._mock.patcher = mock.patch('xmlrpclib.ServerProxy', new=ServerMock, spec=True)
         self._mock_server = self._mock.patcher.start()
-        self._api = Testlink_XML_RPC_API(self.url + "lib/api/xmlrpc.php")
+        self._api = TestlinkXMLRPCAPI(self.url + "lib/api/xmlrpc.php")
         self._api._proxy = self._mock_server
 
     def tearDown(self):
@@ -65,9 +65,9 @@ class TestlinkTests(unittest.TestCase):
     def test_API_TYPE(self):
         """Defazlt API Type"""
         tl = Testlink(self.url, self.devkey)
-        self.assertTrue(isinstance(tl._api, Testlink_XML_RPC_API))
+        self.assertTrue(isinstance(tl._api, TestlinkXMLRPCAPI))
         tl = Testlink(self.url, self.devkey, API_TYPE.XML_RPC)
-        self.assertTrue(isinstance(tl._api, Testlink_XML_RPC_API))
+        self.assertTrue(isinstance(tl._api, TestlinkXMLRPCAPI))
         self.assertRaises(NotImplementedError, Testlink, self.url, self.devkey, API_TYPE.REST)
 
     def test_devKeySetting(self):
@@ -109,8 +109,8 @@ class TestlinkTests(unittest.TestCase):
         # Check correct parameter forwarding
         patched_iter_testproject.assert_called_with(args, **kwargs)
 
-    @mock.patch('testlink.api.Testlink_XML_RPC_API.getTestProjectByName')
-    @mock.patch('testlink.api.Testlink_XML_RPC_API.getProjects')
+    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getTestProjectByName')
+    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getProjects')
     def test_iterTestProject_shortcut(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject' - Shortcut"""
         # Generate some test data
@@ -131,8 +131,8 @@ class TestlinkTests(unittest.TestCase):
         self.assertEqual(project.name, test_data[1]['name'])
         self.assertEqual(project.notes, test_data[1]['notes'])
 
-    @mock.patch('testlink.api.Testlink_XML_RPC_API.getTestProjectByName')
-    @mock.patch('testlink.api.Testlink_XML_RPC_API.getProjects')
+    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getTestProjectByName')
+    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getProjects')
     def test_iterTestProject_shortcut_no_result(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject' - Shortcut Empty Result"""
         # Init Testlink
@@ -146,8 +146,8 @@ class TestlinkTests(unittest.TestCase):
         project_iter = tl.iterTestProject(randput())
         self.assertRaises(StopIteration, project_iter.next)
 
-    @mock.patch('testlink.api.Testlink_XML_RPC_API.getTestProjectByName')
-    @mock.patch('testlink.api.Testlink_XML_RPC_API.getProjects')
+    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getTestProjectByName')
+    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getProjects')
     def test_iterTestProject(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject'"""
         # Generate some test data
@@ -171,8 +171,8 @@ class TestlinkTests(unittest.TestCase):
         self.assertEqual(project.name, test_data[1]['name'])
         self.assertEqual(project.notes, test_data[1]['notes'])
 
-    @mock.patch('testlink.api.Testlink_XML_RPC_API.getTestProjectByName')
-    @mock.patch('testlink.api.Testlink_XML_RPC_API.getProjects')
+    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getTestProjectByName')
+    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getProjects')
     def test_iterTestProject_no_result(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject' - Empty Result"""
         # Init Testlink
@@ -198,8 +198,8 @@ class CompatTests(unittest.TestCase):
         """Datetime Backwards compatability Python 2.5<"""
         from datetime import datetime
         from testlink.objects.tl_object import TestlinkObject
-        from testlink.objects.tl_object import _STRPTIME_FUNC as STRPTIME
+        from testlink.objects.tl_object import strptime
         date_string = "2000-12-23 12:34:45"
         datetime_obj = datetime.strptime(date_string, TestlinkObject.DATETIME_FORMAT)
-        strptime_obj = STRPTIME(date_string, TestlinkObject.DATETIME_FORMAT)
+        strptime_obj = strptime(date_string, TestlinkObject.DATETIME_FORMAT)
         self.assertEquals(datetime_obj, strptime_obj)

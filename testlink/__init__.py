@@ -6,8 +6,6 @@
 @summary: Testlink API Wrapper
 """
 
-__version__ = '0.45.0'
-
 # EXPORTS
 from testlink.objects import Testlink
 from testlink.objects import TestlinkObject
@@ -23,3 +21,5 @@ from testlink.objects import Risk
 
 from testlink.exceptions import APIError
 from testlink.exceptions import NotSupported
+
+__version__ = '0.45.0'

@@ -4,7 +4,7 @@
 """TestPlan Object"""
 
 # IMPORTS
-from testlink.log import LOGGER as log
+from testlink.log import LOGGER
 
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
@@ -14,6 +14,7 @@ from testlink.objects.tl_platform import Platform
 from testlink.objects.tl_testcase import TestCase
 
 from testlink.exceptions import APIError
+
 
 class TestPlan(TestlinkObject):
     """Testlink TestPlan representation
@@ -27,16 +28,7 @@ class TestPlan(TestlinkObject):
 
     __slots__ = ("notes", "active", "public", "_parent_testproject")
 
-    def __init__(
-            self,\
-            name="",\
-            notes="",\
-            is_public="0",\
-            active="0",\
-            parent_testproject=None,\
-            api=None,\
-            **kwargs\
-    ):
+    def __init__(self, name="", notes="", is_public="0", active="0", parent_testproject=None, api=None, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
         self.notes = unicode(notes)
         self.active = bool(int(active))
@@ -118,7 +110,8 @@ class TestPlan(TestlinkObject):
             else:
                 raise
 
-        platforms = [Platform(parent_testproject=self, parent_testplan=self, api=self._api, **platform) for platform in response]
+        platforms = [Platform(parent_testproject=self, parent_testplan=self, api=self._api, **platform)
+                     for platform in response]
 
         # Filter
         if len(params) > 0 or name:
@@ -152,22 +145,11 @@ class TestPlan(TestlinkObject):
         """
         return normalize_list([p for p in self.iterPlatform(name, **params)])
 
-    def iterTestCase(
-            self,\
-            name=None,\
-            buildid=None,\
-            keywordid=None,\
-            keywords=None,\
-            executed=None,\
-            assigned_to=None,\
-            execution_type=None,\
-            **params
-        ):
+    def iterTestCase(self, name=None, buildid=None, keywordid=None, keywords=None, executed=None, assigned_to=None,
+                     execution_type=None, **params):
         """Iterates over Testcases specified by parameters
         @param name: The name of the TestCase
         @type name: str
-        @param id: The internal ID of the TestCase
-        @type id: int
         @param buildid: The internal ID of the Build
         @type buildid: int
         @param keywordid: The internal ID of the used Keyword
@@ -202,19 +184,17 @@ class TestPlan(TestlinkObject):
         # Get all available TestCases
         # Use all possible API params to speed up API call
         try:
-            response = self._api.getTestCasesForTestPlan(\
-                                    testprojectid=self.getTestProject().id,\
-                                    testplanid=self.id,\
-                                    testcaseid=_id,\
-                                    buildid=buildid,\
-                                    keywordid=keywordid,\
-                                    keywords=keywords,\
-                                    executed=executed,\
-                                    assignedto=assigned_to,\
-                                    executestatus=execution_status,\
-                                    executiontype=execution_type,\
-                                    getstepsinfo=True\
-                                )
+            response = self._api.getTestCasesForTestPlan(testprojectid=self.getTestProject().id,
+                                                         testplanid=self.id,
+                                                         testcaseid=_id,
+                                                         buildid=buildid,
+                                                         keywordid=keywordid,
+                                                         keywords=keywords,
+                                                         executed=executed,
+                                                         assignedto=assigned_to,
+                                                         executestatus=execution_status,
+                                                         executiontype=execution_type,
+                                                         getstepsinfo=True)
         except APIError, ae:
             # TestCase not linked to TestPlan
             # Build does not exist in TestPlan
@@ -232,7 +212,7 @@ class TestPlan(TestlinkObject):
         for platforms in response.values():
             if isinstance(platforms, list):
                 # No platforms, first nested items are testcases as list
-                log.debug("No Platforms within this testplan")
+                LOGGER.debug("No Platforms within this testplan")
                 for tc in platforms:
                     testcases.append(tc)
             else:
@@ -260,7 +240,10 @@ class TestPlan(TestlinkObject):
                             # TestCase has no attribute key
                             # Try to treat key as the name of a custom field
                             ext_id = "%s-%s" % (tcase.getTestProject().prefix, tcase.external_id)
-                            cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id, tcase.version, tcase.getTestProject().id, key)
+                            cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,
+                                                                                 tcase.version,
+                                                                                 tcase.getTestProject().id,
+                                                                                 key)
                             if not unicode(cf_val) == unicode(value):
                                 # No match either, try next testcase
                                 tcase = None
@@ -276,22 +259,11 @@ class TestPlan(TestlinkObject):
             for tcase in cases:
                 yield tcase
 
-    def getTestCase(
-            self,\
-            name=None,\
-            buildid=None,\
-            keywordid=None,\
-            keywords=None,\
-            executed=None,\
-            assigned_to=None,\
-            execution_type=None,\
-            **params
-        ):
+    def getTestCase(self, name=None, buildid=None, keywordid=None, keywords=None, executed=None,
+                    assigned_to=None, execution_type=None, **params):
         """Returns all Testcases specified by parameters
         @param name: The name of the TestCase
         @type name: str
-        @param id: The internal ID of the TestCase
-        @type id: int
         @param buildid: The internal ID of the Build
         @type buildid: int
         @param keywordid: The internal ID of the used Keyword
@@ -309,7 +281,8 @@ class TestPlan(TestlinkObject):
         @returns: Matching TestCases
         @rtype: mixed
         """
-        return normalize_list([c for c in self.iterTestCase(name, buildid, keywordid, keywords, executed, assigned_to, execution_type, **params)])
+        return normalize_list([c for c in self.iterTestCase(name, buildid, keywordid, keywords,
+                                                            executed, assigned_to, execution_type, **params)])
 
     def assignTestCase(self, case, platform=None, execution_order=None, urgency=None):
         """Assigns the specified TestCase to the current TestPlan.
@@ -325,5 +298,11 @@ class TestPlan(TestlinkObject):
         """
         if not platform:
             platform = Platform(-1)
-        self._api.addTestCaseToTestPlan(self.getTestProject().id, self.id, "%s-%s" % (self.getTestProject().prefix, str(case.external_id)), case.version, platform.id, execution_order, urgency)
-
+        self._api.addTestCaseToTestPlan(self.getTestProject().id,
+                                        self.id,
+                                        "%s-%s" % (self.getTestProject().prefix,
+                                                   str(case.external_id)),
+                                        case.version,
+                                        platform.id,
+                                        execution_order,
+                                        urgency)

@@ -12,6 +12,7 @@ from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.exceptions import APIError
 
+
 class TestSuite(TestlinkObject, IAttachmentGetter):
     """Testlink TestSuite representation
     @ivar notes: TestSuite notes
@@ -20,9 +21,10 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
 
     __slots__ = ("details", "_parent_testproject", "_parent_testsuite")
 
-    def __init__(self, name="", details="", parent_testproject=None, parent_testsuite=None, api=None, _level=0, **kwargs):
+    def __init__(self, name="", details="", parent_testproject=None, parent_testsuite=None,
+                 api=None, _level=0, **kwargs):
         TestlinkObject.__init__(self, kwargs.get('id'), name, api)
-        IAttachmentGetter.__init__(self)
+        IAttachmentGetter.__init__(self, kwargs.get('id'), api)
         self.details = unicode(details)
         self._level = _level
         self._parent_testproject = parent_testproject
@@ -43,8 +45,6 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
         """Iterates over TestSuites speficied by parameters
         @param name: The name of the wanted TestSuite
         @type name: str
-        @param id: The internal ID of the TestSuite
-        @type id: int
         @param recursive: Search recursive to get all nested TestSuites
         @type recursive: bool
         @param params: Other params for TestSuite
@@ -63,10 +63,13 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
         elif isinstance(response, dict):
             # Check for nested dict
             if isinstance(response[response.keys()[0]], dict):
-                response = [self._api.getTestSuiteById(self.getTestProject().id, suite_id) for suite_id in response.keys()]
+                response = [self._api.getTestSuiteById(self.getTestProject().id, suite_id)
+                            for suite_id in response.keys()]
             else:
                 response = [response]
-        suites = [TestSuite(api=self._api, parent_testproject=self.getTestProject(), parent_testsuite=self, _level=self._level+1, **suite) for suite in response]
+        suites = [TestSuite(api=self._api, parent_testproject=self.getTestProject(),
+                            parent_testsuite=self, _level=self._level+1, **suite)
+                  for suite in response]
 
         # Filter
         if len(params) > 0 or name:
@@ -83,7 +86,9 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
                                 break
                         except AttributeError:
                             # Try as custom field
-                            cf_val = self._api.getTestSuiteCustomFieldDesignValue(tsuite.id, tsuite.getTestProject().id, key)
+                            cf_val = self._api.getTestSuiteCustomFieldDesignValue(tsuite.id,
+                                                                                  tsuite.getTestProject().id,
+                                                                                  key)
                             if not unicode(cf_val) == unicode(value):
                                 tsuite = None
                                 break
@@ -113,8 +118,6 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
         """Returns all TestSuites speficied by parameters
         @param name: The name of the wanted TestSuite
         @type name: str
-        @param id: The internal ID of the TestSuite
-        @type id: int
         @param recursive: Search recursive to get all nested TestSuites
         @type recursive: bool
         @param params: Other params for TestSuite
@@ -135,7 +138,8 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
         """
         # No simple API call possible, get all
         response = self._api.getTestCasesForTestSuite(self.id, details='full', getkeywords=True)
-        cases = [TestCase(api=self._api, parent_testproject=self.getTestProject(), parent_testsuite=self, **case) for case in response]
+        cases = [TestCase(api=self._api, parent_testproject=self.getTestProject(), parent_testsuite=self, **case)
+                 for case in response]
 
         # Filter by specified parameters
         if len(params) > 0 or name:
@@ -153,7 +157,10 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
                         except AttributeError:
                             # Try as custom field
                             ext_id = "%s-%s" % (tcase.getTestProject().prefix, tcase.external_id)
-                            cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id, tcase.version, tcase.getTestProject().id, key)
+                            cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,
+                                                                                 tcase.version,
+                                                                                 tcase.getTestProject().id,
+                                                                                 key)
                             if not unicode(cf_val) == unicode(value):
                                 tcase = None
                                 break
@@ -180,4 +187,3 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
         @rtype: mixed
         """
         return normalize_list([c for c in self.iterTestCase(name, **params)])
-

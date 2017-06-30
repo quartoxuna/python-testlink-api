@@ -7,28 +7,18 @@
 import datetime
 
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+from testlink.objects.tl_object import strptime
+
 
 class Risk(TestlinkObject):
     """Testlink Risk representation"""
 
-    __slots__ = ["doc_id", "description", "author_id", "creation_ts", "modifier_id", "modification_ts",\
-            "_requirement_id", "cross_coverage"]
+    __slots__ = ["doc_id", "description", "author_id", "creation_ts", "modifier_id", "modification_ts",
+                 "_requirement_id", "cross_coverage"]
 
-    def __init__(\
-            self,\
-            risk_doc_id=None,\
-            name='',\
-            description='',\
-            author_id=-1,\
-            creation_ts=str(datetime.datetime.min),\
-            modifier_id=-1,\
-            modification_ts=str(datetime.datetime.min),\
-            requirement_id=-1,\
-            cross_coverage='',\
-            api=None,\
-            **kwargs\
-        ):
+    def __init__(self, risk_doc_id=None, name='', description='', author_id=-1, creation_ts=str(datetime.datetime.min),
+                 modifier_id=-1, modification_ts=str(datetime.datetime.min), requirement_id=-1, cross_coverage='',
+                 api=None, **kwargs):
         """Initializes a new Risk with the specified parameters
         @todo: doc
         """

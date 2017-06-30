@@ -5,48 +5,35 @@
 
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+from testlink.objects.tl_object import strptime
 from testlink.objects.tl_step import Step
 from testlink.objects.tl_keyword import Keyword
 from testlink.objects.tl_execution import Execution
-from testlink.objects.tl_execution import Attachment
+from testlink.objects.tl_attachment import Attachment
 from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.exceptions import APIError
 from testlink.exceptions import NotSupported
 
-from testlink.enums import EXECUTION_TYPE as ExecutionType
-from testlink.enums import IMPORTANCE_LEVEL as ImportanceLevel
-from testlink.enums import CUSTOM_FIELD_DETAILS as CustomFieldDetails
-from testlink.enums import TESTCASE_STATUS as TestcaseStatus
+from testlink.enums import EXECUTION_TYPE as EXECUTION_TYPE
+from testlink.enums import IMPORTANCE_LEVEL as IMPORTANCE_LEVEL
+from testlink.enums import CUSTOM_FIELD_DETAILS as CUSTOM_FIELD_DETAILS
+from testlink.enums import TESTCASE_STATUS as TESTCASE_STATUS
+
 
 class TestCase(TestlinkObject, IAttachmentGetter):
     """Testlink TestCase representation"""
 
-    __slots__ = ["tc_id", "external_id", "platform_id", "execution_status", "execution_notes", "priority",\
-            "__author", "author_id", "creation_ts", "__modifier", "modifier_id", "modification_ts",\
-            "__testsuite", "__testsuite_id", "version", "status", "importance", "execution_type", "preconditions",\
-            "summary", "active", "testsuite_id", "tester_id", "exec_duration", "_parent_testproject", "customfields", "requirements",\
-            "__steps", "__preconditions", "keywords", "linked_by", "linked_ts"]
+    __slots__ = ["tc_id", "external_id", "platform_id", "execution_status", "execution_notes", "priority",
+                 "__author", "author_id", "creation_ts", "__modifier", "modifier_id", "modification_ts",
+                 "__testsuite", "__testsuite_id", "version", "status", "importance", "execution_type", "preconditions",
+                 "summary", "active", "testsuite_id", "tester_id", "exec_duration", "_parent_testproject",
+                 "customfields", "requirements", "__steps", "__preconditions", "keywords", "linked_by", "linked_ts"]
 
-    def __init__(
-            self,\
-            version=1,\
-            status=TestcaseStatus.DRAFT,\
-            importance=ImportanceLevel.MEDIUM,\
-            execution_type=ExecutionType.MANUAL,\
-            summary="",\
-            active=True,\
-            api=None,\
-            parent_testproject=None,\
-            parent_testsuite=None,\
-            customfields=None,\
-            requirements=None,\
-            tester_id=-1,\
-            estimated_exec_duration=0.0,\
-            keywords=None,\
-            **kwargs
-        ):
+    def __init__(self, version=1, status=TESTCASE_STATUS.DRAFT, importance=IMPORTANCE_LEVEL.MEDIUM,
+                 execution_type=EXECUTION_TYPE.MANUAL, summary="", active=True, api=None, parent_testproject=None,
+                 parent_testsuite=None, customfields=None, requirements=None, tester_id=-1, estimated_exec_duration=0.0,
+                 keywords=None, **kwargs):
         """Initialises a new TestCase with the specified parameters.
         @param name: The name of the TestCase
         @type name: str
@@ -161,7 +148,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
 
         # Init
         TestlinkObject.__init__(self, _id, _name, api=api)
-        IAttachmentGetter.__init__(self)
+        IAttachmentGetter.__init__(self, _id, api)
 
         # Set the "correct" external id
         if 'tc_external_id' in kwargs:
@@ -366,6 +353,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                 this = self.getTestProject().getTestCase(id=self.tc_id)
                 self.__testsuite = this.getTestSuite()
             return self.__testsuite
+
     def _set_testsuite(self, suite):
         """Lazy-loading testsuite setter"""
         self.__testsuite = suite
@@ -379,6 +367,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             case = self.getTestProject().getTestCase(id=self.tc_id, external_id=self.external_id, version=self.version)
             self.__steps = case.__steps
             return self.__steps
+
     def _set_steps(self, steps):
         """Lazy-loading step setter"""
         self.__steps = steps
@@ -392,6 +381,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             case = self.getTestProject().getTestCase(id=self.tc_id, version=self.version)
             self.__preconditions = case.__preconditions
             return self.__preconditions
+
     def _set_preconditions(self, preconditions):
         """Lazy-loading precondition setter"""
         self.__preconditions = preconditions
@@ -405,10 +395,12 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         """Returns associated TestSuite"""
         return self.testsuite
 
-    def getLastExecutionResult(self, testplanid, platformid=None, platformname=None, buildid=None, buildname=None, bugs=False):
+    def getLastExecutionResult(self, testplanid, platformid=None, platformname=None, buildid=None,
+                               buildname=None, bugs=False):
         """Return last execution result"""
         try:
-            resp = self._api.getLastExecutionResult(testplanid, self.tc_id, self.external_id, platformid, platformname, buildid, buildname, bugs)
+            resp = self._api.getLastExecutionResult(testplanid, self.tc_id, self.external_id, platformid,
+                                                    platformname, buildid, buildname, bugs)
             if isinstance(resp, list) and len(resp) == 1:
                 resp = resp[0]
             execution = Execution(api=self._api, **resp)
@@ -424,7 +416,8 @@ class TestCase(TestlinkObject, IAttachmentGetter):
     def getExecutions(self, testplanid, platformid=None, platformname=None, buildid=None, buildname=None, bugs=False):
         """Returns last executions"""
         try:
-            resp = self._api.getExecutions(testplanid, self.tc_id, self.external_id, platformid, platformname, buildid, buildname, bugs)
+            resp = self._api.getExecutions(testplanid, self.tc_id, self.external_id, platformid, platformname,
+                                           buildid, buildname, bugs)
             if len(resp) == 0:
                 return []
             else:
@@ -444,17 +437,15 @@ class TestCase(TestlinkObject, IAttachmentGetter):
 
     def reportResult(self, testplanid, buildid, status, notes=None, overwrite=False, execduration=None):
         """Reports TC result"""
-        response = self._api.reportTCResult(\
-                       testplanid=testplanid,\
-                       status=status,\
-                       testcaseid=self.tc_id,\
-                       testcaseexternalid=self.external_id,\
-                       notes=notes,\
-                       platformid=self.platform_id,\
-                       overwrite=overwrite,\
-                       buildid=buildid,\
-                       execduration=execduration\
-            )
+        response = self._api.reportTCResult(testplanid=testplanid,
+                                            status=status,
+                                            testcaseid=self.tc_id,
+                                            testcaseexternalid=self.external_id,
+                                            notes=notes,
+                                            platformid=self.platform_id,
+                                            overwrite=overwrite,
+                                            buildid=buildid,
+                                            execduration=execduration)
 
         # Return actual execution object
         if isinstance(response, list) and len(response) == 1:
@@ -465,32 +456,32 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             if execution.id == int(response['id']):
                 return execution
 
-    def getCustomFieldDesignValue(self, fieldname, details=CustomFieldDetails.VALUE_ONLY):
+    def getCustomFieldDesignValue(self, fieldname, details=CUSTOM_FIELD_DETAILS.VALUE_ONLY):
         """Returns the custom field design value for the specified custom field
         @param fieldname: The internal name of the custom field
         @type fieldname: str
         @param details: Granularity of the response
-        @type details: CustomFieldDetails
+        @type details: CUSTOM_FIELD_DETAILS
         @returns: Custom Field value or informations
         @rtype: mixed
         """
         if fieldname not in self.customfields.keys():
-            value = self._api.getTestCaseCustomFieldDesignValue(\
-                        testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),\
-                        version=int(self.version),\
-                        testprojectid=self.getTestProject().id,\
-                        customfieldname=fieldname,\
-                        details=details\
-                    )
+            value = self._api.getTestCaseCustomFieldDesignValue(
+                testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),
+                version=int(self.version),
+                testprojectid=self.getTestProject().id,
+                customfieldname=fieldname,
+                details=details)
             # If retrieved the value only, we can cache it
-            if value is not None and (details == CustomFieldDetails.VALUE_ONLY):
+            if value is not None and (details == CUSTOM_FIELD_DETAILS.VALUE_ONLY):
                 self.customfields[fieldname] = value
         return self.customfields.get(fieldname, None)
 
-    def update(self, testcasename=None, summary=None, preconditions=None, steps=None, importance=None, executiontype=None, status=None, exec_duration=None):
+    def update(self, testcasename=None, summary=None, preconditions=None, steps=None, importance=None,
+               executiontype=None, status=None, exec_duration=None):
         """Updates the the current TestCase.
         @param testcasename: The name of the TestCase
-        @type testcasname: str
+        @type testcasename: str
         @param summary: The summary of the TestCase
         @type summary: str
         @param preconditions: The Preconditions of the TestCase
@@ -498,11 +489,11 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         @param steps: The steps of the TestCase
         @type steps: list
         @param importance: The importance of the TestCase
-        @type importance: enums.ImportanceLevel
+        @type importance: enums.IMPORTANCE_LEVEL
         @param executiontype: The execution type of the TestCase
-        @type executiontype: enums.ExecutionType
+        @type executiontype: enums.EXECUTION_TYPE
         @param status: The status of the TestCase
-        @type status: enums.TestcaseStatus
+        @type status: enums.TESTCASE_STATUS
         @param exec_duration: The estimated execution time of the TestCase
         @type exec_duration: int
         @returns: None
@@ -528,17 +519,16 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         if exec_duration is None:
             exec_duration = self.exec_duration
 
-        self._api.updateTestCase(\
-                testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),\
-                testcasename=testcasename,\
-                summary=summary,\
-                preconditions=preconditions,\
-                steps=[step.as_dict() for step in steps],\
-                importance=importance,\
-                executiontype=executiontype,\
-                status=status,\
-                estimatedexecduration=exec_duration\
-            )
+        self._api.updateTestCase(
+            testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),
+            testcasename=testcasename,
+            summary=summary,
+            preconditions=preconditions,
+            steps=[step.as_dict() for step in steps],
+            importance=importance,
+            executiontype=executiontype,
+            status=status,
+            estimatedexecduration=exec_duration)
 
     def assignRequirements(self, requirements=None):
         """Assign all specified requirements to current TestCase.
@@ -548,11 +538,10 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         if requirements is None:
             requirements = self.requirements
 
-        return self._api.assignRequirements(\
-                    testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),\
-                    testprojectid=self.getTestProject().id,\
-                    requirements=requirements\
-                )
+        return self._api.assignRequirements(
+            testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),
+            testprojectid=self.getTestProject().id,
+            requirements=requirements)
 
     def updateCustomFieldDesignValue(self, customfields=None):
         """Updates all custom fields of current TestCase.
@@ -562,12 +551,11 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         if customfields is None:
             customfields = self.customfields
 
-        return self._api.updateTestCaseCustomFieldDesignValue(\
-                    testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),\
-                    version=int(self.version),\
-                    testprojectid=self.getTestProject().id,\
-                    customfields=customfields\
-                )
+        return self._api.updateTestCaseCustomFieldDesignValue(
+            testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),
+            version=int(self.version),
+            testprojectid=self.getTestProject().id,
+            customfields=customfields)
 
     def iterAttachment(self, **params):
         """Iterates over TestlinkObject's attachments specified by parameters
@@ -583,7 +571,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         attachments = [Attachment(api=self._api, **resp) for resp in response.values()]
 
         # Filter
-        if len(params)>0:
+        if len(params) > 0:
             for attach in attachments:
                 for key, value in params.items():
                     # Skip None

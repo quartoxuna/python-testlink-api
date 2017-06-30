@@ -4,17 +4,18 @@
 """Testlink Object Wrapper"""
 
 # IMPORTS
-from testlink.log import LOGGER as log
-from testlink.api import Testlink_XML_RPC_API
+from testlink.log import LOGGER
+from testlink.api import TestlinkXMLRPCAPI
 from testlink.exceptions import APIError
 
-from testlink.enums import API_TYPE as APIType
-from testlink.enums import DUPLICATE_STRATEGY as DuplicateStrategy
+from testlink.enums import API_TYPE
+from testlink.enums import DUPLICATE_STRATEGY
 
 from testlink.objects.tl_object import normalize_list
 from testlink.objects.tl_testproject import TestProject
 from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testsuite import TestCase
+
 
 class Testlink(object):
     """Testlink Server implementation
@@ -24,7 +25,7 @@ class Testlink(object):
     @type devkey: str
     """
 
-    def __init__(self, url, devkey, api=APIType.XML_RPC):
+    def __init__(self, url, devkey, api=API_TYPE.XML_RPC):
         """Initializes the Testlink Server object
         @param url: Testlink URL
         @type url: str
@@ -33,14 +34,14 @@ class Testlink(object):
         """
         self._url = str(url)
         # Init raw API
-        if api == APIType.XML_RPC:
-            self._api = Testlink_XML_RPC_API(url)
-        elif api == APIType.REST:
+        if api == API_TYPE.XML_RPC:
+            self._api = TestlinkXMLRPCAPI(url)
+        elif api == API_TYPE.REST:
             raise NotImplementedError()
         self._api_type = api
 
         # Log API Information
-        log.info("Testlink %s API Version %s at %s", self._api_type, self.getVersion(), self._url)
+        LOGGER.info("Testlink %s API Version %s at %s", self._api_type, self.getVersion(), self._url)
 
         # Set devkey globally
         self._api.devkey = str(devkey)
@@ -121,8 +122,6 @@ class Testlink(object):
         """Iterates over TestSuites specified by parameters
         @param name: The name of the wanted TestSuite
         @type name: str
-        @param id: The internal ID of the TestSuite
-        @type id: int
         @param recursive: Search recursive to get all nested TestSuites
         @type recursive: bool
         @param params: Other params for TestSuite
@@ -132,7 +131,7 @@ class Testlink(object):
         """
         # Check if simple API call can be done
         # Since the ID is unique, all other params can be ignored
-        _id = params.get('id')
+        _id = params.get('id', 0)
         if _id:
             response = self._api.getTestSuiteById(_id)
             # Since this testsuite is not linked to a testproject
@@ -153,8 +152,6 @@ class Testlink(object):
         """Returns all TestSuites specified by parameters
         @param name: The name of the wanted TestSuite
         @type name: str
-        @param id: The internal ID of the TestSuite
-        @type id: int
         @param recursive: Search recursive to get all nested TestSuites
         @type recursive: bool
         @param params: Other params for TestSuite
@@ -166,8 +163,6 @@ class Testlink(object):
 
     def iterTestCase(self, **params):
         """Iterates over TestCases specified by parameters
-        @param id: The internal ID of the TestCase
-        @type id: int
         @returns: Matching TestCases
         @rtype: generator
         """
@@ -194,8 +189,6 @@ class Testlink(object):
 
     def getTestCase(self, **params):
         """Returns all TestCases specified by parameters
-        @param id: The internal ID of the TestCase
-        @type id: int
         @returns: Matching TestCases
         @rtype: mixed
         """
@@ -204,19 +197,17 @@ class Testlink(object):
     def createTestProject(self, project):
         """Creates a new TestProject using the current Testlink instance.
         @param project: Project to create
-        @type project: TestProject
+        @type project: testlink.objects.tl_testproject.TestProject
         """
-        return self._api.createTestProject(\
-                    name=project.name,\
-                    prefix=project.prefix,\
-                    notes=project.notes,\
-                    active=project.active,\
-                    public=project.public,\
-                    requirements=project.requirements,\
-                    priority=project.priority,\
-                    automation=project.automation,\
-                    inventory=project.inventory\
-                )
+        return self._api.createTestProject(name=project.name,
+                                           prefix=project.prefix,
+                                           notes=project.notes,
+                                           active=project.active,
+                                           public=project.public,
+                                           requirements=project.requirements_enabled,
+                                           priority=project.priority_enabled,
+                                           automation=project.automation_enabled,
+                                           inventory=project.inventory_enabled)
 
     def createTestPlan(self, testplan, testproject):
         """Creates a new TestPlan for the specified TestProject using the current Testlink instance.
@@ -225,13 +216,11 @@ class Testlink(object):
         @param testproject: TestProject to add the Testplan to
         @type testproject: TestProject
         """
-        return self._api.createTestPlan(\
-                    name=testplan.name,\
-                    notes=testplan.notes,\
-                    active=testplan.active,\
-                    public=testplan.public,\
-                    project=testproject.name\
-                )
+        return self._api.createTestPlan(name=testplan.name,
+                                        notes=testplan.notes,
+                                        active=testplan.active,
+                                        public=testplan.public,
+                                        project=testproject.name)
 
     def createBuild(self, build, testplan):
         """Creates a new Build for the specified TestPlan using the current Testlink instance.
@@ -240,11 +229,7 @@ class Testlink(object):
         @param testplan: TestPlan to add the Build to
         @type testplan: TestPlan
         """
-        return self._api.createBuild(\
-                    name=build.name,\
-                    notes=build.notes,\
-                    testplanid=testplan.id\
-                )
+        return self._api.createBuild(name=build.name, notes=build.notes, testplanid=testplan.id)
 
     def createPlatform(self, platform, testproject):
         """Creates a new Platform for the specified TestProject using the current Testlink instance.
@@ -253,18 +238,14 @@ class Testlink(object):
         @param testproject: TestProject to add the Platform to
         @type testproject: TestProject
         """
-        return self._api.createPlatform(\
-                    platformname=platform.name,\
-                    notes=platform.notes,\
-                    testprojectname=testproject.name\
-                )
+        return self._api.createPlatform(platformname=platform.name,
+                                        notes=platform.notes,
+                                        testprojectname=testproject.name)
 
     def createTestSuite(self, suite, testproject, **kwargs):
         """Creates a new TestSuite for the specified parent objects using the current Testlink instance.
         @param suite: TestSuite to create
         @type suite: TestSuite
-        @param parent: Parent TestSuite
-        @type parent: mixed
         @param testproject: The parent TestProject
         @type testproject: TestProject
         @keyword parent: Parent testsuite ID
@@ -273,7 +254,7 @@ class Testlink(object):
         """
         parent = kwargs.get('parent', None)
         order = kwargs.get('order', 0)
-        on_duplicate = kwargs.get('on_duplicate', DuplicateStrategy.BLOCK)
+        on_duplicate = kwargs.get('on_duplicate', DUPLICATE_STRATEGY.BLOCK)
 
         duplicate_check = False
         if on_duplicate is not None:
@@ -283,15 +264,13 @@ class Testlink(object):
         if parent is not None:
             parent_id = parent.id
 
-        return self._api.createTestSuite(\
-                    testsuitename=suite.name,\
-                    details=suite.details,\
-                    testprojectid=testproject.id,\
-                    parentid=parent_id,\
-                    order=order,\
-                    checkduplicatedname=duplicate_check,\
-                    actiononduplicatedname=on_duplicate\
-                )
+        return self._api.createTestSuite(testsuitename=suite.name,
+                                         details=suite.details,
+                                         testprojectid=testproject.id,
+                                         parentid=parent_id,
+                                         order=order,
+                                         checkduplicatedname=duplicate_check,
+                                         actiononduplicatedname=on_duplicate)
 
     def createTestCase(self, testcase, testsuite, testproject, authorlogin, **kwargs):
         """Creates a new TestCase for the specifies parent objects using the current Testlink instance.
@@ -307,7 +286,7 @@ class Testlink(object):
         @keyword on_duplicate: Used duplicate strategy
         """
         order = kwargs.get('order', 0)
-        on_duplicate = kwargs.get('on_duplicate', DuplicateStrategy.BLOCK)
+        on_duplicate = kwargs.get('on_duplicate', DUPLICATE_STRATEGY.BLOCK)
 
         duplicate_check = False
         if on_duplicate is not None:
@@ -315,21 +294,19 @@ class Testlink(object):
 
         steps = [s.__dict__ for s in testcase.steps]
 
-        return self._api.createTestCase(\
-                    testcasename=testcase.name,\
-                    testsuiteid=testsuite.id,\
-                    testprojectid=testproject.id,\
-                    authorlogin=authorlogin,\
-                    summary=testcase.summary,\
-                    steps=steps,\
-                    preconditions=testcase.preconditions,\
-                    importance=testcase.importance,\
-                    executiontype=testcase.execution_type,\
-                    order=order,\
-                    customfields=testcase.customfields,\
-                    checkduplicatedname=duplicate_check,\
-                    actiononduplicatedname=on_duplicate\
-                )
+        return self._api.createTestCase(testcasename=testcase.name,
+                                        testsuiteid=testsuite.id,
+                                        testprojectid=testproject.id,
+                                        authorlogin=authorlogin,
+                                        summary=testcase.summary,
+                                        steps=steps,
+                                        preconditions=testcase.preconditions,
+                                        importance=testcase.importance,
+                                        executiontype=testcase.execution_type,
+                                        order=order,
+                                        customfields=testcase.customfields,
+                                        checkduplicatedname=duplicate_check,
+                                        actiononduplicatedname=on_duplicate)
 
     def createRequirementSpecification(self, reqspec, testproject, parent=None):
         """Creates a new RequirementSpecification for the specified testproject using the current Testlink instance.
@@ -345,18 +322,17 @@ class Testlink(object):
         else:
             parent_id = None
 
-        return self._api.createRequirementSpecification(\
-                    testprojectid=testproject.id,\
-                    parentid=parent_id,\
-                    docid=reqspec.doc_id,\
-                    title=reqspec.name,\
-                    scope=reqspec.scope,\
-                    userid=reqspec.author_id,\
-                    typ=reqspec.typ\
-                )
+        return self._api.createRequirementSpecification(testprojectid=testproject.id,
+                                                        parentid=parent_id,
+                                                        docid=reqspec.doc_id,
+                                                        title=reqspec.name,
+                                                        scope=reqspec.scope,
+                                                        userid=reqspec.author_id,
+                                                        typ=reqspec.typ)
 
     def createRequirement(self, requirement, testproject, reqspec):
-        """Creates a new Requirement for the specified TestProject and Requirement Specification using the current Testlink instance.
+        """Creates a new Requirement for the specified TestProject and Requirement Specification
+        using the current Testlink instance.
         @param requirement: Requirement to create
         @type requirement: Requirement
         @param testproject: Parent TestProject
@@ -364,16 +340,14 @@ class Testlink(object):
         @param reqspec: Parent Requirement Specification
         @type reqspec: RequirementSpecification
         """
-        return self._api.createRequirement(\
-                    testprojectid=testproject.id,\
-                    reqspecid=reqspec.id,\
-                    docid=requirement.req_doc_id,\
-                    title=requirement.name,\
-                    scope=requirement.scope,\
-                    userid=requirement.author_id,\
-                    typ=requirement.typ,\
-                    status=requirement.status\
-                )
+        return self._api.createRequirement(testprojectid=testproject.id,
+                                           reqspecid=reqspec.id,
+                                           docid=requirement.req_doc_id,
+                                           title=requirement.name,
+                                           scope=requirement.scope,
+                                           userid=requirement.author_id,
+                                           typ=requirement.typ,
+                                           status=requirement.status)
 
     def createRisk(self, risk, requirement):
         """Creates a new Risk for the specified Requirement using the current Testlink instance.
@@ -382,12 +356,9 @@ class Testlink(object):
         @param requirement: Parent Requirement
         @type requirement: Requirement
         """
-        return self._api.createRisk(\
-                    requirementid=requirement.id,\
-                    docid=risk.doc_id,\
-                    title=risk.name,\
-                    scope=risk.description,\
-                    userid=risk.author_id,\
-                    coverage=risk.cross_coverage\
-                )
-
+        return self._api.createRisk(requirementid=requirement.id,
+                                    docid=risk.doc_id,
+                                    title=risk.name,
+                                    scope=risk.description,
+                                    userid=risk.author_id,
+                                    coverage=risk.cross_coverage)

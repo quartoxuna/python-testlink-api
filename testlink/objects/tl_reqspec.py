@@ -8,43 +8,30 @@ import datetime
 
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
-from testlink.objects.tl_object import _STRPTIME_FUNC as strptime
+from testlink.objects.tl_object import strptime
 
 from testlink.objects.tl_req import Requirement
 from testlink.objects.tl_attachment import IAttachmentGetter
 
-from testlink.enums import REQSPEC_TYPE as RequirementSpecificationType
+from testlink.enums import REQSPEC_TYPE
+
 
 class RequirementSpecification(TestlinkObject, IAttachmentGetter):
     """Testlink Requirement Specification representation"""
 
-    __slots__ = ("doc_id", "typ", "scope", "testproject_id", "author_id", "creation_ts",\
-            "modifier_id", "modification_ts", "total_req", "node_order", "_parent_testproject",
-            "_parent_requirement_specification")
+    __slots__ = ("doc_id", "typ", "scope", "testproject_id", "author_id", "creation_ts",
+                 "modifier_id", "modification_ts", "total_req", "node_order", "_parent_testproject",
+                 "_parent_requirement_specification")
 
-    def __init__(\
-            self,\
-            doc_id='',\
-            title='',\
-            typ=RequirementSpecificationType.SECTION,\
-            scope='',\
-            testproject_id=-1,\
-            author_id=-1,\
-            creation_ts=str(datetime.datetime.min),\
-            modifier_id=-1,\
-            modification_ts=str(datetime.datetime.min),\
-            total_req=0,\
-            node_order=0,\
-            api=None,\
-            parent_testproject=None,\
-            parent_requirement_specification=None,\
-            **kwargs\
-            ):
+    def __init__(self, doc_id='', title='', typ=REQSPEC_TYPE.SECTION, scope='', testproject_id=-1, author_id=-1,
+                 creation_ts=str(datetime.datetime.min), modifier_id=-1, modification_ts=str(datetime.datetime.min),
+                 total_req=0, node_order=0, api=None, parent_testproject=None, parent_requirement_specification=None,
+                 **kwargs):
         """Initializes a new Requirement Specification with the specified parameters.
         @todo: doc
         """
         TestlinkObject.__init__(self, kwargs.get('id'), title, api)
-        IAttachmentGetter.__init__(self)
+        IAttachmentGetter.__init__(self, kwargs.get('id'), api)
         self.doc_id = unicode(doc_id)
         self.typ = int(typ)
         self.scope = scope
@@ -85,7 +72,8 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
         """
         # Simple API call not possible
         response = self._api.getRequirementSpecificationsForRequirementSpecification(self.id)
-        specs = [RequirementSpecification(api=self._api, parent_testproject=self.getTestProject(), parent_requirement_specification=self, **reqspec) for reqspec in response]
+        specs = [RequirementSpecification(api=self._api, parent_testproject=self.getTestProject(),
+                                          parent_requirement_specification=self, **reqspec) for reqspec in response]
 
         # Filter
         if len(params) > 0 or name:
@@ -102,7 +90,9 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
                                 break
                         except AttributeError:
                             # Try to treat as custom field
-                            cf_val = self._api.getReqSpecCustomFieldDesignValue(rspec.id, rspec.getTestProject().id, key)
+                            cf_val = self._api.getReqSpecCustomFieldDesignValue(rspec.id,
+                                                                                rspec.getTestProject().id,
+                                                                                key)
                             if not unicode(cf_val) == unicode(value):
                                 rspec = None
                                 break
@@ -117,7 +107,7 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
                 for rspec in specs:
                     # Yield nested specs that match
                     for r in rspec.iterRequirementSpecification(recursive=recursive, **params):
-                        yield s
+                        yield r
         # Return all Requirement Specifications
         else:
             for rspec in specs:
@@ -148,7 +138,8 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
         """
         # No Simple API Call possible, get all and convert to Requirement instances
         response = self._api.getRequirementsForRequirementSpecification(self.id, self.getTestProject().id)
-        requirements = [Requirement(api=self._api, parent_testproject=self.getTestProject(), parent_requirement_specification=self, **req) for req in response]
+        requirements = [Requirement(api=self._api, parent_testproject=self.getTestProject(),
+                                    parent_requirement_specification=self, **req) for req in response]
 
         # Filter
         if len(params) > 0 or name:
@@ -165,7 +156,9 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
                                 break
                         except AttributeError:
                             # Try as custom field
-                            cf_val = self._api.getRequirementCustomFieldDesignValue(req.id, req.getTestProject().id, key)
+                            cf_val = self._api.getRequirementCustomFieldDesignValue(req.id,
+                                                                                    req.getTestProject().id,
+                                                                                    key)
                             if not unicode(cf_val) == unicode(value):
                                 req = None
                                 break
@@ -186,4 +179,3 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
         @rtype: mixed
         """
         return normalize_list([r for r in self.iterRequirement(name, **params)])
-
