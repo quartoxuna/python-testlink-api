@@ -9,12 +9,13 @@
 # IMPORTS
 import unittest
 
-from testlink.enums import EXECUTION_TYPE as ExecutionType
-from testlink.enums import IMPORTANCE_LEVEL as ImportanceLevel
-from testlink.enums import DUPLICATE_STRATEGY as DuplicateStrategy
-from testlink.enums import CUSTOM_FIELD_DETAILS as CustomFieldDetails
-from testlink.enums import API_TYPE as APIType
-from testlink.enums import TESTCASE_STATUS as TestcaseStatus
+from testlink.enums import EXECUTION_TYPE
+from testlink.enums import IMPORTANCE_LEVEL
+from testlink.enums import DUPLICATE_STRATEGY
+from testlink.enums import CUSTOM_FIELD_DETAILS
+from testlink.enums import API_TYPE
+from testlink.enums import TESTCASE_STATUS
+
 
 class EnumerationTests(unittest.TestCase):
     """ Tests for Enums"""
@@ -24,26 +25,26 @@ class EnumerationTests(unittest.TestCase):
 
     def test_enums(self):
         """Enumerations"""
-        self.assertEqual(ExecutionType.MANUAL, 1)
-        self.assertEqual(ExecutionType.AUTOMATIC, 2)
+        self.assertEqual(EXECUTION_TYPE.MANUAL, 1)
+        self.assertEqual(EXECUTION_TYPE.AUTOMATIC, 2)
 
-        self.assertEqual(ImportanceLevel.HIGH, 3)
-        self.assertEqual(ImportanceLevel.MEDIUM, 2)
-        self.assertEqual(ImportanceLevel.LOW, 1)
+        self.assertEqual(IMPORTANCE_LEVEL.HIGH, 3)
+        self.assertEqual(IMPORTANCE_LEVEL.MEDIUM, 2)
+        self.assertEqual(IMPORTANCE_LEVEL.LOW, 1)
 
-        self.assertEqual(DuplicateStrategy.NEW_VERSION, 'create_new_version')
-        self.assertEqual(DuplicateStrategy.GENERATE_NEW, 'generate_new')
-        self.assertEqual(DuplicateStrategy.BLOCK, 'block')
+        self.assertEqual(DUPLICATE_STRATEGY.NEW_VERSION, 'create_new_version')
+        self.assertEqual(DUPLICATE_STRATEGY.GENERATE_NEW, 'generate_new')
+        self.assertEqual(DUPLICATE_STRATEGY.BLOCK, 'block')
 
-        self.assertEqual(CustomFieldDetails.VALUE_ONLY, 'value')
+        self.assertEqual(CUSTOM_FIELD_DETAILS.VALUE_ONLY, 'value')
 
-        self.assertEqual(APIType.XML_RPC, 'XML-RPC')
-        self.assertEqual(APIType.REST, 'REST')
+        self.assertEqual(API_TYPE.XML_RPC, 'XML-RPC')
+        self.assertEqual(API_TYPE.REST, 'REST')
 
-        self.assertEqual(TestcaseStatus.DRAFT, 1)
-        self.assertEqual(TestcaseStatus.READY_FOR_REVIEW, 2)
-        self.assertEqual(TestcaseStatus.REVIEW_IN_PROGRESS, 3)
-        self.assertEqual(TestcaseStatus.REWORK, 4)
-        self.assertEqual(TestcaseStatus.OBSOLETE, 5)
-        self.assertEqual(TestcaseStatus.FUTURE, 6)
-        self.assertEqual(TestcaseStatus.FINAL, 7)
+        self.assertEqual(TESTCASE_STATUS.DRAFT, 1)
+        self.assertEqual(TESTCASE_STATUS.READY_FOR_REVIEW, 2)
+        self.assertEqual(TESTCASE_STATUS.REVIEW_IN_PROGRESS, 3)
+        self.assertEqual(TESTCASE_STATUS.REWORK, 4)
+        self.assertEqual(TESTCASE_STATUS.OBSOLETE, 5)
+        self.assertEqual(TESTCASE_STATUS.FUTURE, 6)
+        self.assertEqual(TESTCASE_STATUS.FINAL, 7)

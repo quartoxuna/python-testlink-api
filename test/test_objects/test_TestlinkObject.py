@@ -7,11 +7,17 @@
 """
 
 # IMPORTS
+import random
+import string
 import unittest
-
-from .. import randint, randput
-
 from testlink.objects.tl_object import TestlinkObject
+
+
+def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
+
+
+def randint(length=10): return int("".join([random.choice(string.digits) for _ in xrange(random.randint(1, length))]))
+
 
 class TestlinkObjectTests(unittest.TestCase):
     """TestlinkObject Object Tests"""
@@ -25,5 +31,5 @@ class TestlinkObjectTests(unittest.TestCase):
         _id = randint()
         name = randput()
         obj = TestlinkObject(_id, name)
-        string = str(obj)
-        self.assertEqual(string, "TestlinkObject (%d) %s" % (_id, name))
+        _string = str(obj)
+        self.assertEqual(_string, "TestlinkObject (%d) %s" % (_id, name))

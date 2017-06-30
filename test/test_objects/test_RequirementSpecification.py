@@ -7,11 +7,14 @@
 """
 
 # IMPORTS
+import random
+import string
 import unittest
-
-from .. import randput
-
 from testlink.objects.tl_reqspec import RequirementSpecification
+
+
+def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
+
 
 class RequirementSpecificationTests(unittest.TestCase):
     """Requirement Specification Object Tests"""
@@ -25,5 +28,5 @@ class RequirementSpecificationTests(unittest.TestCase):
         doc_id = randput()
         name = randput()
         obj = RequirementSpecification(doc_id=doc_id, title=name)
-        string = str(obj)
-        self.assertEqual(string, "Requirement Specification %s: %s" % (doc_id, name))
+        _string = str(obj)
+        self.assertEqual(_string, "Requirement Specification %s: %s" % (doc_id, name))

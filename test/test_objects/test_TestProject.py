@@ -7,11 +7,14 @@
 """
 
 # IMPORTS
+import random
+import string
 import unittest
-
-from .. import randput
-
 from testlink.objects.tl_testproject import TestProject
+
+
+def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
+
 
 class TestProjectTests(unittest.TestCase):
     """TestProject Object Tests"""
@@ -24,5 +27,5 @@ class TestProjectTests(unittest.TestCase):
         """String representation"""
         name = randput()
         obj = TestProject(name=name)
-        string = str(obj)
-        self.assertEqual(string, "%s" % name)
+        _string = str(obj)
+        self.assertEqual(_string, "%s" % name)

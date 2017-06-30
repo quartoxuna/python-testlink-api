@@ -7,12 +7,19 @@
 """
 
 # IMPORTS
+import random
+import string
 import unittest
 from mock import patch, Mock
 
-from .. import randint, randput
-
 from testlink.objects.tl_testcase import TestCase
+
+
+def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
+
+
+def randint(length=10): return int("".join([random.choice(string.digits) for _ in xrange(random.randint(1, length))]))
+
 
 class TestCaseTests(unittest.TestCase):
     """TestCase Object Tests"""
@@ -32,5 +39,5 @@ class TestCaseTests(unittest.TestCase):
         _patch.return_value = project
 
         obj = TestCase(name=name, external_id=ext_id)
-        string = str(obj)
-        self.assertEqual(string, "Testcase %s-%s: %s" % (project.prefix, ext_id, name))
+        _string = str(obj)
+        self.assertEqual(_string, "Testcase %s-%s: %s" % (project.prefix, ext_id, name))

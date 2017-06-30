@@ -7,11 +7,17 @@
 """
 
 # IMPORTS
+import random
+import string
 import unittest
-
-from .. import randput, randint
-
 from testlink.objects.tl_step import Step
+
+
+def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
+
+
+def randint(length=10): return int("".join([random.choice(string.digits) for _ in xrange(random.randint(1, length))]))
+
 
 class StepTests(unittest.TestCase):
     """Step Object Tests"""
@@ -27,5 +33,5 @@ class StepTests(unittest.TestCase):
         results = randput()
 
         obj = Step(step_number=number, actions=actions, expected_results=results)
-        string = str(obj)
-        self.assertEqual(string, "Step %d:\n%s\n%s" % (number, actions, results))
+        _string = str(obj)
+        self.assertEqual(_string, "Step %d:\n%s\n%s" % (number, actions, results))

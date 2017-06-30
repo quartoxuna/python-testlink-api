@@ -11,9 +11,11 @@ import unittest
 from testlink.server import TestlinkXMLRPCServer
 from xmlrpclib import ServerProxy
 
+
 def dummy_callback(val):
     """Dummy callback method"""
     return val
+
 
 class TestlinkXMLRPCServerTests(unittest.TestCase):
     """Tests of TestlinkXMLRPCServer implementation"""

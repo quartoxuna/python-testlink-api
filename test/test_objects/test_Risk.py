@@ -7,11 +7,14 @@
 """
 
 # IMPORTS
+import random
+import string
 import unittest
-
-from .. import randput
-
 from testlink.objects.tl_risk import Risk
+
+
+def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
+
 
 class RiskTests(unittest.TestCase):
     """Risk Object Tests"""
@@ -25,5 +28,5 @@ class RiskTests(unittest.TestCase):
         risk_id = randput()
         name = randput()
         obj = Risk(risk_doc_id=risk_id, name=name)
-        string = str(obj)
-        self.assertEqual(string, "Risk %s: %s" % (risk_id, name))
+        _string = str(obj)
+        self.assertEqual(_string, "Risk %s: %s" % (risk_id, name))

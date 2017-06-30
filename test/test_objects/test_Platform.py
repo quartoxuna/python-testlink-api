@@ -7,11 +7,15 @@
 """
 
 # IMPORTS
+import random
+import string
 import unittest
 
-from .. import randput
-
 from testlink.objects.tl_platform import Platform
+
+
+def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
+
 
 class PlatformTests(unittest.TestCase):
     """Platform Object Tests"""
@@ -24,5 +28,5 @@ class PlatformTests(unittest.TestCase):
         """String representation"""
         name = randput()
         obj = Platform(name=name)
-        string = str(obj)
-        self.assertEqual(string, "Platform: %s" % name)
+        _str = str(obj)
+        self.assertEqual(_str, "Platform: %s" % name)

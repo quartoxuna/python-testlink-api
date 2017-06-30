@@ -11,6 +11,7 @@ import unittest
 from testlink.api import TLVersion
 from testlink.api import NotSupported
 
+
 class TLVersionDecoratorTests(unittest.TestCase):
     """Tests of TLVersion decorator"""
 
@@ -24,7 +25,8 @@ class TLVersionDecoratorTests(unittest.TestCase):
         # Restore defaults
         TLVersion.IGNORE = False
 
-    def dummy(self, *args, **kwargs):
+    @staticmethod
+    def dummy(*args, **kwargs):
         """Dummy method"""
         pass
 
@@ -48,8 +50,7 @@ class TLVersionDecoratorTests(unittest.TestCase):
     def test_strict(self):
         """Strict version check"""
         # Check if error is raised on other version
-        for version in ("0.1", "0.9", "0.9.9", "0.1.0",\
-                         "1.1", "1.0.1", "1.9.3"):
+        for version in ("0.1", "0.9", "0.9.9", "0.1.0", "1.1", "1.0.1", "1.9.3"):
             decorated = TLVersion(version, strict=True)
             self.assertRaises(NotSupported, decorated(self.dummy), self)
         # Check if call can be done if version is exactly the same
@@ -64,4 +65,3 @@ class TLVersionDecoratorTests(unittest.TestCase):
             decorated = TLVersion(str(version))
             self.assertEquals(decorated.IGNORE, True)
             decorated(self.dummy)(self)
-
