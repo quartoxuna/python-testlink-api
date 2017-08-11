@@ -271,12 +271,12 @@ class TestCase(TestlinkObject, IAttachmentGetter):
 
         # Set common attributes
         self.version = int(version)
-        self.status = int(status)
+        self.status = int(status) if str(status).isdigit() else None
         self.importance = int(importance)
         self.execution_type = int(execution_type)
         self.summary = unicode(summary)
         self.active = bool(int(active))
-        self.tester_id = int(tester_id)
+        self.tester_id = int(tester_id) if str(tester_id).isdigit() else None
 
         try:
             self.exec_duration = float(estimated_exec_duration)
