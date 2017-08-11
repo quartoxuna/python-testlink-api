@@ -22,4 +22,4 @@ from testlink.objects import Risk
 from testlink.exceptions import APIError
 from testlink.exceptions import NotSupported
 
-__version__ = '0.46.0'
+__version__ = '0.46.1'
