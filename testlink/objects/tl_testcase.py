@@ -160,7 +160,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
 
         # Set uncommon, but necessary attributes
         if 'platform_id' in kwargs:
-            self.platform_id = kwargs['platform_id']
+            self.platform_id = int(kwargs['platform_id'])
         else:
             self.platform_id = None
 
