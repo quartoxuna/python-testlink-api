@@ -22,7 +22,7 @@ class Risk(TestlinkObject):
         """Initializes a new Risk with the specified parameters
         @todo: doc
         """
-        TestlinkObject.__init__(self, kwargs.get('id'), name, api)
+        TestlinkObject.__init__(self, kwargs.get('id', -1), name, api)
         self.doc_id = unicode(risk_doc_id)
         self.description = description
         self.author_id = int(author_id)

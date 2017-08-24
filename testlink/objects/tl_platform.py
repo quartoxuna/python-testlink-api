@@ -16,7 +16,7 @@ class Platform(TestlinkObject):
     __slots__ = ("notes", "_parent_testproject", "_parent_testplan")
 
     def __init__(self, name=None, notes=None, parent_testproject=None, parent_testplan=None, api=None, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id'), name, api)
+        TestlinkObject.__init__(self, kwargs.get('id', -1), name, api)
         self.notes = unicode(notes)
         self._parent_testproject = parent_testproject
         self._parent_testplan = parent_testplan

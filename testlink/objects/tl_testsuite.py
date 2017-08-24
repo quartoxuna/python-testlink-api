@@ -23,7 +23,7 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
 
     def __init__(self, name="", details="", parent_testproject=None, parent_testsuite=None,
                  api=None, _level=0, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id'), name, api)
+        TestlinkObject.__init__(self, kwargs.get('id', -1), name, api)
         IAttachmentGetter.__init__(self, kwargs.get('id'), api)
         self.details = unicode(details)
         self._level = _level

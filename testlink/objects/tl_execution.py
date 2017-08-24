@@ -46,7 +46,7 @@ class Execution(TestlinkObject, IAttachmentGetter):
     def __init__(self, testplan_id=-1, platform_id=-1, build_id=-1, tcversion_id=-1, tcversion_number=0,
                  status='', notes="", execution_type=EXECUTION_TYPE.MANUAL, execution_ts=str(datetime.datetime.min),
                  tester_id=-1, execution_duration=0.0, api=None, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id'), kwargs.get('id', "None"), api)
+        TestlinkObject.__init__(self, kwargs.get('id', -1), kwargs.get('id', "None"), api)
         IAttachmentGetter.__init__(self, kwargs.get('id', None), api, foreign_key_table="executions")
         self.testplan_id = int(testplan_id)
         self.platform_id = int(platform_id)

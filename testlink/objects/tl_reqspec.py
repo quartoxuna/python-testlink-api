@@ -30,7 +30,7 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
         """Initializes a new Requirement Specification with the specified parameters.
         @todo: doc
         """
-        TestlinkObject.__init__(self, kwargs.get('id'), title, api)
+        TestlinkObject.__init__(self, kwargs.get('id', -1), title, api)
         IAttachmentGetter.__init__(self, kwargs.get('id'), api)
         self.doc_id = unicode(doc_id)
         self.typ = int(typ)

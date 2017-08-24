@@ -20,7 +20,7 @@ class Build(TestlinkObject):
 
     def __init__(self, name=None, notes=None, is_open=False, active=False, creation_ts=None, closed_on_date=None,
                  release_date=None, parent_testplan=None, api=None, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id'), name, api)
+        TestlinkObject.__init__(self, kwargs.get('id',-1), name, api)
         self.active = bool(int(active))
         self.open = bool(int(is_open))
         self.notes = unicode(notes)
