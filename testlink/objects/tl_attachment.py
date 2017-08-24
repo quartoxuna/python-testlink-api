@@ -47,9 +47,7 @@ class Attachment(TestlinkObject):
 class IAttachmentGetter(object):
     """Interface class for getting attachments of various Testlink Objects"""
 
-    def __init__(self, _id, api, foreign_key_table="nodes_hierarchy"):
-        self.id = _id
-        self._api = api
+    def __init__(self, foreign_key_table="nodes_hierarchy"):
         self._foreign_key_table = foreign_key_table
 
     def iterAttachment(self, **params):

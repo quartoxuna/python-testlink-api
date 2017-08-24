@@ -24,7 +24,7 @@ class Step(object):
     """
     def __init__(self, step_number=1, actions="", execution_type=EXECUTION_TYPE.MANUAL, active="0",
                  expected_results="", **kwargs):
-		self.id = kwargs.get('id', -1)
+        self.id = kwargs.get('id', -1)
         self.step_number = int(step_number)
         self.actions = actions
         self.execution_type = int(execution_type)

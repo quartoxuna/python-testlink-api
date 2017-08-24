@@ -31,7 +31,7 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
         @todo: doc
         """
         TestlinkObject.__init__(self, kwargs.get('id', -1), title, api)
-        IAttachmentGetter.__init__(self, kwargs.get('id'), api)
+        IAttachmentGetter.__init__(self)
         self.doc_id = unicode(doc_id)
         self.typ = int(typ)
         self.scope = scope

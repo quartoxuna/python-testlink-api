@@ -51,7 +51,7 @@ class TestProject(TestlinkObject, IAttachmentGetter):
             opt['automationEnabled'] = 0
             opt['inventoryEnabled'] = 0
         TestlinkObject.__init__(self, kwargs.get('id', -1), name, api)
-        IAttachmentGetter.__init__(self, kwargs.get('id'), api)
+        IAttachmentGetter.__init__(self)
         self.notes = unicode(notes)
         self.prefix = str(prefix)
         self.active = bool(int(active))

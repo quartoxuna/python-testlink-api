@@ -148,7 +148,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
 
         # Init
         TestlinkObject.__init__(self, _id, _name, api=api)
-        IAttachmentGetter.__init__(self, _id, api)
+        IAttachmentGetter.__init__(self)
 
         # Set the "correct" external id
         if 'tc_external_id' in kwargs:
