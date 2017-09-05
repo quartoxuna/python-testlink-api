@@ -10,7 +10,7 @@
 import unittest
 from testlink.api import TLVersion
 from testlink.api import NotSupported
-
+from testlink.api import TestlinkXMLRPCAPI
 
 class TLVersionDecoratorTests(unittest.TestCase):
     """Tests of TLVersion decorator"""
@@ -23,7 +23,7 @@ class TLVersionDecoratorTests(unittest.TestCase):
 
     def tearDown(self):
         # Restore defaults
-        TLVersion.IGNORE = False
+        TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK = False
 
     @staticmethod
     def dummy(*args, **kwargs):
@@ -59,9 +59,9 @@ class TLVersionDecoratorTests(unittest.TestCase):
 
     def test_ignore(self):
         """Ignore version checks"""
-        self.assertEquals(TLVersion.IGNORE, False)
-        TLVersion.IGNORE = True
+        self.assertEquals(TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK, False)
+        TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK = True
         for version in ("1.0", "0.9", "1.1"):
             decorated = TLVersion(str(version))
-            self.assertEquals(decorated.IGNORE, True)
+            self.assertEquals(TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK, True)
             decorated(self.dummy)(self)

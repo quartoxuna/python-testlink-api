@@ -26,8 +26,7 @@ from testlink.exceptions import ConnectionError
 from distutils.version import LooseVersion as Version
 from urlparse import urlparse
 
-
-class TLVersion(object):
+def TLVersion(version, strict=False):
     """
     Function decorator for Testlink version requirements
 
@@ -35,8 +34,6 @@ class TLVersion(object):
     :type version: str
     :param strict: Strict check
     :type strict: bool
-    :cvar IGNORE: Ignore version checking at all
-    :type IGNORE: bool
 
     :Examples:
 
@@ -57,32 +54,25 @@ class TLVersion(object):
 
     """
 
-    IGNORE = False
-
-    def __init__(self, version, strict=False):
-        self.version = Version(version)
-        self.strict = strict
-
-    def __call__(self, fn):
-        def _wrapped(parent, *args, **kwargs):
-            """Decorator Wrapper"""
+    def decorate(fn):
+        def wrapper(parent, *args, **kwargs):
             # Check version
-            if not TLVersion.IGNORE and (
-                (self.strict and self.version != parent.tl_version) or
-                (self.version > parent.tl_version)
+            if not TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK and (
+                (strict and version != parent.tl_version) or
+                (version > parent.tl_version)
             ):
-                if self.strict:
+                if strict:
                     sign = "=="
                 else:
                     sign = ">="
                 raise NotSupported("Method '%s' requires Testlink version %s %s but is %s" %
-                                   (str(fn.__name__), str(sign), str(self.version), str(parent.tl_version)))
+                                   (str(fn.__name__), str(sign), str(version), str(parent.tl_version)))
             return fn(parent, *args, **kwargs)
-        _wrapped.__name__ = fn.__name__
-        _wrapped.__doc__ = fn.__doc__
-        _wrapped.__dict__.update(fn.__dict__)
-        return _wrapped
-
+        wrapper.__name__ = fn.__name__
+        wrapper.__doc__ = fn.__doc__
+        wrapper.__dict__.update(fn.__dict__)
+        return wrapper
+    return decorate
 
 class ThreadSafeTransport(xmlrpclib.Transport):
     """Create single connection for each request"""
@@ -104,6 +94,7 @@ class TestlinkXMLRPCAPI(object):
     RPC_PATHS = ["/lib/api/xmlrpc.php", "/lib/api/xmlrpc/v1/xmlrpc.php"]  # RPC endpoints
     WAIT_BEFORE_RECONNECT = 5   # Time (seconds) to wait before reconnect
     MAX_RECONNECTION_ATTEMPTS = 5  # Max amout of reconnection attempts
+    IGNORE_VERSION_CHECK = False # Ignores version checking via TLVersion decorator
 
     def __init__(self, url):
         """Initialize the TestlinkAPI
@@ -650,7 +641,7 @@ class TestlinkXMLRPCAPI(object):
         @rtype: dict
         """
         arguments = {}
-        if (self._tl_version >= Version("1.9.14")) or TLVersion.IGNORE:
+        if (self._tl_version >= Version("1.9.14")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
             arguments['execduration'] = execduration
 
         return self._query("tl.reportTCResult",
@@ -701,7 +692,7 @@ class TestlinkXMLRPCAPI(object):
                      "testcaseid": testcaseid,
                      "testcaseexternalid": testcaseexternalid}
 
-        if (self._tl_version >= Version("1.9.9")) or TLVersion.IGNORE:
+        if (self._tl_version >= Version("1.9.9")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
             arguments['platformid'] = platformid
             arguments['platformname'] = platformname
             arguments['buildid'] = buildid
@@ -1045,7 +1036,7 @@ class TestlinkXMLRPCAPI(object):
         arguments = {"testsuiteid": testsuiteid,
                      "deep": deep,
                      "details": details}
-        if (self._tl_version >= Version("1.9.10")) or TLVersion.IGNORE:
+        if (self._tl_version >= Version("1.9.10")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
             arguments['getkeywords'] = getkeywords
         return self._query("tl.getTestCasesForTestSuite", devKey=devkey, **arguments)
 
@@ -1096,7 +1087,7 @@ class TestlinkXMLRPCAPI(object):
                      "executiontype": executiontype,
                      "getstepsinfo": getstepsinfo}
 
-        if (self._tl_version >= Version("1.9.4")) or TLVersion.IGNORE:
+        if (self._tl_version >= Version("1.9.4")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
             # Add 'details' attribute
             arguments['details'] = details
 
