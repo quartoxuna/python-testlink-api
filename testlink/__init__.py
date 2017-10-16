@@ -9,6 +9,7 @@
 # EXPORTS
 from testlink.objects import Testlink
 from testlink.objects import TestlinkObject
+from testlink.objects import User
 from testlink.objects import TestProject
 from testlink.objects import TestSuite
 from testlink.objects import TestCase
