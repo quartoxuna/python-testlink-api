@@ -11,6 +11,7 @@ from testlink.objects.tl_keyword import Keyword
 from testlink.objects.tl_execution import Execution
 from testlink.objects.tl_attachment import Attachment
 from testlink.objects.tl_attachment import IAttachmentGetter
+from testlink.objects.tl_user import User
 
 from testlink.exceptions import APIError
 from testlink.exceptions import NotSupported
@@ -226,6 +227,11 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         else:
             self.modification_ts = None
 
+        # Try to get assigned user
+        self.__assignee_id = None
+        self.__assignee = None
+        self.__assignee_id = kwargs.get('user_id')
+
         # Try get get linked_by
         if ('linked_by' in kwargs) and (kwargs['linked_by'].strip() != ''):
             self.linked_by = int(kwargs['linked_by'])
@@ -308,7 +314,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                 user = self._api.getUserByID(self.author_id)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                self.__author = "%s %s" % (unicode(user['firstName']), unicode(user['lastName']))
+                self.__author = User(api=self._api, **user)
             except NotSupported:
                 pass
         return self.__author
@@ -321,24 +327,37 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                 user = self._api.getUserByID(self.modifier_id)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                self.__modifier = "%s %s" % (unicode(user['firstName']), unicode(user['lastName']))
+                self.__modifier = User(api=self._api, **user)
             except NotSupported:
                 pass
         return self.__modifier
 
     @property
+    def assignee(self):
+        """Assignee of this testcase"""
+        if (self.__assignee is None) and (self.__assignee_id is not None):
+            try:
+                user = self._api.getUserByID(self.__assignee_id)
+                if isinstance(user, list) and len(user) == 1:
+                    user = user[0]
+                self.__assignee = User(api=self._api, **user)
+            except NotSupported:
+                pass
+        return self.__assignee
+
+    @property
     def linker(self):
         """Linker of this testcase"""
         # Do not cache
-        if self.linked_by is not None:
+        if (self.__linker is None) and (self.linked_by is not None):
             try:
                 user = self._api.getUserByID(self.linked_by)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                return "%s %s" % (unicode(user['firstName']), unicode(user['lastName']))
+                self.__linker = User(api=self._api, **user)
             except NotSupported:
                 pass
-        return None
+        return self.__linker
 
     def _get_testsuite(self):
         """Lazy-loading testsuite getter"""
