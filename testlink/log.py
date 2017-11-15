@@ -11,3 +11,9 @@ import logging
 
 # Define logger before importing the rest
 LOGGER = logging.getLogger('testlink')
+
+try:
+    from logging import NullHandler
+    LOGGER.addHandler(NullHandler())
+except Exception:
+    pass
