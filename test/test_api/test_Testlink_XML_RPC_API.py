@@ -670,7 +670,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         # Check default params
         defaults = randict("steps", "action")
         self.assertEquals(self._api.createTestCaseSteps(**defaults), query.return_value)
-        query.assert_called_with('tl.createTestCaseStep',
+        query.assert_called_with('tl.createTestCaseSteps',
                                  devKey=None,
                                  testcaseexternalid=None,
                                  testcaseid=None,
@@ -679,7 +679,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         # Check with specified parameters
         non_defaults = randict("steps", "action", "testcaseid", "testcaseexternalid", "version")
         self.assertEquals(self._api.createTestCaseSteps(**non_defaults), query.return_value)
-        query.assert_called_with('tl.createTestCaseStep', devKey=None, **non_defaults)
+        query.assert_called_with('tl.createTestCaseSteps', devKey=None, **non_defaults)
 
     @mock.patch("testlink.api.TestlinkXMLRPCAPI._query")
     def test_delete_testcase_steps(self, query):
