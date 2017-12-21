@@ -6,11 +6,11 @@ Setup Script for python-testlink-api
 """
 
 from setuptools import setup
-from testlink import __version__ as VERSION
+from testlink import _VERSION_
 
 setup(\
   name='python-testlink-api',\
-  version=VERSION,\
+  version=_VERSION_,\
   description='Testlink API Wrapper Library',\
   author='Kai Borowiak',\
   author_email='info@quartoxuna.com',\
