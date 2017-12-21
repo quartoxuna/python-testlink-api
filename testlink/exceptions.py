@@ -5,18 +5,39 @@
 Exceptions
 ==========
 :module: testlink.exceptions
+
+.. exception:: NotSupported
+
+    Raised if method is not supported within the Testlink version
+
+    .. attribute:: error_msg
+
+        The error message
+
+.. exception:: APIError
+
+    Raised if Testlink API return an API error
+
+    .. attribute:: error_msg
+
+        The error message
+
+    .. attribute:: error_code
+
+        The API error code
+
+.. exception:: ConnectionError
+
+    Raised if there was a connection error to the Testlink server
 """
 
-
 class NotSupported(Exception):
-    """Method is not supported within the Testlink version"""
     def __init__(self, fn_name):
         Exception.__init__(self, fn_name)
         self.error_msg = fn_name
 
 
 class APIError(Exception):
-    """Testlink API returns an error struct"""
     def __init__(self, code='-1', message=''):
         msg = unicode(message).encode("utf-8")
         Exception.__init__(self, str(msg))
@@ -30,5 +51,4 @@ class APIError(Exception):
 
 
 class ConnectionError(Exception):
-    """Connection to the server cannot be stablished"""
     pass
