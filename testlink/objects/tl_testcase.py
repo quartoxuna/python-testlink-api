@@ -33,7 +33,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
 
     def __init__(self, version=1, status=TESTCASE_STATUS.DRAFT, importance=IMPORTANCE_LEVEL.MEDIUM,
                  execution_type=EXECUTION_TYPE.MANUAL, summary="", active=True, api=None, parent_testproject=None,
-                 parent_testsuite=None, customfields=None, requirements=None, tester_id=-1, estimated_exec_duration=0.0,
+                 parent_testsuite=None, customfields=None, requirements=None, tester_id=-1,
                  keywords=None, **kwargs):
         """Initialises a new TestCase with the specified parameters.
         @param name: The name of the TestCase
@@ -272,6 +272,15 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         else:
             self.__preconditions = None
 
+        # Set Estimated Execution Duration by lazy loading
+        if 'estimated_exec_duration' in kwargs:
+            try:
+                self.__exec_duration = float(kwargs['estimated_exec_duration'])
+            except ValueError:
+                self.__exec_duration = 0.0
+        else:
+            self.__exec_duration = None
+
         # Set keywords
         self.keywords = []
         if keywords is not None:
@@ -285,11 +294,6 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         self.summary = unicode(summary)
         self.active = bool(int(active))
         self.tester_id = int(tester_id) if str(tester_id).isdigit() else None
-
-        try:
-            self.exec_duration = float(estimated_exec_duration)
-        except ValueError:
-            self.exec_duration = 0.0
 
         # Set internal attributes
         self._parent_testproject = parent_testproject
@@ -307,6 +311,13 @@ class TestCase(TestlinkObject, IAttachmentGetter):
     def __unicode__(self):
         """Returns Unicode Representation"""
         return unicode(u"Testcase %s-%s: %s" % (self.getTestProject().prefix, self.external_id, self.name))
+
+    @property
+    def exec_duration(self):
+        """Estimated Execution Duration"""
+        if (self.__exec_duration is None):
+            self.__exec_duration = self.getTestProject().getTestCase(id=self.tc_id, version=self.version).exec_duration
+        return self.__exec_duration
 
     @property
     def author(self):
