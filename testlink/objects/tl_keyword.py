@@ -29,7 +29,12 @@ class Keyword(TestlinkObject):
         return str(self._keyword)
 
     def __eq__(self, other):
-        return self._keyword == other
+        if isinstance(other, Keyword):
+            return self._keyword == other._keyword
+        elif isinstance(other, basestring):
+            return self._keyword == other
+        else:
+            return unicode(self.keyword) == unicode(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)
