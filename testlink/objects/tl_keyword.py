@@ -32,4 +32,4 @@ class Keyword(TestlinkObject):
         return self._keyword == other
 
     def __ne__(self, other):
-        return not self._keyword == other
+        return not self.__eq__(other)
