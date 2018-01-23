@@ -126,16 +126,16 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         # Get the "correct" id
         if ('id' in kwargs) and ('tcversion_id' in kwargs):
             # getTestCasesForTestSuite()
-            _id = kwargs['tcversion_id']
-            self.tc_id = kwargs['id']
+            _id = int(kwargs['tcversion_id'])
+            self.tc_id = int(kwargs['id'])
         elif ('id' in kwargs) and ('testcase_id' in kwargs):
             # getTestCase()
-            _id = kwargs['id']
-            self.tc_id = kwargs['testcase_id']
+            _id = int(kwargs['id'])
+            self.tc_id = int(kwargs['testcase_id'])
         elif ('tc_id' in kwargs) and ('tcversion_id' in kwargs):
             # getTestCasesForTestPlan
-            _id = kwargs['tcversion_id']
-            self.tc_id = kwargs['tc_id']
+            _id = int(kwargs['tcversion_id'])
+            self.tc_id = int(kwargs['tc_id'])
         else:
             _id = None
 
