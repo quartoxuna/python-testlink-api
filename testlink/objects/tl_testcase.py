@@ -29,12 +29,11 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                  "__author", "author_id", "creation_ts", "__modifier", "modifier_id", "modification_ts",
                  "__testsuite", "__testsuite_id", "version", "status", "importance", "execution_type", "preconditions",
                  "summary", "active", "testsuite_id", "tester_id", "exec_duration", "_parent_testproject",
-                 "customfields", "requirements", "__steps", "__preconditions", "keywords", "linked_by", "linked_ts"]
+                 "customfields", "requirements", "__steps", "__preconditions", "linked_by", "linked_ts", "_keywords"]
 
     def __init__(self, version=1, status=TESTCASE_STATUS.DRAFT, importance=IMPORTANCE_LEVEL.MEDIUM,
                  execution_type=EXECUTION_TYPE.MANUAL, summary="", active=True, api=None, parent_testproject=None,
-                 parent_testsuite=None, customfields=None, requirements=None, tester_id=-1,
-                 keywords=None, **kwargs):
+                 parent_testsuite=None, customfields=None, requirements=None, tester_id=-1, **kwargs):
         """Initialises a new TestCase with the specified parameters.
         @param name: The name of the TestCase
         @type name: str
@@ -281,10 +280,14 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         else:
             self.__exec_duration = None
 
-        # Set keywords
-        self.keywords = []
-        if keywords is not None:
-            self.keywords = [Keyword(**k) for k in keywords.values()]
+        # Set Keywords by lazy loading
+        if 'keywords' in kwargs:
+            try:
+                self._keywords = [Keyword(**keyword) for keyword_id, keyword in kwargs['keywords'].items()]
+            except TypeError:
+                self._keywords = []
+        else:
+            self._keywords = None
 
         # Set common attributes
         self.version = int(version)
@@ -311,6 +314,24 @@ class TestCase(TestlinkObject, IAttachmentGetter):
     def __unicode__(self):
         """Returns Unicode Representation"""
         return unicode(u"Testcase %s-%s: %s" % (self.getTestProject().prefix, self.external_id, self.name))
+
+    @property
+    def keywords(self):
+        """Keywords of this testcase"""
+        if (self._keywords is None):
+            # Unfortunately, the only way to get keywords from a testcase
+            # is to get the testcase via the parent testsuite
+            case = self.getTestSuite().getTestCase(id=self.id, version=self.version)
+
+            # Also, if a testcase has no keywords, we self._keywords stays empty
+            # if the testcase has no keywords at all, so we explicitly have to
+            # check the _keywords member after the first lazy load.
+            # If this is still None, the testcase has no keywords at all.
+            if case._keywords is None:
+                self._keywords = []
+            else:
+                 self._keywords = case._keywords
+        return self._keywords
 
     @property
     def exec_duration(self):
