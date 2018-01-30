@@ -488,8 +488,11 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         last = self.getLastExecutionResult(testplanid)
         self._api.deleteExecution(last.id)
 
-    def reportResult(self, testplanid, buildid, status, notes=None, overwrite=False, execduration=None):
+    def reportResult(self, testplanid, buildid, status, notes=None, overwrite=False, execduration=None, customfields={}):
         """Reports TC result"""
+        if len(customfields) == 0:
+            customfields = None
+
         response = self._api.reportTCResult(testplanid=testplanid,
                                             status=status,
                                             testcaseid=self.tc_id,
@@ -498,7 +501,8 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                                             platformid=self.platform_id,
                                             overwrite=overwrite,
                                             buildid=buildid,
-                                            execduration=execduration)
+                                            execduration=execduration,
+                                            customfields=customfields)
 
         # Return actual execution object
         if isinstance(response, list) and len(response) == 1:
