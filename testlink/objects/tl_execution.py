@@ -9,6 +9,7 @@ import datetime
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import strptime
 
+from testlink.objects.tl_user import User
 from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.exceptions import NotSupported
@@ -79,7 +80,7 @@ class Execution(TestlinkObject, IAttachmentGetter):
                 user = self._api.getUserByID(self.tester_id)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                self.__tester = "%s %s" % (unicode(user['firstName']), unicode(user['lastName']))
+                self.__tester = User(api=self._api, **user)
             except NotSupported:
                 pass
         return self.__tester
