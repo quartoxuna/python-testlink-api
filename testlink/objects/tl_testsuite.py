@@ -55,7 +55,7 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
         # Simple API call could be done, but
         # we want to ensure, that only sub suites of this
         # particular suite are involved, so no API call here
-        response = self._api.getTestSuitesForTestSuite(self.id)
+        response = self._api.getTestSuitesForTestSuite(self.id, self.getTestProject().id)
 
         # Normalize result
         if isinstance(response, str) and response.strip() == "":

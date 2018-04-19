@@ -785,19 +785,20 @@ class TestlinkXMLRPCAPI(object):
         return self._query("tl.getTestSuiteByID", devKey=devkey, testprojectid=testprojectid, testsuiteid=testsuiteid)
 
     @TLVersion("1.0")
-    def getTestSuitesForTestSuite(self, testsuiteid, devkey=None):
+    def getTestSuitesForTestSuite(self, testsuiteid, testprojectid=None, devkey=None):
         """getTestSuitesForTestSuite(testsuiteid[, devkey])
 
         Returns all TestSuites within the specified TestSuite.
 
         :param int testsuiteid: The internal ID of the parent TestSuite.
+        :param int testprojectid: The internal ID of the parent TestProject (used for rights checks)
         :param str devkey: The Testlink Developer Key. If no key is specified, the Developer Key of the current connection will be used.
         :rtype: list
         :returns: Server Response
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestSuitesForTestSuite", devKey=devkey, testsuiteid=testsuiteid)
+        return self._query("tl.getTestSuitesForTestSuite", devKey=devkey, testsuiteid=testsuiteid, testprojectid=testprojectid)
 
     @TLVersion("1.0")
     def getFirstLevelTestSuitesForTestProject(self, testprojectid, devkey=None):

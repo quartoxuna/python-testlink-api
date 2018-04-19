@@ -580,7 +580,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
     def test_get_suites_for_suite(self, query):
         """'getTestSuitesForTestSuite' (1.0)"""
         query.return_value = [randict("name", "id"), randict("name", "id")]
-        test_data = randict("testsuiteid")
+        test_data = randict("testsuiteid", "testprojectid")
         self.assertEquals(self._api.getTestSuitesForTestSuite(**test_data), query.return_value)
         query.assert_called_with('tl.getTestSuitesForTestSuite', devKey=None, **test_data)
         self._api._tl_version = Version("0.9")
