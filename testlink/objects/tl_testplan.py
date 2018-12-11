@@ -216,8 +216,30 @@ class TestPlan(TestlinkObject):
                 for tc in platforms:
                     testcases.append(tc)
             else:
-                for tc in platforms.values():
-                    testcases.append(tc)
+                for platform_id, tc in platforms.items():
+
+                    # Check if filtering for platform_id is requested
+                    if 'platform_id' in params:
+
+                        # Convert platform IDs to real integers
+                        platform_id = int(platform_id)
+                        if 'platform_id' in tc:
+                            tc['platform_id'] = int(tc['platform_id'])
+                        else:
+                            # Testcase has no platform, but we want to filter
+                            # for it, so skip this testcase anyway
+                            continue
+
+                        # Filter by platform_id
+                        if platform_id == tc['platform_id']:
+                            testcases.append(tc)
+                    else:
+                        testcases.append(tc)
+
+                    # Remove 'platform_id' from filters since we
+                    # we already filteres for platform_id
+                    if 'platform_id' in params:
+                        del params['platform_id']
 
         # Initialise TestCase Objects
         cases = [TestCase(api=self._api, parent_testproject=self.getTestProject(), **case) for case in testcases]
