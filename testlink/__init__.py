@@ -5,7 +5,6 @@
 @author: Kai Borowiak
 @summary: Testlink API Wrapper
 """
-_VERSION_ = '0.50.1'
 
 # EXPORTS
 from testlink.objects import Testlink

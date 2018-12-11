@@ -217,22 +217,13 @@ class TestPlan(TestlinkObject):
                     testcases.append(tc)
             else:
                 for tc in platforms.values():
-                    if 'platform_id' in params.keys():
-                        if str(params['platform_id']).strip()==tc['platform_id'].strip():
-                            testcases.append(tc)
-                    else:	
-                    	testcases.append(tc)
+                    testcases.append(tc)
 
         # Initialise TestCase Objects
         cases = [TestCase(api=self._api, parent_testproject=self.getTestProject(), **case) for case in testcases]
 
-        _ignoreFilter = False
-        if 'ignoreFilter' in params.keys():
-            _ignoreFilter = params['ignoreFilter']
-            del params['ignoreFilter']
-		
         # Filter
-        if not _ignoreFilter and (len(params) > 0 or name):
+        if len(params) > 0 or name:
             params['name'] = name
             for tcase in cases:
                 for key, value in params.items():
