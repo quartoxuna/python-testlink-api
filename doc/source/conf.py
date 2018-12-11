@@ -17,8 +17,8 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
-sys.path.insert(0, os.path.abspath('../../'))
+#import sys
+#sys.path.insert(0, os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
 # -- General configuration ------------------------------------------------
 
@@ -63,8 +63,8 @@ author = u'Kai Borowiak'
 # built documents.
 #
 # The short X.Y version.
-from testlink import _VERSION_
-version = _VERSION_
+execfile(os.path.join(os.pardir, os.pardir, 'testlink', 'version.py'))
+version = __version__
 # The full version including alpha/beta/rc tags.
 release = version
 
