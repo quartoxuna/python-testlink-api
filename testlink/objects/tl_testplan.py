@@ -236,10 +236,10 @@ class TestPlan(TestlinkObject):
                     else:
                         testcases.append(tc)
 
-                    # Remove 'platform_id' from filters since we
-                    # we already filteres for platform_id
-                    if 'platform_id' in params:
-                        del params['platform_id']
+                # Remove 'platform_id' from filters since we
+                # we already filteres for platform_id
+                if 'platform_id' in params:
+                    del params['platform_id']
 
         # Initialise TestCase Objects
         cases = [TestCase(api=self._api, parent_testproject=self.getTestProject(), **case) for case in testcases]
