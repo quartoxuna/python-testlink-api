@@ -133,14 +133,16 @@ class Testlink(object):
         # Since the ID is unique, all other params can be ignored
         _id = params.get('id', 0)
         if _id:
-            response = self._api.getTestSuiteById(_id)
             # Since this testsuite is not linked to a testproject
             # we have to set the _parent_testproject attribute directly
             # Alternatively, we could implement _parent_testsuite as
             # dynamic property, but then we would getTestSuite() within
             # Testproject class, but we do not know the testproject :-) so yay
             project_name = self._api.getFullPath(_id).values()[0][0]
-            yield TestSuite(api=self._api, parent_testproject=self.getTestProject(project_name), **response)
+            testproject = self.getTestProject(project_name)
+
+            response = self._api.getTestSuiteById(testproject.id, _id)
+            yield TestSuite(api=self._api, parent_testproject=testproject, **response)
         else:
             # Simply iterate over all projects and yield
             # all matching testsuites
