@@ -1397,13 +1397,13 @@ class TestlinkXMLRPCAPI(object):
                            title=title,
                            description=description)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def deleteAttachment(self, attachment_id, devkey=None):
         """deleteAttachment(attachment_id[, devkey])
 
         Deletes the specified attachment.
 
-        :Since: Custom Testlink Verion 1.11-sinaqs
+        :Since: Custom Testlink Verion 1.11.0-sinaqs
         :param int attachment_id: The internal ID of the Attachment to delete
         :param str devkey: The Testlink Developer Key. If no key is specified, the Developer Key of the current connection will be used.
         :rtype: list
@@ -1595,13 +1595,13 @@ class TestlinkXMLRPCAPI(object):
                            testcaseid=testcaseid,
                            testcaseexternalid=testcaseexternalid)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def getRequirementSpecificationsForTestProject(self, testprojectid, devkey=None):
         """getRequirementSpecificationsForTestProject(testprojectid[, devkey])
 
         Returns all available Requirement Specifications for the specified TestProject.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int testprojectid: The internal ID of the TestProject
         :param str devkey: The Testlink Developer Key. If no key is specified, the Developer Key of the current connection will be used.
         :rtype: list
@@ -1613,13 +1613,13 @@ class TestlinkXMLRPCAPI(object):
                            devKey=devkey,
                            testprojectid=testprojectid)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def getRequirementSpecificationsForRequirementSpecification(self, reqspecid, devkey=None):
         """getRequirementSpecificationsForRequirementSpecification(reqspecid[, devkey])
 
         Returns all available Requirement Specifications for the specified Requirement Specification.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int reqspecid: The internal ID of the Requirement Specification
         :param str devkey: The Testlink Developer Key. If no key is specified, the Developer Key of the current connection will be used.
         :rtype: list
@@ -1631,13 +1631,13 @@ class TestlinkXMLRPCAPI(object):
                            devKey=devkey,
                            reqspecid=reqspecid)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def getRequirementsForRequirementSpecification(self, reqspecid, testprojectid, devkey=None):
         """getRequirementsForRequirementSpecification(reqspecid, testprojectid[, devkey=None])
 
         Returns all available Requirements for the specified Requirement Specification.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int reqspecid: The internal ID of the Requirement Specification
         :param int testprojectid: The internal ID of the parent TestProject
         :param str devkey: The Testlink Developer Key. If no key is specified, the Developer Key of the current connection will be used.
@@ -1651,13 +1651,13 @@ class TestlinkXMLRPCAPI(object):
                            reqspecid=reqspecid,
                            testprojectid=testprojectid)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def getRisksForRequirement(self, requirementid, devkey=None):
         """getRisksForRequirement(requirementid[, devkey])
 
         Returns all avaialble Risks for the specified Requirement.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int requirementid: The internal ID of the Requirement
         :param str devkey: The Testlink Developer Key. If no key is specified, the Developer Key of the current connection will be used.
         :rtype: list
@@ -1667,13 +1667,13 @@ class TestlinkXMLRPCAPI(object):
         """
         return self._query("tl.getRisksForRequirement", devKey=devkey, requirementid=requirementid)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def createRequirementSpecification(self, testprojectid, parentid, docid, title, scope, userid, typ, devkey=None):
         """createRequirementSpecification(testprojecid, parentid, docid, title, scope, userid, typ[, devkey])
 
         Creates a new Requirement Specification with the specified parameters.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int testprojectid: The internal ID of the parent TestProject
         :param int parentid: The internal ID of the parent Requirement Specification
         :param str docid: The Document ID of the new Requirement Specification
@@ -1700,14 +1700,14 @@ class TestlinkXMLRPCAPI(object):
                            userid=userid,
                            type=typ)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def createRequirement(self, testprojectid, reqspecid, docid, title, scope, userid, status, typ, coverage=1,
                           devkey=None):
         """createRequirement(testprojectid, reqspecid, docid, title, scope, userid, status, typ[, coverage=1][, devkey])
 
         Creates a new Requirement with the specified parameters.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int testprojectid: The internal ID of the parent TestProject
         :param int reqspecid: The internal ID of the parent Requirement Specification
         :param str docid: The Document ID of the new Requirement
@@ -1735,13 +1735,13 @@ class TestlinkXMLRPCAPI(object):
                            type=typ,
                            coverage=coverage)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def createRisk(self, requirementid, docid, title, scope, userid, coverage=None, devkey=None):
         """createRisk(requirementid, docid, title, scope, userid[, coverage][, devkey])
 
         Creates a new Risk with the specified parameters.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param requirementid: The internal ID of the parent Requirement
         :param str docid: The Document ID of the new Risk
         :param str title: The name of the new Risk
@@ -1763,13 +1763,13 @@ class TestlinkXMLRPCAPI(object):
                            userid=userid,
                            coverage=coverage)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def assignRisks(self, testcaseexternalid, testprojectid, risks, devkey=None):
         """assignRisks(testcaseexternalid, testprojectid, risks[, devkey])
 
         Assigns risks to a testcase.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int testcaseexternalid: The **external** ID of the TestCase
         :param int testprojectid: The internal ID of the parent TestProject
         :param list risks: Risks to assign to the TestCase
@@ -1785,14 +1785,14 @@ class TestlinkXMLRPCAPI(object):
                            testcaseexternalid=testcaseexternalid,
                            risks=risks)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def getExecutions(self, testplanid, testcaseid=None, testcaseexternalid=None, platformid=None, platformname=None,
                       buildid=None, buildname=None, bugs=False, devkey=None):
         """getExecutions(testplanid[, (testcaseid \| testcaseexternalid)][, (platformname \| platformid)][, (buildid | buildname)][, bugs=False][, devkey])
 
         Returns all execution result for a specified TestCase and TestPlan.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int testplanid: The internal ID of the TestPlan
         :param int testcaseid: The **internal** ID of the TestCase. If not given, the **external** ID has to be specified.
         :param int testcaseexternalid: The **external** ID of the TestCase. If not given, the **internal** ID has to be specified.
@@ -1818,13 +1818,13 @@ class TestlinkXMLRPCAPI(object):
                            buildname=buildname,
                            options={'getBugs': bugs})
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def getAttachments(self, fkid, fktable, devkey=None):
         """getAttachments(fkid, fktable[, devkey])
 
         Returns an attachment for the specified ID in the specified table.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int fkid: The internal ID of the attached Object
         :param str fktable: The Table name of the attached Object
         :param str devkey: The Testlink Developer Key. If no key is specified, the Developer Key of the current connection will be used.
@@ -1838,13 +1838,13 @@ class TestlinkXMLRPCAPI(object):
                            fkid=fkid,
                            fktable=fktable)
 
-    @TLVersion("1.11-sinaqs", strict=True)
+    @TLVersion("1.11.0-sinaqs")
     def getRequirementCoverage(self, requirementid, testplanid=None, platformid=None, devkey=None):
         """getRequirementCoverage(requirementid[, testplanid][, platformid][, devkey])
 
         Returns the coverage for a specified Requirement within a given context.
 
-        :Since: Custom Testlink Version 1.11-sinaqs
+        :Since: Custom Testlink Version 1.11.0-sinaqs
         :param int requirementid: The internal ID of the Requirement
         :param int testplanid: The internal ID of the TestPlan to filter Coverage by TestPlan
         :param int platformid: The internal ID of the Platform to filter Coverage by TestPlan
