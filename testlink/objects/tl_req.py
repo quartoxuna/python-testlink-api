@@ -15,7 +15,7 @@ from testlink.objects.tl_attachment import IAttachmentGetter
 
 from testlink.enums import REQUIREMENT_TYPE as REQUIREMENT_TYPE
 from testlink.enums import REQUIREMENT_STATUS as REQUIREMENT_STATUS
-
+from testlink.enums import CUSTOM_FIELD_DETAILS as CUSTOM_FIELD_DETAILS
 
 class Requirement(TestlinkObject, IAttachmentGetter):
     """Testlink Requirement representation"""
@@ -23,14 +23,14 @@ class Requirement(TestlinkObject, IAttachmentGetter):
     __slots__ = ("srs_id", "req_doc_id", "req_spec_title", "type", "version", "version_id", "revision",
                  "revision_id", "scope", "status", "node_order", "is_open", "active", "expected_coverage",
                  "testproject_id", "author", "author_id", "creation_ts", "modifier", "modifier_id", "modification_ts",
-                 "_parent_testproject", "_parent_requirement_specification")
+                 "_parent_testproject", "_parent_requirement_specification","customfields")
 
     def __init__(self, srs_id=None, req_doc_id='', title='', req_spec_title=None, version=-1, version_id=-1,
                  revision=-1, revision_id=-1, scope='', status=REQUIREMENT_STATUS.DRAFT, node_order=0, is_open="1",
                  active="1", expected_coverage=1, testproject_id=-1, author=None, author_id=-1,
                  creation_ts=str(datetime.datetime.min), modifier=None, modifier_id=-1,
                  modification_ts=str(datetime.datetime.min), api=None, parent_testproject=None,
-                 parent_requirement_specification=None, **kwargs):
+                 parent_requirement_specification=None, customfields=None, **kwargs):
         """Initializes a new Requirement with the specified parameters
         @todo: doc
         """
@@ -68,6 +68,9 @@ class Requirement(TestlinkObject, IAttachmentGetter):
             self.modification_ts = datetime.datetime.min
         self._parent_testproject = parent_testproject
         self._parent_requirement_specification = parent_requirement_specification
+        self.customfields = {}
+        if customfields is not None:
+            self.customfields = customfields
 
     def __str__(self):
         return "Requirement %s: %s" % (self.req_doc_id, self.name)
@@ -176,3 +179,22 @@ class Requirement(TestlinkObject, IAttachmentGetter):
         @rtype: mixed
         """
         return normalize_list([c for c in self.iterCoverage(testplan, platform)])
+
+    def getCustomFieldDesignValue(self, fieldname):
+        """Returns the custom field design value for the specified custom field
+        @param fieldname: The internal name of the custom field
+        @type fieldname: str
+        @param details: Granularity of the response
+        @type details: CUSTOM_FIELD_DETAILS
+        @returns: Custom Field value or informations
+        @rtype: mixed
+        """
+        if fieldname not in self.customfields.keys():
+            value = self._api.getRequirementCustomFieldDesignValue(
+                               requirementid="%s" % (str(self.version_id)),
+                testprojectid=self.getTestProject().id,
+                customfieldname=fieldname)
+            # If retrieved the value only, we can cache it
+            if value is not None:
+                           self.customfields[fieldname] = value
+        return self.customfields.get(fieldname, None)
