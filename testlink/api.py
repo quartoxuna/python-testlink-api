@@ -50,7 +50,7 @@ from testlink.exceptions import NotSupported
 from testlink.exceptions import APIError
 from testlink.exceptions import ConnectionError
 
-from distutils.version import LooseVersion as Version
+from pkg_resources import parse_version as Version
 from urlparse import urlparse
 
 class TLVersion(object):

@@ -10,7 +10,7 @@ import string
 import unittest
 import mock
 import testlink.enums
-from distutils.version import LooseVersion as Version
+from pkg_resources import parse_version as Version
 from testlink.api import TestlinkXMLRPCAPI
 from testlink.exceptions import NotSupported
 from testlink.exceptions import APIError
