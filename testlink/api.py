@@ -149,7 +149,8 @@ class TestlinkXMLRPCAPI(object):
             # Get the version
             # Wihtout wrapping function to avoid version check
             # before acutally having the version
-            self._tl_version = Version(str(self._query("tl.testLinkVersion")))
+            if hasattr(self._proxy, 'tl.testLinkVersion'):
+                self.__tl_version = Version(self._proxy.tl.testLinkVersion())
         except NotSupported:
             # Testlink API has version 1.0
             return
