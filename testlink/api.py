@@ -57,7 +57,7 @@ class TLVersion(object):
     """Testlink Version Checker decorator"""
 
     def __init__(self, version, strict=False):
-        self.version = version
+        self.version = Version(version)
         self.strict = strict
 
     def __call__(self, fn):
