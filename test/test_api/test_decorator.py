@@ -12,10 +12,13 @@ from testlink.api import TLVersion
 from testlink.api import NotSupported
 from testlink.api import TestlinkXMLRPCAPI
 
+from pkg_resources import parse_version
+
+class DummyAPI(object):
+    tl_version = parse_version("1.0")
+
 class TLVersionDecoratorTests(unittest.TestCase):
     """Tests of TLVersion decorator"""
-
-    tl_version = "1.0"
 
     def __init__(self, *args, **kwargs):
         super(TLVersionDecoratorTests, self).__init__(*args, **kwargs)
@@ -25,43 +28,45 @@ class TLVersionDecoratorTests(unittest.TestCase):
         # Restore defaults
         TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK = False
 
-    @staticmethod
-    def dummy(*args, **kwargs):
-        """Dummy method"""
-        pass
-
     def test_equal(self):
         """Equal version"""
-        decorated = TLVersion(self.tl_version)
-        decorated(self.dummy)(self)
+        @TLVersion("1.0")
+        def decorated(arg):
+            pass
+        decorated(DummyAPI)
 
     def test_lower(self):
         """Lower version"""
         for version in ("0.1", "0.9", "0.9.9", "0.1.0"):
-            decorated = TLVersion(version)
-            decorated(self.dummy)(self)
+            @TLVersion(version)
+            def decorated(arg):
+                pass
+            decorated(DummyAPI)
 
     def test_higher(self):
         """Higher version"""
         for version in ("1.1", "1.0.1", "1.9.3"):
-            decorated = TLVersion(str(version))
-            self.assertRaises(NotSupported, decorated(self.dummy), self)
+            @TLVersion(version)
+            def decorated(arg):
+                pass
+            self.assertRaises(NotSupported, decorated, DummyAPI)
 
     def test_strict(self):
         """Strict version check"""
         # Check if error is raised on other version
         for version in ("0.1", "0.9", "0.9.9", "0.1.0", "1.1", "1.0.1", "1.9.3"):
-            decorated = TLVersion(version, strict=True)
-            self.assertRaises(NotSupported, decorated(self.dummy), self)
-        # Check if call can be done if version is exactly the same
-        decorated = TLVersion(self.tl_version, strict=True)
-        decorated(self.dummy)(self)
+            @TLVersion(version, strict=True)
+            def decorated(arg):
+                pass
+            self.assertRaises(NotSupported, decorated, DummyAPI)
 
     def test_ignore(self):
         """Ignore version checks"""
         self.assertEquals(TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK, False)
         TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK = True
         for version in ("1.0", "0.9", "1.1"):
-            decorated = TLVersion(str(version))
+            @TLVersion(version)
+            def decorated(arg):
+                pass
             self.assertEquals(TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK, True)
-            decorated(self.dummy)(self)
+            decorated(DummyAPI)

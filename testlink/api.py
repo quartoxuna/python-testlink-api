@@ -38,6 +38,7 @@ API Wrapper for Testlink XML-RPC/REST API.
 import socket
 import xmlrpclib
 import time
+import functools
 
 from testlink.log import LOGGER
 
@@ -49,29 +50,31 @@ from testlink.exceptions import NotSupported
 from testlink.exceptions import APIError
 from testlink.exceptions import ConnectionError
 
-from distutils.version import LooseVersion as Version
+from pkg_resources import parse_version as Version
 from urlparse import urlparse
 
-def TLVersion(version, strict=False):
-    def decorate(fn):
-        def wrapper(parent, *args, **kwargs):
-            # Check version
+class TLVersion(object):
+    """Testlink Version Checker decorator"""
+
+    def __init__(self, version, strict=False):
+        self.version = Version(version)
+        self.strict = strict
+
+    def __call__(self, fn):
+        @functools.wraps(fn)
+        def wrapper(testlink_api, *args, **kwargs):
             if not TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK and (
-                (strict and version != parent.tl_version) or
-                (version > parent.tl_version)
+                (self.strict and self.version != testlink_api.tl_version) or
+                (self.version > testlink_api.tl_version)
             ):
-                if strict:
+                if self.strict:
                     sign = "=="
                 else:
                     sign = ">="
                 raise NotSupported("Method '%s' requires Testlink version %s %s but is %s" %
-                                   (str(fn.__name__), str(sign), str(version), str(parent.tl_version)))
-            return fn(parent, *args, **kwargs)
-        wrapper.__name__ = fn.__name__
-        wrapper.__doc__ = fn.__doc__
-        wrapper.__dict__.update(fn.__dict__)
+                    (str(fn.__name__), sign, str(self.version), str(testlink_api.tl_version)))
+            return fn(testlink_api, *args, **kwargs)
         return wrapper
-    return decorate
 
 
 class ThreadSafeTransport(xmlrpclib.Transport):
@@ -146,7 +149,8 @@ class TestlinkXMLRPCAPI(object):
             # Get the version
             # Wihtout wrapping function to avoid version check
             # before acutally having the version
-            self._tl_version = Version(str(self._query("tl.testLinkVersion")))
+            if hasattr(self._proxy, 'tl.testLinkVersion'):
+                self._tl_version = Version(self._proxy.tl.testLinkVersion())
         except NotSupported:
             # Testlink API has version 1.0
             return
