@@ -4,8 +4,6 @@
 """TestPlan Object"""
 
 # IMPORTS
-import random
-
 from testlink.log import LOGGER
 
 from testlink.objects.tl_object import TestlinkObject
@@ -232,9 +230,6 @@ class TestPlan(TestlinkObject):
         # we already filteres for platform_id
         if 'platform_id' in params:
             del params['platform_id']
-
-        # Shuffle Testcases to get another first testcase on each call
-        random.shuffle(testcases)
 
         # Initialise TestCase Objects
         cases = [TestCase(api=self._api, parent_testproject=self.getTestProject(), **case) for case in testcases]
