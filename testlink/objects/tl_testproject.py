@@ -42,16 +42,15 @@ class TestProject(TestlinkObject, IAttachmentGetter):
     __slots__ = ("notes", "prefix", "active", "public", "requirements_enabled", "priority_enabled",
                  "automation_enabled", "inventory_enabled", "tc_counter", "color", "_parent_testlink")
 
-    def __init__(self, name="", notes="", prefix="", active="0", is_public="0", tc_counter=0, opt=None, color="",
-                 api=None, parent_testlink=None, **kwargs):
+    def __init__(self, notes="", prefix="", active="0", is_public="0", tc_counter=0, opt=None, color="",
+                 parent_testlink=None, *args, **kwargs):
         if opt is None:
             opt = dict()
             opt['requirementsEnabled'] = 0
             opt['testPriorityEnabled'] = 0
             opt['automationEnabled'] = 0
             opt['inventoryEnabled'] = 0
-        TestlinkObject.__init__(self, kwargs.get('id', -1), name, api)
-        IAttachmentGetter.__init__(self)
+        super(TestProject, self).__init__(*args, **kwargs)
         self.notes = unicode(notes)
         self.prefix = str(prefix)
         self.active = bool(int(active))
