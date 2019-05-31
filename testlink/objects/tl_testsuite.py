@@ -21,10 +21,9 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
 
     __slots__ = ("details", "_parent_testproject", "_parent_testsuite")
 
-    def __init__(self, name="", details="", parent_testproject=None, parent_testsuite=None,
-                 api=None, _level=0, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id', -1), name, api)
-        IAttachmentGetter.__init__(self)
+    def __init__(self,details="", parent_testproject=None, parent_testsuite=None,
+                  _level=0, *args, **kwargs):
+        super(TestSuite, self).__init__(*args, **kwargs)
         self.details = unicode(details)
         self._level = _level
         self._parent_testproject = parent_testproject
