@@ -16,8 +16,8 @@ class Attachment(TestlinkObject):
 
     slots = ["title", "file_type", "content", "date_added"]
 
-    def __init__(self, title, file_type, content="", date_added=None, api=None, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id', -1), kwargs.get('name'), api)
+    def __init__(self, title, file_type, content="", date_added=None, *args, **kwargs):
+        super(Attachment, self).__init__(*args, **kwargs)
         self.title = title
         self.file_name = self.name
         self.file_type = str(file_type)
@@ -49,6 +49,7 @@ class IAttachmentGetter(object):
     """Interface class for getting attachments of various Testlink Objects"""
 
     def __init__(self, foreign_key_table="nodes_hierarchy"):
+        super(IAttachmentGetter, self).__init__()
         self._foreign_key_table = foreign_key_table
 
     def iterAttachment(self, **params):
