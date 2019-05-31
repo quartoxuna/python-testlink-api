@@ -18,9 +18,9 @@ class Build(TestlinkObject):
     __slots__ = ("active", "open", "notes", "creation_ts", "release_date",
                  "closed_on_date", "_parent_testplan")
 
-    def __init__(self, name=None, notes=None, is_open=False, active=False, creation_ts=None, closed_on_date=None,
-                 release_date=None, parent_testplan=None, api=None, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id',-1), name, api)
+    def __init__(self, notes=None, is_open=False, active=False, creation_ts=None, closed_on_date=None,
+                 release_date=None, parent_testplan=None, *args, **kwargs):
+        super(Build, self).__init__(*args, **kwargs)
         self.active = bool(int(active))
         self.open = bool(int(is_open))
         self.notes = unicode(notes)
