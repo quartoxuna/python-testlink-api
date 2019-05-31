@@ -16,13 +16,13 @@ class Risk(TestlinkObject):
     __slots__ = ["doc_id", "description", "author_id", "creation_ts", "modifier_id", "modification_ts",
                  "_requirement_id", "cross_coverage"]
 
-    def __init__(self, risk_doc_id=None, name='', description='', author_id=-1, creation_ts=str(datetime.datetime.min),
+    def __init__(self, risk_doc_id=None, description='', author_id=-1, creation_ts=str(datetime.datetime.min),
                  modifier_id=-1, modification_ts=str(datetime.datetime.min), requirement_id=-1, cross_coverage='',
-                 api=None, **kwargs):
+                 *args, **kwargs):
         """Initializes a new Risk with the specified parameters
         @todo: doc
         """
-        TestlinkObject.__init__(self, kwargs.get('id', -1), name, api)
+        super(Risk, self).__init__(*args, **kwargs)
         self.doc_id = unicode(risk_doc_id)
         self.description = description
         self.author_id = int(author_id)

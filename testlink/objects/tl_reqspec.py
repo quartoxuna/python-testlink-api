@@ -25,13 +25,13 @@ class RequirementSpecification(TestlinkObject, IAttachmentGetter):
 
     def __init__(self, doc_id='', title='', typ=REQSPEC_TYPE.SECTION, scope='', testproject_id=-1, author_id=-1,
                  creation_ts=str(datetime.datetime.min), modifier_id=-1, modification_ts=str(datetime.datetime.min),
-                 total_req=0, node_order=0, api=None, parent_testproject=None, parent_requirement_specification=None,
-                 **kwargs):
+                 total_req=0, node_order=0, parent_testproject=None, parent_requirement_specification=None,
+                 *args, **kwargs):
         """Initializes a new Requirement Specification with the specified parameters.
         @todo: doc
         """
-        TestlinkObject.__init__(self, kwargs.get('id', -1), title, api)
-        IAttachmentGetter.__init__(self)
+        kwargs['name'] = title
+        super(RequirementSpecification, self).__init__(*args, **kwargs)
         self.doc_id = unicode(doc_id)
         self.typ = int(typ)
         self.scope = scope

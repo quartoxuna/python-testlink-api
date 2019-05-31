@@ -19,8 +19,8 @@ class Keyword(TestlinkObject):
 
     __slots__ = ["id", "notes", "testcase_id", "_keyword"]
 
-    def __init__(self, keyword_id=-1, notes=None, testcase_id=None, keyword=None, api=None):
-        TestlinkObject.__init__(self, keyword_id, keyword, api)
+    def __init__(self, keyword_id=-1, notes=None, testcase_id=None, keyword=None, *args, **kwargs):
+        super(Keyword, self).__init__(*args, **kwargs)
         self.notes = notes
         self.testcase_id = int(testcase_id)
         self._keyword = keyword

@@ -28,8 +28,8 @@ class TestPlan(TestlinkObject):
 
     __slots__ = ("notes", "active", "public", "_parent_testproject")
 
-    def __init__(self, name="", notes="", is_public="0", active="0", parent_testproject=None, api=None, **kwargs):
-        TestlinkObject.__init__(self, kwargs.get('id', -1), name, api)
+    def __init__(self, notes="", is_public="0", active="0", parent_testproject=None, *args, **kwargs):
+        super(TestPlan, self).__init__(*args, **kwargs)
         self.notes = unicode(notes)
         self.active = bool(int(active))
         self.public = bool(int(is_public))
