@@ -32,8 +32,8 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                  "customfields", "requirements", "__steps", "__preconditions", "linked_by", "linked_ts", "_keywords"]
 
     def __init__(self, version=1, status=TESTCASE_STATUS.DRAFT, importance=IMPORTANCE_LEVEL.MEDIUM,
-                 execution_type=EXECUTION_TYPE.MANUAL, summary="", active=True, api=None, parent_testproject=None,
-                 parent_testsuite=None, customfields=None, requirements=None, tester_id=-1, **kwargs):
+                 execution_type=EXECUTION_TYPE.MANUAL, summary="", active=True, parent_testproject=None,
+                 parent_testsuite=None, customfields=None, requirements=None, tester_id=-1, *args, **kwargs):
         """Initialises a new TestCase with the specified parameters.
         @param name: The name of the TestCase
         @type name: str
@@ -122,6 +122,8 @@ class TestCase(TestlinkObject, IAttachmentGetter):
         |                             |                             |  platform_id                |
         ===========================================================================================
         """
+        super(TestCase, self).__init__(*args, **kwargs)
+
         # Get the "correct" id
         if ('id' in kwargs) and ('tcversion_id' in kwargs):
             # getTestCasesForTestSuite()
@@ -145,10 +147,6 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             _name = kwargs['tcase_name']
         else:
             _name = None
-
-        # Init
-        TestlinkObject.__init__(self, _id, _name, api=api)
-        IAttachmentGetter.__init__(self)
 
         # Set the "correct" external id
         if 'tc_external_id' in kwargs:
