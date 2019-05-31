@@ -29,13 +29,12 @@ class Requirement(TestlinkObject, IAttachmentGetter):
                  revision=-1, revision_id=-1, scope='', status=REQUIREMENT_STATUS.DRAFT, node_order=0, is_open="1",
                  active="1", expected_coverage=1, testproject_id=-1, author=None, author_id=-1,
                  creation_ts=str(datetime.datetime.min), modifier=None, modifier_id=-1,
-                 modification_ts=str(datetime.datetime.min), api=None, parent_testproject=None,
-                 parent_requirement_specification=None, customfields=None, **kwargs):
+                 modification_ts=str(datetime.datetime.min), parent_testproject=None,
+                 parent_requirement_specification=None, customfields=None, *args, **kwargs):
         """Initializes a new Requirement with the specified parameters
         @todo: doc
         """
-        TestlinkObject.__init__(self, kwargs.get('id', -1), title, api)
-        IAttachmentGetter.__init__(self)
+        super(Requirement, self).__init__(*args, **kwargs)
         self.srs_id = str(srs_id)
         self.req_doc_id = unicode(req_doc_id)
         self.req_spec_title = req_spec_title
