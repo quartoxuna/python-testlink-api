@@ -4,10 +4,12 @@
 """TestCase Step Object"""
 
 # IMPORTS
+from testlink.objects.tl_object import TestlinkObject
+
 from testlink.enums import EXECUTION_TYPE
 
 
-class Step(object):
+class Step(TestlinkObject):
     """Testlink TestCase Step representation
     @ivar id: Internal ID of the Step
     @type id: int
@@ -23,8 +25,8 @@ class Step(object):
     @type results: str
     """
     def __init__(self, step_number=1, actions="", execution_type=EXECUTION_TYPE.MANUAL, active="0",
-                 expected_results="", **kwargs):
-        self.id = kwargs.get('id', -1)
+                 expected_results="", *args, **kwargs):
+        super(Step, self).__init__(*args, **kwargs)
         self.step_number = int(step_number)
         self.actions = actions
         self.execution_type = int(execution_type)
