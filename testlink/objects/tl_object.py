@@ -49,10 +49,7 @@ class TestlinkObject(object):
     # Global datetime format
     DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-    # Default ID
-    DEFAULT_ID = 0
-
-    def __init__(self, _id=None, name="", api=None):
+    def __init__(self, id=-1, name="", api=None, *args, **kwargs):
         """Initialises base Testlink object
         @param _id: Internal Testlink Id of the object
         @type _id: int
@@ -61,11 +58,9 @@ class TestlinkObject(object):
         @param api: Testlink API instance
         @type api: testlink.api.TestlinkXMLRPCAPI
         """
-        if _id is not None:
-            self.id = int(_id)
-        else:
-            self.id = TestlinkObject.DEFAULT_ID
-        self.name = unicode(name)
+        super(TestlinkObject, self).__init__()
+        self.id = id
+        self.name = name
         self._api = api
 
     def __str__(self):
