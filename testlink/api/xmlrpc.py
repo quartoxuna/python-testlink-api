@@ -94,7 +94,7 @@ class TestlinkXMLRPCAPI(object):
             # Testlink API has version 1.0
             return
         except AttributeError:
-            # Mocked _query during tests
+            # Mocked query during tests
             return
 
     @property
@@ -159,7 +159,7 @@ class TestlinkXMLRPCAPI(object):
         if self._proxy is None:
             raise ConnectionError("Cannot connect to Testlink API @ %s (%s)" % (str(self._url), str(last_excpt)))
 
-    def _query(self, method, _reconnect=True, **kwargs):
+    def query(self, method, _reconnect=True, **kwargs):
         """Remote calls a method on the server
         @param method: Method to call
         @type method: str
@@ -192,7 +192,7 @@ class TestlinkXMLRPCAPI(object):
             LOGGER.debug("Connection Error: %s" + str(ex))
             if _reconnect:
                 self._reconnect()
-                return self._query(method, _reconnect=False, **kwargs)
+                return self.query(method, _reconnect=False, **kwargs)
             else:
                 raise
         else:
@@ -216,7 +216,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: str
         :return: Testlink Version String
         """
-        return self._query("tl.testLinkVersion")
+        return self.query("tl.testLinkVersion")
 
     @TLVersion("1.0")
     def about(self):
@@ -227,7 +227,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: str
         :returns: 'Testlink Testlink Version: x.x initially written by ...'
         """
-        return self._query("tl.about")
+        return self.query("tl.about")
 
     @TLVersion("1.0")
     def sayHello(self):
@@ -238,7 +238,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: str
         :returns: 'Hello!'
         """
-        return self._query("tl.sayHello")
+        return self.query("tl.sayHello")
     ping = sayHello
 
     @TLVersion("1.0")
@@ -251,7 +251,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: str
         :returns: The value send to the server
         """
-        return self._query("tl.repeat", str=str(value))
+        return self.query("tl.repeat", str=str(value))
 
     @TLVersion("1.0")
     def checkDevKey(self, devkey=None):
@@ -263,7 +263,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: bool
         :returns: Status of the specified Developer Key.
         """
-        return self._query("tl.checkDevKey", devKey=devkey)
+        return self.query("tl.checkDevKey", devKey=devkey)
 
     @TLVersion("1.0")
     def doesUserExist(self, user, devkey=None):
@@ -276,7 +276,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: bool
         :returns: Status of the specified User
         """
-        return self._query("tl.doesUserExist", devKey=devkey, user=user)
+        return self.query("tl.doesUserExist", devKey=devkey, user=user)
 
     @TLVersion("1.9.8")
     def getUserByLogin(self, user, devkey=None):
@@ -290,7 +290,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: dict
         :returns: User Information
         """
-        return self._query("tl.getUserByLogin", devKey=devkey, user=user)
+        return self.query("tl.getUserByLogin", devKey=devkey, user=user)
 
     @TLVersion("1.9.8")
     def getUserByID(self, userid, devkey=None):
@@ -304,7 +304,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: dict
         :returns: User Information
         """
-        return self._query("tl.getUserByID", devKey=devkey, userid=userid)
+        return self.query("tl.getUserByID", devKey=devkey, userid=userid)
 
     @TLVersion("1.0")
     def getFullPath(self, nodeid, devkey=None):
@@ -317,7 +317,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: dict
         :returns: Hierarchical Path of the specified Node
         """
-        return self._query("tl.getFullPath", devKey=devkey, nodeid=int(nodeid))
+        return self.query("tl.getFullPath", devKey=devkey, nodeid=int(nodeid))
 
     @TLVersion("1.0")
     def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False,
@@ -345,7 +345,7 @@ class TestlinkXMLRPCAPI(object):
                 'automationEnabled': automation,
                 'inventoryEnabled': inventory}
 
-        return self._query("tl.createTestProject",
+        return self.query("tl.createTestProject",
                            devKey=devkey,
                            name=name,
                            prefix=prefix,
@@ -364,7 +364,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: list
         :returns: List of available TestProjects
         """
-        return self._query("tl.getProjects", devKey=devkey)
+        return self.query("tl.getProjects", devKey=devkey)
 
     @TLVersion("1.0")
     def getTestProjectByName(self, name, devkey=None):
@@ -377,7 +377,7 @@ class TestlinkXMLRPCAPI(object):
         :rtype: mixed
         :returns: TestProject dictionary if TestProject has been found, else None.
         """
-        resp = self._query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
+        resp = self.query("tl.getTestProjectByName", devKey=devkey, testprojectname=name)
         # Return None for an empty string
         if resp is not None and len(resp) == 0:
             resp = None
@@ -400,7 +400,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.createTestPlan",
+        return self.query("tl.createTestPlan",
                            devKey=devkey,
                            testplanname=name,
                            testprojectname=project,
@@ -422,7 +422,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestPlanByName", devKey=devkey, testplanname=name, testprojectname=projectname)
+        return self.query("tl.getTestPlanByName", devKey=devkey, testplanname=name, testprojectname=projectname)
 
     @TLVersion("1.0")
     def getProjectTestPlans(self, projectid, devkey=None):
@@ -437,7 +437,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getProjectTestPlans", devKey=devkey, testprojectid=projectid)
+        return self.query("tl.getProjectTestPlans", devKey=devkey, testprojectid=projectid)
 
     @TLVersion("1.9.4")
     def getTestPlanCustomFieldValue(self, testplanid, testprojectid, fieldname, devkey=None):
@@ -455,7 +455,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestPlanCustomFieldValue",
+        return self.query("tl.getTestPlanCustomFieldValue",
                            devKey=devkey,
                            customfieldname=fieldname,
                            testprojectid=testprojectid,
@@ -476,7 +476,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.createBuild",
+        return self.query("tl.createBuild",
                            devKey=devkey,
                            testplanid=testplanid,
                            buildname=name,
@@ -495,7 +495,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getLatestBuildForTestPlan", devKey=devkey, testplanid=testplanid)
+        return self.query("tl.getLatestBuildForTestPlan", devKey=devkey, testplanid=testplanid)
 
     @TLVersion("1.0")
     def getBuildsForTestPlan(self, testplanid, devkey=None):
@@ -510,7 +510,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getBuildsForTestPlan", devKey=devkey, testplanid=testplanid)
+        return self.query("tl.getBuildsForTestPlan", devKey=devkey, testplanid=testplanid)
 
     @TLVersion("1.9.4")
     def getExecCountersByBuild(self, testplanid, devkey=None):
@@ -526,7 +526,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getExecCountersByBuild", devKey=devkey, testplanid=testplanid)
+        return self.query("tl.getExecCountersByBuild", devKey=devkey, testplanid=testplanid)
 
     @TLVersion("1.9.6")
     def createPlatform(self, testprojectname, platformname, notes="", devkey=None):
@@ -544,7 +544,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.createPlatform",
+        return self.query("tl.createPlatform",
                            devKey=devkey,
                            testprojectname=testprojectname,
                            platformname=platformname,
@@ -564,7 +564,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getProjectPlatforms", devKey=devkey, testprojectid=testprojectid)
+        return self.query("tl.getProjectPlatforms", devKey=devkey, testprojectid=testprojectid)
 
     @TLVersion("1.0")
     def getTestPlanPlatforms(self, testplanid, devkey=None):
@@ -579,7 +579,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestPlanPlatforms", devKey=devkey, testplanid=testplanid)
+        return self.query("tl.getTestPlanPlatforms", devKey=devkey, testplanid=testplanid)
 
     @TLVersion("1.0")
     def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None,
@@ -613,7 +613,7 @@ class TestlinkXMLRPCAPI(object):
         if (self._tl_version >= Version("1.9.14")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
             arguments['execduration'] = execduration
 
-        return self._query("tl.reportTCResult",
+        return self.query("tl.reportTCResult",
                            devKey=devkey,
                            testplanid=testplanid,
                            status=status,
@@ -664,7 +664,7 @@ class TestlinkXMLRPCAPI(object):
             arguments['buildname'] = buildname
             arguments['options'] = {'getBugs': bugs}
 
-        return self._query("tl.getLastExecutionResult", **arguments)
+        return self.query("tl.getLastExecutionResult", **arguments)
 
     @TLVersion("1.0")
     def deleteExecution(self, executionid, devkey=None):
@@ -679,7 +679,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.deleteExecution", devKey=devkey, executionid=executionid)
+        return self.query("tl.deleteExecution", devKey=devkey, executionid=executionid)
 
     @TLVersion("1.0")
     def createTestSuite(self, testsuitename, testprojectid, details=None, parentid=None, order=None,
@@ -701,7 +701,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.createTestSuite",
+        return self.query("tl.createTestSuite",
                            devKey=devkey,
                            testsuitename=testsuitename,
                            testprojectid=testprojectid,
@@ -725,7 +725,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestSuiteByID", devKey=devkey, testprojectid=testprojectid, testsuiteid=testsuiteid)
+        return self.query("tl.getTestSuiteByID", devKey=devkey, testprojectid=testprojectid, testsuiteid=testsuiteid)
 
     @TLVersion("1.0")
     def getTestSuitesForTestSuite(self, testsuiteid, testprojectid=None, devkey=None):
@@ -741,7 +741,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestSuitesForTestSuite", devKey=devkey, testsuiteid=testsuiteid, testprojectid=testprojectid)
+        return self.query("tl.getTestSuitesForTestSuite", devKey=devkey, testsuiteid=testsuiteid, testprojectid=testprojectid)
 
     @TLVersion("1.0")
     def getFirstLevelTestSuitesForTestProject(self, testprojectid, devkey=None):
@@ -756,7 +756,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getFirstLevelTestSuitesForTestProject", devKey=devkey, testprojectid=testprojectid)
+        return self.query("tl.getFirstLevelTestSuitesForTestProject", devKey=devkey, testprojectid=testprojectid)
 
     @TLVersion("1.0")
     def getTestSuitesForTestPlan(self, planid, devkey=None):
@@ -771,7 +771,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestSuitesForTestPlan", devKey=devkey, testplanid=planid)
+        return self.query("tl.getTestSuitesForTestPlan", devKey=devkey, testplanid=planid)
 
     @TLVersion("1.0")
     def createTestCase(self, testcasename, testsuiteid, testprojectid, authorlogin, summary, steps=None,
@@ -801,7 +801,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.createTestCase",
+        return self.query("tl.createTestCase",
                            devKey=devkey,
                            testcasename=testcasename,
                            testsuiteid=testsuiteid,
@@ -843,7 +843,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.updateTestCase",
+        return self.query("tl.updateTestCase",
                            devKey=devkey,
                            testcaseexternalid=testcaseexternalid,
                            version=version,
@@ -874,7 +874,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.setTestCaseExecutionType",
+        return self.query("tl.setTestCaseExecutionType",
                            devKey=devkey,
                            testcaseexternalid=testcaseexternalid,
                            version=version,
@@ -902,7 +902,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.createTestCaseSteps",
+        return self.query("tl.createTestCaseSteps",
                            devKey=devkey,
                            testcaseexternalid=testcaseexternalid,
                            testcaseid=testcaseid,
@@ -926,7 +926,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.deleteTestCaseSteps",
+        return self.query("tl.deleteTestCaseSteps",
                            devKey=devkey,
                            testcaseexternalid=testcaseexternalid,
                            steps=steps,
@@ -947,7 +947,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestCase",
+        return self.query("tl.getTestCase",
                            devKey=devkey,
                            testcaseid=testcaseid,
                            testcaseexternalid=testcaseexternalid,
@@ -970,7 +970,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestCaseIDByName",
+        return self.query("tl.getTestCaseIDByName",
                            devKey=devkey,
                            testcasename=testcasename,
                            testsuitename=testsuitename,
@@ -998,7 +998,7 @@ class TestlinkXMLRPCAPI(object):
                      "details": details}
         if (self._tl_version >= Version("1.9.10")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
             arguments['getkeywords'] = getkeywords
-        return self._query("tl.getTestCasesForTestSuite", devKey=devkey, **arguments)
+        return self.query("tl.getTestCasesForTestSuite", devKey=devkey, **arguments)
 
     @TLVersion("1.0")
     def getTestCasesForTestPlan(self, testprojectid, testplanid, testcaseid=None, buildid=None, keywordid=None,
@@ -1043,7 +1043,7 @@ class TestlinkXMLRPCAPI(object):
             # Add 'details' attribute
             arguments['details'] = details
 
-        return self._query("tl.getTestCasesForTestPlan", **arguments)
+        return self.query("tl.getTestCasesForTestPlan", **arguments)
 
     @TLVersion("1.0")
     def addTestCaseToTestPlan(self, testprojectid, testplanid, testcaseexternalid, version, platformid=None,
@@ -1065,7 +1065,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.addTestCaseToTestPlan",
+        return self.query("tl.addTestCaseToTestPlan",
                            devKey=devkey,
                            testprojectid=testprojectid,
                            testplanid=testplanid,
@@ -1090,7 +1090,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.addPlatformToTestPlan",
+        return self.query("tl.addPlatformToTestPlan",
                            devKey=devkey,
                            testplanid=testplanid,
                            platformname=platformname)
@@ -1110,7 +1110,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.removePlatformFromTestPlan",
+        return self.query("tl.removePlatformFromTestPlan",
                            devKey=devkey,
                            testplanid=testplanid,
                            platformname=platformname)
@@ -1130,7 +1130,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.assignRequirements",
+        return self.query("tl.assignRequirements",
                            devKey=devkey,
                            testcaseexternalid=testcaseexternalid,
                            testprojectid=testprojectid,
@@ -1152,7 +1152,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getReqSpecCustomFieldDesignValue",
+        return self.query("tl.getReqSpecCustomFieldDesignValue",
                            devKey=devkey,
                            customfieldname=customfieldname,
                            testprojectid=testprojectid,
@@ -1174,7 +1174,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getRequirementCustomFieldDesignValue",
+        return self.query("tl.getRequirementCustomFieldDesignValue",
                            devKey=devkey,
                            customfieldname=customfieldname,
                            testprojectid=testprojectid,
@@ -1196,7 +1196,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestSuiteCustomFieldDesignValue",
+        return self.query("tl.getTestSuiteCustomFieldDesignValue",
                            devKey=devkey,
                            customfieldname=customfieldname,
                            testprojectid=testprojectid,
@@ -1220,7 +1220,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        resp = self._query("tl.getTestCaseCustomFieldDesignValue",
+        resp = self.query("tl.getTestCaseCustomFieldDesignValue",
                            devKey=devkey,
                            testcaseexternalid=testcaseexternalid,
                            version=version,
@@ -1250,7 +1250,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.updateTestCaseCustomFieldDesignValue",
+        return self.query("tl.updateTestCaseCustomFieldDesignValue",
                            devKey=devkey,
                            testcaseexternalid=testcaseexternalid,
                            version=version,
@@ -1276,7 +1276,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestCaseCustomFieldExecutionValue",
+        return self.query("tl.getTestCaseCustomFieldExecutionValue",
                            devKey=devkey,
                            customfieldname=customfieldname,
                            testprojectid=testprojectid,
@@ -1303,7 +1303,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestCaseCustomFieldTestPlanDesignValue",
+        return self.query("tl.getTestCaseCustomFieldTestPlanDesignValue",
                            devKey=devkey,
                            customfieldname=customfieldname,
                            testprojectid=testprojectid,
@@ -1330,7 +1330,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.uploadAttachment",
+        return self.query("tl.uploadAttachment",
                            devKey=devkey,
                            fkid=fkid,
                            fktable=fktable,
@@ -1354,7 +1354,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.deleteAttachment", devKey=devkey, attachmentid=attachment_id)
+        return self.query("tl.deleteAttachment", devKey=devkey, attachmentid=attachment_id)
 
     @TLVersion("1.0")
     def uploadRequirementSpecificationAttachment(self, reqspecid, filename, filetype, content, title=None,
@@ -1375,7 +1375,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.uploadRequirementSpecificationAttachment",
+        return self.query("tl.uploadRequirementSpecificationAttachment",
                            devKey=devkey,
                            reqspecid=reqspecid,
                            filename=filename,
@@ -1402,7 +1402,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.uploadRequirementAttachment",
+        return self.query("tl.uploadRequirementAttachment",
                            devKey=devkey,
                            requirementid=requirementid,
                            filename=filename,
@@ -1429,7 +1429,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.uploadTestProjectAttachment",
+        return self.query("tl.uploadTestProjectAttachment",
                            devKey=devkey,
                            testprojectid=testprojectid,
                            filename=filename,
@@ -1456,7 +1456,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.uploadTestSuiteAttachment",
+        return self.query("tl.uploadTestSuiteAttachment",
                            devKey=devkey,
                            testsuiteid=testsuiteid,
                            filename=filename,
@@ -1483,7 +1483,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.uploadTestCaseAttachment",
+        return self.query("tl.uploadTestCaseAttachment",
                            devKey=devkey,
                            testcaseid=testcaseid,
                            filename=filename,
@@ -1510,7 +1510,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.uploadExecutionAttachment",
+        return self.query("tl.uploadExecutionAttachment",
                            devKey=devkey,
                            executionid=executionid,
                            filename=filename,
@@ -1533,7 +1533,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getTestCaseAttachments",
+        return self.query("tl.getTestCaseAttachments",
                            devKey=devkey,
                            testcaseid=testcaseid,
                            testcaseexternalid=testcaseexternalid)
@@ -1552,7 +1552,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getRequirementSpecificationsForTestProject",
+        return self.query("tl.getRequirementSpecificationsForTestProject",
                            devKey=devkey,
                            testprojectid=testprojectid)
 
@@ -1570,7 +1570,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getRequirementSpecificationsForRequirementSpecification",
+        return self.query("tl.getRequirementSpecificationsForRequirementSpecification",
                            devKey=devkey,
                            reqspecid=reqspecid)
 
@@ -1589,7 +1589,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getRequirementsForRequirementSpecification",
+        return self.query("tl.getRequirementsForRequirementSpecification",
                            devKey=devkey,
                            reqspecid=reqspecid,
                            testprojectid=testprojectid)
@@ -1608,7 +1608,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getRisksForRequirement", devKey=devkey, requirementid=requirementid)
+        return self.query("tl.getRisksForRequirement", devKey=devkey, requirementid=requirementid)
 
     @TLVersion("1.11.0-sinaqs")
     def createRequirementSpecification(self, testprojectid, parentid, docid, title, scope, userid, typ, devkey=None):
@@ -1633,7 +1633,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.createRequirementSpecification",
+        return self.query("tl.createRequirementSpecification",
                            devKey=devkey,
                            testprojectid=testprojectid,
                            parentid=parentid,
@@ -1666,7 +1666,7 @@ class TestlinkXMLRPCAPI(object):
         .. todo:: Update Return Value
         .. todo:: Modify 'typ'
         """
-        return self._query("tl.createRequirement",
+        return self.query("tl.createRequirement",
                            devKey=devkey,
                            testprojectid=testprojectid,
                            reqspecid=reqspecid,
@@ -1697,7 +1697,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.createRisk",
+        return self.query("tl.createRisk",
                            devKey=devkey,
                            requirementid=requirementid,
                            docid=docid,
@@ -1722,7 +1722,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.assignRisks",
+        return self.query("tl.assignRisks",
                            devKey=devkey,
                            testprojectid=testprojectid,
                            testcaseexternalid=testcaseexternalid,
@@ -1750,7 +1750,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getExecutions",
+        return self.query("tl.getExecutions",
                            devKey=devkey,
                            testplanid=testplanid,
                            testcaseid=testcaseid,
@@ -1776,7 +1776,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query("tl.getAttachments",
+        return self.query("tl.getAttachments",
                            devKey=devkey,
                            fkid=fkid,
                            fktable=fktable)
@@ -1797,7 +1797,7 @@ class TestlinkXMLRPCAPI(object):
 
         .. todo:: Update Return Value
         """
-        return self._query('tl.getRequirementCoverage',
+        return self.query('tl.getRequirementCoverage',
                            devKey=devkey,
                            requirementid=requirementid,
                            testplanid=testplanid,

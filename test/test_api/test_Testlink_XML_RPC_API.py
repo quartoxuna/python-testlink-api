@@ -59,19 +59,19 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._mock_server.error = mock.Mock(return_value=[{'code': 1337, 'message': 'SPAM!'}])
 
         # Check endpoints
-        self.assertEqual(self._api._query("passed"), "SPAM!")
-        self.assertRaises(APIError, self._api._query, "error")
+        self.assertEqual(self._api.query("passed"), "SPAM!")
+        self.assertRaises(APIError, self._api.query, "error")
 
         # Check APIError struct
         try:
-            self._api._query("error")
+            self._api.query("error")
         except APIError, error:
             self.assertEquals(error.error_code, 1337)
             self.assertEquals(error.error_msg, "SPAM!")
 
         # Check correct variable forwarding
         data = {'testprojectid': 123, 'name': 'Testproject', 'is_active': True}
-        self._api._query("passed", **data)
+        self._api.query("passed", **data)
         data.update({'devKey': None})
         self._mock_server.passed.assert_called_with(data)
 
@@ -82,7 +82,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         # Define faulty endpoint
         self._mock_server.socketerror = mock.Mock(side_effect=socket.error())
         # Do the call
-        self.assertRaises(socket.error, self._api._query, "socketerror")
+        self.assertRaises(socket.error, self._api.query, "socketerror")
         # Check that reconnect has been called
         self.assertTrue(reconnect.called)
 
@@ -92,7 +92,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         test_data = {'foo': 'bar'}
         self._api._devkey = key
         self._mock_server.mockMethod = mock.MagicMock()
-        self._api._query("mockMethod", **test_data)
+        self._api.query("mockMethod", **test_data)
         test_data["devKey"] = key
         self._mock_server.mockMethod.assert_called_with(test_data)
 
@@ -104,7 +104,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
     #     - Correct naming and forwarding of arguments
     #       to internal _query method
     #
-    # @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    # @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     # def test_foo(self, query):
     #     """'foo' (x.x.x)"""    # <-- Method and TL version
     #
@@ -128,7 +128,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
     #     self.assertRaises(NotSupported, self._api.foo)
     #
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_testlink_version(self, query):
         """'testLinkVersion' (1.9.9)"""
         # First _query fails because NotSupported
@@ -141,7 +141,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self.assertEquals(self._api.testLinkVersion(), query.return_value)
         query.assert_called_with('tl.testLinkVersion')
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_about(self, query):
         """'about' (1.0)"""
         self.assertEquals(self._api.about(), query.return_value)
@@ -149,7 +149,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.about)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_say_hello(self, query):
         """'sayHello' (1.0)"""
         self.assertEquals(self._api.sayHello(), query.return_value)
@@ -157,7 +157,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.sayHello)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_repeat(self, query):
         """'repeat' (1.0)"""
         test_data = 'repeatMe'
@@ -166,7 +166,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.repeat)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_check_devkey(self, query):
         """'checkDevKey' (1.0)"""
         test_data = '123456789abcdef123456789abcdeff'
@@ -175,7 +175,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.checkDevKey)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_does_user_exist(self, query):
         """'doesUserExist' (1.0)"""
         test_data = 'user.login'
@@ -184,7 +184,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.doesUserExist)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_user_by_login(self, query):
         """'getUserByLogin' (1.9.8)"""
         test_data = 'user.login'
@@ -193,7 +193,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getUserByLogin(test_data)
         query.assert_called_with('tl.getUserByLogin', user=test_data, devKey=None)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_user_by_id(self, query):
         """'getUserByID' (1.9.8)"""
         test_data = 23
@@ -202,7 +202,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getUserByID(test_data)
         query.assert_called_with('tl.getUserByID', userid=test_data, devKey=None)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_full_path(self, query):
         """'getFullPath' (1.0)"""
         test_data = 123456
@@ -211,7 +211,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getFullPath)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_create_testproject(self, query):
         """'createTestProject' (1.0)"""
         # Check default params
@@ -246,7 +246,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.createTestProject)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_projects(self, query):
         """'getProjects' (1.0)"""
         self._api.getProjects()
@@ -254,7 +254,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getProjects)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_testproject_by_name(self, query):
         """'getTestProjectByName' (1.0)"""
         test_data = "Testproject"
@@ -263,7 +263,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getTestProjectByName)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_create_testplan(self, query):
         """'createTestPlan' (1.0)"""
         # Check default params
@@ -289,7 +289,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.createTestPlan)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_test_plan_by_name(self, query):
         """'getTestPlanByName' (1.0)"""
         test_data = {'name': "Testplan", 'projectname': "Testproject"}
@@ -301,7 +301,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getTestPlanByName)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_project_testplans(self, query):
         """'getProjectTestPlans' (1.0)"""
         test_data = 12345
@@ -310,7 +310,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getProjectTestPlans)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_testplan_cf_value(self, query):
         """'getTestPlanCustomFieldValue' (1.9.4)"""
         test_data = {'testplanid': 12345, 'testprojectid': 23456, 'fieldname': "someField"}
@@ -323,7 +323,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
                                  testprojectid=test_data['testprojectid'],
                                  testplanid=test_data['testplanid'])
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_create_build(self, query):
         """'createBuild' (1.0)"""
         # Check default params
@@ -345,7 +345,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.createBuild)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_latest_build_for_plan(self, query):
         """'getLatestBuildForTestPlan' (1.0)"""
         test_data = 123456
@@ -354,7 +354,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getLatestBuildForTestPlan)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_builds_for_testplan(self, query):
         """'getBuildsForTestPlan' (1.0)"""
         test_data = 123456
@@ -363,7 +363,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getBuildsForTestPlan)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_exec_counters_by_build(self, query):
         """'getExecCountersByBuild' (1.9.4)"""
         test_data = 12345
@@ -372,7 +372,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getExecCountersByBuild(test_data)
         query.assert_called_with('tl.getExecCountersByBuild', devKey=None, testplanid=test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_create_platform(self, query):
         """'createPlatform' (1.9.6)"""
         # Check default params
@@ -386,7 +386,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.createPlatform(**non_defaults)
         query.assert_called_with('tl.createPlatform', devKey=None, **non_defaults)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_project_platforms(self, query):
         """'getProjectPlatforms' (1.9.6)"""
         test_data = 123456
@@ -395,7 +395,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getProjectPlatforms(test_data)
         query.assert_called_with('tl.getProjectPlatforms', devKey=None, testprojectid=test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_testplan_platforms(self, query):
         """'getTestPlanPlatforms' (1.0)"""
         test_data = 123456
@@ -404,7 +404,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getTestPlanPlatforms)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_report_tc_result(self, query):
         """'reportTCResult' (1.0)"""
         # Check default params
@@ -454,7 +454,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self.assertEquals(self._api.reportTCResult(**non_defaults), query.return_value)
         query.assert_called_with('tl.reportTCResult', devKey=None, **non_defaults)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_last_execution_result(self, query):
         """'getLastExecutionResult' (1.0)"""
         # Check default params
@@ -497,7 +497,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
                                  buildname=non_defaults['buildname'],
                                  options={'getBugs': non_defaults['bugs']})
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_delete_execution(self, query):
         """'deleteExecution' (1.0)"""
         test_data = 43543
@@ -506,7 +506,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.deleteExecution)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_create_testsuite(self, query):
         """'createTestSuite' (1.0)"""
         # Check default params
@@ -528,7 +528,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.createTestSuite)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_testsuite_by_id(self, query):
         """'getTestSuiteById' (1.0)"""
         test_data = {'testprojectid': 432434, 'testsuiteid': 432343}
@@ -537,7 +537,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getTestSuiteById)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_suites_for_suite(self, query):
         """'getTestSuitesForTestSuite' (1.0)"""
         test_data = {'testsuiteid': 2343, 'testprojectid': 32344}
@@ -546,7 +546,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getTestSuitesForTestSuite)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_suites_for_project(self, query):
         """'getFirstLevelTestSuitesForTestProject' (1.0)"""
         test_data = 122323
@@ -555,7 +555,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getFirstLevelTestSuitesForTestProject)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_create_testcase(self, query):
         """'createTestCase' (1.0)"""
         # Check default params
@@ -582,7 +582,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.createTestCase)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_update_testcase(self, query):
         """'updateTestCase' (1.9.8)"""
         self.assertRaises(NotSupported, self._api.updateTestCase)
@@ -610,7 +610,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.updateTestCase(**non_defaults)
         query.assert_called_with('tl.updateTestCase', devKey=None, **non_defaults)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_set_tc_execution_type(self, query):
         """'setTestCaseEXECUTION_TYPE' (1.9.4)"""
         test_data = {'testcaseexternalid': 23232, 'version': 23, 'testprojectid': 2323, 'executiontype': 1}
@@ -619,7 +619,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.setTestCaseExecutionType(**test_data)
         query.assert_called_with('tl.setTestCaseExecutionType', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_create_testcase_steps(self, query):
         """'createTestCaseSteps' (1.9.4)"""
         self.assertRaises(NotSupported, self._api.createTestCaseSteps)
@@ -638,7 +638,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.createTestCaseSteps(**non_defaults)
         query.assert_called_with('tl.createTestCaseSteps', devKey=None, **non_defaults)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_delete_testcase_steps(self, query):
         """'deleteTestCaseSteps' (1.9.4)"""
         self.assertRaises(NotSupported, self._api.deleteTestCaseSteps)
@@ -652,7 +652,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.deleteTestCaseSteps(**non_defaults)
         query.assert_called_with('tl.deleteTestCaseSteps', devKey=None, **non_defaults)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_testcase(self, query):
         """'getTestCase' (1.0)"""
         # Check default params
@@ -669,7 +669,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getTestCase)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_testcase_id_by_name(self, query):
         """'getTestCaseIdByName' (1.0)"""
         # Check default params
@@ -688,7 +688,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getTestCaseIdByName)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_cases_for_suite(self, query):
         """'getTestCasesForTestSuite' (1.0/1.9.10)"""
         # Check default params
@@ -718,7 +718,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self.assertEquals(self._api.getTestCasesForTestSuite(**non_defaults), query.return_value)
         query.assert_called_with('tl.getTestCasesForTestSuite', devKey=None, **non_defaults)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_testcases_for_testplan(self, query):
         """'getTesTCasesForTestPlan' (1.0 /1.9.4)"""
         # Check default params
@@ -763,7 +763,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getTestCasesForTestPlan(**non_defaults)
         query.assert_called_with('tl.getTestCasesForTestPlan', devKey=None, **non_defaults)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_add_testcase_to_testplan(self, query):
         """'addTestCaseToTestPlan' (1.0)"""
         # Check default params
@@ -783,7 +783,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.addTestCaseToTestPlan)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_add_platform_to_testplan(self, query):
         """'addPlatformToTestPlan' (1.9.6)"""
         test_data = {'testplanid': 323, 'platformname': "Platform"}
@@ -792,7 +792,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.addPlatformToTestPlan(**test_data)
         query.assert_called_with('tl.addPlatformToTestPlan', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_remove_platform_from_plan(self, query):
         """'removePlatformFromTestPlan' (1.9.6)"""
         test_data = {'testplanid': 13, 'platformname': "Platform"}
@@ -801,7 +801,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.removePlatformFromTestPlan(**test_data)
         query.assert_called_with('tl.removePlatformFromTestPlan', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_assign_requirements(self, query):
         """'assignRequirements' (1.0)"""
         test_data = {'testcaseexternalid': 23, 'testprojectid': 232, 'requirements': {'req_id': 32, 'testcases': [323, 43]}}
@@ -810,7 +810,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.assignRequirements)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_reqspec_cf_value(self, query):
         """'getReqSpecCustomFieldDesignValue' (1.9.4)"""
         test_data = {'reqspecid': 32, 'testprojectid': 232, 'customfieldname': "field"}
@@ -819,7 +819,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getReqSpecCustomFieldDesignValue(**test_data)
         query.assert_called_with('tl.getReqSpecCustomFieldDesignValue', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_req_cf_value(self, query):
         """'getRequirementCustomFieldDesignValue' (1.9.4)"""
         test_data = {'requirementid': 32, 'testprojectid': 32, 'customfieldname': "field"}
@@ -828,7 +828,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getRequirementCustomFieldDesignValue(**test_data)
         query.assert_called_with('tl.getRequirementCustomFieldDesignValue', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_suite_cf_value(self, query):
         """'getTestSuiteCustomFieldDesignValue' (1.9.4)"""
         test_data = {'testsuiteid': 3234, 'testprojectid': 32, 'customfieldname': "Field"}
@@ -837,7 +837,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getTestSuiteCustomFieldDesignValue(**test_data)
         query.assert_called_with('tl.getTestSuiteCustomFieldDesignValue', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_case_cf_value(self, query):
         """'getTestCaseCustomFieldDesignValue' (1.0)"""
         # Check default params
@@ -851,7 +851,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.getTestCaseCustomFieldDesignValue)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_update_case_cf_value(self, query):
         """'updateTestCaseCustomFieldDesignValue' (1.9.4)"""
         test_data = {'testcaseexternalid': 232, 'version': 3, 'testprojectid': 32, 'customfields': {'field1': "SPAM"}}
@@ -860,7 +860,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.updateTestCaseCustomFieldDesignValue(**test_data)
         query.assert_called_with('tl.updateTestCaseCustomFieldDesignValue', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_case_cf_exec_value(self, query):
         """'getTestCaseCustomFieldExecutionValue' (1.9.4)"""
         test_data = {'executionid': 3231, 'testplanid': 32, 'version': 5, 'testprojectid': 434, 'customfieldname': "Field"}
@@ -869,7 +869,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getTestCaseCustomFieldExecutionValue(**test_data)
         query.assert_called_with('tl.getTestCaseCustomFieldExecutionValue', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_case_cf_plan_value(self, query):
         """'getTestCaseCustomFieldTestPlanDesignValue' (1.9.4)"""
         test_data = {'linkid': 4323, 'testplanid': 45, 'version': 3, 'testprojectid': 2323, 'customfieldname': "Field"}
@@ -878,7 +878,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api.getTestCaseCustomFieldTestPlanDesignValue(**test_data)
         query.assert_called_with('tl.getTestCaseCustomFieldTestPlanDesignValue', devKey=None, **test_data)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_upload_attachment(self, query):
         """'uploadAttachment' (1.0)"""
         # Check default params
@@ -893,7 +893,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.uploadAttachment)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_upload_reqspec_attachment(self, query):
         """'uploadRequirementSpecificationAttachment' (1.0)"""
         # Check default params
@@ -912,7 +912,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.uploadRequirementSpecificationAttachment)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_upload_req_attachment(self, query):
         """'uploadRequirementAttachment' (1.0)"""
         # Check default params
@@ -931,7 +931,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.uploadRequirementAttachment)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_upload_project_attachment(self, query):
         """'uploadTestProjectAttachment' (1.0)"""
         # Check default params
@@ -950,7 +950,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.uploadTestProjectAttachment)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_upload_suite_attachment(self, query):
         """'uploadTestSuiteAttachment' (1.0)"""
         # Check default params
@@ -969,7 +969,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.uploadTestSuiteAttachment)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_upload_case_attachment(self, query):
         """'uploadTestCaseAttachment' (1.0)"""
         # Check default params
@@ -984,7 +984,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.uploadTestCaseAttachment)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_upload_exec_attachment(self, query):
         """'uploadExecutionAttachment' (1.0)"""
         # Check default params
@@ -999,7 +999,7 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         self._api._tl_version = Version("0.9")
         self.assertRaises(NotSupported, self._api.uploadExecutionAttachment)
 
-    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI._query")
+    @mock.patch("testlink.api.xmlrpc.TestlinkXMLRPCAPI.query")
     def test_get_testcase_attachments(self, query):
         """'getTestCaseAttachments' (1.0)"""
         # Check default params
