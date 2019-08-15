@@ -58,6 +58,37 @@ class TLVersion(object):
         return wrapper
 
 
+class TestlinkAPIBuilder(object):
+    """General Testlink API Builder
+
+    :param APIType api_type: The type of the Testlink API
+    :param str devkey: Global developer key
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, url=None, devkey=None):
+        super(TestlinkAPIBuilder, self).__init__()
+        self.url = url
+        self.devkey = devkey
+
+    def connect_to(self, url):
+        """Set the URL of the Testlink API
+        :type url: str"""
+        self.url = url
+        return self
+
+    def using_devkey(self, devkey):
+        """Set the global developer key
+        :type devkey: str"""
+        return self
+
+    @abc.abstractmethod
+    def build(self):
+        """Return Testlink API instance"""
+        pass
+
+
 class TestlinkAPI(object):
     """Abstract Testlink API Interface
 
@@ -67,9 +98,16 @@ class TestlinkAPI(object):
 
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, devkey = None, *args, **kwargs):
         super(TestlinkAPI, self).__init__()
-        self.__global_devkey = None
+        self.__global_devkey = devkey
+
+    @staticmethod
+    def builder(api_type=APIType.XMLRPC):
+        builder_cls = None
+        if api_type == APIType.XMLRPC:
+            from xmlrpc import TestlinkXMLRPCAPIBuilder as builder_cls
+        return builder_cls()
 
     @property
     def devkey(self):
@@ -80,19 +118,6 @@ class TestlinkAPI(object):
         if self.__global_devkey:
             raise RuntimeError("Cannot change current Developer Key on runtime (current: '{}')".format(self.__global_devkey))
         self.__global_devkey = devkey
-
-    @staticmethod
-    def create(url, api_type=APIType.XMLRPC, devkey=None):
-        """Factory method for generating a valid Testlink API Interface
-
-        :param str url: URL to Testlink instance
-        :param APIType api_type: Type of the API to generate
-        :param str devkey: Global developer key to be used
-        :rtype TestlinkAPI:
-        """
-        if api_type == APIType.XMLRPC:
-            from xmlrpc import TestlinkXMLRPCAPI as API
-        return API
 
     #
     # Interface definition

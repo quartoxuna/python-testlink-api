@@ -2,12 +2,14 @@
 import socket
 import xmlrpclib
 import time
-from pkg_resources import parse_version as Version
-from urlparse import urlparse
+
+from testlink_api import TestlinkAPI
+from testlink_api import TestlinkAPIBuilder
+from testlink_api import Version
+from testlink_api import TLVersion
+
 
 from testlink.log import LOGGER
-
-from testlink.api.testlink_api import TLVersion
 
 from testlink.enums import IMPORTANCE_LEVEL
 from testlink.enums import EXECUTION_TYPE
@@ -16,148 +18,60 @@ from testlink.enums import DUPLICATE_STRATEGY
 from testlink.exceptions import APIError
 from testlink.exceptions import ConnectionError
 
-class ThreadSafeTransport(xmlrpclib.Transport):
-    def make_connection(self, host):
-        # Disable connection caching in Python >= 2.7
-        self._connection = None
-        return xmlrpclib.Transport.make_connection(self, host)
+
+class TestlinkXMLRPCAPIBuilder(TestlinkAPIBuilder):
+
+    RPC_PATHS = [
+        ['lib', 'api', 'xmlrpc', 'v1'],
+        ['lib', 'api', 'xmlrpc']
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super(TestlinkXMLRPCAPIBuilder, self).__init__(*args, **kwargs)
+
+    def build(self):
+        proxy = None
+        for path in TestlinkXMLRPCAPIBuilder.RPC_PATHS:
+            try:
+                uri = '/'.join([self.url] + path + ['xmlrpc.php'])
+                proxy = xmlrpclib.ServerProxy(uri)
+                assert proxy.system.listMethods()
+                break
+            except:
+                continue
+        return TestlinkXMLRPCAPI(proxy, devkey=self.devkey)
 
 
-class TestlinkXMLRPCAPI(object):
-    """Proxy class for Testlink's XML-RPC API.
+class TestlinkXMLRPCAPI(TestlinkAPI):
+    """Interface class for Testlink's XML-RPC API
 
-    This class handles the initial connection to Testlink, the sending of queries to the server and handling the responses send from it.
-
-    .. data:: RPC_PATHS
-
-       RPC endpoints to check when a connection is established
-
-    .. data:: WAIT_BEFORE_RECONNECT
-
-       Timeout in seconds to wait before trying a reconnect
-
-    .. data:: MAX_RECONNECTION_ATTEMPTS
-
-       Maximal amount of reconnection tries in case of connection loss.
-
-    .. data:: IGNORE_VERSION_CHECK
-
-       Ignore version checks
-
-    .. attribute:: devkey
-
-       The Testlink Developer Key to be used
-
-    .. attribute:: tl_version
-
-       The Version of the currently connected Testlink
+    :param xmlrpclib.ServerProxy proxy: Used Proxy Server instance
     """
 
-    RPC_PATHS = ["/lib/api/xmlrpc.php", "/lib/api/xmlrpc/v1/xmlrpc.php"]  # RPC endpoints
-    WAIT_BEFORE_RECONNECT = 5   # Time (seconds) to wait before reconnect
-    MAX_RECONNECTION_ATTEMPTS = 5  # Max amout of reconnection attempts
-    IGNORE_VERSION_CHECK = False # Ignores version checking via TLVersion decorator
+    def __init__(self, proxy, *args, **kwargs):
+        super(TestlinkXMLRPCAPI, self).__init__(*args, **kwargs)
+        self.__proxy = proxy
 
-    def __init__(self, url):
-        """Initialize the TestlinkAPI
-        @param url: Testlink URL
-        @type url: str
-        @raises ConnectionError: The given URL is not valid
-        """
-        self._proxy = None
-        self._devkey = None
-        self._tl_version = Version("1.0")
-        self._rpc_path_cache = None
-
-        # Patch URL
-        if url.endswith('/'):
-            url = url[:-1]
-
-        # Check if URL is correct and save it for further use
-        url_components = urlparse(url)
-        # Must have scheme and net location
-        if len(url_components[0].strip()) == 0 or len(url_components[1].strip()) == 0:
-            raise ConnectionError("Invalid URI (%s)" % str(url))
-        else:
-            self._url = url
-
-        # Establish connection
-        self._reconnect()
-
+        # Bootstrap Testlink API Version
         try:
-            # Get the version
-            # Wihtout wrapping function to avoid version check
-            # before acutally having the version
-            if hasattr(self._proxy, 'tl.testLinkVersion'):
-                self._tl_version = Version(self._proxy.tl.testLinkVersion())
-        except NotSupported:
-            # Testlink API has version 1.0
-            return
-        except AttributeError:
-            # Mocked query during tests
-            return
+            self.__version = Version(self.proxy.tl.testLinkVersion())
+        except:
+            self.__version = Version("1.0")
 
     @property
-    def devkey(self):
-        return self._devkey
+    def proxy(self):
+        return self.__proxy
 
-    @devkey.setter
-    def devkey(self, value):
-        if self._devkey is None:
-            self._devkey = value
-        else:
-            raise AttributeError("Cannot overwrite current Developer Key!")
+    #
+    # TestlinkAPI Interface Implementation
+    #
+
+    def __str__(self):
+        return "{} {} @ {} using {}".format(self.__class__.__name__, self.version, str(self.proxy), self.devkey)
 
     @property
-    def tl_version(self):
-        return self._tl_version
-
-    def _reconnect(self):
-        """Reconnects to initially specified URL"""
-        if self._proxy is not None:
-            LOGGER.debug("Reconnecting to '%s'" % str(self._url))
-
-        # Get possinle RPC paths either
-        # cached one or all available
-        if not self._rpc_path_cache:
-            possible_rpc_paths = TestlinkXMLRPCAPI.RPC_PATHS
-        else:
-            possible_rpc_paths = [self._rpc_path_cache]
-
-        # Check for each possible RPC path,
-        # if a connection can be made
-        last_excpt = None
-        for i in range(self.MAX_RECONNECTION_ATTEMPTS):
-            for path in possible_rpc_paths:
-                tmp = self._url
-                try:
-                    # Check if path is valid
-                    if not tmp.endswith(path):
-                        tmp += path
-
-                    # Connect and test connection by retrieving remote methods
-                    self._proxy = xmlrpclib.ServerProxy(tmp, encoding='UTF-8', allow_none=True,
-                                                        transport=ThreadSafeTransport(use_datetime=False))
-                    self._proxy.system.listMethods()
-
-                    # Cache fitting RPC path for later reconnection attempts
-                    self._rpc_path_cache = path
-
-                    break
-                except Exception, ex:
-                    last_excpt = ex
-                    self._proxy = None
-                    continue
-            if self._proxy is None:
-                LOGGER.debug("Connection attempt %d failed: '%s'" % (i+1, str(last_excpt)))
-
-                # Wait a moment before retry
-                time.sleep(5)
-            else:
-                break
-
-        if self._proxy is None:
-            raise ConnectionError("Cannot connect to Testlink API @ %s (%s)" % (str(self._url), str(last_excpt)))
+    def version(self):
+        return self.__version
 
     def query(self, method, _reconnect=True, **kwargs):
         """Remote calls a method on the server
@@ -206,6 +120,7 @@ class TestlinkXMLRPCAPI(object):
     #
     # Raw API methods
     #
+
     @TLVersion("1.9.9")
     def testLinkVersion(self):
         """testLinkVersion()
