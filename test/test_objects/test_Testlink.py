@@ -12,7 +12,7 @@ import string
 import unittest
 import mock
 
-from testlink.api import TestlinkXMLRPCAPI
+from testlink.api.xmlrpc import TestlinkXMLRPCAPI
 from testlink.enums import API_TYPE
 from testlink.exceptions import APIError
 from testlink.objects import TestProject
@@ -109,8 +109,8 @@ class TestlinkTests(unittest.TestCase):
         # Check correct parameter forwarding
         patched_iter_testproject.assert_called_with(args, **kwargs)
 
-    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getTestProjectByName')
-    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getProjects')
+    @mock.patch('testlink.api.xmlrpc.TestlinkXMLRPCAPI.getTestProjectByName')
+    @mock.patch('testlink.api.xmlrpc.TestlinkXMLRPCAPI.getProjects')
     def test_iterTestProject_shortcut(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject' - Shortcut"""
         # Generate some test data
@@ -131,8 +131,8 @@ class TestlinkTests(unittest.TestCase):
         self.assertEqual(project.name, test_data[1]['name'])
         self.assertEqual(project.notes, test_data[1]['notes'])
 
-    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getTestProjectByName')
-    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getProjects')
+    @mock.patch('testlink.api.xmlrpc.TestlinkXMLRPCAPI.getTestProjectByName')
+    @mock.patch('testlink.api.xmlrpc.TestlinkXMLRPCAPI.getProjects')
     def test_iterTestProject_shortcut_no_result(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject' - Shortcut Empty Result"""
         # Init Testlink
@@ -146,8 +146,8 @@ class TestlinkTests(unittest.TestCase):
         project_iter = tl.iterTestProject(randput())
         self.assertRaises(StopIteration, project_iter.next)
 
-    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getTestProjectByName')
-    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getProjects')
+    @mock.patch('testlink.api.xmlrpc.TestlinkXMLRPCAPI.getTestProjectByName')
+    @mock.patch('testlink.api.xmlrpc.TestlinkXMLRPCAPI.getProjects')
     def test_iterTestProject(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject'"""
         # Generate some test data
@@ -171,8 +171,8 @@ class TestlinkTests(unittest.TestCase):
         self.assertEqual(project.name, test_data[1]['name'])
         self.assertEqual(project.notes, test_data[1]['notes'])
 
-    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getTestProjectByName')
-    @mock.patch('testlink.api.TestlinkXMLRPCAPI.getProjects')
+    @mock.patch('testlink.api.xmlrpc.TestlinkXMLRPCAPI.getTestProjectByName')
+    @mock.patch('testlink.api.xmlrpc.TestlinkXMLRPCAPI.getProjects')
     def test_iterTestProject_no_result(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject' - Empty Result"""
         # Init Testlink

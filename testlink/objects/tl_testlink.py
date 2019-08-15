@@ -5,7 +5,7 @@
 
 # IMPORTS
 from testlink.log import LOGGER
-from testlink.api import TestlinkXMLRPCAPI
+from testlink.api.xmlrpc import TestlinkXMLRPCAPI
 from testlink.exceptions import APIError
 
 from testlink.enums import API_TYPE

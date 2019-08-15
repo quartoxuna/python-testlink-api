@@ -1,81 +1,20 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=N802
-
-"""
-Testlink XML-RPC API
-====================
-
-API Wrapper for Testlink XML-RPC/REST API.
-
-.. decorator:: TLVersion(version[, strict=False])
-
-  Function decorator for Testlink version requirements
-
-  :param version: Version to be checked
-  :type version: str
-  :param strict: Strict check
-  :type strict: bool
-
-  :Examples:
-
-      >>> # Default function
-      >>> @TLVersion("1.0")
-      >>> def function1():
-      >>>     pass
-
-      >>> # Function available in Testlink 1.9.11 and higher
-      >>> @TLVersion("1.9.11")
-      >>> def function2():
-      >>>     pass
-
-      >>> # Function ONLY avaialble in Testlink 1.9.11-alpha
-      >>> @TLVersion("1.9.11-alpha", strict=1)
-      >>> def function3():
-      >>>     pass
-"""
-
 # IMPORTS
 import socket
 import xmlrpclib
 import time
-import functools
+from pkg_resources import parse_version as Version
+from urlparse import urlparse
 
 from testlink.log import LOGGER
+
+from testlink.api.testlink_api import TLVersion
 
 from testlink.enums import IMPORTANCE_LEVEL
 from testlink.enums import EXECUTION_TYPE
 from testlink.enums import DUPLICATE_STRATEGY
 
-from testlink.exceptions import NotSupported
 from testlink.exceptions import APIError
 from testlink.exceptions import ConnectionError
-
-from pkg_resources import parse_version as Version
-from urlparse import urlparse
-
-class TLVersion(object):
-    """Testlink Version Checker decorator"""
-
-    def __init__(self, version, strict=False):
-        self.version = Version(version)
-        self.strict = strict
-
-    def __call__(self, fn):
-        @functools.wraps(fn)
-        def wrapper(testlink_api, *args, **kwargs):
-            if not TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK and (
-                (self.strict and self.version != testlink_api.tl_version) or
-                (self.version > testlink_api.tl_version)
-            ):
-                if self.strict:
-                    sign = "=="
-                else:
-                    sign = ">="
-                raise NotSupported("Method '%s' requires Testlink version %s %s but is %s" %
-                    (str(fn.__name__), sign, str(self.version), str(testlink_api.tl_version)))
-            return fn(testlink_api, *args, **kwargs)
-        return wrapper
-
 
 class ThreadSafeTransport(xmlrpclib.Transport):
     def make_connection(self, host):

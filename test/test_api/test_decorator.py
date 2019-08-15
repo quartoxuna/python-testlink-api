@@ -8,9 +8,9 @@
 
 # IMPORTS
 import unittest
-from testlink.api import TLVersion
-from testlink.api import NotSupported
-from testlink.api import TestlinkXMLRPCAPI
+from testlink.api.testlink_api import TLVersion
+from testlink.api.xmlrpc import TestlinkXMLRPCAPI
+from testlink.exceptions import NotSupported
 
 from pkg_resources import parse_version
 
