@@ -3,7 +3,6 @@ import functools
 from pkg_resources import parse_version as Version
 
 from testlink.exceptions import NotSupported
-from testlink.api.xmlrpc import TestlinkXMLRPCAPI
 
 class TLVersion(object):
     """Testlink Version Checker decorator"""
@@ -15,10 +14,8 @@ class TLVersion(object):
     def __call__(self, fn):
         @functools.wraps(fn)
         def wrapper(testlink_api, *args, **kwargs):
-            if not TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK and (
-                (self.strict and self.version != testlink_api.tl_version) or
-                (self.version > testlink_api.tl_version)
-            ):
+            if (self.strict and self.version != testlink_api.tl_version)\
+            or (self.version > testlink_api.tl_version):
                 if self.strict:
                     sign = "=="
                 else:
