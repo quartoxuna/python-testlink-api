@@ -1,8 +1,18 @@
 # IMPORTS
 import functools
+
+from enum import Enum
 from pkg_resources import parse_version as Version
 
 from testlink.exceptions import NotSupported
+
+#
+# CONSTANTS
+#
+class APIType(Enum):
+    XMLRPC = "XML-RPC"
+    REST = "REST"
+
 
 class TLVersion(object):
     """Testlink Version Checker decorator
