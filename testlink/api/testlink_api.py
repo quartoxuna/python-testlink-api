@@ -1,4 +1,5 @@
 # IMPORTS
+import abc
 import functools
 
 from enum import Enum
@@ -55,3 +56,61 @@ class TLVersion(object):
                     (str(fn.__name__), sign, str(self.version), str(testlink_api.tl_version)))
             return fn(testlink_api, *args, **kwargs)
         return wrapper
+
+
+class TestlinkAPI(object):
+    """Abstract Testlink API Interface
+
+    :param str version: Version of the current API
+    :param str devkey: Global developer key
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, *args, **kwargs):
+        super(TestlinkAPI, self).__init__()
+        self.__global_devkey = None
+
+    @property
+    def devkey(self):
+        return self.__global_devkeya
+
+    @devkey.setter
+    def devkey(self, devkey):
+        if self.__global_devkey:
+            raise RuntimeError("Cannot change current Developer Key on runtime (current: '{}')".format(self.__global_devkey))
+        self.__global_devkey = devkey
+
+    @staticmethod
+    def create(url, api_type=APIType.XMLRPC, devkey=None):
+        """Factory method for generating a valid Testlink API Interface
+
+        :param str url: URL to Testlink instance
+        :param APIType api_type: Type of the API to generate
+        :param str devkey: Global developer key to be used
+        :rtype TestlinkAPI:
+        """
+        if api_type == APIType.XMLRPC:
+            from xmlrpc import TestlinkXMLRPCAPI as API
+        return API
+
+    #
+    # Interface definition
+    #
+
+    @abc.abstractmethod
+    def __str__(self):
+        """Proper string representation of the current Testlink API
+        :rtype: str"""
+        pass
+
+    @abc.abstractproperty
+    def version(self):
+        """Currrent API Version
+        :rtype: str"""
+        pass
+
+    @abc.abstractmethod
+    def query(self, *args, **kwargs):
+        """Send a query to interfacing Testlink API"""
+        pass
