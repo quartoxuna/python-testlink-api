@@ -5,7 +5,28 @@ from pkg_resources import parse_version as Version
 from testlink.exceptions import NotSupported
 
 class TLVersion(object):
-    """Testlink Version Checker decorator"""
+    """Testlink Version Checker decorator
+
+    :param pkg_resources.parse_version version: Version to be checked
+    :param bool struct: If True, then strict version check is enabled
+
+    :Examples:
+
+        >>> # Default function
+        >>> @TLVersion("1.0")
+        >>> def function1():
+        >>>     pass
+
+        >>> # Function available in Testlink 1.9.11 and higher
+        >>> @TLVersion("1.9.11")
+        >>> def function2():
+        >>>     pass
+
+        >>> # Function ONLY avaialble in Testlink 1.9.11-alpha
+        >>> @TLVersion("1.9.11-alpha", strict=1)
+        >>> def function3():
+        >>>     pass
+    """
 
     def __init__(self, version, strict=False):
         self.version = Version(version)
