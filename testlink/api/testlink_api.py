@@ -52,7 +52,7 @@ class TestlinkAPI(object):
 
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, devkey = None, *args, **kwargs):
+    def __init__(self, devkey=None, *args, **kwargs):
         super(TestlinkAPI, self).__init__()
         self.__global_devkey = devkey
 
