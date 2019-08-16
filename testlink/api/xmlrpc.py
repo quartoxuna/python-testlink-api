@@ -31,7 +31,7 @@ class TestlinkXMLRPCAPIBuilder(TestlinkAPIBuilder):
         for path in TestlinkXMLRPCAPIBuilder.RPC_PATHS:
             try:
                 uri = '/'.join([self.url] + path + ['xmlrpc.php'])
-                proxy = xmlrpclib.ServerProxy(uri)
+                proxy = xmlrpclib.ServerProxy(uri, allow_none=True)
                 assert proxy.system.listMethods()
                 break
             except:
