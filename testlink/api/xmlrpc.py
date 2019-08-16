@@ -70,49 +70,28 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
     def version(self):
         return self.__version
 
-    def query(self, method, _reconnect=True, **kwargs):
-        """Remote calls a method on the server
-        @param method: Method to call
-        @type method: str
-        @raise NotSupported: Called method is not supported by Testlink
-        @raise APIError: Testlink API server side error
+    def query(self, method, **parameters):
+        """Executes XML-RPC call to server
+
+        :param str method: Method to call
+        :param dict parameters: Parameters to send
         """
-        # Use class wide devkey if not given
-        if not ('devKey' in kwargs and kwargs['devKey']) or kwargs['devKey'].strip() == "":
-            kwargs['devKey'] = self._devkey
+        # Use global develop key if none is defined
+        if not 'devKey' in parameters:
+            parameters.update({'devKey': self.devkey})
 
-        # Check for empty method name
-        if not method or method.strip() == "":
-            raise NotSupported("Empty method name")
-
-        LOGGER.debug("Query: %s(%s)" % (str(method), str(kwargs)))
         try:
             # Call the actual method
-            fn = getattr(self._proxy, method)
-            resp = fn(kwargs)
-            LOGGER.debug(u"Response: %s" % unicode(resp))
-        except xmlrpclib.Fault, f:
-            # If method is not supported, raise NotSupported
-            # Otherwise re-raise original error
-            if f.faultCode == -32601:
-                raise NotSupported(method)
-            else:
-                raise
-        except (Exception, socket.error), ex:
-            # Something was wrong with the request, try to reestablish
-            LOGGER.debug("Connection Error: %s" + str(ex))
-            if _reconnect:
-                self._reconnect()
-                return self.query(method, _reconnect=False, **kwargs)
-            else:
-                raise
+            LOGGER.debug(">>> Query: %s(%s)", method, parameters)
+            function = getattr(self.proxy, method)
+
+            response = function(parameters)
+            LOGGER.debug("<<< Response: %s", response)
+        except Exception, ex:
+            LOGGER.exception(ex)
+            raise
         else:
-            # Check for API error [{'code': 123, 'message': foo}]
-            if isinstance(resp, list) and len(resp) == 1:
-                tmp = resp[0]
-                if ('code' in tmp) and ('message' in tmp):
-                    raise APIError(tmp['code'], tmp['message'])
-            return resp
+            return response
 
     #
     # Raw API methods
