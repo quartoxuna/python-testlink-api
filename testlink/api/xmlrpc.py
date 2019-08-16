@@ -5,9 +5,6 @@ import time
 
 from testlink_api import TestlinkAPI
 from testlink_api import TestlinkAPIBuilder
-from testlink_api import Version
-from testlink_api import TLVersion
-
 
 from testlink.log import LOGGER
 
@@ -54,9 +51,9 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
 
         # Bootstrap Testlink API Version
         try:
-            self.__version = Version(self.proxy.tl.testLinkVersion())
+            self.__version = self.proxy.tl.testLinkVersion()
         except:
-            self.__version = Version("1.0")
+            self.__version = "1.0"
 
     @property
     def proxy(self):
@@ -121,7 +118,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
     # Raw API methods
     #
 
-    @TLVersion("1.9.9")
     def testLinkVersion(self):
         """testLinkVersion()
 
@@ -133,7 +129,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.testLinkVersion")
 
-    @TLVersion("1.0")
     def about(self):
         """about()
 
@@ -144,7 +139,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.about")
 
-    @TLVersion("1.0")
     def sayHello(self):
         """sayHello()
 
@@ -156,7 +150,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         return self.query("tl.sayHello")
     ping = sayHello
 
-    @TLVersion("1.0")
     def repeat(self, value):
         """repeat(value)
 
@@ -168,7 +161,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.repeat", str=str(value))
 
-    @TLVersion("1.0")
     def checkDevKey(self, devkey=None):
         """checkDevKey([devkey])
 
@@ -180,7 +172,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.checkDevKey", devKey=devkey)
 
-    @TLVersion("1.0")
     def doesUserExist(self, user, devkey=None):
         """doesUserExist(user[, devkey])
 
@@ -193,7 +184,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.doesUserExist", devKey=devkey, user=user)
 
-    @TLVersion("1.9.8")
     def getUserByLogin(self, user, devkey=None):
         """getUserByLogin(user[, devkey])
 
@@ -207,7 +197,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getUserByLogin", devKey=devkey, user=user)
 
-    @TLVersion("1.9.8")
     def getUserByID(self, userid, devkey=None):
         """getUserByID(userid[, devkey])
 
@@ -221,7 +210,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getUserByID", devKey=devkey, userid=userid)
 
-    @TLVersion("1.0")
     def getFullPath(self, nodeid, devkey=None):
         """getFullPath(nodeid[, devkey])
 
@@ -234,7 +222,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getFullPath", devKey=devkey, nodeid=int(nodeid))
 
-    @TLVersion("1.0")
     def createTestProject(self, name, prefix, notes='', active=True, public=True, requirements=False,
                           priority=False, automation=False, inventory=False, devkey=None):
         """createTestProject(name, prefix[, notes=''][, active=True][, public=True][, requirements=False][, priority=False][, automation=False][, inventory=False][, devkey])
@@ -269,7 +256,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            public=public,
                            options=opts)
 
-    @TLVersion("1.0")
     def getProjects(self, devkey=None):
         """getProjects([devkey])
 
@@ -281,7 +267,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getProjects", devKey=devkey)
 
-    @TLVersion("1.0")
     def getTestProjectByName(self, name, devkey=None):
         """getTestProjectByName(name[, devkey])
 
@@ -298,7 +283,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
             resp = None
         return resp
 
-    @TLVersion("1.0")
     def createTestPlan(self, name, project, notes='', active=True, public=True, devkey=None):
         """createTestPlan(name, project[, notes=''][, active=True][, public=True][, devkey])
 
@@ -323,7 +307,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            active=active,
                            public=public)
 
-    @TLVersion("1.0")
     def getTestPlanByName(self, name, projectname, devkey=None):
         """getTestPlanByName(name, projectname[, devkey])
 
@@ -339,7 +322,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getTestPlanByName", devKey=devkey, testplanname=name, testprojectname=projectname)
 
-    @TLVersion("1.0")
     def getProjectTestPlans(self, projectid, devkey=None):
         """getProjectTestPlans(projectid[, devkey])
 
@@ -354,7 +336,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getProjectTestPlans", devKey=devkey, testprojectid=projectid)
 
-    @TLVersion("1.9.4")
     def getTestPlanCustomFieldValue(self, testplanid, testprojectid, fieldname, devkey=None):
         """getTestPlanCustomFieldValue(testplanid, testprojectid, fieldname[, devkey])
 
@@ -376,7 +357,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testprojectid=testprojectid,
                            testplanid=testplanid)
 
-    @TLVersion("1.0")
     def createBuild(self, testplanid, name, notes='', devkey=None):
         """createBuild(testplanid, name[, notes=''][, devkey])
 
@@ -397,7 +377,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            buildname=name,
                            buildnotes=notes)
 
-    @TLVersion("1.0")
     def getLatestBuildForTestPlan(self, testplanid, devkey=None):
         """getLatestBuildForTestPlan(testplanid[, devkey])
 
@@ -412,7 +391,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getLatestBuildForTestPlan", devKey=devkey, testplanid=testplanid)
 
-    @TLVersion("1.0")
     def getBuildsForTestPlan(self, testplanid, devkey=None):
         """getBuildsForTestPlan(testplanid[, devkey])
 
@@ -427,7 +405,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getBuildsForTestPlan", devKey=devkey, testplanid=testplanid)
 
-    @TLVersion("1.9.4")
     def getExecCountersByBuild(self, testplanid, devkey=None):
         """getExecCountersByBuild(testplanid[, devkey])
 
@@ -443,7 +420,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getExecCountersByBuild", devKey=devkey, testplanid=testplanid)
 
-    @TLVersion("1.9.6")
     def createPlatform(self, testprojectname, platformname, notes="", devkey=None):
         """createPlatform(testprojectname, platforname[, notes=""][, devkey])
 
@@ -465,7 +441,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            platformname=platformname,
                            notes=notes)
 
-    @TLVersion("1.9.6")
     def getProjectPlatforms(self, testprojectid, devkey=None):
         """getProjectPlatforms(testprojectid[, devkey])
 
@@ -481,7 +456,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getProjectPlatforms", devKey=devkey, testprojectid=testprojectid)
 
-    @TLVersion("1.0")
     def getTestPlanPlatforms(self, testplanid, devkey=None):
         """getTestPlanPlatforms(testplanid[, devkey])
 
@@ -496,7 +470,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getTestPlanPlatforms", devKey=devkey, testplanid=testplanid)
 
-    @TLVersion("1.0")
     def reportTCResult(self, testplanid, status, testcaseid=None, testcaseexternalid=None, buildid=None,
                        buildname=None, notes=None, guess=True, bugid=None, platformid=None, platformname=None,
                        customfields=None, overwrite=False, execduration=None, devkey=None):
@@ -546,7 +519,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            **arguments)
     setTestCaseExecutionResult = reportTCResult
 
-    @TLVersion("1.0")
     def getLastExecutionResult(self, testplanid, testcaseid=None, testcaseexternalid=None, platformid=None,
                                platformname=None, buildid=None, buildname=None, bugs=False, devkey=None):
         """getLastExecutionResult(testplanid[, (testcaseid \| testcaseexternalid)][, (platformname \| platformid)][, (buildid | buildname)][, bugs=False][, devkey])
@@ -581,7 +553,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
 
         return self.query("tl.getLastExecutionResult", **arguments)
 
-    @TLVersion("1.0")
     def deleteExecution(self, executionid, devkey=None):
         """deleteExecution(externalid[, devkey])
 
@@ -596,7 +567,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.deleteExecution", devKey=devkey, executionid=executionid)
 
-    @TLVersion("1.0")
     def createTestSuite(self, testsuitename, testprojectid, details=None, parentid=None, order=None,
                         checkduplicatedname=True, actiononduplicatedname=DUPLICATE_STRATEGY.BLOCK, devkey=None):
         """createTestSuite(testsuitename, testprojectid[, details][, parentid][, order][, checkduplicatedname=True][, actiononduplicatedname=testlink.enums.DUPLICATE_STRATEGY.BLOCK][, devkey])
@@ -626,7 +596,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            checkduplicatedname=checkduplicatedname,
                            actiononduplicatedname=actiononduplicatedname)
 
-    @TLVersion("1.0")
     def getTestSuiteById(self, testprojectid, testsuiteid, devkey=None):
         """getTestSuiteById(testprojectid, testsuiteid[, devkey])
 
@@ -642,7 +611,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getTestSuiteByID", devKey=devkey, testprojectid=testprojectid, testsuiteid=testsuiteid)
 
-    @TLVersion("1.0")
     def getTestSuitesForTestSuite(self, testsuiteid, testprojectid=None, devkey=None):
         """getTestSuitesForTestSuite(testsuiteid[, devkey])
 
@@ -658,7 +626,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getTestSuitesForTestSuite", devKey=devkey, testsuiteid=testsuiteid, testprojectid=testprojectid)
 
-    @TLVersion("1.0")
     def getFirstLevelTestSuitesForTestProject(self, testprojectid, devkey=None):
         """getFirstLevelTestSuitesForTestProject(testprojecid[, devkey])
 
@@ -673,7 +640,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getFirstLevelTestSuitesForTestProject", devKey=devkey, testprojectid=testprojectid)
 
-    @TLVersion("1.0")
     def getTestSuitesForTestPlan(self, planid, devkey=None):
         """getTestSuitesForTestPlan(planid[, devkey])
 
@@ -688,7 +654,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getTestSuitesForTestPlan", devKey=devkey, testplanid=planid)
 
-    @TLVersion("1.0")
     def createTestCase(self, testcasename, testsuiteid, testprojectid, authorlogin, summary, steps=None,
                        preconditions=None, importance=IMPORTANCE_LEVEL.MEDIUM, executiontype=EXECUTION_TYPE.MANUAL,
                        order=None, checkduplicatedname=True, actiononduplicatedname=DUPLICATE_STRATEGY.BLOCK,
@@ -732,7 +697,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            checkduplicatedname=checkduplicatedname,
                            actiononduplicatedname=actiononduplicatedname)
 
-    @TLVersion("1.9.8")
     def updateTestCase(self, testcaseexternalid, version=None, testcasename=None, summary=None, preconditions=None,
                        steps=None, importance=None, executiontype=None, status=None, estimatedexecduration=None,
                        user=None, devkey=None):
@@ -772,7 +736,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            estimatedexecduration=estimatedexecduration,
                            user=user)
 
-    @TLVersion("1.9.4")
     def setTestCaseExecutionType(self, testcaseexternalid, version, testprojectid, executiontype, devkey=None):
         """setTestCaseExecutionType(testcaseexternalid, version, testprojectid, executiontype[, devkey])
 
@@ -796,7 +759,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testprojectid=testprojectid,
                            executiontype=executiontype)
 
-    @TLVersion("1.9.4")
     def createTestCaseSteps(self, steps, action, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
         """createTestCaseSteps(steps, action[, (testcaseid \|testcaseexternalid)][, version][, devkey])
 
@@ -825,7 +787,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            action=action,
                            steps=steps)
 
-    @TLVersion("1.9.4")
     def deleteTestCaseSteps(self, testcaseexternalid, steps, version=None, devkey=None):
         """deleteTestCaseSteps(testcaseexternalid, steps[, version][, devkey])
 
@@ -847,7 +808,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            steps=steps,
                            version=version)
 
-    @TLVersion("1.0")
     def getTestCase(self, testcaseid=None, testcaseexternalid=None, version=None, devkey=None):
         """getTestCase((testcaseid \| testcaseexternalid)[, version][, devkey])
 
@@ -868,7 +828,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testcaseexternalid=testcaseexternalid,
                            version=version)
 
-    @TLVersion("1.0")
     def getTestCaseIdByName(self, testcasename, testsuitename=None, testprojectname=None,
                             testcasepathname=None, devkey=None):
         """getTestCaseIdByName(testcasename[, testsuitename][, testprojectname][, testcasepathname][, devkey])
@@ -892,7 +851,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testprojectname=testprojectname,
                            testcasepathname=testcasepathname)
 
-    @TLVersion("1.0")
     def getTestCasesForTestSuite(self, testsuiteid, deep=False, details='simple', getkeywords=False, devkey=None):
         """getTestCasesForTestSuite(testsuiteid[, deep=False][, details='simple'][, getkeywords=False][, devkey])
 
@@ -915,7 +873,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
             arguments['getkeywords'] = getkeywords
         return self.query("tl.getTestCasesForTestSuite", devKey=devkey, **arguments)
 
-    @TLVersion("1.0")
     def getTestCasesForTestPlan(self, testprojectid, testplanid, testcaseid=None, buildid=None, keywordid=None,
                                 keywords=None, executed=None, assignedto=None, executestatus=None, executiontype=None,
                                 getstepsinfo=False, details='full', devkey=None):
@@ -960,7 +917,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
 
         return self.query("tl.getTestCasesForTestPlan", **arguments)
 
-    @TLVersion("1.0")
     def addTestCaseToTestPlan(self, testprojectid, testplanid, testcaseexternalid, version, platformid=None,
                               executionorder=None, urgency=None, devkey=None):
         """addTestCaseToTestPlan(testprojectid, testplanid, testcaseexternalid, version[, platformid][, executionorder][, urgency][, devkey])
@@ -990,7 +946,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            executionorder=executionorder,
                            urgency=urgency)
 
-    @TLVersion("1.9.6")
     def addPlatformToTestPlan(self, testplanid, platformname, devkey=None):
         """addPlatformToTestPlan(testplanid, platformname[, devkey])
 
@@ -1010,7 +965,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testplanid=testplanid,
                            platformname=platformname)
 
-    @TLVersion("1.9.6")
     def removePlatformFromTestPlan(self, testplanid, platformname, devkey=None):
         """removePlatformFromTestPlan(testplanid, platformname[, devkey])
 
@@ -1030,7 +984,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testplanid=testplanid,
                            platformname=platformname)
 
-    @TLVersion("1.0")
     def assignRequirements(self, testcaseexternalid, testprojectid, requirements, devkey=None):
         """assignRequirements(testcaseexternalid, testprojectid, requirements[, devkey])
 
@@ -1051,7 +1004,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testprojectid=testprojectid,
                            requirements=requirements)
 
-    @TLVersion("1.9.4")
     def getReqSpecCustomFieldDesignValue(self, reqspecid, testprojectid, customfieldname, devkey=None):
         """getReqSpecCustomFieldDesignValue(reqspecid, testprojectid, customfieldname[, devkey])
 
@@ -1073,7 +1025,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testprojectid=testprojectid,
                            reqspecid=reqspecid)
 
-    @TLVersion("1.9.4")
     def getRequirementCustomFieldDesignValue(self, requirementid, testprojectid, customfieldname, devkey=None):
         """getRequirementCustomFieldDesignValue(requirementid, testprojectid, customfieldname[, devkey])
 
@@ -1095,7 +1046,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testprojectid=testprojectid,
                            requirementid=requirementid)
 
-    @TLVersion("1.9.4")
     def getTestSuiteCustomFieldDesignValue(self, testsuiteid, testprojectid, customfieldname, devkey=None):
         """getTestSuiteCustomFieldDesignValue(testsuiteid, testprojectid, customfieldname[, devkey])
 
@@ -1117,7 +1067,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testprojectid=testprojectid,
                            testsuiteid=testsuiteid)
 
-    @TLVersion("1.0")
     def getTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfieldname,
                                           details='value', devkey=None):
         """getTestCaseCustomFieldDesignValue(testcaseexternalid, version, testprojectid, customfieldname[, details='value'][, devkey])
@@ -1147,7 +1096,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
             resp = None
         return resp
 
-    @TLVersion("1.9.4")
     def updateTestCaseCustomFieldDesignValue(self, testcaseexternalid, version, testprojectid, customfields=None,
                                              devkey=None):
         """updateTestCaseCustomFieldDesignValue(testcaseexternalid, version, testprojectid[, customfields][, devkey])
@@ -1172,7 +1120,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testprojectid=testprojectid,
                            customfields=customfields)
 
-    @TLVersion("1.9.4")
     def getTestCaseCustomFieldExecutionValue(self, executionid, testplanid, version, testprojectid, customfieldname,
                                              devkey=None):
         """getTestCaseCustomFieldExecutionValue(executionid, testplanid, version, testprojectid, customfieldname[, devkey])
@@ -1199,7 +1146,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            executionid=executionid,
                            testplanid=testplanid)
 
-    @TLVersion("1.9.4")
     def getTestCaseCustomFieldTestPlanDesignValue(self, linkid, testplanid, version, testprojectid, customfieldname,
                                                   devkey=None):
         """getTestCaseCustomFieldTestPlanDesignValue(linkid, testplanid, version, testprojectid, customfieldname[, devkey])
@@ -1226,7 +1172,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testplanid=testplanid,
                            linkid=linkid)
 
-    @TLVersion("1.0")
     def uploadAttachment(self, fkid, fktable, filename, filetype, content, title=None, description=None, devkey=None):
         """uploadAttachment(fkid, fktable, filename, filetype, content[, title][, description][, devkey])
 
@@ -1255,7 +1200,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            title=title,
                            description=description)
 
-    @TLVersion("1.11.0-sinaqs")
     def deleteAttachment(self, attachment_id, devkey=None):
         """deleteAttachment(attachment_id[, devkey])
 
@@ -1271,7 +1215,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.deleteAttachment", devKey=devkey, attachmentid=attachment_id)
 
-    @TLVersion("1.0")
     def uploadRequirementSpecificationAttachment(self, reqspecid, filename, filetype, content, title=None,
                                                  description=None, devkey=None):
         """uploadRequirementSpecificationAttachment(reqspecid, filename, filetype, content[, title][, description][, devkey])
@@ -1299,7 +1242,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            title=title,
                            description=description)
 
-    @TLVersion("1.0")
     def uploadRequirementAttachment(self, requirementid, filename, filetype, content, title=None, description=None, devkey=None):
         """uploadRequirementAttachment(requirementid, filename, filetype, content[, title][, description][, devkey])
 
@@ -1326,7 +1268,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            title=title,
                            description=description)
 
-    @TLVersion("1.0")
     def uploadTestProjectAttachment(self, testprojectid, filename, filetype, content, title=None, description=None, devkey=None):
         """uploadTestProjectAttachment(testprojectid, filename, filetype, content[, title][, description][, devkey])
 
@@ -1353,7 +1294,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            title=title,
                            description=description)
 
-    @TLVersion("1.0")
     def uploadTestSuiteAttachment(self, testsuiteid, filename, filetype, content, title=None, description=None, devkey=None):
         """uploadTestProjectAttachment(testsuiteid, filename, filetype, content[, title][, description][, devkey])
 
@@ -1380,7 +1320,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            title=title,
                            description=description)
 
-    @TLVersion("1.0")
     def uploadTestCaseAttachment(self, testcaseid, filename, filetype, content, title=None, description=None, devkey=None):
         """uploadTestCaseAttachment(testcaseid, filename, filetype, content[, title][, description][, devkey])
 
@@ -1407,7 +1346,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            title=title,
                            description=description)
 
-    @TLVersion("1.0")
     def uploadExecutionAttachment(self, executionid, filename, filetype, content, title=None, description=None, devkey=None):
         """uploadTestCaseAttachment(executionid, filename, filetype, content[, title][, description][, devkey])
 
@@ -1434,7 +1372,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            title=title,
                            description=description)
 
-    @TLVersion("1.0")
     def getTestCaseAttachments(self, testcaseid=None, testcaseexternalid=None, devkey=None):
         """getTestCaseAttachments((testcaseid \| testcaseexternalid)[, devkey])
 
@@ -1453,7 +1390,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testcaseid=testcaseid,
                            testcaseexternalid=testcaseexternalid)
 
-    @TLVersion("1.11.0-sinaqs")
     def getRequirementSpecificationsForTestProject(self, testprojectid, devkey=None):
         """getRequirementSpecificationsForTestProject(testprojectid[, devkey])
 
@@ -1471,7 +1407,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            devKey=devkey,
                            testprojectid=testprojectid)
 
-    @TLVersion("1.11.0-sinaqs")
     def getRequirementSpecificationsForRequirementSpecification(self, reqspecid, devkey=None):
         """getRequirementSpecificationsForRequirementSpecification(reqspecid[, devkey])
 
@@ -1489,7 +1424,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            devKey=devkey,
                            reqspecid=reqspecid)
 
-    @TLVersion("1.11.0-sinaqs")
     def getRequirementsForRequirementSpecification(self, reqspecid, testprojectid, devkey=None):
         """getRequirementsForRequirementSpecification(reqspecid, testprojectid[, devkey=None])
 
@@ -1509,7 +1443,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            reqspecid=reqspecid,
                            testprojectid=testprojectid)
 
-    @TLVersion("1.11.0-sinaqs")
     def getRisksForRequirement(self, requirementid, devkey=None):
         """getRisksForRequirement(requirementid[, devkey])
 
@@ -1525,7 +1458,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         """
         return self.query("tl.getRisksForRequirement", devKey=devkey, requirementid=requirementid)
 
-    @TLVersion("1.11.0-sinaqs")
     def createRequirementSpecification(self, testprojectid, parentid, docid, title, scope, userid, typ, devkey=None):
         """createRequirementSpecification(testprojecid, parentid, docid, title, scope, userid, typ[, devkey])
 
@@ -1558,7 +1490,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            userid=userid,
                            type=typ)
 
-    @TLVersion("1.11.0-sinaqs")
     def createRequirement(self, testprojectid, reqspecid, docid, title, scope, userid, status, typ, coverage=1,
                           devkey=None):
         """createRequirement(testprojectid, reqspecid, docid, title, scope, userid, status, typ[, coverage=1][, devkey])
@@ -1593,7 +1524,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            type=typ,
                            coverage=coverage)
 
-    @TLVersion("1.11.0-sinaqs")
     def createRisk(self, requirementid, docid, title, scope, userid, coverage=None, devkey=None):
         """createRisk(requirementid, docid, title, scope, userid[, coverage][, devkey])
 
@@ -1621,7 +1551,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            userid=userid,
                            coverage=coverage)
 
-    @TLVersion("1.11.0-sinaqs")
     def assignRisks(self, testcaseexternalid, testprojectid, risks, devkey=None):
         """assignRisks(testcaseexternalid, testprojectid, risks[, devkey])
 
@@ -1643,7 +1572,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            testcaseexternalid=testcaseexternalid,
                            risks=risks)
 
-    @TLVersion("1.11.0-sinaqs")
     def getExecutions(self, testplanid, testcaseid=None, testcaseexternalid=None, platformid=None, platformname=None,
                       buildid=None, buildname=None, bugs=False, devkey=None):
         """getExecutions(testplanid[, (testcaseid \| testcaseexternalid)][, (platformname \| platformid)][, (buildid | buildname)][, bugs=False][, devkey])
@@ -1676,7 +1604,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            buildname=buildname,
                            options={'getBugs': bugs})
 
-    @TLVersion("1.11.0-sinaqs")
     def getAttachments(self, fkid, fktable, devkey=None):
         """getAttachments(fkid, fktable[, devkey])
 
@@ -1696,7 +1623,6 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                            fkid=fkid,
                            fktable=fktable)
 
-    @TLVersion("1.11.0-sinaqs")
     def getRequirementCoverage(self, requirementid, testplanid=None, platformid=None, devkey=None):
         """getRequirementCoverage(requirementid[, testplanid][, platformid][, devkey])
 
