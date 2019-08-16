@@ -33,7 +33,7 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         self.name = kwargs.get('name', None)
         self.description = kwargs.get('notes', None)
         self.active = bool(kwargs.get('active', None))
-        self.public = bool(kwargs.get('public', None))
+        self.public = bool(kwargs.get('is_public', None))
         self.testproject = kwargs.get('parent_testproject', None)
 
     def build(self):
