@@ -21,6 +21,7 @@ from testlink.exceptions import APIError
 class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """Testlink TestProject Builder for raw Testlink API data
 
+    :param str name: Name of the TestPlan
     :param str description: Description of the TestPlan
     :param bool active: Active status of the plan
     :param bool public: Public status of the plan
