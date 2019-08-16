@@ -36,7 +36,7 @@ def normalize_list(res):
         return res
 
 
-class TestlinkAPIObjectBuilder(object):
+class TestlinkObjectFromAPIBuilder(object):
     """Testlink Object Builder for raw Testlink API data
 
     :param int _id: Internal Testlink ID of the object
