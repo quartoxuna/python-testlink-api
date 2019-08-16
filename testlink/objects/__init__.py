@@ -16,7 +16,7 @@ from tl_step import Step
 from tl_keyword import Keyword
 from tl_execution import Execution
 from testplan import TestPlan
-from tl_build import Build
+from build import Build
 from tl_platform import Platform
 from tl_reqspec import RequirementSpecification
 from tl_req import Requirement
