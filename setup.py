@@ -3,7 +3,7 @@
 
 # IMPORTS
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 execfile(os.path.relpath(os.path.join('testlink', 'version.py')))
 
 setup(
@@ -17,7 +17,7 @@ setup(
     url='https://github.com/quartoxuna/python-testlink-api',
 
     # Package Contents
-    packages=['testlink','testlink.objects'],
+    packages=find_packages(),
     keywords='testlink api xmlrpc python',
 
     # Unit Tests
