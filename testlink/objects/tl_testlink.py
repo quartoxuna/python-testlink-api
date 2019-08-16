@@ -12,7 +12,8 @@ from testlink.enums import API_TYPE
 from testlink.enums import DUPLICATE_STRATEGY
 
 from testlink.objects.tl_object import normalize_list
-from testlink.objects.tl_testproject import TestProject
+
+from testproject import TestProjectFromAPIBuilder
 from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testsuite import TestCase
 
@@ -63,7 +64,7 @@ class Testlink(object):
                 # before, there was a list containing a dict
                 if isinstance(response, list):
                     response = response[0]
-                yield TestProject(api=self._api, **response)
+                yield TestProjectFromAPIBuilder(parent_testlink=self, **response).build()
             except APIError, api_error:
                 if api_error.error_code == 7011:
                     # No TestProject found at all
@@ -73,7 +74,7 @@ class Testlink(object):
         else:
             # Get all projects and convert them to TestProject instances
             response = self._api.getProjects()
-            projects = [TestProject(api=self._api, parent_testlink=self, **project) for project in response]
+            projects = [TestProjectFromAPIBuilder(parent_testlink=self, **project).build() for project in response]
 
             # Filter
             if len(params) > 0:
