@@ -6,19 +6,10 @@
 """
 
 # IMPORTS
-import string
-import unittest
 import mock
-import testlink.enums
-from pkg_resources import parse_version as Version
+import unittest
 
 from testlink.api.xmlrpc import TestlinkXMLRPCAPI
-from testlink.api.xmlrpc import TestlinkXMLRPCAPIBuilder
-
-from testlink.exceptions import NotSupported
-from testlink.exceptions import APIError
-from testlink.exceptions import ConnectionError
-
 
 class TestlinkXMLRPCAPITests(unittest.TestCase):
     """Testcases for Testlink XML-RPC API Wrapper"""
@@ -29,10 +20,12 @@ class TestlinkXMLRPCAPITests(unittest.TestCase):
         proxy.test = mock.MagicMock(return_value="Passed")
         api = TestlinkXMLRPCAPI(proxy)
         parameters = {'id': 1234, 'name': 'Test'}
+        expected = parameters
+        expected.update({'devKey': 123456})
 
         # Call method
         self.assertEqual(api.query('test', **parameters), "Passed")
-        proxy.test.assert_called_with(**parameters)
+        proxy.test.assert_called_with(expected)
 
     def test_global_devkey(self):
         """Global DevKey setting"""
