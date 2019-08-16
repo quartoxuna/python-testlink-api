@@ -57,7 +57,7 @@ class TestlinkObjectFromAPIBuilder(object):
         return TestlinkObject(self._id, self.testlink)
 
 
-class TestlinkObjectBuilder(TestlinkAPIObjectBuilder):
+class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     """General TestlinkObject Builder"""
 
     def __init__(self, *args, **kwargs):
