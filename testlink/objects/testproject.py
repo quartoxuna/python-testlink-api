@@ -218,6 +218,10 @@ class TestProject(TestlinkObject, IAttachmentGetter):
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
+    @staticmethod
+    def builder():
+        return TestProjectBuilder()
+
     @property
     def name(self):
         return self.__name
