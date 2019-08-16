@@ -64,7 +64,7 @@ class TestlinkAPI(object):
 
     @property
     def devkey(self):
-        return self.__global_devkeya
+        return self.__global_devkey
 
     @devkey.setter
     def devkey(self, devkey):
