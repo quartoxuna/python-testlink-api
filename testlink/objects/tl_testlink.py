@@ -5,7 +5,7 @@
 
 # IMPORTS
 from testlink.log import LOGGER
-from testlink.api.xmlrpc import TestlinkXMLRPCAPI
+from testlink.api.testlink_api import TestlinkAPI
 from testlink.exceptions import APIError
 
 from testlink.enums import API_TYPE
@@ -32,29 +32,19 @@ class Testlink(object):
         @param devkey: Testlink developer key
         @type devkey: str
         """
-        self._url = str(url)
-        # Init raw API
-        if api == API_TYPE.XML_RPC:
-            self._api = TestlinkXMLRPCAPI(url)
-        elif api == API_TYPE.REST:
-            raise NotImplementedError()
-        self._api_type = api
+        self._api = TestlinkAPI.builder()\
+                    .connect_to(url)\
+                    .using_devkey(devkey)\
+                    .build()
 
         # Log API Information
-        LOGGER.info("Testlink %s API Version %s at %s", self._api_type, self.getVersion(), self._url)
-
-        # Set devkey globally
-        self._api.devkey = str(devkey)
+        LOGGER.info(str(self))
 
     def __str__(self):
-        return "Testlink %s API Version %s at %s" % (self._api_type, self.getVersion(), self._url)
+        return "{}: {}".format(self.__class__.__name__, str(self._api))
 
     def getVersion(self):
-        """Retrieve informations about the used Testlink API
-        @return: Version
-        @rtype: str
-        """
-        return str(self._api.tl_version)
+        return self._api.version
 
     def iterTestProject(self, name=None, **params):
         """Iterates over TestProjects specified by parameters
