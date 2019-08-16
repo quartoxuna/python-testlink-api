@@ -4,6 +4,8 @@
 """TestProject Object"""
 
 # IMPORTS
+from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
+from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
 
@@ -16,55 +18,249 @@ from testlink.objects.tl_attachment import IAttachmentGetter
 from testlink.exceptions import APIError
 
 
+class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
+    """Testlink TestProject Builder for raw Testlink API data
+
+    :param str prefix: Prefix of the project
+    :param str description: Description of the project
+    :param bool active: Active status of the project
+    :param bool public: Public status of the project
+    :param str color: Color coding for the project
+    :param int testcase_count: Maximum external testcase ID of the project
+    :param bool requirement_feature: Status of requirement feature
+    :param bool priority_feature: Status of priority feature
+    :param bool automation_feature: Status of automation feature
+    :param bool inventory_feature: Status of inventory feature
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(TestProjectFromAPIBuilder, self).__init__(*args, **kwargs)
+        self.name = kwargs.get('name', None)
+        self.prefix = kwargs.get('prefix', None)
+        self.description = kwargs.get('notes', None)
+        self.active = bool(kwargs.get('active', False))
+        self.public = bool(kwargs.get('is_public', None))
+        self.color = kwargs.get('color', None)
+        self.testcase_count = int(kwargs.get('tc_counter', 0))
+
+        self.requirement_feature = None
+        self.priority_feature = None
+        self.automation_feature = None
+        self.inventory_feature = None
+        if kwargs.get('opt', None):
+            options = kwargs.get('opt')
+            self.requirement_feature = bool(options['requirementsEnabled'])
+            self.priority_feature = bool(options['testPriorityEnabled'])
+            self.automation_feature = bool(options['automationEnabled'])
+            self.inventory_feature = bool(options['inventoryEnabled'])
+
+    def build(self):
+        """Generates a new TestProject"""
+        # Sanity checks
+        assert self.name is not None, "No TestProject name defined"
+        assert self.prefix is not None, "No TestProject prefix defined"
+        assert self.active is not None, "No TestProject active status defined"
+        assert self.public is not None, "No TestProject public status defined"
+        assert self.testcase_count >= 0, "Invalid testcase count for TestProject: {}".format(self.testcase_count)
+
+        return TestProject(
+            # TestProject
+            self.name,
+            self.prefix,
+            self.description,
+            self.active,
+            self.public,
+            self.color,
+            self.testcase_count,
+            self.requirement_feature,
+            self.priority_feature,
+            self.automation_feature,
+            self.inventory_feature,
+            # TestlinkObject
+            _id=self.id,
+            parent_testlink=self.testlink,
+        )
+
+
+class TestProjectBuilder(TestProjectFromAPIBuilder):
+    """General TestProject Builder"""
+
+    def __init__(self, *args, **kwargs):
+        super(TestProjectBuilder, self).__init__(*args, **kwargs)
+
+    def with_name(self, name):
+        """Set the name of the TestProject
+        :type name: str"""
+        self.name = name
+        return self
+
+    def with_prefix(self, prefix):
+        """Set the prefix of the TestProject
+        :type prefix: str"""
+        self.prefix = prefix
+        return self
+
+    def with_description(self, description):
+        """Set the description of the TestProject
+        :type description: str"""
+        self.description = description
+        return self
+
+    def is_active(self, active=True):
+        """Set the TestProject status to active
+        :type active: bool"""
+        self.active = active
+        return self
+
+    def is_not_active(self):
+        """Set the TestProject status to inactive"""
+        self.active = False
+        return self
+
+    def is_public(self, public=True):
+        """Set the TestProject visibility to public
+        :type public: bool"""
+        self.public = public
+        return self
+
+    def is_not_public(self):
+        """Set the TestProject visibility to not public"""
+        self.public = False
+        return self
+
+    def with_color(self, color):
+        """Set the color coding for the TestProject
+        :type color: str"""
+        self.color = color
+        return self
+
+    def with_testcase_count(self, testcase_count):
+        """Set the currently highest external testcase ID for the TestProject
+        :type testcase_count: int"""
+        self.testcase_count = testcase_count
+        return self
+
+    def with_requirement_feature(self, requirement_feature=True):
+        """Set the status for the requirement feature of the TestProject
+        :type requirement_feature: bool"""
+        self.requirement_feature = requirement_feature
+        return self
+
+    def without_requirement_feature(self):
+        """Disables the requirement feature for the TestProject"""
+        self.requirement_feature = False
+        return self
+
+    def with_priority_feature(self, priority_feature=True):
+        """Set the status for the priority feature of the TestProject
+        :type priority_feature: bool"""
+        self.priority_feature = priority_feature
+        return self
+
+    def without_priority_feature(self):
+        """Disables the priority feature for the TestProject"""
+        self.priority_feature = False
+        return self
+
+    def with_automation_feature(self, automation_feature=True):
+        """Set the status for the automation feature of the TestProject
+        :type automation_feature: bool"""
+        self.automation_feature = automation_feature
+        return self
+
+    def without_automation_feature(self):
+        """Disables the automation feature for the TestProject"""
+        self.automation_feature = False
+        return self
+
+    def with_inventory_feature(self, inventory_feature=True):
+        """Set the status for the inventory feature of the TestProject
+        :type inventory_feature: bool"""
+        self.inventory_feature = inventory_feature
+        return self
+
+    def without_inventory_feature(self):
+        """Disables the inventory feature for the TestProject"""
+        self.inventory_feature = False
+        return self
+
+
 class TestProject(TestlinkObject, IAttachmentGetter):
-    """Testlink TestProject representation
-    @ivar notes: TestProject notes
-    @type notes: str
-    @ivar prefix: TestCase prefix within TestProject
-    @type prefix: str
-    @ivar active: TestProject active flag
-    @type active: bool
-    @ivar public: TestProject public flag
-    @type public: bool
-    @ivar requirements_enabled: Requirement Feature flag
-    @type requirements_enabled: bool
-    @ivar priority_enabled: Test Priority feature flag
-    @type priority_enabled: bool
-    @ivar automation_enabled: Automation Feature flag
-    @type automation_enabled: bool
-    @ivar inventory_enabled: Inventory Feature flag
-    @type inventory_enabled: bool
-    @ivar tc_counter: Current amount of TestCases in TestProject
-    @type tc_counter: int
-    @ivar color: Assigned color of TestProject
-    @type color: str"""
+    """Testlink TestProject
 
-    __slots__ = ("notes", "prefix", "active", "public", "requirements_enabled", "priority_enabled",
-                 "automation_enabled", "inventory_enabled", "tc_counter", "color", "_parent_testlink")
+    :param str name: Name of the TestProject
+    :param str prefix: Prefix of the TestProject
+    :param str description: Description of the TestProject
+    :param bool active: Status of the TestProject
+    :param bool public: Visibility of the TestProject
+    :param str color: Color coding of the TestProject
+    :param int testcase_count: Currently highest external testcase ID within TestProject
+    :param bool requirement_feature: Status of the requirement feature for the TestProject
+    :param bool priority_feature: Status of the priority feature for the TestProject
+    :param bool automation_feature: Status of the automation feature for the TestProject
+    :param bool inventory_feature: Status of the inventory feature for the TestProject
+    """
 
-    def __init__(self, notes="", prefix="", active="0", is_public="0", tc_counter=0, opt=None, color="",
-                 parent_testlink=None, *args, **kwargs):
-        if opt is None:
-            opt = dict()
-            opt['requirementsEnabled'] = 0
-            opt['testPriorityEnabled'] = 0
-            opt['automationEnabled'] = 0
-            opt['inventoryEnabled'] = 0
+    def __init__(self, *args, **kwargs):
         super(TestProject, self).__init__(*args, **kwargs)
-        self.notes = unicode(notes)
-        self.prefix = str(prefix)
-        self.active = bool(int(active))
-        self.public = bool(int(is_public))
-        self.requirements_enabled = bool(int(opt['requirementsEnabled']))
-        self.priority_enabled = bool(int(opt['testPriorityEnabled']))
-        self.automation_enabled = bool(int(opt['automationEnabled']))
-        self.inventory_enabled = bool(int(opt['inventoryEnabled']))
-        self.tc_counter = int(tc_counter)
-        self.color = str(color)
-        self._parent_testlink = parent_testlink
+        self.__name = kwargs['name']
+        self.__prefix = kwargs['prefix']
+        self.__description = kwargs['description']
+        self.__active = kwargs['active']
+        self.__public = kwargs['public']
+        self.__color = kwargs['color']
+        self.__testcase_count = kwargs['testcase_count']
+        self.__requirement_feature = kwargs['requirement_feature']
+        self.__priority_feature = kwargs['priority_feature']
+        self.__automation_feature = kwargs['automation_feature']
+        self.__inventory_feature = kwargs['inventory_feature']
 
     def __str__(self):
-        return "%s" % self.name
+        return "{}: {}".format(self.__class__.__name__, self.name)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def prefix(self):
+        return self.__prefix
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def active(self):
+        return self.__active
+
+    @property
+    def public(self):
+        return self.__public
+
+    @property
+    def color(self):
+        return self.__color
+
+    @property
+    def testcase_count(self):
+        return self.__testcase_count
+
+    @property
+    def requirement_feature(self):
+        return self.__requirement_feature
+
+    @property
+    def priority_feature(self):
+        return self.__priority_feature
+
+    @property
+    def automation_feature(self):
+        return self.__automation_feature
+
+    @property
+    def inventory_feature(self):
+        return self.__inventory_feature
 
     def iterTestPlan(self, name=None, **params):
         """Iterates over TestPlans specified by parameters
