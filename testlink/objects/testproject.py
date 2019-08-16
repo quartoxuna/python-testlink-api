@@ -65,19 +65,19 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
 
         return TestProject(
             # TestProject
-            self.name,
-            self.prefix,
-            self.description,
-            self.active,
-            self.public,
-            self.color,
-            self.testcase_count,
-            self.requirement_feature,
-            self.priority_feature,
-            self.automation_feature,
-            self.inventory_feature,
+            name=self.name,
+            prefix=self.prefix,
+            description=self.description,
+            active=self.active,
+            public=self.public,
+            color=self.color,
+            testcase_count=self.testcase_count,
+            requirement_feature=self.requirement_feature,
+            priority_feature=self.priority_feature,
+            automation_feature=self.automation_feature,
+            inventory_feature=self.inventory_feature,
             # TestlinkObject
-            _id=self.id,
+            _id=self._id,
             parent_testlink=self.testlink,
         )
 
