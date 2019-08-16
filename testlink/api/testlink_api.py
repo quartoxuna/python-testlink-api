@@ -34,6 +34,7 @@ class TestlinkAPIBuilder(object):
     def using_devkey(self, devkey):
         """Set the global developer key
         :type devkey: str"""
+        self.devkey = devkey
         return self
 
     @abc.abstractmethod
