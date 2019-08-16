@@ -77,7 +77,7 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         :param dict parameters: Parameters to send
         """
         # Use global develop key if none is defined
-        if not 'devKey' in parameters:
+        if not parameters.get('devKey', None):
             parameters.update({'devKey': self.devkey})
 
         try:
