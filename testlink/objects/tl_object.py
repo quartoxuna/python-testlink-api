@@ -44,7 +44,7 @@ class TestlinkObjectFromAPIBuilder(object):
     """
 
     def __init__(self, *args, **kwargs):
-        super(TestlinkAPIObject, self).__init__()
+        super(TestlinkObjectFromAPIBuilder, self).__init__()
         self._id = int(kwargs.get('id', 0))
         self.testlink = kwargs.get('testlink', None)
 
