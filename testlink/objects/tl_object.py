@@ -54,7 +54,10 @@ class TestlinkObjectFromAPIBuilder(object):
         assert self._id is not None, "Invalid internal ID '{}'".format(self._id)
         assert self.testlink is not None, "No parent Testlink instance defined"
 
-        return TestlinkObject(self._id, self.testlink)
+        return TestlinkObject(
+            _id=self._id,
+            parent_testlink=self.testlink
+        )
 
 
 class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
@@ -66,7 +69,7 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     def with_id(self, _id):
         """Set the internal ID of the Testlink Object
         :type _id: int"""
-        self._id = id
+        self._id = _id
         return self
 
     def with_testlink(self, testlink):
@@ -85,10 +88,10 @@ class TestlinkObject(object):
 
     DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-    def __init__(self, _id, parent_testlink, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(TestlinkObject, self).__init__()
-        self.__id = _id
-        self.__parent_testlink = parent_testlink
+        self.__id = kwargs['_id']
+        self.__parent_testlink = kwargs['parent_testlink']
 
     @staticmethod
     def builder():
