@@ -6,6 +6,8 @@
 # IMPORTS
 from testlink.log import LOGGER
 
+from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
+from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
 
@@ -16,35 +18,135 @@ from testlink.objects.tl_testcase import TestCase
 from testlink.exceptions import APIError
 
 
-class TestPlan(TestlinkObject):
-    """Testlink TestPlan representation
-    @ivar notes: TestPlan notes
-    @type notes: str
-    @ivar active: TestPlan active flag
-    @type active: bool
-    @ivar public: TestPlan public flag
-    @type public: bool
+class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
+    """Testlink TestProject Builder for raw Testlink API data
+
+    :param str description: Description of the TestPlan
+    :param bool active: Active status of the plan
+    :param bool public: Public status of the plan
+    :param TestProject testproject: Parent TestProject
     """
 
-    __slots__ = ("notes", "active", "public", "_parent_testproject")
+    def __init__(self, *args, **kwargs):
+        super(TestPlanFromAPIBuilder, self).__init__(*args, **kwargs)
+        self.name = kwargs.get('name', None)
+        self.description = kwargs.get('notes', None)
+        self.active = bool(kwargs.get('active', None))
+        self.public = bool(kwargs.get('public', None))
+        self.testproject = kwargs.get('parent_testproject', None)
 
-    def __init__(self, notes="", is_public="0", active="0", parent_testproject=None, *args, **kwargs):
-        super(TestPlan, self).__init__(*args, **kwargs)
-        self.notes = unicode(notes)
-        self.active = bool(int(active))
-        self.public = bool(int(is_public))
-        self._parent_testproject = parent_testproject
+    def build(self):
+        """Generate a new TestPlan"""
+        # Sanity checks
+        assert self.name is not None, "No TestPlan name defined"
+        assert self.active is not None, "No TestPlan active status defined"
+        assert self.public is not None, "No TestPlan public status defined"
+        assert self.testproject is not None, "No parent TestProject defined"
+
+        return TestPlan(
+            # TestPlan
+            name=self.name,
+            description=self.description,
+            active=self.active,
+            public=self.public,
+            parent_testproject=self.testproject,
+            # TestlinkObject
+            _id=self._id,
+            parent_testlink=self.testlink,
+        )
+
+
+class TestPlanBuilder(TestPlanFromAPIBuilder):
+    """General TestPlan Builder"""
+
+    def __init__(self, *args, **kwargs):
+        super(TestPlanBuilder, self).__init__(*args, **kwargs)
+
+    def with_name(self, name):
+        """Set the name of the TestPlan
+        :type name: str"""
+        self.name = name
+        return self
+
+    def with_description(self, description):
+        """Set the description of the TestPlan
+        :type description: str"""
+        self.description = description
+        return self
+
+    def is_active(self, active=True):
+        """Set the TestPlan to active
+        :type active: bool"""
+        self.active = active
+        return self
+
+    def is_not_active(self):
+        """Set the TestPlan to inactive"""
+        self.active = False
+        return self
+
+    def is_public(self, public=True):
+        """Set the TestPlan to public
+        :type public: bool"""
+        self.public = public
+        return self
+
+    def is_not_public(self):
+        """Set the TestPlan to not public"""
+        self.public = False
+        return self
+
+    def with_testproject(self, testproject):
+        """Set the parent TestProject instance
+        :type testproject: TestProject"""
+        self.testproject = testproject
+        return self
+
+
+class TestPlan(TestlinkObject):
+    """Testlink TestPlan
+
+    :param str name: Name of the TestPlan
+    :param str description: Description of the TestPlan
+    :param bool active: Status of the TestPlan
+    :param bool public: Visibility of the TestPlan
+    :param TestProject testproject: Parent TestProject instance
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(TestlinkObject, self).__init__(*args, **kwargs)
+        self.__name = kwargs['name']
+        self.__description = kwargs['description']
+        self.__active = kwargs['active']
+        self.__public = kwargs['public']
+        self.__parent_testproject = kwargs['parent_testproject']
 
     def __str__(self):
-        return "TestPlan: %s" % self.name
+        return "{}: {}".format(self.__class__.__name__, self.name)
 
-    def getTestProject(self):
-        """Returns associated TestProject"""
-        return self._parent_testproject
+    @staticmethod
+    def builder():
+        return TestProjectBuilder()
 
-    def iterTestProject(self):
-        """Returns associated TestProject"""
-        yield self._parent_testproject
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def active(self):
+        return self.__active
+
+    @property
+    def public(self):
+        return self.__public
+
+    @property
+    def testproject(self):
+        return self.__parent_testproject
 
     def iterBuild(self, name=None, **params):
         """Iterates over Builds specified by parameters
