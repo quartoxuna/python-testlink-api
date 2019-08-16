@@ -93,6 +93,10 @@ class TestlinkObject(object):
         self.__id = _id
         self.__parent_testlink = parent_testlink
 
+    @staticmethod
+    def builder():
+        return TestlinkObjectBuilder()
+
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.id)
 
