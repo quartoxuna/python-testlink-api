@@ -45,11 +45,8 @@ class TestlinkObjectFromAPIBuilder(object):
 
     def __init__(self, *args, **kwargs):
         super(TestlinkAPIObject, self).__init__()
-        self._id = kwargs.get('id', None)
+        self._id = int(kwargs.get('id', 0))
         self.testlink = kwargs.get('testlink', None)
-
-        # Fix type
-        self._id = int(self._id)
 
     def build(self):
         """Generates a new TestlinkObject"""
