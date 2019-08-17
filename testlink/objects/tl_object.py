@@ -45,8 +45,12 @@ class TestlinkObjectFromAPIBuilder(object):
 
     def __init__(self, *args, **kwargs):
         super(TestlinkObjectFromAPIBuilder, self).__init__()
-        self._id = int(kwargs.get('id', 0))
-        self.testlink = kwargs.get('testlink', None)
+        self._id = kwargs.get('id', None)
+        self.testlink = kwargs.get('parent_testlink', None)
+
+        # Fix types
+        if self._id is not None:
+            self._id = int(self._id)
 
     def build(self):
         """Generates a new TestlinkObject"""
@@ -72,7 +76,7 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
         self._id = _id
         return self
 
-    def with_testlink(self, testlink):
+    def from_testlink(self, testlink):
         """Set the parent Testlink instance
         :type testlink: Testlink"""
         self.testlink = testlink
