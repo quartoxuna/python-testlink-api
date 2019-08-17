@@ -11,7 +11,7 @@ import random
 import string
 import unittest
 
-from testlink.objects.tl_platform import Platform
+from testlink.objects.platform import Platform
 
 
 def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
