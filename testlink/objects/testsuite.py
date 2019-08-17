@@ -4,6 +4,7 @@
 """TestSuite Object"""
 
 # IMPORTS
+from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
 
@@ -13,24 +14,120 @@ from testlink.objects.tl_attachment import IAttachmentGetter
 from testlink.exceptions import APIError
 
 
-class TestSuite(TestlinkObject, IAttachmentGetter):
-    """Testlink TestSuite representation
-    @ivar notes: TestSuite notes
-    @type notes: str
+class TestSuiteFromAPIBuilder(TestlinkObjectFromAPIBuilder):
+    """Testlink TestSuite Builder for raw Testlink API data
+
+    :param str name: Name of the TestSuite
+    :param str description: Description of the TestSuite
+    :param int level: Level of the TestSuite
+    :param TestProject testproject: Parent TestProject
+    :param TestSuite testsuite: Parent testsuite
     """
 
-    __slots__ = ("details", "_parent_testproject", "_parent_testsuite")
+    def __init__(self, *args, **kwargs):
+        super(TestSuiteFromAPIBuilder, self).__init__(*args, **kwargs)
+        self.name = kwargs.get('name', None)
+        self.description = kwargs.get('details', None)
+        self.level = int(kwargs.get('level', None))
+        self.testsuite = kwargs.get('parent_testsuite', None)
+        self.testproject = kwargs.get('parent_testproject', None)
 
-    def __init__(self,details="", parent_testproject=None, parent_testsuite=None,
-                  _level=0, *args, **kwargs):
+    def build(self):
+        """Generate a new TestSuite"""
+        # Sanity checks
+        assert self.name is not None, "No TestSuite name defined"
+        assert self.testproject is not None, "No parent TestProject defined"
+
+        return TestSuite(
+            # TestSuite
+            name=self.name,
+            description=self.description,
+            level=self.level,
+            parent_testsuite=self.testsuite,
+            parent_testproject=self.testproject,
+            # TestlinkObject
+            _id=self._id,
+            parent_testlink=self.testlink
+        )
+
+
+class TestSuiteBuilder(TestSuiteFromAPIBuilder):
+    """General TestSuite Builder"""
+
+    def __init__(self, *args, **kwargs):
+        super(TestSuiteBuilder, self).__init__(*args, **kwargs)
+
+    def with_name(self, name):
+        """Set the name of the TestSuite
+        :type name: str"""
+        self.name = name
+        return self
+
+    def with_description(self, description):
+        """Set the description of the TestSuite
+        :type description: str"""
+        self.description = description
+        return self
+
+    def with_level(self, level):
+        """Set the level of the TestSuite
+        :type level: int"""
+        self.level = level
+        return self
+
+    def from_testproject(self, testproject):
+        """Set the parent TestProject of the TestSuite
+        :type testproject: TestProject"""
+        self.testproject = testproject
+        return self
+
+    def from_testsuite(self, testsuite):
+        """Set the parent TestSuite of the current TestSuite
+        :type testsuite: TestSuite"""
+        self.testsuite = testsuite
+        return self
+
+
+class TestSuite(TestlinkObject, IAttachmentGetter):
+    """Testlink TestSuite
+
+    :param str name: Name of the TestSuite
+    :param str description: Description of the TestSuite
+    :param int level: Level of the TestSuite
+    :param TestProject testproject: Parent TestProject
+    :param TestSuite testsuite: Parent TestSuite
+    """
+
+    def __init__(self, *args, **kwargs):
         super(TestSuite, self).__init__(*args, **kwargs)
-        self.details = unicode(details)
-        self._level = _level
-        self._parent_testproject = parent_testproject
-        self._parent_testsuite = parent_testsuite
+        self.__name = kwargs['name']
+        self.__description = kwargs['description']
+        self.__level = kwargs['level']
+        self.__parent_testproject = kwargs['parent_testproject']
+        self.__parent_testsuite = kwargs['parent_testsuite']
 
     def __str__(self):
-        return "TestSuite: %s" % self.name
+        return "{}: {}".format(self.__class__.__name__, self.name)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def level(self):
+        return self.__level
+
+    @property
+    def testproject(self):
+        return self.__parent_testproject
+
+    @property
+    def testsuite(self):
+        return self.__parent_testsuite
 
     def iterTestProject(self):
         """Returns associated TestProject"""
