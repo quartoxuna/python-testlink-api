@@ -17,7 +17,7 @@ from tl_keyword import Keyword
 from tl_execution import Execution
 from testplan import TestPlan
 from build import Build
-from tl_platform import Platform
+from platform import Platform
 from tl_reqspec import RequirementSpecification
 from tl_req import Requirement
 from tl_risk import Risk
