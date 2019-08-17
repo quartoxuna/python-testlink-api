@@ -10,7 +10,7 @@ from tl_testlink import Testlink
 from tl_object import TestlinkObject
 from tl_user import User
 from testproject import TestProject
-from tl_testsuite import TestSuite
+from testsuite import TestSuite
 from tl_testcase import TestCase
 from tl_step import Step
 from tl_keyword import Keyword

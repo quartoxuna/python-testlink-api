@@ -9,7 +9,7 @@ from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
 
-from testlink.objects.tl_testsuite import TestSuite
+from testlink.objects.testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
 from testlink.objects.tl_reqspec import RequirementSpecification
 from testlink.objects.testplan import TestPlan

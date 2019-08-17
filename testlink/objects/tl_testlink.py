@@ -14,8 +14,8 @@ from testlink.enums import DUPLICATE_STRATEGY
 from testlink.objects.tl_object import normalize_list
 
 from testproject import TestProjectFromAPIBuilder
-from testlink.objects.tl_testsuite import TestSuite
-from testlink.objects.tl_testsuite import TestCase
+from testsuite import TestSuite
+from testlink.objects.tl_testcase import TestCase
 
 
 class Testlink(object):
