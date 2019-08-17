@@ -11,7 +11,6 @@ from testlink.objects.tl_object import normalize_list
 
 from testlink.objects.testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
-from testlink.objects.tl_reqspec import RequirementSpecification
 from testlink.objects.testplan import TestPlan
 from testlink.objects.tl_attachment import IAttachmentGetter
 
@@ -484,91 +483,3 @@ class TestProject(TestlinkObject, IAttachmentGetter):
         @rtype: mixed
         """
         return normalize_list([c for c in self.iterTestCase(name, external_id, **params)])
-
-    def iterRequirementSpecification(self, name=None, recursive=False, **params):
-        """Iterates over Requirement Specifications specified by parameters
-        @param name: The title of the wanted Requirement Specification
-        @type name: str
-        @param recursive: Get Specifications recursively
-        @type recursive: bool
-        @returns: Matching Requirement Specifications
-        @rtype: generator
-        """
-        # No simple API call possible, get all
-        response = self._api.getRequirementSpecificationsForTestProject(self.id)
-        specs = [RequirementSpecification(api=self._api, parent_testproject=self, **reqspec) for reqspec in response]
-
-        # Filter
-        if len(params) > 0 or name:
-            params['name'] = name
-            for rspec in specs:
-                for key, value in params.items():
-                    # Skip None
-                    if value is None:
-                        continue
-                    try:
-                        try:
-                            if not unicode(getattr(rspec, key)) == unicode(value):
-                                rspec = None
-                                break
-                        except AttributeError:
-                            # Try to treat as custom field
-                            cf_val = self._api.getReqSpecCustomFieldDesignValue(rspec.id,
-                                                                                rspec.getTestProject().id,
-                                                                                key)
-                            if not unicode(cf_val) == unicode(value):
-                                rspec = None
-                                break
-                    except AttributeError:
-                        raise AttributeError("Invalid Search Parameter for Requirement Specification: %s" % key)
-                if rspec is not None:
-                    yield rspec
-            # If recursive is specified,
-            # also search in nested specs
-            if recursive:
-                # For each reqspec of this level
-                for rspec in specs:
-                    # Yield nested specs that match
-                    for r in rspec.iterRequirementSpecification(recursive=recursive, **params):
-                        yield r
-        # Return all Requirement Specifications
-        else:
-            for rspec in specs:
-                # First return the reqspecs from this level,
-                # then return nested ones if recursive is specified
-                yield rspec
-                if recursive:
-                    for r in rspec.iterRequirementSpecification(name=name, recursive=recursive, **params):
-                        yield r
-
-    def getRequirementSpecification(self, name=None, recursive=False, **params):
-        """Returns all Requirement Specifications specified by parameters
-        @param name: The title of the wanted Requirement Specification
-        @type name: str
-        @param recursive: Get Specifications recursively
-        @type recursive: bool
-        @returns: Matching Requirement Specifications
-        @rtype: list
-        """
-        return normalize_list([r for r in self.iterRequirementSpecification(name, recursive, **params)])
-
-    def iterRequirement(self, name=None, **params):
-        """Returns all Requirements specified by paramaters
-        @param name: The title of the wanted Requirements
-        @type name: str
-        @returns: Matching Requirements
-        @rtype: generator
-        """
-        params['name'] = name
-        for spec in self.iterRequirementSpecification(recursive=True):
-            for req in spec.iterRequirement(**params):
-                yield req
-
-    def getRequirement(self, name=None, **params):
-        """Returns all Requirements specified by paramaters
-        @param name: The title of the wanted Requirements
-        @type name: str
-        @returns: Matching Requirements
-        @rtype: list
-        """
-        return normalize_list([r for r in self.iterRequirement(name, **params)])

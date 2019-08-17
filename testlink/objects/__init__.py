@@ -18,6 +18,3 @@ from tl_execution import Execution
 from testplan import TestPlan
 from build import Build
 from platform import Platform
-from tl_reqspec import RequirementSpecification
-from tl_req import Requirement
-from tl_risk import Risk
