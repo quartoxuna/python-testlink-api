@@ -16,9 +16,6 @@ from objects import TestCase
 from objects import TestPlan
 from objects import Build
 from objects import Platform
-from objects import RequirementSpecification
-from objects import Requirement
-from objects import Risk
 
 from exceptions import APIError
 from exceptions import NotSupported
