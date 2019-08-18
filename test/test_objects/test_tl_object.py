@@ -69,3 +69,6 @@ class TestlinkObject_Tests(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             obj.testlink = MagicMock()
+
+if __name__ == "__main__":
+    unittest.main()

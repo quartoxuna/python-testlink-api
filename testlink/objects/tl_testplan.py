@@ -11,8 +11,8 @@ from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
 
-from testlink.objects.build import Build
-from testlink.objects.platform import Platform
+from testlink.objects.tl_build import Build
+from testlink.objects.tl_platform import Platform
 from testlink.objects.tl_testcase import TestCase
 
 from testlink.exceptions import APIError
