@@ -7,14 +7,29 @@ from mock import MagicMock
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 
-class TestlinkObject_Tests(unittest.TestCase):
+class TestlinkObjectFromAPIBuilder_Tests(unittest.TestCase):
 
-    def test_api_builder(self):
-        mock_testlink = MagicMock()
+    def test_api_data(self):
         parameters = {'id': '123'}
-        obj = TestlinkObjectFromAPIBuilder(parent_testlink=mock_testlink, **parameters).build()
-        self.assertEqual(obj.id, 123)
-        self.assertEqual(obj.testlink, mock_testlink)
+        builder = TestlinkObjectFromAPIBuilder(**parameters)
+        self.assertEqual(builder._id, 123)
+
+
+class TestlinkObjectBuilder_Tests(unittest.TestCase):
+
+    def test_with_id(self):
+        builder = TestlinkObject.builder()
+        self.assertEqual(builder, builder.with_id(123))
+        self.assertEqual(builder._id, 123)
+
+    def test_from_testlink(self):
+        testlink = MagicMock()
+        builder = TestlinkObject.builder()
+        self.assertEqual(builder, builder.from_testlink(testlink))
+        self.assertEqual(builder.testlink, testlink)
+
+
+class TestlinkObject_Tests(unittest.TestCase):
 
     def test_default_builder(self):
         mock_testlink = MagicMock()
