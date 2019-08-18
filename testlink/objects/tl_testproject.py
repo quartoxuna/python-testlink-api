@@ -37,10 +37,10 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         self.name = kwargs.get('name', None)
         self.prefix = kwargs.get('prefix', None)
         self.description = kwargs.get('notes', None)
-        self.active = bool(kwargs.get('active', False))
-        self.public = bool(kwargs.get('is_public', None))
+        self.active = kwargs.get('active', None)
+        self.public = kwargs.get('is_public', None)
         self.color = kwargs.get('color', None)
-        self.testcase_count = int(kwargs.get('tc_counter', 0))
+        self.testcase_count = kwargs.get('tc_counter', None)
 
         self.requirement_feature = None
         self.priority_feature = None
@@ -48,10 +48,26 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         self.inventory_feature = None
         if kwargs.get('opt', None):
             options = kwargs.get('opt')
-            self.requirement_feature = bool(options['requirementsEnabled'])
-            self.priority_feature = bool(options['testPriorityEnabled'])
-            self.automation_feature = bool(options['automationEnabled'])
-            self.inventory_feature = bool(options['inventoryEnabled'])
+            self.requirement_feature = options['requirementsEnabled']
+            self.priority_feature = options['testPriorityEnabled']
+            self.automation_feature = options['automationEnabled']
+            self.inventory_feature =  options['inventoryEnabled']
+
+        # Fix types
+        if self.active is not None:
+            self.active = bool(int(self.active))
+        if self.public is not None:
+            self.public = bool(int(self.public))
+        if self.requirement_feature is not None:
+            self.requirement_feature = bool(int(self.requirement_feature))
+        if self.priority_feature is not None:
+            self.priority_feature = bool(int(self.priority_feature))
+        if self.automation_feature is not None:
+            self.automation_feature = bool(int(self.automation_feature))
+        if self.inventory_feature is not None:
+            self.inventory_feature = bool(int(self.inventory_feature))
+        if self.testcase_count is not None:
+            self.testcase_count = int(self.testcase_count)
 
     def build(self):
         """Generates a new TestProject"""
@@ -81,7 +97,8 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         )
 
 
-class TestProjectBuilder(TestProjectFromAPIBuilder):
+class TestProjectBuilder(TestlinkObjectBuilder,
+                         TestProjectFromAPIBuilder):
     """General TestProject Builder"""
 
     def __init__(self, *args, **kwargs):
