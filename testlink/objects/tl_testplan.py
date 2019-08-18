@@ -32,9 +32,15 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         super(TestPlanFromAPIBuilder, self).__init__(*args, **kwargs)
         self.name = kwargs.get('name', None)
         self.description = kwargs.get('notes', None)
-        self.active = bool(kwargs.get('active', None))
-        self.public = bool(kwargs.get('is_public', None))
+        self.active = kwargs.get('active', None)
+        self.public = kwargs.get('is_public', None)
         self.testproject = kwargs.get('parent_testproject', None)
+
+        # Fix types
+        if self.active is not None:
+            self.active = bool(int(self.active))
+        if self.public is not None:
+            self.public = bool(int(self.public))
 
     def build(self):
         """Generate a new TestPlan"""
@@ -57,7 +63,8 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         )
 
 
-class TestPlanBuilder(TestPlanFromAPIBuilder):
+class TestPlanBuilder(TestlinkObjectBuilder,
+                      TestPlanFromAPIBuilder):
     """General TestPlan Builder"""
 
     def __init__(self, *args, **kwargs):
@@ -97,7 +104,7 @@ class TestPlanBuilder(TestPlanFromAPIBuilder):
         self.public = False
         return self
 
-    def with_testproject(self, testproject):
+    def from_testproject(self, testproject):
         """Set the parent TestProject instance
         :type testproject: TestProject"""
         self.testproject = testproject
@@ -115,7 +122,7 @@ class TestPlan(TestlinkObject):
     """
 
     def __init__(self, *args, **kwargs):
-        super(TestlinkObject, self).__init__(*args, **kwargs)
+        super(TestPlan, self).__init__(*args, **kwargs)
         self.__name = kwargs['name']
         self.__description = kwargs['description']
         self.__active = kwargs['active']
@@ -127,7 +134,7 @@ class TestPlan(TestlinkObject):
 
     @staticmethod
     def builder():
-        return TestProjectBuilder()
+        return TestPlanBuilder()
 
     @property
     def name(self):

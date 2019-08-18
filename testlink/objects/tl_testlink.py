@@ -13,39 +13,29 @@ from testlink.enums import DUPLICATE_STRATEGY
 
 from testlink.objects.tl_object import normalize_list
 
-from testproject import TestProjectFromAPIBuilder
-from testsuite import TestSuite
+from testlink.objects.tl_testproject import TestProjectFromAPIBuilder
+from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
 
 
 class Testlink(object):
-    """Testlink Server implementation
-    @ivar _url: URL of connected Testlink
-    @type _url: str
-    @ivar devkey: Valid Testlink developer key
-    @type devkey: str
+    """Testlink object
+
+    :param TestlinkAPI api: TestlinkAPI instance
     """
 
-    def __init__(self, url, devkey, api=API_TYPE.XML_RPC):
-        """Initializes the Testlink Server object
-        @param url: Testlink URL
-        @type url: str
-        @param devkey: Testlink developer key
-        @type devkey: str
-        """
-        self._api = TestlinkAPI.builder()\
-                    .connect_to(url)\
-                    .using_devkey(devkey)\
-                    .build()
+    def __init__(self, api):
+        self.__api = api
 
         # Log API Information
         LOGGER.info(str(self))
 
     def __str__(self):
-        return "{}: {}".format(self.__class__.__name__, str(self._api))
+        return "{}: {}".format(self.__class__.__name__, str(self.api))
 
-    def getVersion(self):
-        return self._api.version
+    @property
+    def api(self):
+        return self.__api
 
     def iterTestProject(self, name=None, **params):
         """Iterates over TestProjects specified by parameters
