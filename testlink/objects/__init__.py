@@ -6,9 +6,9 @@
 @summary: Testlink Objects
 """
 
-from tl_testlink import Testlink
 from tl_object import TestlinkObject
 from tl_user import User
+from testlink import Testlink
 from testproject import TestProject
 from testsuite import TestSuite
 from tl_testcase import TestCase
