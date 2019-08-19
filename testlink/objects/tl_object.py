@@ -68,7 +68,7 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     """General TestlinkObject Builder"""
 
     def __init__(self, *args, **kwargs):
-        super(TestlinkObjectBuilder, self).__init__()
+        super(TestlinkObjectBuilder, self).__init__(*args, **kwargs)
 
     def with_id(self, testlink_id):
         """Set the internal ID of the Testlink Object
