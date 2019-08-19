@@ -199,3 +199,33 @@ class TestProjectTests(unittest.TestCase):
         self.assertTrue(testproject.automation_feature)
         self.assertFalse(testproject.inventory_feature)
         self.assertEqual(testproject.testlink, testlink)
+
+    def test_api_builder(self):
+        """Test initialisation of default builder with raw API data"""
+        testlink = MagicMock()
+        data = {'id': '123', 'name': "Example", 'prefix': 'ABC',
+                'notes': "Description", 'active': '0', 'is_public': '1',
+                'color': '#00FF00', 'tc_counter': '42',
+                'opt': {
+                    'requirementsEnabled': '1',
+                    'testPriorityEnabled': '0',
+                    'automationEnabled': '1',
+                    'inventoryEnabled': '0'
+                }
+               }
+        testproject = TestProject.builder(**data)\
+                      .from_testlink(testlink)\
+                      .build()
+        self.assertEqual(testproject.id, 123)
+        self.assertEqual(testproject.name, "Example")
+        self.assertEqual(testproject.prefix, 'ABC')
+        self.assertEqual(testproject.description, "Description")
+        self.assertFalse(testproject.active)
+        self.assertTrue(testproject.public)
+        self.assertEqual(testproject.color, '#00FF00')
+        self.assertEqual(testproject.testcase_count, 42)
+        self.assertTrue(testproject.requirement_feature)
+        self.assertFalse(testproject.priority_feature)
+        self.assertTrue(testproject.automation_feature)
+        self.assertFalse(testproject.inventory_feature)
+        self.assertEqual(testproject.testlink, testlink)

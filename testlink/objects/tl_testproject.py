@@ -235,8 +235,8 @@ class TestProject(TestlinkObject, AttachmentMixin):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder():
-        return TestProjectBuilder()
+    def builder(*args, **kwargs):
+        return TestProjectBuilder(*args, **kwargs)
 
     @property
     def name(self):
