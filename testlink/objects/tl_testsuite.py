@@ -5,6 +5,7 @@
 
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
+from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import normalize_list
 
@@ -22,15 +23,26 @@ class TestSuiteFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     :param int level: Level of the TestSuite
     :param TestProject testproject: Parent TestProject
     :param TestSuite testsuite: Parent testsuite
+
+    .. todo::
+        Remove *parent_testsuite* from API builder
+
+
+    .. todo::
+        Remove *parent_testproject* from API builder
     """
 
     def __init__(self, *args, **kwargs):
         super(TestSuiteFromAPIBuilder, self).__init__(*args, **kwargs)
         self.name = kwargs.get('name', None)
         self.description = kwargs.get('details', None)
-        self.level = int(kwargs.get('level', None))
+        self.level = kwargs.get('level', None)
         self.testsuite = kwargs.get('parent_testsuite', None)
         self.testproject = kwargs.get('parent_testproject', None)
+
+        # Fix types
+        if self.level is not None:
+            self.level = int(self.level)
 
     def build(self):
         """Generate a new TestSuite"""
@@ -51,7 +63,8 @@ class TestSuiteFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         )
 
 
-class TestSuiteBuilder(TestSuiteFromAPIBuilder):
+class TestSuiteBuilder(TestlinkObjectBuilder,
+                       TestSuiteFromAPIBuilder):
     """General TestSuite Builder"""
 
     def __init__(self, *args, **kwargs):
@@ -108,6 +121,10 @@ class TestSuite(TestlinkObject, IAttachmentGetter):
 
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.name)
+
+    @staticmethod
+    def builder():
+        return TestSuiteBuilder()
 
     @property
     def name(self):
