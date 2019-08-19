@@ -13,7 +13,7 @@ from testlink.enums import DUPLICATE_STRATEGY
 
 from testlink.objects.tl_object import normalize_list
 
-from testlink.objects.tl_testproject import TestProjectFromAPIBuilder
+from testlink.objects.tl_testproject import TestProject
 from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
 
@@ -37,67 +37,14 @@ class Testlink(object):
     def api(self):
         return self.__api
 
-    def iterTestProject(self, name=None, **params):
-        """Iterates over TestProjects specified by parameters
-        @param name: The name of the TestProject
-        @type name: str
-        @param params: Other params for TestProject
-        @type params: dict
-        @returns: Matching TestProjects
-        @rtype: generator
-        """
-        # Check if simple API call can be done
-        if name and len(params) == 0:
-            try:
-                response = self._api.getTestProjectByName(name)
-                # Since Testlink 1.9.6, the server already returns a dict
-                # before, there was a list containing a dict
-                if isinstance(response, list):
-                    response = response[0]
-                yield TestProjectFromAPIBuilder(parent_testlink=self, **response).build()
-            except APIError, api_error:
-                if api_error.error_code == 7011:
-                    # No TestProject found at all
-                    return
-                else:
-                    raise
-        else:
-            # Get all projects and convert them to TestProject instances
-            response = self._api.getProjects()
-            projects = [TestProjectFromAPIBuilder(parent_testlink=self, **project).build() for project in response]
-
-            # Filter
-            if len(params) > 0:
-                params['name'] = name
-                for tproject in projects:
-                    for key, value in params.items():
-                        # Skip None values
-                        if value is None:
-                            continue
-                        try:
-                            if not unicode(getattr(tproject, key)) == unicode(value):
-                                tproject = None
-                                break
-                        except AttributeError:
-                            raise AttributeError("Invalid Search Parameter for TestProject: %s" % key)
-                    # Return found project
-                    if tproject is not None:
-                        yield tproject
-            # Return all found projects
-            else:
-                for tproject in projects:
-                    yield tproject
-
-    def getTestProject(self, name=None, **params):
-        """Returns all TestProjects specified by parameters
-        @param name: The name of the TestProject
-        @type name: str
-        @param params: Other params for TestProject
-        @type params: dict
-        @returns: Matching TestProjects
-        @rtype: mixed
-        """
-        return normalize_list([p for p in self.iterTestProject(name, **params)])
+    @property
+    def testprojects(self):
+        """Returns all TestProjects for the current Testlink instance
+        :rtype: Iterator[TestProject]"""
+        for data in self.api.getProjects():
+            yield TestProject.builder(**data)\
+                  .from_testlink(self)\
+                  .build()
 
     def iterTestSuite(self, name=None, recursive=True, **params):
         """Iterates over TestSuites specified by parameters
