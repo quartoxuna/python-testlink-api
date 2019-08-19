@@ -2,10 +2,14 @@
 
 # IMPORTS
 import unittest
-from mock import MagicMock
+import mock
 
 from testlink.objects.tl_testproject import TestProjectFromAPIBuilder
 from testlink.objects.tl_testproject import TestProject
+
+from testlink.api.testlink_api import TestlinkAPI
+from testlink.objects.tl_testlink import Testlink
+from testlink.objects.tl_testplan import TestPlan
 
 class TestProjectFromAPIBuilderTests(unittest.TestCase):
 
@@ -46,7 +50,7 @@ class TestProjectBuilderTests(unittest.TestCase):
 
     def test_from_testlink(self):
         """Test setter for parent Testlink instance"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         builder = TestProject.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
@@ -170,7 +174,7 @@ class TestProjectTests(unittest.TestCase):
 
     def test_builder(self):
         """Test initialisation with default builder"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         testproject = TestProject.builder()\
                       .with_id(123)\
                       .from_testlink(testlink)\
@@ -202,7 +206,7 @@ class TestProjectTests(unittest.TestCase):
 
     def test_api_builder(self):
         """Test initialisation of default builder with raw API data"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         data = {'id': '123', 'name': "Example", 'prefix': 'ABC',
                 'notes': "Description", 'active': '0', 'is_public': '1',
                 'color': '#00FF00', 'tc_counter': '42',
@@ -229,3 +233,64 @@ class TestProjectTests(unittest.TestCase):
         self.assertTrue(testproject.automation_feature)
         self.assertFalse(testproject.inventory_feature)
         self.assertEqual(testproject.testlink, testlink)
+
+    def test_iterate_testplans(self):
+        """Iterate over testplans"""
+        # Initialize Testlink Object
+        testlink_api = mock.create_autospec(spec=TestlinkAPI)
+        testlink = Testlink(testlink_api)
+
+        # Prepare Server Mock
+        testlink_api.getProjectTestPlans = mock.MagicMock()
+        testlink_api.getProjectTestPlans.return_value = [
+            {'id': '123', 'name': "TestPlan1", 'notes': "Description TestPlan1",
+             'active': '1', 'is_public': '0'},
+            {'id': '456', 'name': "TestPlan2", 'notes': "Description TestPlan2",
+             'active': '0', 'is_public': '1'}
+        ]
+
+        # Prepare parent TestProject
+        testproject = TestProject.builder()\
+                      .with_id(23)\
+                      .from_testlink(testlink)\
+                      .with_name("TestProject")\
+                      .with_prefix("ABC")\
+                      .with_testcase_count(23)\
+                      .is_active()\
+                      .is_public()\
+                      .build()
+
+        # Generate expected results
+        expected_testplans = [
+            TestPlan.builder()\
+            .with_id(123)\
+            .from_testlink(testlink)\
+            .with_name("TestPlan1")\
+            .with_description("Description TestPlan1")\
+            .is_active()\
+            .is_not_public()\
+            .from_testproject(testproject)\
+            .build(),
+            TestPlan.builder()\
+            .with_id(456)\
+            .from_testlink(testlink)\
+            .with_name("TestPlan2")\
+            .with_description("Description TestPlan2")\
+            .is_not_active()\
+            .is_public()\
+            .from_testproject(testproject)\
+            .build()
+        ]
+
+        # Check results
+        for i, testplan in enumerate(testproject.testplans):
+            expected = expected_testplans[i]
+            self.assertEqual(expected, testplan)
+            self.assertEqual(expected.id, testplan.id)
+            self.assertEqual(expected.testlink, testplan.testlink)
+            self.assertEqual(expected.name, testplan.name)
+            self.assertEqual(expected.description, testplan.description)
+            self.assertEqual(expected.active, testplan.active)
+            self.assertEqual(expected.public, testplan.public)
+            self.assertEqual(expected.testproject, testplan.testproject)
+        self.assertTrue(len(list(testproject.testplans)) == 2)

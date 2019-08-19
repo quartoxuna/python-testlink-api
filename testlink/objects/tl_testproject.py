@@ -282,64 +282,16 @@ class TestProject(TestlinkObject, AttachmentMixin):
     def inventory_feature(self):
         return self.__inventory_feature
 
-    def iterTestPlan(self, name=None, **params):
-        """Iterates over TestPlans specified by parameters
-        @param name: The name of the TestPlan
-        @type name: str
-        @param params: Other params for TestPlan
-        @type params: dict
-        @returns: Matching TestPlans
-        @rtype: generator
-        """
-        # Check if simple API call can be done
-        if name and len(params) == 0:
-            response = self._api.getTestPlanByName(name, projectname=self.name)
-            yield TestPlan(api=self._api, parent_testproject=self, **response[0])
-        else:
-            # Get all plans and convert them to TestPlan instances
-            response = self._api.getProjectTestPlans(self.id)
-            plans = [TestPlan(api=self._api, parent_testproject=self, **plan) for plan in response]
+    @property
+    def testplans(self):
+        """Returns all Testplans for the current TestProject
+        :rtype: Iterator[TestPlan]"""
+        for data in self.testlink.api.getProjectTestPlans():
+            yield TestPlan.builder(**data)\
+                  .from_testproject(self)\
+                  .from_testlink(self.testlink)\
+                  .build()
 
-            # Filter
-            if len(params) > 0:
-                params['name'] = name
-                for tplan in plans:
-                    for key, value in params.items():
-                        # Skip None
-                        if value is None:
-                            continue
-                        try:
-                            try:
-                                if not unicode(getattr(tplan, key)) == unicode(value):
-                                    tplan = None
-                                    break
-                            except AttributeError:
-                                # TestPlan has no attribute 'key'
-                                # Try to treat as custom field
-                                cf_val = self._api.getTestPlanCustomFieldValue(tplan.id, tplan.getTestProject().id, key)
-                                if not unicode(cf_val) == unicode(value):
-                                    # No match either
-                                    tplan = None
-                                    break
-                        except AttributeError:
-                            raise AttributeError("Invalid Search Parameter for TestPlan: %s" % key)
-                    if tplan is not None:
-                        yield tplan
-            # Return all found TestPlans
-            else:
-                for tplan in plans:
-                    yield tplan
-
-    def getTestPlan(self, name=None, **params):
-        """Returns all TestPlans specified by parameters
-        @param name: The name of the TestPlan
-        @type name: str
-        @param params: Other params for TestPlan
-        @type params: dict
-        @returns: Matching TestPlans
-        @rtype: mixed
-        """
-        return normalize_list([p for p in self.iterTestPlan(name, **params)])
 
     def iterTestSuite(self, name=None, recursive=True, **params):
         """Iterates over TestSuites specified by parameters
