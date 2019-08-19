@@ -25,8 +25,8 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         super(BuildFromAPIBuilder, self).__init__(*args, **kwargs)
         self.name = kwargs.get('name', None)
         self.description = kwargs.get('notes', None)
-        self.active = bool(kwargs.get('active', None))
-        self.public = bool(kwargs.get('is_public', None))
+        self.active = kwargs.get('active', None)
+        self.public = kwargs.get('is_public', None)
         self.testplan = kwargs.get('parent_testplan', None)
 
         self.created = kwargs.get('creation_ts', None)
@@ -34,12 +34,16 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         self.closed = kwargs.get('closed_on_date', None)
 
         # Fix types
+        if self.active is not None:
+            self.active = bool(int(self.active))
+        if self.public is not None:
+            self.public = bool(int(self.public))
         if self.created is not None:
             self.created = datetime.strptime(self.created, Build.DATETIME_FORMAT)
         if self.released is not None:
-            self.released = datetime.strptime(self.relased, Build.DATETIME_FORMAT)
+            self.released = datetime.strptime(self.released, Build.DATE_FORMAT).date()
         if self.closed is not None:
-            self.closed = datetime.strptime(self.closed, Build.DATETIME_FORMAT)
+            self.closed = datetime.strptime(self.closed, Build.DATE_FORMAT).date()
 
     def build(self):
         """Generate a new Build"""
@@ -66,7 +70,8 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         )
 
 
-class BuildBuilder(BuildFromAPIBuilder):
+class BuildBuilder(TestlinkObjectBuilder,
+                   BuildFromAPIBuilder):
     """General Build Builder"""
 
     def __init__(self, *args, **kwargs):
@@ -112,7 +117,7 @@ class BuildBuilder(BuildFromAPIBuilder):
         self.created = creation_date
         return self
 
-    def relased_on(self, relase_date):
+    def released_on(self, release_date):
         """Set the release date of the Build
         :type release_date: datetime.datetime"""
         self.released = release_date
@@ -122,6 +127,12 @@ class BuildBuilder(BuildFromAPIBuilder):
         """Set the closing date of the Build
         :type closing_date: datetime.datetime"""
         self.closed = closing_date
+        return self
+
+    def from_testplan(self, testplan):
+        """Set the parent TestPlan of the Build
+        :type testplan: TestPlan"""
+        self.testplan = testplan
         return self
 
 
@@ -137,6 +148,8 @@ class Build(TestlinkObject):
     :param datetime.datetime closed: Closing Time of the Build
     :param TestPlan testplan: Parent TestPlan instance
     """
+
+    DATE_FORMAT = "%Y-%m-%d"
 
     def __init__(self, *args, **kwargs):
         super(Build, self).__init__(*args, **kwargs)
