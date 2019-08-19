@@ -4,45 +4,134 @@
 """Attachment Object"""
 
 # IMPORTS
-import datetime
+from datetime import datetime
 
+from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
+from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import strptime
 from testlink.objects.tl_object import normalize_list
 
 
+class AttachmentFromAPIBuilder(TestlinkObjectFromAPIBuilder):
+    """Testlink Attachment Builder for raw Testlink API data
+
+    :param str name: File name of the Attachment
+    :param str description: Description of the Attachment
+    :param str file_type: MIME type of the Attachment
+    :param datetime.date created: Creation Date of the Attachment
+    :param str content: Contents of the Attachment as base64 encoded string
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(AttachmentFromAPIBuilder, self).__init__(*args, **kwargs)
+        self.name = kwargs.get('name', None)
+        self.description = kwargs.get('title', None)
+        self.file_type = kwargs.get('file_type', None)
+        self.created = kwargs.get('date_added', None)
+        self.content = kwargs.get('content', None)
+
+        # Fix types
+        if self.created is not None:
+            self.created = datetime.strptime(self.created, Attachment.DATETIME_FORMAT)
+
+    def build(self):
+        """Generate new Attachment"""
+        return Attachment(
+            # Attachment
+            name=self.name,
+            description=self.description,
+            file_type=self.file_type,
+            created=self.created,
+            content=self.content,
+            # TestlinkObject
+            testlink_id=self.testlink_id,
+            parent_testlink=self.testlink
+    )
+
+
+class AttachmentBuilder(TestlinkObjectBuilder,
+                        AttachmentFromAPIBuilder):
+    """General Attachment Builder"""
+
+    def __init__(self, *args, **kwargs):
+        super(AttachmentBuilder, self).__init__(*args, **kwargs)
+
+    def with_name(self, name):
+        """Set the name of the Attachment
+        :type name: str"""
+        self.name = name
+        return self
+
+    def with_description(self, description):
+        """Set the description of the Attachment
+        :type description: str"""
+        self.description = description
+        return self
+
+    def with_file_type(self, file_type):
+        """Set the file type of the Attachment
+        :type file_type: str"""
+        self.file_type = file_type
+        return self
+
+    def created_on(self, creation_date):
+        """Set the creation date of the Attachment
+        :type creation_date: datetime.datetime"""
+        self.created = creation_date
+        return self
+
+    def with_content(self, content):
+        """Set the content of the Attachment
+        :type content: str"""
+        self.content = content
+        return self
+
+
 class Attachment(TestlinkObject):
-    """Testlink Attachment representation"""
+    """Testlink Attachmen
 
-    slots = ["title", "file_type", "content", "date_added"]
+    :param str name: Name of the Attachment
+    :param str description: Description of the Attachment
+    :param str file_type: File type of the Attachment
+    :param datetime.datetime created: Creation time of the Attachment
+    :param str content: Content of the Attachemnt as base64 encoded string
+    """
 
-    def __init__(self, title, file_type, content="", date_added=None, *args, **kwargs):
-        super(Attachment, self).__init__(*args, **kwargs)
-        self.title = title
-        self.file_name = self.name
-        self.file_type = str(file_type)
-        self.content = str(content)
-        self.length = 0
-        if self.content is not None:
-            self.length = len(self.content)
-        try:
-            self.date_added = strptime(str(date_added), TestlinkObject.DATETIME_FORMAT)
-        except ValueError:
-            self.date_added = datetime.datetime.min
+    def __init__(self, *args, **kwargs):
+        super(Attachment,self).__init__(*args, **kwargs)
+        self.__name = kwargs['name']
+        self.__description = kwargs['description']
+        self.__file_type = kwargs['file_type']
+        self.__created = kwargs['created']
+        self.__content = kwargs['content']
 
     def __str__(self):
-        return "Attachment %d: %s - %s (%s) [%d Bytes] %s" %\
-               (self.id, self.name, self.title, self.file_type, self.length, str(self.date_added))
+        return "{}: {}".format(self.__class__.__name__, self.name)
 
-    def delete(self):
-        """Deletes the current attchment
-        @returns: Success state
-        @rtype: bool
-        """
-        resp = self._api.deleteAttachment(self.id)
-        if isinstance(resp, list) and len(resp) == 1:
-            resp = resp[0]
-        return resp['status_ok']
+    @staticmethod
+    def builder():
+        return AttachmentBuilder()
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def file_type(self):
+        return self.__file_type
+
+    @property
+    def created(self):
+        return self.__created
+
+    @property
+    def content(self):
+        return self.__content
 
 
 class IAttachmentGetter(object):
