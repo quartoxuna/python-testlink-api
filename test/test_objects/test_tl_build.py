@@ -1,22 +1,23 @@
-#!/usr/bin/env python
+# pylint: disable=missing-docstring
 
 # IMPORTS
+import datetime
 import unittest
 from mock import MagicMock
 
-import datetime
 
 from testlink.objects.tl_build import BuildFromAPIBuilder
 from testlink.objects.tl_build import Build
 
-class BuildFromAPIBuilder_Tests(unittest.TestCase):
+class BuildFromAPIBuilderTests(unittest.TestCase):
 
     def test_api_data(self):
+        """Test builder initialization with raw API data"""
         data = {'id': '123', 'name': "Example", 'notes': "Description", 'active': '0',
                 'is_public': '1', 'creation_ts': '2019-08-19 12:34:56',
                 'release_date': '2019-08-18', 'closed_on_date': '2019-08-26'}
         builder = BuildFromAPIBuilder(**data)
-        self.assertEqual(builder._id, 123)
+        self.assertEqual(builder.testlink_id, 123)
         self.assertEqual(builder.name, "Example")
         self.assertEqual(builder.description, "Description")
         self.assertFalse(builder.active)
@@ -26,30 +27,35 @@ class BuildFromAPIBuilder_Tests(unittest.TestCase):
         self.assertEqual(builder.closed, datetime.date(2019, 8, 26))
 
 
-class BuildBuilder_Tests(unittest.TestCase):
+class BuildBuilderTests(unittest.TestCase):
 
     def test_with_id(self):
+        """Test setter for Testlink ID"""
         builder = Build.builder()
         self.assertEqual(builder, builder.with_id(123))
-        self.assertEqual(builder._id, 123)
+        self.assertEqual(builder.testlink_id, 123)
 
     def test_from_testlink(self):
+        """Test setter for parent Testlink instance"""
         testlink = MagicMock()
         builder = Build.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
 
     def test_with_name(self):
+        """Test setter for Build name"""
         builder = Build.builder()
         self.assertEqual(builder, builder.with_name("Example"))
         self.assertEqual(builder.name, "Example")
 
     def test_with_description(self):
+        """Test setter for Build description"""
         builder = Build.builder()
         self.assertEqual(builder, builder.with_description("Description"))
         self.assertEqual(builder.description, "Description")
 
     def test_is_active(self):
+        """Test setter for Build active status"""
         builder = Build.builder()
         self.assertEqual(builder, builder.is_active())
         self.assertTrue(builder.active)
@@ -57,11 +63,13 @@ class BuildBuilder_Tests(unittest.TestCase):
         self.assertFalse(builder.active)
 
     def test_is_not_active(self):
+        """Test setter for Build inactive status"""
         builder = Build.builder()
         self.assertEqual(builder, builder.is_not_active())
         self.assertFalse(builder.active)
 
     def test_is_public(self):
+        """Test setter for Build public status"""
         builder = Build.builder()
         self.assertEqual(builder, builder.is_public())
         self.assertTrue(builder.public)
@@ -69,38 +77,44 @@ class BuildBuilder_Tests(unittest.TestCase):
         self.assertFalse(builder.public)
 
     def test_is_not_public(self):
+        """Test setter for Build not public status"""
         builder = Build.builder()
         self.assertEqual(builder, builder.is_not_public())
         self.assertFalse(builder.public)
 
     def test_created_on(self):
+        """Test setter for Build creation date"""
         creation_date = datetime.datetime(2019, 8, 19, 12, 34, 56)
         builder = Build.builder()
         self.assertEqual(builder, builder.created_on(creation_date))
         self.assertEqual(builder.created, creation_date)
 
     def test_released_on(self):
+        """Test setter for Build release date"""
         release_date = datetime.date(2019, 8, 18)
         builder = Build.builder()
         self.assertEqual(builder, builder.released_on(release_date))
         self.assertEqual(builder.released, release_date)
 
     def test_closed_on(self):
+        """Test setter for Build closed date"""
         closing_date = datetime.date(2019, 8, 26)
         builder = Build.builder()
         self.assertEqual(builder, builder.closed_on(closing_date))
         self.assertEqual(builder.closed, closing_date)
 
     def test_from_testplan(self):
+        """Test setter for Build parent testplan"""
         testplan = MagicMock()
         builder = Build.builder()
         self.assertEqual(builder, builder.from_testplan(testplan))
         self.assertEqual(builder.testplan, testplan)
 
 
-class Build_Tests(unittest.TestCase):
+class BuildTests(unittest.TestCase):
 
     def test_builder(self):
+        """Test initialization with default builder"""
         testlink = MagicMock()
         testplan = MagicMock()
         creation_date = datetime.datetime(2019, 8, 19, 12, 34, 56)

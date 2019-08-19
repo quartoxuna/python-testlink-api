@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# pylint: disable=missing-docstring
 
 # IMPORTS
 import unittest
@@ -7,12 +7,12 @@ import mock
 from testlink.api.xmlrpc import TestlinkXMLRPCAPI
 from testlink.objects.tl_testlink import Testlink
 
-class Testlink_Tests(unittest.TestCase):
+class TestlinkTests(unittest.TestCase):
 
     def test_initialization(self):
+        """Test default initialisation"""
         proxy = mock.MagicMock()
         api = TestlinkXMLRPCAPI(proxy)
-        
-        tl = Testlink(api)
-        self.assertEqual(tl.api, api)
 
+        testlink = Testlink(api)
+        self.assertEqual(testlink.api, api)

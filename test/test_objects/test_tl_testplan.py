@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# pylint: disable=missing-docstring
 
 # IMPORTS
 import unittest
@@ -8,43 +8,49 @@ from testlink.objects.tl_testplan import TestPlanFromAPIBuilder
 from testlink.objects.tl_testplan import TestPlan
 
 
-class TestPlanFromAPIBuilder_Tests(unittest.TestCase):
+class TestPlanFromAPIBuilderTests(unittest.TestCase):
 
     def test_api_data(self):
-        data = {'id': '123', 'name': 'Example', 'notes': "Description",
-                'active': '1','is_public': '0'}
+        """Test builder initialisation with raw API data"""
+        data = {'id': '123', 'name': 'Example',
+                'notes': "Description", 'active': '1', 'is_public': '0'}
         builder = TestPlanFromAPIBuilder(**data)
-        self.assertEqual(builder._id, 123)
+        self.assertEqual(builder.testlink_id, 123)
         self.assertEqual(builder.name, "Example")
         self.assertEqual(builder.description, "Description")
         self.assertTrue(builder.active)
         self.assertFalse(builder.public)
 
 
-class TestPlanBuilder_Tests(unittest.TestCase):
+class TestPlanBuilderTests(unittest.TestCase):
 
     def test_with_id(self):
+        """Test setter for internal Testlink ID"""
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.with_id(123))
-        self.assertEqual(builder._id, 123)
+        self.assertEqual(builder.testlink_id, 123)
 
     def test_from_testlink(self):
+        """Test setter for parent Testlink instance"""
         testlink = MagicMock()
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
 
     def test_with_name(self):
+        """Test setter for TestPlan name"""
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.with_name("Example"))
         self.assertEqual(builder.name, "Example")
 
     def test_with_description(self):
+        """Test setter for TestPlan description"""
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.with_description("Description"))
         self.assertEqual(builder.description, "Description")
 
     def test_is_active(self):
+        """Test setter for TestPlan active status"""
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.is_active())
         self.assertTrue(builder.active)
@@ -52,11 +58,13 @@ class TestPlanBuilder_Tests(unittest.TestCase):
         self.assertFalse(builder.active)
 
     def test_is_not_active(self):
+        """Test setter for TestPlan inactive status"""
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.is_not_active())
         self.assertFalse(builder.active)
 
     def test_is_public(self):
+        """Test setter for TestPlan public status"""
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.is_public())
         self.assertTrue(builder.public)
@@ -64,20 +72,23 @@ class TestPlanBuilder_Tests(unittest.TestCase):
         self.assertFalse(builder.public)
 
     def test_is_not_public(self):
+        """Test setter for TestPlan not public status"""
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.is_not_public())
         self.assertFalse(builder.public)
 
     def test_from_testproject(self):
+        """Test setter for TestPlan parent TestProject"""
         testlink = MagicMock()
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
 
 
-class TestPlan_Tests(unittest.TestCase):
+class TestPlanTests(unittest.TestCase):
 
-    def test_default(self):
+    def test_builder(self):
+        """Test initialisation with default builder"""
         testlink = MagicMock()
         testproject = MagicMock()
         testplan = TestPlan.builder()\
