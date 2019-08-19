@@ -92,7 +92,7 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
             automation_feature=self.automation_feature,
             inventory_feature=self.inventory_feature,
             # TestlinkObject
-            _id=self._id,
+            testlink_id=self.testlink_id,
             parent_testlink=self.testlink,
         )
 

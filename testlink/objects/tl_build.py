@@ -65,7 +65,7 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
             closed=self.closed,
             parent_testplan=self.testplan,
             # TestlinkObject
-            _id=self._id,
+            testlink_id=self.testlink_id,
             parent_testlink=self.testlink
         )
 

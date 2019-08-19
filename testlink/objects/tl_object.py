@@ -45,21 +45,21 @@ class TestlinkObjectFromAPIBuilder(object):
 
     def __init__(self, *args, **kwargs):
         super(TestlinkObjectFromAPIBuilder, self).__init__()
-        self._id = kwargs.get('id', None)
+        self.testlink_id = kwargs.get('id', None)
         self.testlink = kwargs.get('parent_testlink', None)
 
         # Fix types
-        if self._id is not None:
-            self._id = int(self._id)
+        if self.testlink_id is not None:
+            self.testlink_id = int(self.testlink_id)
 
     def build(self):
         """Generates a new TestlinkObject"""
         # Sanity checks
-        assert self._id is not None, "Invalid internal ID '{}'".format(self._id)
+        assert self.testlink_id is not None, "Invalid internal ID '{}'".format(self.testlink_id)
         assert self.testlink is not None, "No parent Testlink instance defined"
 
         return TestlinkObject(
-            _id=self._id,
+            testlink_id=self.testlink_id,
             parent_testlink=self.testlink
         )
 
@@ -70,10 +70,10 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     def __init__(self, *args, **kwargs):
         super(TestlinkObjectBuilder, self).__init__()
 
-    def with_id(self, _id):
+    def with_id(self, testlink_id):
         """Set the internal ID of the Testlink Object
-        :type _id: int"""
-        self._id = _id
+        :type testlink_id: int"""
+        self.testlink_id = testlink_id
         return self
 
     def from_testlink(self, testlink):
@@ -94,7 +94,7 @@ class TestlinkObject(object):
 
     def __init__(self, *args, **kwargs):
         super(TestlinkObject, self).__init__()
-        self.__id = kwargs['_id']
+        self.__testlink_id = kwargs['testlink_id']
         self.__parent_testlink = kwargs['parent_testlink']
 
     @staticmethod
@@ -105,14 +105,14 @@ class TestlinkObject(object):
         return "{}: {}".format(self.__class__.__name__, self.id)
 
     def __id__(self):
-        return self.__id
+        return self.__testlink_id
 
     def __eq__(self, other):
         return self.id == other.id
 
     @property
     def id(self):
-        return self.__id
+        return self.__testlink_id
 
     @property
     def testlink(self):

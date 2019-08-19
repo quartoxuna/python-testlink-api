@@ -61,7 +61,7 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
             public=self.public,
             parent_testproject=self.testproject,
             # TestlinkObject
-            _id=self._id,
+            testlink_id=self.testlink_id,
             parent_testlink=self.testlink,
         )
 
