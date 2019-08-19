@@ -5,6 +5,7 @@
 
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
+from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 
 
@@ -15,6 +16,13 @@ class PlatformFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     :param str description: Description of the Platform
     :param TestProject testproject: Parent TestProject
     :param TestPlan testplan: Parent TestPlan
+
+    .. todo::
+        Remove *parent_testproject* from API builder
+
+
+    .. todo::
+        Remove *parent_testplan* from API builder
     """
 
     def __init__(self, *args, **kwargs):
@@ -37,12 +45,13 @@ class PlatformFromAPIBuilder(TestlinkObjectFromAPIBuilder):
             parent_testproject=self.testproject,
             parent_testplan=self.testplan,
             # TestlinkObject
-            _id=self._id,
+            testlink_id=self.testlink_id,
             parent_testlink=self.testlink
         )
 
 
-class PlatformBuilder(PlatformFromAPIBuilder):
+class PlatformBuilder(TestlinkObjectBuilder,
+                      PlatformFromAPIBuilder):
     """General Platform Builder"""
 
     def __init__(self, *args, **kwargs):
@@ -83,6 +92,7 @@ class Platform(TestlinkObject):
     """
 
     def __init__(self, *args, **kwargs):
+        super(Platform, self).__init__(*args, **kwargs)
         self.__name = kwargs['name']
         self.__description = kwargs['description']
         self.__parent_testproject = kwargs['parent_testproject']
@@ -90,6 +100,10 @@ class Platform(TestlinkObject):
 
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.name)
+
+    @staticmethod
+    def builder():
+        return PlatformBuilder()
 
     @property
     def name(self):
