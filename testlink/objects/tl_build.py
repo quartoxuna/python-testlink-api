@@ -18,6 +18,9 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     :param str description: Description of the Build
     :param bool active: Active status of the build
     :param bool public: Public status of the build
+    :param datetime.datetime created: Creation time of the Build
+    :param datetime.date released: Relase date of the Build
+    :param datetime.date closed: Closing date of the Build
     :param TestPlan testplan: Parent TestPlan
     """
 
