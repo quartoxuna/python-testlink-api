@@ -7,6 +7,7 @@ from mock import MagicMock
 
 from testlink.objects.tl_attachment import AttachmentFromAPIBuilder
 from testlink.objects.tl_attachment import Attachment
+from testlink.objects.tl_attachment import AttachmentMixin
 
 class AttachmentFromAPIBuilderTests(unittest.TestCase):
 
@@ -92,3 +93,16 @@ class AttachmentTests(unittest.TestCase):
         self.assertEqual(attachment.created, datetime.datetime(2019, 8, 19, 12, 34, 56))
         self.assertEqual(attachment.content, 'SGVsbG8gV29ybGQK')
         self.assertEqual(attachment.testlink, testlink)
+
+
+class AttachmentMixinTests(unittest.TestCase):
+
+    def test_mixin(self):
+        """Test class definition with AttachmentMixin"""
+        class TestClass(AttachmentMixin):
+            def __init__(self, *args, **kwargs):
+                super(TestClass, self).__init__(*args, **kwargs)
+
+        cls = TestClass(foreign_key_table='ForeignTable')
+        self.assertEqual(cls.foreign_key_table, 'ForeignTable')
+        self.assertTrue(hasattr(cls, 'attachments'))
