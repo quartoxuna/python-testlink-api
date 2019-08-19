@@ -2,7 +2,7 @@
 
 # IMPORTS
 import unittest
-from mock import MagicMock
+import mock
 
 from testlink.objects.tl_testplan import TestPlanFromAPIBuilder
 from testlink.objects.tl_testplan import TestPlan
@@ -32,7 +32,7 @@ class TestPlanBuilderTests(unittest.TestCase):
 
     def test_from_testlink(self):
         """Test setter for parent Testlink instance"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
@@ -79,7 +79,7 @@ class TestPlanBuilderTests(unittest.TestCase):
 
     def test_from_testproject(self):
         """Test setter for TestPlan parent TestProject"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         builder = TestPlan.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
@@ -89,14 +89,14 @@ class TestPlanTests(unittest.TestCase):
 
     def test_builder(self):
         """Test initialisation with default builder"""
-        testlink = MagicMock()
-        testproject = MagicMock()
+        testlink = mock.MagicMock()
+        testproject = mock.MagicMock()
         testplan = TestPlan.builder()\
                    .with_id(123)\
                    .from_testlink(testlink)\
                    .with_name("Example")\
                    .with_description("Description")\
-                   .is_active()\
+                   .is_not_active()\
                    .is_public()\
                    .from_testproject(testproject)\
                    .build()
@@ -104,6 +104,24 @@ class TestPlanTests(unittest.TestCase):
         self.assertEqual(testplan.testlink, testlink)
         self.assertEqual(testplan.name, "Example")
         self.assertEqual(testplan.description, "Description")
-        self.assertTrue(testplan.active)
+        self.assertFalse(testplan.active)
         self.assertTrue(testplan.public)
+        self.assertEqual(testplan.testproject, testproject)
+
+    def test_api_builder(self):
+        """Test initialisation of default builder with raw API data"""
+        testlink = mock.MagicMock()
+        testproject = mock.MagicMock()
+        data = {'id': '123', 'name': 'Example',
+                'notes': "Description", 'active': '1', 'is_public': '0'}
+        testplan = TestPlan.builder(**data)\
+                   .from_testproject(testproject)\
+                   .from_testlink(testlink)\
+                   .build()
+        self.assertEqual(testplan.id, 123)
+        self.assertEqual(testplan.testlink, testlink)
+        self.assertEqual(testplan.name, "Example")
+        self.assertEqual(testplan.description, "Description")
+        self.assertTrue(testplan.active)
+        self.assertFalse(testplan.public)
         self.assertEqual(testplan.testproject, testproject)

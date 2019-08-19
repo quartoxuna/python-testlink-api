@@ -136,8 +136,8 @@ class TestPlan(TestlinkObject):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder():
-        return TestPlanBuilder()
+    def builder(*args, **kwargs):
+        return TestPlanBuilder(*args, **kwargs)
 
     @property
     def name(self):
