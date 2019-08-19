@@ -26,6 +26,9 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     :param bool active: Active status of the plan
     :param bool public: Public status of the plan
     :param TestProject testproject: Parent TestProject
+
+    .. todo::
+        Remove *parent_testproject* from API builder
     """
 
     def __init__(self, *args, **kwargs):
