@@ -10,7 +10,7 @@ from testlink.objects.tl_step import Step
 from testlink.objects.tl_keyword import Keyword
 from testlink.objects.tl_execution import Execution
 from testlink.objects.tl_attachment import Attachment
-from testlink.objects.tl_attachment import IAttachmentGetter
+from testlink.objects.tl_attachment import AttachmentMixin
 from testlink.objects.tl_user import User
 
 from testlink.exceptions import APIError
@@ -22,7 +22,7 @@ from testlink.enums import CUSTOM_FIELD_DETAILS as CUSTOM_FIELD_DETAILS
 from testlink.enums import TESTCASE_STATUS as TESTCASE_STATUS
 
 
-class TestCase(TestlinkObject, IAttachmentGetter):
+class TestCase(TestlinkObject, AttachmentMixin):
     """Testlink TestCase representation"""
 
     __slots__ = ["tc_id", "external_id", "platform_id", "execution_status", "execution_notes", "priority",
@@ -646,7 +646,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                 yield attach
 
     def uploadAttachment(self, *args, **kwargs):
-        """Upload an Attachment for the TestCase, see IAttachmentGetter.uploadAttachment"""
+        """Upload an Attachment for the TestCase, see AttachmentMixin.uploadAttachment"""
         # Update ID to TestCase ID rather than TestCase Version ID
         kwargs.update({'id': self.tc_id})
-        IAttachmentGetter.uploadAttachment(self, *args, **kwargs)
+        AttachmentMixin.uploadAttachment(self, *args, **kwargs)

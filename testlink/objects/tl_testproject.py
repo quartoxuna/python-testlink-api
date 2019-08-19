@@ -12,7 +12,7 @@ from testlink.objects.tl_object import normalize_list
 from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
 from testlink.objects.tl_testplan import TestPlan
-from testlink.objects.tl_attachment import IAttachmentGetter
+from testlink.objects.tl_attachment import AttachmentMixin
 
 from testlink.exceptions import APIError
 
@@ -201,7 +201,7 @@ class TestProjectBuilder(TestlinkObjectBuilder,
         return self
 
 
-class TestProject(TestlinkObject, IAttachmentGetter):
+class TestProject(TestlinkObject, AttachmentMixin):
     """Testlink TestProject
 
     :param str name: Name of the TestProject

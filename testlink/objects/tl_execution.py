@@ -10,14 +10,14 @@ from testlink.objects.tl_object import TestlinkObject
 from testlink.objects.tl_object import strptime
 
 from testlink.objects.tl_user import User
-from testlink.objects.tl_attachment import IAttachmentGetter
+from testlink.objects.tl_attachment import AttachmentMixin
 
 from testlink.exceptions import NotSupported
 
 from testlink.enums import EXECUTION_TYPE
 
 
-class Execution(TestlinkObject, IAttachmentGetter):
+class Execution(TestlinkObject, AttachmentMixin):
     """Testlink TestCase Execution representation
     @ivar id: The internal ID of the Execution
     @type id: int

@@ -134,78 +134,22 @@ class Attachment(TestlinkObject):
         return self.__content
 
 
-class IAttachmentGetter(object):
-    """Interface class for getting attachments of various Testlink Objects"""
+class AttachmentMixin(object):
+    """Mixin class for Testlink Objects which can have Attachments
 
-    def __init__(self, foreign_key_table="nodes_hierarchy"):
-        super(IAttachmentGetter, self).__init__()
-        self._foreign_key_table = foreign_key_table
+    :param str foreign_key_table: Name of foreign key table, used for getting attachment
+    """
 
-    def iterAttachment(self, **params):
-        """Iterates over TestlinkObject's attachments specified by parameters
-        @returns: Matching attachments
-        @rtype: generator
-        """
-        # Get all attachments for this object
-        response = self._api.getAttachments(self.id, self._foreign_key_table)
+    def __init__(self, *args, **kwargs):
+        super(AttachmentMixin, self).__init__()
+        self.__foreign_key_table = kwargs.get('foreign_key_table', None)
 
-        # Check for empty result
-        if len(response) == 0:
-            return
-        attachments = [Attachment(api=self._api, **resp) for resp in response.values()]
+    @property
+    def foreign_key_table(self):
+        return self.__foreign_key_table
 
-        # Filter
-        if len(params) > 0:
-            for attach in attachments:
-                for key, value in params.items():
-                    # Skip None
-                    if value is None:
-                        continue
-                    try:
-                        if not unicode(getattr(attach, key)) == unicode(value):
-                            attach = None
-                            break
-                    except AttributeError:
-                        raise AttributeError("Invalid Search Paramater for Attachment: %s" % key)
-                if attach is not None:
-                    yield attach
-        else:
-            # Return all found attachments
-            for attach in attachments:
-                yield attach
-
-    def getAttachment(self, **params):
-        """Return all TestlinkObject's attachments specified by parameters
-        @returns: Matching Attachments
-        @rtype: mixed
-        """
-        return normalize_list([p for p in self.iterAttachment(**params)])
-
-    def uploadAttachment(self, filename, filetype, content, title=None, description=None, **kwargs):
-        """Upload an Attachment for the current object
-        @param filename: Filename of the attached file
-        @type filename: str
-        @param filetype: MIME Type of the attached file
-        @type filetype: str
-        @param content: Contents of the file as Base64 encoded string
-        @type content: str
-        @param title: <optional> Title of the attachment
-        @type title: str
-        @param description: <optional> Description of the attachment
-        @type description: str
-        @keyword id: <optional> ID Override (used for TestCases)
-        @returns: Server response
-        @rtype: dict
-        """
-        # Check which ID to use
-        _id = self.id
-        if 'id' in kwargs:
-            _id = kwargs['id']
-
-        self._api.uploadAttachment(fkid=_id,
-                                   fktable=self._foreign_key_table,
-                                   filename=str(filename),
-                                   filetype=str(filetype),
-                                   content=content,
-                                   title=title,
-                                   description=description)
+    def attachments(self):
+        """Returns all attachments for the current TestlinkObject
+        :rtype: Iterator[Attachment]"""
+        for data in self.testlink.getAttachments(self.id, self.foreign_key_table):
+            yield AttachmentFromAPIBuilder(**data).build()
