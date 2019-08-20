@@ -123,8 +123,8 @@ class TestSuite(TestlinkObject, AttachmentMixin):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder():
-        return TestSuiteBuilder()
+    def builder(*args, **kwargs):
+        return TestSuiteBuilder(*args, **kwargs)
 
     @property
     def name(self):

@@ -2,7 +2,7 @@
 
 # IMPORTS
 import unittest
-from mock import MagicMock
+import mock
 
 from testlink.objects.tl_testsuite import TestSuiteFromAPIBuilder
 from testlink.objects.tl_testsuite import TestSuite
@@ -30,7 +30,7 @@ class TestSuiteBuilderTests(unittest.TestCase):
 
     def test_from_testlink(self):
         """Test setter for parent Testlink instance"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         builder = TestSuite.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
@@ -55,14 +55,14 @@ class TestSuiteBuilderTests(unittest.TestCase):
 
     def test_from_testproject(self):
         """Test setter for TestSuite parent TestProject"""
-        testproject = MagicMock()
+        testproject = mock.MagicMock()
         builder = TestSuite.builder()
         self.assertEqual(builder, builder.from_testproject(testproject))
         self.assertEqual(builder.testproject, testproject)
 
     def test_from_testsuite(self):
         """Test setter for TestSuite parent TestSuite"""
-        testsuite = MagicMock()
+        testsuite = mock.MagicMock()
         builder = TestSuite.builder()
         self.assertEqual(builder, builder.from_testsuite(testsuite))
         self.assertEqual(builder.testsuite, testsuite)
@@ -72,9 +72,9 @@ class TestSuiteTests(unittest.TestCase):
 
     def test_builder(self):
         """Test initialisation with default builder"""
-        testsuite = MagicMock()
-        testproject = MagicMock()
-        testlink = MagicMock()
+        testsuite = mock.MagicMock()
+        testproject = mock.MagicMock()
+        testlink = mock.MagicMock()
         suite = TestSuite.builder()\
                 .with_id(123)\
                 .from_testlink(testlink)\
@@ -84,6 +84,26 @@ class TestSuiteTests(unittest.TestCase):
                 .from_testproject(testproject)\
                 .from_testsuite(testsuite)\
                 .build()
+        self.assertEqual(suite.id, 123)
+        self.assertEqual(suite.name, "Example")
+        self.assertEqual(suite.description, "Description")
+        self.assertEqual(suite.level, 4)
+        self.assertEqual(suite.testlink, testlink)
+        self.assertEqual(suite.testproject, testproject)
+        self.assertEqual(suite.testsuite, testsuite)
+
+    def test_api_builder(self):
+        """Test initialisation of default builder with raw API data"""
+        testlink = mock.MagicMock()
+        testproject = mock.MagicMock()
+        testsuite = mock.MagicMock()
+        data = {'id': '123', 'name': "Example",
+                'details': "Description", 'level': '4'}
+        suite = TestSuite.builder(**data)\
+                    .from_testlink(testlink)\
+                    .from_testproject(testproject)\
+                    .from_testsuite(testsuite)\
+                    .build()
         self.assertEqual(suite.id, 123)
         self.assertEqual(suite.name, "Example")
         self.assertEqual(suite.description, "Description")
