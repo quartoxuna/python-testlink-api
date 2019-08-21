@@ -7,6 +7,10 @@ import mock
 from testlink.objects.tl_testsuite import TestSuiteFromAPIBuilder
 from testlink.objects.tl_testsuite import TestSuite
 
+from testlink.api.testlink_api import TestlinkAPI
+from testlink.objects.tl_testlink import Testlink
+from testlink.objects.tl_testproject import TestProject
+
 class TestSuiteFromAPIBuilderTests(unittest.TestCase):
 
     def test_api_data(self):
@@ -111,3 +115,165 @@ class TestSuiteTests(unittest.TestCase):
         self.assertEqual(suite.testlink, testlink)
         self.assertEqual(suite.testproject, testproject)
         self.assertEqual(suite.testsuite, testsuite)
+
+    def test_iterate_testsuites(self):
+        """Iterator over nested testsuites"""
+        # Initialize Testlink Object
+        testlink_api = mock.create_autospec(spec=TestlinkAPI)
+        testlink = Testlink(testlink_api)
+
+        # Prepare Server Mock
+        #
+        # + TestSuite 0 (self)
+        #     + TestSuite 1
+        #     + TestSuite 2
+        #         + TestSuite 2.1
+        #             + TestSuite 2.1.1
+        #         + TestSuite 2.2
+        #     + TestSuite 3
+        #         + TestSuite 3.1
+        #
+
+        leveled_results = [
+            # Children of 'TestSuite 0'
+            [
+                {'id': '1', 'name': "TestSuite 1", 'details': "Description 1", 'level': '2'},
+                {'id': '2', 'name': "TestSuite 2", 'details': "Description 2", 'level': '2'},
+                {'id': '3', 'name': "TestSuite 3", 'details': "Description 3", 'level': '2'}
+            ],
+
+            # Children of 'TestSuite 1'
+            [],
+
+            # Children of 'TestSuite 2'
+            [
+                {'id': '21', 'name': "TestSuite 2.1", 'details': "Description 2.1", 'level': '3'},
+                {'id': '22', 'name': "TestSuite 2.2", 'details': "Description 2.2", 'level': '3'}
+            ],
+
+            # Children of 'TestSuite 2.1'
+            [
+                {'id': '211', 'name': "TestSuite 2.1.1", 'details': "Description 2.1.1", 'level': '4'}
+            ],
+
+            # Children of 'TestSuite 2.1.1'
+            [],
+
+            # Children of 'TestSuite 2.2'
+            [],
+
+            # Children of 'TestSuite 3'
+            [
+                {'id': '31', 'name': "TestSuite 3.1", 'details': "Description 3.1", 'level': '3'}
+            ],
+
+            # Children of 'TestSuite 3.1'
+            []
+        ]
+        testlink_api.getTestSuitesForTestSuite = mock.MagicMock(side_effect=leveled_results)
+
+        # Prepare parent TestProject
+        testproject = TestProject.builder()\
+                      .with_id(23)\
+                      .from_testlink(testlink)\
+                      .with_name("TestProject")\
+                      .with_prefix("ABC")\
+                      .with_testcase_count(20)\
+                      .is_active()\
+                      .is_public()\
+                      .build()
+
+        # Prepare current TestSuite
+        testsuite_0 = TestSuite.builder()\
+                    .with_id(0)\
+                    .from_testlink(testlink)\
+                    .with_name("TestSuite 0")\
+                    .with_description("Description 0")\
+                    .with_level(1)\
+                    .from_testproject(testproject)\
+                    .build()
+
+        # Generate expected results
+        testsuite_1 = TestSuite.builder()\
+                     .with_id(1)\
+                     .from_testlink(testlink)\
+                     .with_name("TestSuite 1")\
+                     .with_description("Description 1")\
+                     .with_level(2)\
+                     .from_testproject(testproject)\
+                     .from_testsuite(testsuite_0)\
+                     .build()
+        testsuite_2 = TestSuite.builder()\
+                     .with_id(2)\
+                     .from_testlink(testlink)\
+                     .with_name("TestSuite 2")\
+                     .with_description("Description 2")\
+                     .with_level(2)\
+                     .from_testproject(testproject)\
+                     .from_testsuite(testsuite_0)\
+                     .build()
+        testsuite_3 = TestSuite.builder()\
+                     .with_id(3)\
+                     .from_testlink(testlink)\
+                     .with_name("TestSuite 3")\
+                     .with_description("Description 3")\
+                     .with_level(2)\
+                     .from_testproject(testproject)\
+                     .from_testsuite(testsuite_0)\
+                     .build()
+        testsuite_2_1 = TestSuite.builder()\
+                     .with_id(21)\
+                     .from_testlink(testlink)\
+                     .with_name("TestSuite 2.1")\
+                     .with_description("Description 2.1")\
+                     .with_level(3)\
+                     .from_testproject(testproject)\
+                     .from_testsuite(testsuite_2)\
+                     .build()
+        testsuite_2_2 = TestSuite.builder()\
+                     .with_id(22)\
+                     .from_testlink(testlink)\
+                     .with_name("TestSuite 2.2")\
+                     .with_description("Description 2.2")\
+                     .with_level(3)\
+                     .from_testproject(testproject)\
+                     .from_testsuite(testsuite_2)\
+                     .build()
+        testsuite_3_1 = TestSuite.builder()\
+                     .with_id(31)\
+                     .from_testlink(testlink)\
+                     .with_name("TestSuite 3.1")\
+                     .with_description("Description 3.1")\
+                     .with_level(3)\
+                     .from_testproject(testproject)\
+                     .from_testsuite(testsuite_3)\
+                     .build()
+        testsuite_2_1_1 = TestSuite.builder()\
+                     .with_id(211)\
+                     .from_testlink(testlink)\
+                     .with_name("TestSuite 2.1.1")\
+                     .with_description("Description 2.1.1")\
+                     .with_level(4)\
+                     .from_testproject(testproject)\
+                     .from_testsuite(testsuite_2_1)\
+                     .build()
+        expected_testsuites = [
+            testsuite_1,
+            testsuite_2,
+            testsuite_2_1,
+            testsuite_2_1_1,
+            testsuite_2_2,
+            testsuite_3,
+            testsuite_3_1
+        ]
+
+        # Check results
+        for i, testsuite in enumerate(testsuite_0.testsuites):
+            expected = expected_testsuites[i]
+            self.assertEqual(expected.id, testsuite.id)
+            self.assertEqual(expected.name, testsuite.name)
+            self.assertEqual(expected.description, testsuite.description)
+            self.assertEqual(expected.level, testsuite.level)
+            self.assertEqual(expected.testproject, testsuite.testproject)
+            self.assertEqual(expected.testlink, testsuite.testlink)
+            self.assertEqual(expected.testsuite, testsuite.testsuite)
