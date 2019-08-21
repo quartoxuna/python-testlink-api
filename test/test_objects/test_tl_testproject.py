@@ -443,3 +443,6 @@ class TestProjectTests(unittest.TestCase):
             self.assertEqual(expected.testproject, testsuite.testproject)
             self.assertEqual(expected.testlink, testsuite.testlink)
             self.assertEqual(expected.testsuite, testsuite.testsuite)
+
+        # Verify that amount of returned testsuites match
+        self.assertEqual(len(expected_testsuites), i+1)
