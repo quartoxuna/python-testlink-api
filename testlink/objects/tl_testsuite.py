@@ -109,6 +109,7 @@ class TestSuite(TestlinkObject, AttachmentMixin):
     :param int level: Level of the TestSuite
     :param TestProject testproject: Parent TestProject
     :param TestSuite testsuite: Parent TestSuite
+    :param Iterator[TestSuite] testsuites: Child TestSuites
     """
 
     def __init__(self, *args, **kwargs):
@@ -120,7 +121,10 @@ class TestSuite(TestlinkObject, AttachmentMixin):
         self.__parent_testsuite = kwargs['parent_testsuite']
 
     def __str__(self):
-        return "{}: {}".format(self.__class__.__name__, self.name)
+        return "[{}] {}: {}".format(self.level, self.__class__.__name__, self.name)
+
+    def __repr__(self):
+        return str(self)
 
     @staticmethod
     def builder(*args, **kwargs):
@@ -146,99 +150,24 @@ class TestSuite(TestlinkObject, AttachmentMixin):
     def testsuite(self):
         return self.__parent_testsuite
 
-    def iterTestProject(self):
-        """Returns associated TestProject"""
-        yield self._parent_testproject
+    @property
+    def testsuites(self):
+        """Returns all TestSuites for the current TestSuite
+        :rtype: Iterator[TestSuite]"""
+        # DFS - Deep-First Search
+        # First, return all currently nested testsuites
+        for data in self.testlink.api.getTestSuitesForTestSuite(self.id, self.testproject.id):
+            testsuite = TestSuite.builder(**data)\
+                        .from_testlink(self.testlink)\
+                        .from_testproject(self.testproject)\
+                        .from_testsuite(self)\
+                        .build()
+            yield testsuite
 
-    def getTestProject(self):
-        """Returns associated TestProject"""
-        return self._parent_testproject
-
-    def iterTestSuite(self, name=None, recursive=True, **params):
-        """Iterates over TestSuites speficied by parameters
-        @param name: The name of the wanted TestSuite
-        @type name: str
-        @param recursive: Search recursive to get all nested TestSuites
-        @type recursive: bool
-        @param params: Other params for TestSuite
-        @type params: dict
-        @returns: Matching TestSuites
-        @rtype: generator
-        """
-        # Simple API call could be done, but
-        # we want to ensure, that only sub suites of this
-        # particular suite are involved, so no API call here
-        response = self._api.getTestSuitesForTestSuite(self.id, self.getTestProject().id)
-
-        # Normalize result
-        if isinstance(response, str) and response.strip() == "":
-            response = []
-        elif isinstance(response, dict):
-            # Check for nested dict
-            if isinstance(response[response.keys()[0]], dict):
-                response = [self._api.getTestSuiteById(self.getTestProject().id, suite_id)
-                            for suite_id in response.keys()]
-            else:
-                response = [response]
-        suites = [TestSuite(api=self._api, parent_testproject=self.getTestProject(),
-                            parent_testsuite=self, _level=self._level+1, **suite)
-                  for suite in response]
-
-        # Filter
-        if len(params) > 0 or name:
-            params['name'] = name
-            for tsuite in suites:
-                for key, value in params.items():
-                    # Skip None
-                    if value is None:
-                        continue
-                    try:
-                        try:
-                            if not unicode(getattr(tsuite, key)) == unicode(value):
-                                tsuite = None
-                                break
-                        except AttributeError:
-                            # Try as custom field
-                            cf_val = self._api.getTestSuiteCustomFieldDesignValue(tsuite.id,
-                                                                                  tsuite.getTestProject().id,
-                                                                                  key)
-                            if not unicode(cf_val) == unicode(value):
-                                tsuite = None
-                                break
-                    except AttributeError:
-                        raise AttributeError("Invalid Search Parameter for TestSuite: %s" % key)
-                if tsuite is not None:
-                    yield tsuite
-            # If recursive is specified
-            # also serch in nested suites
-            if recursive:
-                # For each suite of this level
-                for tsuite in suites:
-                    # Yield nested suites that match
-                    for s in tsuite.iterTestSuite(recursive=recursive, **params):
-                        yield s
-        # Return all suites
-        else:
-            for tsuite in suites:
-                # First return the suites from this level,\
-                # then return nested ones if recursive is specified
-                yield tsuite
-                if recursive:
-                    for s in tsuite.iterTestSuite(name=name, recursive=recursive, **params):
-                        yield s
-
-    def getTestSuite(self, name=None, recursive=True, **params):
-        """Returns all TestSuites speficied by parameters
-        @param name: The name of the wanted TestSuite
-        @type name: str
-        @param recursive: Search recursive to get all nested TestSuites
-        @type recursive: bool
-        @param params: Other params for TestSuite
-        @type params: dict
-        @returns: Matching TestSuites
-        @rtype: mixed
-        """
-        return normalize_list([s for s in self.iterTestSuite(name, recursive, **params)])
+            # Then, return all nested testsuites
+            # for that particular testsuite
+            for nested in testsuite.testsuites:
+                yield nested
 
     def iterTestCase(self, name=None, **params):
         """Iterates over TestCases specified by parameters

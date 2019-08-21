@@ -292,103 +292,23 @@ class TestProject(TestlinkObject, AttachmentMixin):
                   .from_testlink(self.testlink)\
                   .build()
 
+    @property
+    def testsuites(self):
+        """Returns all TestSuites for the current TestProject
+        :rtype: Iterator[TestSuite]"""
+        # DFS - Deep-First Search
+        # First, return all first level testsuite
+        for data in self.testlink.api.getFirstLevelTestSuitesForTestProject(self.id):
+            testsuite = TestSuite.builder(**data)\
+                        .from_testproject(self)\
+                        .from_testlink(self.testlink)\
+                        .build()
+            yield testsuite
 
-    def iterTestSuite(self, name=None, recursive=True, **params):
-        """Iterates over TestSuites specified by parameters
-        @param name: The name of the wanted TestSuite
-        @type name: str
-        @param recursive: Search recursive to get all nested TestSuites
-        @type recursive: bool
-        @param params: Other params for TestSuite
-        @type params: dict
-        @returns: Matching TestSuites
-        @rtype: generator
-        """
-        # Check if simple API call can be done
-        # Since the ID is unique, all other params can be ignored
-        _id = params.get('id')
-        if _id:
-            response = self._api.getTestSuiteById(self.id, _id)
-            # We cannot be sure that the found TestSuite resides within the
-            # current TestProject, so we have to do a small check using the
-            # name of the current TestProject
-            # API call returns a dictionary
-            node_path = self._api.getFullPath(_id).values()[0]
-            if node_path[0] == self.name:
-                yield TestSuite(api=self._api, parent_testproject=self, **response)
-        else:
-            try:
-                response = self._api.getFirstLevelTestSuitesForTestProject(self.id)
-            except APIError, ae:
-                if ae.error_code == 7008:
-                    # TestProject has no TestSuites
-                    return
-                else:
-                    raise
-
-            # Bug !
-            # Since the API call to getFirstLevelTestSuites does NOT
-            # return the details, we have to get it with another API call
-            # This has to be done BEFORE the acutal filtering because otherwise
-            # we could not filter by the details
-            response = [self._api.getTestSuiteById(self.id, suite['id']) for suite in response]
-            suites = [TestSuite(api=self._api, parent_testproject=self, **suite) for suite in response]
-
-            # Filter by specified parameters
-            if len(params) > 0 or name:
-                params['name'] = name
-                for tsuite in suites:
-                    for key, value in params.items():
-                        # Skip None
-                        if value is None:
-                            continue
-                        try:
-                            try:
-                                if not unicode(getattr(tsuite, key)) == unicode(value):
-                                    tsuite = None
-                                    break
-                            except AttributeError:
-                                # Try as custom field
-                                cf_val = self._api.getTestSuiteCustomFieldDesignValue(tsuite.id,
-                                                                                      tsuite.getTestProject().id,
-                                                                                      key)
-                                if not unicode(cf_val) == unicode(value):
-                                    tsuite = None
-                                    break
-                        except AttributeError:
-                            raise AttributeError("Invalid Search Parameter for TestSuite: %s" % key)
-                    if tsuite is not None:
-                        yield tsuite
-                # If recursive is specified,
-                # also search in nestes suites
-                if recursive:
-                    # For each suite of this level
-                    for tsuite in suites:
-                        # Yield nested suites that match
-                        for s in tsuite.iterTestSuite(recursive=recursive, **params):
-                            yield s
-            # Return all TestSuites
-            else:
-                for tsuite in suites:
-                    # First return the suites from this level,
-                    # then return nested ones if recursive is specified
-                    yield tsuite
-                    if recursive:
-                        for s in tsuite.iterTestSuite(name=name, recursive=recursive, **params):
-                            yield s
-
-    def getTestSuite(self, name=None, recursive=True, **params):
-        """Returns all TestSuites specified by parameters
-        @param name: The name of the wanted TestSuite
-        @type name: str
-        @param recursive: Search recursive to get all nested TestSuites
-        @type recursive: bool
-        @param params: Other params for TestSuite
-        @type params: dict
-        @returns: Matching TestSuites
-        @rtype: mixed
-        """
-        return normalize_list([s for s in self.iterTestSuite(name, recursive, **params)])
+            # Then, return all nested testsuites
+            # for that particular testsuite
+            for nested in testsuite.testsuites:
+                yield nested
 
     def iterTestCase(self, name=None, external_id=None, version=None, **params):
         """Iterates over TestCases specified by parameters

@@ -9,6 +9,7 @@ from testlink.objects.tl_testproject import TestProject
 
 from testlink.api.testlink_api import TestlinkAPI
 from testlink.objects.tl_testlink import Testlink
+from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testplan import TestPlan
 
 class TestProjectFromAPIBuilderTests(unittest.TestCase):
@@ -294,3 +295,151 @@ class TestProjectTests(unittest.TestCase):
             self.assertEqual(expected.public, testplan.public)
             self.assertEqual(expected.testproject, testplan.testproject)
         self.assertTrue(len(list(testproject.testplans)) == 2)
+
+    def test_iterate_testsuites(self):
+        """Iterate over testsuites"""
+        # Initialize Testlink Object
+        testlink_api = mock.create_autospec(spec=TestlinkAPI)
+        testlink = Testlink(testlink_api)
+
+        # Prepare Server Mock
+        #
+        # + TestSuite 1
+        # + TestSuite 2
+        #     + TestSuite 4
+        #         + TestSuite 7
+        #     + TestSuite 5
+        # + TestSuite 3
+        #     + TestSuite 6
+        #
+
+        first_level_results = [
+            {'id': '1', 'name': "TestSuite 1", 'details': "Description 1", 'level': '1'},
+            {'id': '2', 'name': "TestSuite 2", 'details': "Description 2", 'level': '1'},
+            {'id': '3', 'name': "TestSuite 3", 'details': "Description 3", 'level': '1'}
+        ]
+        second_level_results = [
+            # Children of 'TestSuite 1'
+            [],
+
+            # Children of 'TestSuite 2'
+            [
+                {'id': '4', 'name': "TestSuite 4", 'details': "Description 4", 'level': '2'},
+                {'id': '5', 'name': "TestSuite 5", 'details': "Description 5", 'level': '2'}
+            ],
+
+            # Children of 'TestSuite 4'
+            [
+                {'id': '7', 'name': "TestSuite 7", 'details': "Description 7", 'level': '3'}
+            ],
+
+            # Children of TestSuite 5'
+            [],
+
+            # Children of 'TestSuite 7'
+            [],
+
+            # Children of 'TestSuite 3'
+            [
+                {'id': '6', 'name': "TestSuite 6", 'details': "Description 6", 'level': '2'}
+            ],
+
+            # Children of 'TestSuite 6'
+            []
+        ]
+        testlink_api.getFirstLevelTestSuitesForTestProject = mock.MagicMock(return_value=first_level_results)
+        testlink_api.getTestSuitesForTestSuite = mock.MagicMock(side_effect=second_level_results)
+
+        # Prepare parent TestProject
+        testproject = TestProject.builder()\
+                      .with_id(23)\
+                      .from_testlink(testlink)\
+                      .with_name("TestProject")\
+                      .with_prefix("ABC")\
+                      .with_testcase_count(23)\
+                      .is_active()\
+                      .is_public()\
+                      .build()
+
+        # Generate expected results
+        testsuite_1 = TestSuite.builder()\
+                      .with_id(1)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 1")\
+                      .with_description("Description 1")\
+                      .with_level(1)\
+                      .from_testproject(testproject)\
+                      .build()
+        testsuite_2 = TestSuite.builder()\
+                      .with_id(2)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 2")\
+                      .with_description("Description 2")\
+                      .with_level(1)\
+                      .from_testproject(testproject)\
+                      .build()
+        testsuite_3 = TestSuite.builder()\
+                      .with_id(3)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 3")\
+                      .with_description("Description 3")\
+                      .with_level(1)\
+                      .from_testproject(testproject)\
+                      .build()
+        testsuite_4 = TestSuite.builder()\
+                      .with_id(4)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 4")\
+                      .with_description("Description 4")\
+                      .with_level(2)\
+                      .from_testproject(testproject)\
+                      .from_testsuite(testsuite_2)\
+                      .build()
+        testsuite_5 = TestSuite.builder()\
+                      .with_id(5)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 5")\
+                      .with_description("Description 5")\
+                      .with_level(2)\
+                      .from_testproject(testproject)\
+                      .from_testsuite(testsuite_2)\
+                      .build()
+        testsuite_6 = TestSuite.builder()\
+                      .with_id(6)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 6")\
+                      .with_description("Description 6")\
+                      .with_level(2)\
+                      .from_testproject(testproject)\
+                      .from_testsuite(testsuite_3)\
+                      .build()
+        testsuite_7 = TestSuite.builder()\
+                      .with_id(7)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 7")\
+                      .with_description("Description 7")\
+                      .with_level(3)\
+                      .from_testproject(testproject)\
+                      .from_testsuite(testsuite_4)\
+                      .build()
+        expected_testsuites = [
+            testsuite_1, # + TestSuite 1
+            testsuite_2, # + TestSuite 2
+            testsuite_4, #     + TestSuite 4
+            testsuite_7, #         + TestSuite 7
+            testsuite_5, #     + TestSuite 5
+            testsuite_3, # + TestSuite 3
+            testsuite_6  #     + TestSuite 6
+        ]
+
+        # Check results
+        for i, testsuite in enumerate(testproject.testsuites):
+            expected = expected_testsuites[i]
+            self.assertEqual(expected, testsuite)
+            self.assertEqual(expected.id, testsuite.id)
+            self.assertEqual(expected.name, testsuite.name)
+            self.assertEqual(expected.description, testsuite.description)
+            self.assertEqual(expected.level, testsuite.level)
+            self.assertEqual(expected.testproject, testsuite.testproject)
+            self.assertEqual(expected.testlink, testsuite.testlink)
+            self.assertEqual(expected.testsuite, testsuite.testsuite)
