@@ -159,50 +159,15 @@ class TestPlan(TestlinkObject):
     def testproject(self):
         return self.__parent_testproject
 
-    def iterBuild(self, name=None, **params):
-        """Iterates over Builds specified by parameters
-        @param name: The name of the Build
-        @type name: str
-        @param params: Other params for Build
-        @type params: dict
-        @returns: Macthing Builds
-        @rtype: generator
-        """
-        # No simple API call possible, get all
-        response = self._api.getBuildsForTestPlan(self.id)
-        builds = [Build(parent_testplan=self, api=self._api, **build) for build in response]
-
-        # Filter
-        if len(params) > 0 or name:
-            params['name'] = name
-            for bd in builds:
-                for key, value in params.items():
-                    # Skip None
-                    if value is None:
-                        continue
-                    try:
-                        if not unicode(getattr(bd, key)) == unicode(value):
-                            bd = None
-                            break
-                    except AttributeError:
-                        raise AttributeError("Invalid Search Parameter for Build: %s" % key)
-                if bd is not None:
-                    yield bd
-        # Return all Builds
-        else:
-            for bd in builds:
-                yield bd
-
-    def getBuild(self, name=None, **params):
-        """Returns all Builds specified by parameters
-        @param name: The name of the Build
-        @type name: str
-        @param params: Other params for Build
-        @type params: dict
-        @returns: Macthing Builds
-        @rtype: mixed
-        """
-        return normalize_list([b for b in self.iterBuild(name, **params)])
+    @property
+    def builds(self):
+        """Returns all builds for the current TestPlan
+        :rtype: Iterator[Build]"""
+        for data in self.testlink.api.getBuildsForTestPlan(self.id):
+            yield Build.builder(**data)\
+                  .from_testlink(self.testlink)\
+                  .from_testplan(self)\
+                  .build()
 
     def iterPlatform(self, name=None, **params):
         """Iterates over Platforms specified by parameters

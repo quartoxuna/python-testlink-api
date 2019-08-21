@@ -2,11 +2,16 @@
 
 # IMPORTS
 import unittest
+import datetime
 import mock
 
 from testlink.objects.tl_testplan import TestPlanFromAPIBuilder
 from testlink.objects.tl_testplan import TestPlan
 
+from testlink.api.testlink_api import TestlinkAPI
+from testlink.objects.tl_testlink import Testlink
+from testlink.objects.tl_testproject import TestProject
+from testlink.objects.tl_build import Build
 
 class TestPlanFromAPIBuilderTests(unittest.TestCase):
 
@@ -125,3 +130,95 @@ class TestPlanTests(unittest.TestCase):
         self.assertTrue(testplan.active)
         self.assertFalse(testplan.public)
         self.assertEqual(testplan.testproject, testproject)
+
+    def test_iterate_builds(self):
+        """Test Iterator over Builds"""
+        # Initialize Testlink Object
+        testlink_api = mock.create_autospec(spec=TestlinkAPI)
+        testlink = Testlink(testlink_api)
+
+        # Prepare Server Mock
+        build_data = [
+            {'id': '1', 'name': "Build 1", 'notes': "Description 1", 'active': '0',
+             'is_public': '1', 'creation_ts': '2019-08-19 12:34:56',
+             'release_date': '2019-08-18'},
+            {'id': '2', 'name': "Build 2", 'notes': "Description 2", 'active': '0',
+             'is_public': '0', 'creation_ts': '2019-08-19 12:34:56',
+             'release_date': '2019-08-18', 'closed_on_date': '2019-08-26'},
+            {'id': '3', 'name': "Build 3", 'notes': "Description 3", 'active': '1',
+             'is_public': '1', 'creation_ts': '2019-08-19 12:34:56'}
+        ]
+        testlink_api.getBuildsForTestPlan = mock.MagicMock(return_value=build_data)
+
+        # Prepare parent TestProject
+        testproject = TestProject.builder()\
+                      .with_id(23)\
+                      .from_testlink(testlink)\
+                      .with_name("TestProject")\
+                      .with_prefix("ABC")\
+                      .with_testcase_count(12)\
+                      .is_active()\
+                      .is_public()\
+                      .build()
+
+        # Prepare parent TestPlan
+        testplan = TestPlan.builder()\
+                  .with_id(42)\
+                  .with_name("TestPlan")\
+                  .is_active()\
+                  .is_public()\
+                  .from_testlink(testlink)\
+                  .from_testproject(testproject)\
+                  .build()
+
+        # Generate expected results
+        build_1 = Build.builder()\
+                  .with_id(1)\
+                  .from_testlink(testlink)\
+                  .with_name("Build 1")\
+                  .with_description("Description 1")\
+                  .is_not_active()\
+                  .is_public()\
+                  .created_on(datetime.datetime(2019, 8, 19, 12, 34, 56))\
+                  .released_on(datetime.date(2019, 8, 18))\
+                  .from_testplan(testplan)\
+                  .build()
+        build_2 = Build.builder()\
+                  .with_id(2)\
+                  .from_testlink(testlink)\
+                  .with_name("Build 2")\
+                  .with_description("Description 2")\
+                  .is_not_active()\
+                  .is_not_public()\
+                  .created_on(datetime.datetime(2019, 8, 19, 12, 34, 56))\
+                  .released_on(datetime.date(2019, 8, 18))\
+                  .closed_on(datetime.date(2019, 8, 26))\
+                  .from_testplan(testplan)\
+                  .build()
+        build_3 = Build.builder()\
+                  .with_id(3)\
+                  .from_testlink(testlink)\
+                  .with_name("Build 3")\
+                  .with_description("Description 3")\
+                  .is_active()\
+                  .is_public()\
+                  .created_on(datetime.datetime(2019, 8, 19, 12, 34, 56))\
+                  .from_testplan(testplan)\
+                  .build()
+        expected_builds = [build_1, build_2, build_3]
+
+        # Check resuls
+        for i, build in enumerate(testplan.builds):
+            expected = expected_builds[i]
+            self.assertEqual(expected, build)
+            self.assertEqual(expected.id, build.id)
+            self.assertEqual(expected.testlink, build.testlink)
+            self.assertEqual(expected.name, build.name)
+            self.assertEqual(expected.description, build.description)
+            self.assertEqual(expected.active, build.active)
+            self.assertEqual(expected.public, build.public)
+            self.assertEqual(expected.created, build.created)
+            self.assertEqual(expected.released, build.released)
+            self.assertEqual(expected.closed, build.closed)
+            self.assertEqual(expected.testplan, build.testplan)
+        self.assertEqual(len(list(testplan.builds)), len(expected_builds))
