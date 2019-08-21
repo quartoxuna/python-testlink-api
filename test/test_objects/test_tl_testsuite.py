@@ -195,68 +195,68 @@ class TestSuiteTests(unittest.TestCase):
 
         # Generate expected results
         testsuite_1 = TestSuite.builder()\
-                     .with_id(1)\
-                     .from_testlink(testlink)\
-                     .with_name("TestSuite 1")\
-                     .with_description("Description 1")\
-                     .with_level(2)\
-                     .from_testproject(testproject)\
-                     .from_testsuite(testsuite_0)\
-                     .build()
+                      .with_id(1)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 1")\
+                      .with_description("Description 1")\
+                      .with_level(2)\
+                      .from_testproject(testproject)\
+                      .from_testsuite(testsuite_0)\
+                      .build()
         testsuite_2 = TestSuite.builder()\
-                     .with_id(2)\
-                     .from_testlink(testlink)\
-                     .with_name("TestSuite 2")\
-                     .with_description("Description 2")\
-                     .with_level(2)\
-                     .from_testproject(testproject)\
-                     .from_testsuite(testsuite_0)\
-                     .build()
-        testsuite_3 = TestSuite.builder()\
-                     .with_id(3)\
-                     .from_testlink(testlink)\
-                     .with_name("TestSuite 3")\
-                     .with_description("Description 3")\
-                     .with_level(2)\
-                     .from_testproject(testproject)\
-                     .from_testsuite(testsuite_0)\
-                     .build()
+                      .with_id(2)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 2")\
+                      .with_description("Description 2")\
+                      .with_level(2)\
+                      .from_testproject(testproject)\
+                      .from_testsuite(testsuite_0)\
+                      .build()
         testsuite_2_1 = TestSuite.builder()\
-                     .with_id(21)\
-                     .from_testlink(testlink)\
-                     .with_name("TestSuite 2.1")\
-                     .with_description("Description 2.1")\
-                     .with_level(3)\
-                     .from_testproject(testproject)\
-                     .from_testsuite(testsuite_2)\
-                     .build()
-        testsuite_2_2 = TestSuite.builder()\
-                     .with_id(22)\
-                     .from_testlink(testlink)\
-                     .with_name("TestSuite 2.2")\
-                     .with_description("Description 2.2")\
-                     .with_level(3)\
-                     .from_testproject(testproject)\
-                     .from_testsuite(testsuite_2)\
-                     .build()
-        testsuite_3_1 = TestSuite.builder()\
-                     .with_id(31)\
-                     .from_testlink(testlink)\
-                     .with_name("TestSuite 3.1")\
-                     .with_description("Description 3.1")\
-                     .with_level(3)\
-                     .from_testproject(testproject)\
-                     .from_testsuite(testsuite_3)\
-                     .build()
+                        .with_id(21)\
+                        .from_testlink(testlink)\
+                        .with_name("TestSuite 2.1")\
+                        .with_description("Description 2.1")\
+                        .with_level(3)\
+                        .from_testproject(testproject)\
+                        .from_testsuite(testsuite_2)\
+                        .build()
         testsuite_2_1_1 = TestSuite.builder()\
-                     .with_id(211)\
-                     .from_testlink(testlink)\
-                     .with_name("TestSuite 2.1.1")\
-                     .with_description("Description 2.1.1")\
-                     .with_level(4)\
-                     .from_testproject(testproject)\
-                     .from_testsuite(testsuite_2_1)\
-                     .build()
+                          .with_id(211)\
+                          .from_testlink(testlink)\
+                          .with_name("TestSuite 2.1.1")\
+                          .with_description("Description 2.1.1")\
+                          .with_level(4)\
+                          .from_testproject(testproject)\
+                          .from_testsuite(testsuite_2_1)\
+                          .build()
+        testsuite_2_2 = TestSuite.builder()\
+                        .with_id(22)\
+                        .from_testlink(testlink)\
+                        .with_name("TestSuite 2.2")\
+                        .with_description("Description 2.2")\
+                        .with_level(3)\
+                        .from_testproject(testproject)\
+                        .from_testsuite(testsuite_2)\
+                        .build()
+        testsuite_3 = TestSuite.builder()\
+                      .with_id(3)\
+                      .from_testlink(testlink)\
+                      .with_name("TestSuite 3")\
+                      .with_description("Description 3")\
+                      .with_level(2)\
+                      .from_testproject(testproject)\
+                      .from_testsuite(testsuite_0)\
+                      .build()
+        testsuite_3_1 = TestSuite.builder()\
+                        .with_id(31)\
+                        .from_testlink(testlink)\
+                        .with_name("TestSuite 3.1")\
+                        .with_description("Description 3.1")\
+                        .with_level(3)\
+                        .from_testproject(testproject)\
+                        .from_testsuite(testsuite_3)\
+                        .build()
         expected_testsuites = [
             testsuite_1,
             testsuite_2,
