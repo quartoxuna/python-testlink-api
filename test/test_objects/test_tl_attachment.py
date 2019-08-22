@@ -9,6 +9,10 @@ from testlink.objects.tl_attachment import AttachmentFromAPIBuilder
 from testlink.objects.tl_attachment import Attachment
 from testlink.objects.tl_attachment import AttachmentMixin
 
+from testlink.api.testlink_api import TestlinkAPI
+from testlink.objects.tl_testlink import Testlink
+from testlink.objects.tl_object import TestlinkObject
+
 class AttachmentFromAPIBuilderTests(unittest.TestCase):
 
     def test_api_data(self):
@@ -116,10 +120,81 @@ class AttachmentMixinTests(unittest.TestCase):
 
     def test_mixin(self):
         """Test class definition with AttachmentMixin"""
+        # Create Mockup class using closure
         class TestClass(AttachmentMixin):
             def __init__(self, *args, **kwargs):
                 super(TestClass, self).__init__(*args, **kwargs)
+                self._foreign_key_table = 'ForeignKeyTable'
+        mixed_object = TestClass()
 
-        cls = TestClass(foreign_key_table='ForeignTable')
-        self.assertEqual(cls.foreign_key_table, 'ForeignTable')
-        self.assertTrue(hasattr(cls, 'attachments'))
+        self.assertEqual(mixed_object.foreign_key_table, 'ForeignKeyTable')
+        self.assertTrue(hasattr(mixed_object, 'attachments'))
+
+    def test_iterate_attachments(self):
+        """Test Iterator over Attachments"""
+        # Initialize Testlink Object
+        testlink_api = mock.create_autospec(spec=TestlinkAPI)
+        testlink = Testlink(testlink_api)
+
+        # Prepare Server Mock
+        attachment_data = [
+            {'id': '1', 'name': "Example 1", 'title': "Description 1",
+             'file_type': 'text/plain', 'date_added': "2019-08-20 12:34:56",
+             'content': 'SGVsbG8gV29ybGQK'},
+            {'id': '2', 'name': "Example 2", 'title': "Description 2",
+             'file_type': 'text/html', 'date_added': "2019-05-16 06:54:32",
+             'content': 'SGVsbG8gV29ybKQG'}
+        ]
+        testlink_api.getAttachments = mock.MagicMock(return_value=attachment_data)
+
+        # Create Mockup class using closure
+        class TestClass(AttachmentMixin, TestlinkObject):
+            def __init__(self, *args, **kwargs):
+                super(TestClass, self).__init__(*args, **kwargs)
+                self._foreign_key_table = 'ForeignKeyTable'
+        obj_builder = TestlinkObject.builder()\
+                      .with_id(23)\
+                      .from_testlink(testlink)
+        mixed_object = TestClass(obj_builder)
+
+        # Generate expected results
+        attachment_1 = Attachment.builder()\
+                       .with_id(1)\
+                       .from_testlink(testlink)\
+                       .with_name("Example 1")\
+                       .with_description("Description 1")\
+                       .with_file_type("text/plain")\
+                       .created_on(datetime.datetime(2019, 8, 20, 12, 34, 56))\
+                       .with_content("SGVsbG8gV29ybGQK")\
+                       .build()
+        attachment_2 = Attachment.builder()\
+                       .with_id(2)\
+                       .from_testlink(testlink)\
+                       .with_name("Example 2")\
+                       .with_description("Description 2")\
+                       .with_file_type("text/html")\
+                       .created_on(datetime.datetime(2019, 5, 16, 6, 54, 32))\
+                       .with_content("SGVsbG8gV29ybKQG")\
+                       .build()
+        expected_attachments = [attachment_1, attachment_2]
+
+        # Check results
+        for i, attachment in enumerate(mixed_object.attachments):
+            expected = expected_attachments[i]
+            self.assertEqual(expected, attachment)
+            self.assertEqual(expected.id, attachment.id)
+            self.assertEqual(expected.testlink, attachment.testlink)
+            self.assertEqual(expected.name, attachment.name)
+            self.assertEqual(expected.description, attachment.description)
+            self.assertEqual(expected.file_type, attachment.file_type)
+            self.assertEqual(expected.created, attachment.created)
+            self.assertEqual(expected.content, attachment.content)
+
+        # Verity that amount of returned attachments match
+        self.assertEqual(len(list(mixed_object.attachments)), len(expected_attachments))
+
+        # Verify that API method was called correctly
+        expected_calls = [
+            mock.call(mixed_object.id, mixed_object.foreign_key_table)
+        ]
+        testlink_api.getAttachments.assert_has_calls(expected_calls)

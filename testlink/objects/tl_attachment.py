@@ -37,6 +37,7 @@ class AttachmentFromAPIBuilder(TestlinkObjectFromAPIBuilder):
 
     def build(self):
         """Generate new Attachment"""
+        super(AttachmentFromAPIBuilder, self).build()
         return Attachment(self)
 
 
@@ -130,16 +131,15 @@ class AttachmentMixin(object):
     :param str foreign_key_table: Name of foreign key table, used for getting attachment
     """
 
-    def __init__(self, *args, **kwargs):
-        super(AttachmentMixin, self).__init__()
-        self.__foreign_key_table = kwargs.get('foreign_key_table', None)
-
     @property
     def foreign_key_table(self):
-        return self.__foreign_key_table
+        return self._foreign_key_table
 
+    @property
     def attachments(self):
         """Returns all attachments for the current TestlinkObject
         :rtype: Iterator[Attachment]"""
-        for data in self.testlink.getAttachments(self.id, self.foreign_key_table):
-            yield AttachmentFromAPIBuilder(**data).build()
+        for data in self.testlink.api.getAttachments(self.id, self.foreign_key_table):
+            yield Attachment.builder(**data)\
+                  .from_testlink(self.testlink)\
+                  .build()
