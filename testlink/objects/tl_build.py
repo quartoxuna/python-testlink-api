@@ -57,20 +57,7 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         assert self.public is not None, "No Build public status defined"
         assert self.testplan is not None, "No parent TestPlan defined"
 
-        return Build(
-            # Build
-            name=self.name,
-            description=self.description,
-            active=self.active,
-            public=self.public,
-            created=self.created,
-            released=self.released,
-            closed=self.closed,
-            parent_testplan=self.testplan,
-            # TestlinkObject
-            testlink_id=self.testlink_id,
-            parent_testlink=self.testlink
-        )
+        return Build(self)
 
 
 class BuildBuilder(TestlinkObjectBuilder,
@@ -154,16 +141,16 @@ class Build(TestlinkObject):
 
     DATE_FORMAT = "%Y-%m-%d"
 
-    def __init__(self, *args, **kwargs):
-        super(Build, self).__init__(*args, **kwargs)
-        self.__name = kwargs['name']
-        self.__description = kwargs['description']
-        self.__active = kwargs['active']
-        self.__public = kwargs['public']
-        self.__created = kwargs['created']
-        self.__released = kwargs['released']
-        self.__closed = kwargs['closed']
-        self.__parent_testplan = kwargs['parent_testplan']
+    def __init__(self, builder, *args, **kwargs):
+        super(Build, self).__init__(builder, *args, **kwargs)
+        self.__name = builder.name
+        self.__description = builder.description
+        self.__active = builder.active
+        self.__public = builder.public
+        self.__created = builder.created
+        self.__released = builder.released
+        self.__closed = builder.closed
+        self.__parent_testplan = builder.testplan
 
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.name)

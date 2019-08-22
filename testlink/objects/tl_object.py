@@ -58,10 +58,7 @@ class TestlinkObjectFromAPIBuilder(object):
         assert self.testlink_id is not None, "Invalid internal ID '{}'".format(self.testlink_id)
         assert self.testlink is not None, "No parent Testlink instance defined"
 
-        return TestlinkObject(
-            testlink_id=self.testlink_id,
-            parent_testlink=self.testlink
-        )
+        return TestlinkObject(self)
 
 
 class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
@@ -92,10 +89,10 @@ class TestlinkObject(object):
 
     DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, builder, *args, **kwargs):
         super(TestlinkObject, self).__init__()
-        self.__testlink_id = kwargs['testlink_id']
-        self.__parent_testlink = kwargs['parent_testlink']
+        self.__testlink_id = builder.testlink_id
+        self.__parent_testlink = builder.testlink
 
     @staticmethod
     def builder():

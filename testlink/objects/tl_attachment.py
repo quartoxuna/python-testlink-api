@@ -37,17 +37,7 @@ class AttachmentFromAPIBuilder(TestlinkObjectFromAPIBuilder):
 
     def build(self):
         """Generate new Attachment"""
-        return Attachment(
-            # Attachment
-            name=self.name,
-            description=self.description,
-            file_type=self.file_type,
-            created=self.created,
-            content=self.content,
-            # TestlinkObject
-            testlink_id=self.testlink_id,
-            parent_testlink=self.testlink
-    )
+        return Attachment(self)
 
 
 class AttachmentBuilder(TestlinkObjectBuilder,
@@ -98,13 +88,13 @@ class Attachment(TestlinkObject):
     :param str content: Content of the Attachemnt as base64 encoded string
     """
 
-    def __init__(self, *args, **kwargs):
-        super(Attachment,self).__init__(*args, **kwargs)
-        self.__name = kwargs['name']
-        self.__description = kwargs['description']
-        self.__file_type = kwargs['file_type']
-        self.__created = kwargs['created']
-        self.__content = kwargs['content']
+    def __init__(self, builder, *args, **kwargs):
+        super(Attachment,self).__init__(builder, *args, **kwargs)
+        self.__name = builder.name
+        self.__description = builder.description
+        self.__file_type = builder.file_type
+        self.__created = builder.created
+        self.__content = builder.content
 
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.name)

@@ -53,17 +53,7 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         assert self.public is not None, "No TestPlan public status defined"
         assert self.testproject is not None, "No parent TestProject defined"
 
-        return TestPlan(
-            # TestPlan
-            name=self.name,
-            description=self.description,
-            active=self.active,
-            public=self.public,
-            parent_testproject=self.testproject,
-            # TestlinkObject
-            testlink_id=self.testlink_id,
-            parent_testlink=self.testlink,
-        )
+        return TestPlan(self)
 
 
 class TestPlanBuilder(TestlinkObjectBuilder,
@@ -124,13 +114,13 @@ class TestPlan(TestlinkObject):
     :param TestProject testproject: Parent TestProject instance
     """
 
-    def __init__(self, *args, **kwargs):
-        super(TestPlan, self).__init__(*args, **kwargs)
-        self.__name = kwargs['name']
-        self.__description = kwargs['description']
-        self.__active = kwargs['active']
-        self.__public = kwargs['public']
-        self.__parent_testproject = kwargs['parent_testproject']
+    def __init__(self, builder, *args, **kwargs):
+        super(TestPlan, self).__init__(builder, *args, **kwargs)
+        self.__name = builder.name
+        self.__description = builder.description
+        self.__active = builder.active
+        self.__public = builder.public
+        self.__parent_testproject = builder.testproject
 
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.name)

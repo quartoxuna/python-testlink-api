@@ -50,17 +50,7 @@ class TestSuiteFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         assert self.name is not None, "No TestSuite name defined"
         assert self.testproject is not None, "No parent TestProject defined"
 
-        return TestSuite(
-            # TestSuite
-            name=self.name,
-            description=self.description,
-            level=self.level,
-            parent_testsuite=self.testsuite,
-            parent_testproject=self.testproject,
-            # TestlinkObject
-            testlink_id=self.testlink_id,
-            parent_testlink=self.testlink
-        )
+        return TestSuite(self)
 
 
 class TestSuiteBuilder(TestlinkObjectBuilder,
@@ -112,13 +102,13 @@ class TestSuite(TestlinkObject, AttachmentMixin):
     :param Iterator[TestSuite] testsuites: Child TestSuites
     """
 
-    def __init__(self, *args, **kwargs):
-        super(TestSuite, self).__init__(*args, **kwargs)
-        self.__name = kwargs['name']
-        self.__description = kwargs['description']
-        self.__level = kwargs['level']
-        self.__parent_testproject = kwargs['parent_testproject']
-        self.__parent_testsuite = kwargs['parent_testsuite']
+    def __init__(self, builder, *args, **kwargs):
+        super(TestSuite, self).__init__(builder, *args, **kwargs)
+        self.__name = builder.name
+        self.__description = builder.description
+        self.__level = builder.level
+        self.__parent_testproject = builder.testproject
+        self.__parent_testsuite = builder.testsuite
 
     def __str__(self):
         return "[{}] {}: {}".format(self.level, self.__class__.__name__, self.name)

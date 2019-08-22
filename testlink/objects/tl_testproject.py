@@ -78,23 +78,7 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         assert self.public is not None, "No TestProject public status defined"
         assert self.testcase_count >= 0, "Invalid testcase count for TestProject: {}".format(self.testcase_count)
 
-        return TestProject(
-            # TestProject
-            name=self.name,
-            prefix=self.prefix,
-            description=self.description,
-            active=self.active,
-            public=self.public,
-            color=self.color,
-            testcase_count=self.testcase_count,
-            requirement_feature=self.requirement_feature,
-            priority_feature=self.priority_feature,
-            automation_feature=self.automation_feature,
-            inventory_feature=self.inventory_feature,
-            # TestlinkObject
-            testlink_id=self.testlink_id,
-            parent_testlink=self.testlink,
-        )
+        return TestProject(self)
 
 
 class TestProjectBuilder(TestlinkObjectBuilder,
@@ -217,19 +201,19 @@ class TestProject(TestlinkObject, AttachmentMixin):
     :param bool inventory_feature: Status of the inventory feature for the TestProject
     """
 
-    def __init__(self, *args, **kwargs):
-        super(TestProject, self).__init__(*args, **kwargs)
-        self.__name = kwargs['name']
-        self.__prefix = kwargs['prefix']
-        self.__description = kwargs['description']
-        self.__active = kwargs['active']
-        self.__public = kwargs['public']
-        self.__color = kwargs['color']
-        self.__testcase_count = kwargs['testcase_count']
-        self.__requirement_feature = kwargs['requirement_feature']
-        self.__priority_feature = kwargs['priority_feature']
-        self.__automation_feature = kwargs['automation_feature']
-        self.__inventory_feature = kwargs['inventory_feature']
+    def __init__(self, builder, *args, **kwargs):
+        super(TestProject, self).__init__(builder, *args, **kwargs)
+        self.__name = builder.name
+        self.__prefix = builder.prefix
+        self.__description = builder.description
+        self.__active = builder.active
+        self.__public = builder.public
+        self.__color = builder.color
+        self.__testcase_count = builder.testcase_count
+        self.__requirement_feature = builder.requirement_feature
+        self.__priority_feature = builder.priority_feature
+        self.__automation_feature = builder.automation_feature
+        self.__inventory_feature = builder.inventory_feature
 
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.name)

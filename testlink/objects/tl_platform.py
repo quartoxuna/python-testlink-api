@@ -38,16 +38,7 @@ class PlatformFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         assert self.name is not None, "No Platform name defined"
         assert self.testproject is not None; "No parent TestProject defined"
 
-        return Platform(
-            # Platform
-            name=self.name,
-            description=self.description,
-            parent_testproject=self.testproject,
-            parent_testplan=self.testplan,
-            # TestlinkObject
-            testlink_id=self.testlink_id,
-            parent_testlink=self.testlink
-        )
+        return Platform(self)
 
 
 class PlatformBuilder(TestlinkObjectBuilder,
@@ -91,12 +82,12 @@ class Platform(TestlinkObject):
     :param TestPlan testplan: Parent TestPlan
     """
 
-    def __init__(self, *args, **kwargs):
-        super(Platform, self).__init__(*args, **kwargs)
-        self.__name = kwargs['name']
-        self.__description = kwargs['description']
-        self.__parent_testproject = kwargs['parent_testproject']
-        self.__parent_testplan = kwargs['parent_testplan']
+    def __init__(self, builder, *args, **kwargs):
+        super(Platform, self).__init__(builder, *args, **kwargs)
+        self.__name = builder.name
+        self.__description = builder.description
+        self.__parent_testproject = builder.testproject
+        self.__parent_testplan = builder.testplan
 
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.name)
