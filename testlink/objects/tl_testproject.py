@@ -286,7 +286,7 @@ class TestProject(TestlinkObject, AttachmentMixin):
     def testplans(self):
         """Returns all Testplans for the current TestProject
         :rtype: Iterator[TestPlan]"""
-        for data in self.testlink.api.getProjectTestPlans():
+        for data in self.testlink.api.getProjectTestPlans(self.id):
             yield TestPlan.builder(**data)\
                   .from_testproject(self)\
                   .from_testlink(self.testlink)\
