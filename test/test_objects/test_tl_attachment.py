@@ -3,7 +3,7 @@
 # IMPORTS
 import unittest
 import datetime
-from mock import MagicMock
+import mock
 
 from testlink.objects.tl_attachment import AttachmentFromAPIBuilder
 from testlink.objects.tl_attachment import Attachment
@@ -35,7 +35,7 @@ class AttachmentBuilderTests(unittest.TestCase):
 
     def test_from_testlink(self):
         """Test setter for parent Testlink instance"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         builder = Attachment.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
@@ -76,7 +76,7 @@ class AttachmentTests(unittest.TestCase):
 
     def test_builder(self):
         """Test initialisation with default builder"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         attachment = Attachment.builder()\
                      .with_id(123)\
                      .from_testlink(testlink)\
@@ -85,6 +85,23 @@ class AttachmentTests(unittest.TestCase):
                      .with_file_type('text/plain')\
                      .created_on(datetime.datetime(2019, 8, 19, 12, 34, 56))\
                      .with_content('SGVsbG8gV29ybGQK')\
+                     .build()
+        self.assertEqual(attachment.id, 123)
+        self.assertEqual(attachment.name, "Example")
+        self.assertEqual(attachment.description, "Description")
+        self.assertEqual(attachment.file_type, 'text/plain')
+        self.assertEqual(attachment.created, datetime.datetime(2019, 8, 19, 12, 34, 56))
+        self.assertEqual(attachment.content, 'SGVsbG8gV29ybGQK')
+        self.assertEqual(attachment.testlink, testlink)
+
+    def test_api_builder(self):
+        """Test initialisation of default builder with raw API data"""
+        testlink = mock.MagicMock()
+        data = {'id': '123', 'name': "Example", 'title': "Description",
+                'file_type': 'text/plain', 'date_added': "2019-08-19 12:34:56",
+                'content': 'SGVsbG8gV29ybGQK'}
+        attachment = Attachment.builder(**data)\
+                     .from_testlink(testlink)\
                      .build()
         self.assertEqual(attachment.id, 123)
         self.assertEqual(attachment.name, "Example")

@@ -100,8 +100,8 @@ class Attachment(TestlinkObject):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder():
-        return AttachmentBuilder()
+    def builder(*args, **kwargs):
+        return AttachmentBuilder(*args, **kwargs)
 
     @property
     def name(self):
