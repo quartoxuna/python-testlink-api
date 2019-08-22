@@ -294,7 +294,12 @@ class TestProjectTests(unittest.TestCase):
             self.assertEqual(expected.active, testplan.active)
             self.assertEqual(expected.public, testplan.public)
             self.assertEqual(expected.testproject, testplan.testproject)
+
+        # Verify that amount of returned testplans match
         self.assertTrue(len(list(testproject.testplans)) == 2)
+
+        # Verify that API method was called directly
+        testlink_api.getProjectTestPlans.assert_called_with(testproject.id)
 
     def test_iterate_testsuites(self):
         """Iterate over testsuites"""
@@ -446,3 +451,15 @@ class TestProjectTests(unittest.TestCase):
 
         # Verify that amount of returned testsuites match
         self.assertEqual(len(expected_testsuites), i+1)
+
+        # Verify that API method was called directly
+        expected_calls = [
+            mock.call(testsuite_1.id, testproject.id),
+            mock.call(testsuite_2.id, testproject.id),
+            mock.call(testsuite_2_1.id, testproject.id),
+            mock.call(testsuite_2_1_1.id, testproject.id),
+            mock.call(testsuite_2_2.id, testproject.id),
+            mock.call(testsuite_3.id, testproject.id),
+            mock.call(testsuite_3_1.id, testproject.id)
+        ]
+        testlink_api.getTestSuitesForTestSuite.assert_has_calls(expected_calls)

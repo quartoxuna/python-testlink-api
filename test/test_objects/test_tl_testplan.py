@@ -222,7 +222,13 @@ class TestPlanTests(unittest.TestCase):
             self.assertEqual(expected.released, build.released)
             self.assertEqual(expected.closed, build.closed)
             self.assertEqual(expected.testplan, build.testplan)
+
+        # Verify that amount of returned builds match
         self.assertEqual(len(list(testplan.builds)), len(expected_builds))
+
+        # Verify that API method was called directly
+        testlink_api.getBuildsForTestPlan.assert_called_with(testplan.id)
+
 
     def test_iterate_platforms(self):
         """Test Iterator over Platforms"""
@@ -295,4 +301,9 @@ class TestPlanTests(unittest.TestCase):
             self.assertEqual(expected.name, platform.name)
             self.assertEqual(expected.description, platform.description)
             self.assertEqual(expected.testplan, platform.testplan)
+
+        # Verify that amount of returned builds match
         self.assertEqual(len(list(testplan.platforms)), len(expected_platforms))
+
+        # Verify that API method was called directly
+        testlink_api.getTestPlanPlatforms.assert_called_with(testplan.id)

@@ -278,5 +278,18 @@ class TestSuiteTests(unittest.TestCase):
             self.assertEqual(expected.testlink, testsuite.testlink)
             self.assertEqual(expected.testsuite, testsuite.testsuite)
 
-        # Check that amount of returned testsuites match
+        # Verify that amount of returned testsuites match
         self.assertEqual(len(expected_testsuites), i+1)
+
+        # Verify that API method was called directly
+        expected_calls = [
+            mock.call(testsuite_0.id, testproject.id),
+            mock.call(testsuite_1.id, testproject.id),
+            mock.call(testsuite_2.id, testproject.id),
+            mock.call(testsuite_2_1.id, testproject.id),
+            mock.call(testsuite_2_1_1.id, testproject.id),
+            mock.call(testsuite_2_2.id, testproject.id),
+            mock.call(testsuite_3.id, testproject.id),
+            mock.call(testsuite_3_1.id, testproject.id)
+        ]
+        testlink_api.getTestSuitesForTestSuite.assert_has_calls(expected_calls)
