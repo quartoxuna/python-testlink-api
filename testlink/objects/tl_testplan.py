@@ -169,59 +169,16 @@ class TestPlan(TestlinkObject):
                   .from_testplan(self)\
                   .build()
 
-    def iterPlatform(self, name=None, **params):
-        """Iterates over Platforms specified by parameters
-        @param name: The name of the Platform
-        @type name: str
-        @param params: Other params for Platform
-        @type params: dict
-        @returns: Matching Platforms
-        @rtype: generator
-        """
-        # No simple API call possible, get all
-        try:
-            response = self._api.getTestPlanPlatforms(self.id)
-        except APIError, ae:
-            if ae.error_code == 3041:
-                # No platforms linked at all
-                return
-            else:
-                raise
-
-        platforms = [Platform(parent_testproject=self, parent_testplan=self, api=self._api, **platform)
-                     for platform in response]
-
-        # Filter
-        if len(params) > 0 or name:
-            params['name'] = name
-            for ptf in platforms:
-                for key, value in params.items():
-                    # Skip None
-                    if value is None:
-                        continue
-                    try:
-                        if not unicode(getattr(ptf, key)) == unicode(value):
-                            ptf = None
-                            break
-                    except AttributeError:
-                        raise AttributeError("Invalid Search Parameter for Platform: %s" % key)
-                if ptf is not None:
-                    yield ptf
-        # Return all Platforms
-        else:
-            for ptf in platforms:
-                yield ptf
-
-    def getPlatform(self, name=None, **params):
-        """Returns all Platforms specified by parameters
-        @param name: The name of the Platform
-        @type name: str
-        @param params: Other params for Platform
-        @type params: dict
-        @returns: Matching Platforms
-        @rtype: mixed
-        """
-        return normalize_list([p for p in self.iterPlatform(name, **params)])
+    @property
+    def platforms(self):
+        """Returns all platforms for the current TestPlan
+        :rtype: Iterator[Platform]"""
+        for data in self.testlink.api.getTestPlanPlatforms(self.id):
+            yield Platform.builder(**data)\
+                  .from_testlink(self.testlink)\
+                  .from_testproject(self.testproject)\
+                  .from_testplan(self)\
+                  .build()
 
     def iterTestCase(self, name=None, buildid=None, keywordid=None, keywords=None, executed=None, assigned_to=None,
                      execution_type=None, **params):

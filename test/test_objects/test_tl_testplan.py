@@ -11,6 +11,7 @@ from testlink.objects.tl_testplan import TestPlan
 from testlink.api.testlink_api import TestlinkAPI
 from testlink.objects.tl_testlink import Testlink
 from testlink.objects.tl_testproject import TestProject
+from testlink.objects.tl_platform import Platform
 from testlink.objects.tl_build import Build
 
 class TestPlanFromAPIBuilderTests(unittest.TestCase):
@@ -207,7 +208,7 @@ class TestPlanTests(unittest.TestCase):
                   .build()
         expected_builds = [build_1, build_2, build_3]
 
-        # Check resuls
+        # Check results
         for i, build in enumerate(testplan.builds):
             expected = expected_builds[i]
             self.assertEqual(expected, build)
@@ -222,3 +223,76 @@ class TestPlanTests(unittest.TestCase):
             self.assertEqual(expected.closed, build.closed)
             self.assertEqual(expected.testplan, build.testplan)
         self.assertEqual(len(list(testplan.builds)), len(expected_builds))
+
+    def test_iterate_platforms(self):
+        """Test Iterator over Platforms"""
+        # Initialize Testlink Object
+        testlink_api = mock.create_autospec(spec=TestlinkAPI)
+        testlink = Testlink(testlink_api)
+
+        # Prepare Server Mock
+        platform_data = [
+            {'id': '1', 'name': "Platform 1", 'notes': "Description 1"},
+            {'id': '2', 'name': "Platform 2", 'notes': "Description 2"},
+            {'id': '3', 'name': "Platform 3", 'notes': "Description 3"}
+        ]
+        testlink_api.getTestPlanPlatforms = mock.MagicMock(return_value=platform_data)
+
+        # Prepare parent TestProject
+        testproject = TestProject.builder()\
+                      .with_id(23)\
+                      .from_testlink(testlink)\
+                      .with_name("TestProject")\
+                      .with_prefix("ABC")\
+                      .with_testcase_count(23)\
+                      .is_public()\
+                      .is_active()\
+                      .build()
+
+        # Prepare parent TestPlan
+        testplan = TestPlan.builder()\
+                   .with_id(42)\
+                   .from_testlink(testlink)\
+                   .from_testproject(testproject)\
+                   .with_name("TestPlan")\
+                   .is_active()\
+                   .is_public()\
+                   .build()
+
+        # Generate expected results
+        platform_1 = Platform.builder()\
+                     .with_id(1)\
+                     .with_name("Platform 1")\
+                     .with_description("Description 1")\
+                     .from_testlink(testlink)\
+                     .from_testproject(testproject)\
+                     .from_testplan(testplan)\
+                     .build()
+        platform_2 = Platform.builder()\
+                     .with_id(2)\
+                     .with_name("Platform 2")\
+                     .with_description("Description 2")\
+                     .from_testlink(testlink)\
+                     .from_testproject(testproject)\
+                     .from_testplan(testplan)\
+                     .build()
+        platform_3 = Platform.builder()\
+                     .with_id(3)\
+                     .with_name("Platform 3")\
+                     .with_description("Description 3")\
+                     .from_testlink(testlink)\
+                     .from_testproject(testproject)\
+                     .from_testplan(testplan)\
+                     .build()
+        expected_platforms = [platform_1, platform_2, platform_3]
+
+        # Check results
+        for i, platform in enumerate(testplan.platforms):
+            expected = expected_platforms[i]
+            self.assertEqual(expected, platform)
+            self.assertEqual(expected.id, platform.id)
+            self.assertEqual(expected.testlink, platform.testlink)
+            self.assertEqual(expected.name, platform.name)
+            self.assertEqual(expected.description, platform.description)
+            self.assertEqual(expected.testplan, platform.testplan)
+        self.assertEqual(len(list(testplan.platforms)), len(expected_platforms))

@@ -102,8 +102,8 @@ class Platform(TestlinkObject):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder():
-        return PlatformBuilder()
+    def builder(*args, **kwargs):
+        return PlatformBuilder(*args, **kwargs)
 
     @property
     def name(self):
