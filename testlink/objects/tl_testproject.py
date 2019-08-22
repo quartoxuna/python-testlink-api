@@ -71,6 +71,9 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
 
     def build(self):
         """Generates a new TestProject"""
+        # Call Sanity checks of parent class
+        super(TestProjectFromAPIBuilder, self).build()
+
         # Sanity checks
         assert self.name is not None, "No TestProject name defined"
         assert self.prefix is not None, "No TestProject prefix defined"

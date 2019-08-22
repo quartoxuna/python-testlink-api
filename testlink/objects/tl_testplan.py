@@ -48,6 +48,9 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     def build(self):
         """Generate a new TestPlan"""
         # Sanity checks
+        # Call Sanity checks of parent class
+        super(TestPlanFromAPIBuilder, self).build()
+
         assert self.name is not None, "No TestPlan name defined"
         assert self.active is not None, "No TestPlan active status defined"
         assert self.public is not None, "No TestPlan public status defined"

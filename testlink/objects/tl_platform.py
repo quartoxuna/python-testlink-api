@@ -34,6 +34,9 @@ class PlatformFromAPIBuilder(TestlinkObjectFromAPIBuilder):
 
     def build(self):
         """Generate new Platform"""
+        # Call Sanity checks of parent class
+        super(PlatformFromAPIBuilder, self).build()
+
         # Sanity checks
         assert self.name is not None, "No Platform name defined"
         assert self.testproject is not None; "No parent TestProject defined"

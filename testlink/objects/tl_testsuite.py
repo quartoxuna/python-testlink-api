@@ -46,6 +46,9 @@ class TestSuiteFromAPIBuilder(TestlinkObjectFromAPIBuilder):
 
     def build(self):
         """Generate a new TestSuite"""
+        # Call Sanity checks of parent class
+        super(TestSuiteFromAPIBuilder, self).build()
+
         # Sanity checks
         assert self.name is not None, "No TestSuite name defined"
         assert self.testproject is not None, "No parent TestProject defined"

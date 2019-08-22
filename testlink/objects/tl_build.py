@@ -50,6 +50,9 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
 
     def build(self):
         """Generate a new Build"""
+        # Call Sanity checks of parent class
+        super(BuildFromAPIBuilder, self).build()
+
         # Sanity checks
         assert self.name is not None, "No Build name defined"
         assert self.active is not None, "No Build active status defined"
