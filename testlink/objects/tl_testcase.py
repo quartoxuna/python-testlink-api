@@ -22,7 +22,7 @@ from testlink.enums import CUSTOM_FIELD_DETAILS as CUSTOM_FIELD_DETAILS
 from testlink.enums import TESTCASE_STATUS as TESTCASE_STATUS
 
 
-class TestCase(TestlinkObject, AttachmentMixin):
+class TestCase(AttachmentMixin, TestlinkObject):
     """Testlink TestCase representation"""
 
     __slots__ = ["tc_id", "external_id", "platform_id", "execution_status", "execution_notes", "priority",

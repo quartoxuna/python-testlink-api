@@ -185,7 +185,7 @@ class TestProjectBuilder(TestlinkObjectBuilder,
         return self
 
 
-class TestProject(TestlinkObject, AttachmentMixin):
+class TestProject(AttachmentMixin, TestlinkObject):
     """Testlink TestProject
 
     :param str name: Name of the TestProject

@@ -17,7 +17,7 @@ from testlink.exceptions import NotSupported
 from testlink.enums import EXECUTION_TYPE
 
 
-class Execution(TestlinkObject, AttachmentMixin):
+class Execution(AttachmentMixin, TestlinkObject):
     """Testlink TestCase Execution representation
     @ivar id: The internal ID of the Execution
     @type id: int

@@ -91,7 +91,7 @@ class TestSuiteBuilder(TestlinkObjectBuilder,
         return self
 
 
-class TestSuite(TestlinkObject, AttachmentMixin):
+class TestSuite(AttachmentMixin, TestlinkObject):
     """Testlink TestSuite
 
     :param str name: Name of the TestSuite
