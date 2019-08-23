@@ -1,40 +1,117 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Keyword Object"""
-
 # IMPORTS
+from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
+from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 
 
-class Keyword(TestlinkObject):
-    """Testlink TestCase Keyword representation    
-    @ivar notes: Notes of the keyword
-    @type notes: str
-    @ivar testcase_id: <OPTIONAL> Related TestCase ID
-    @type testcase_id: int
-    @ivar _keyword: The actual keyword
-    @type: str
+class KeywordFromAPIBuilder(TestlinkObjectFromAPIBuilder):
+    """Testlink Keyword Builder from raw Testlink API data
+
+    :ivar str name: The name of the Keyword
+    :ivar str description: The description of the Keyword
+    :ivar int testcase_id: Internal ID of related TestCase
     """
 
-    __slots__ = ["id", "notes", "testcase_id", "_keyword"]
+    def __init__(self, *args, **kwargs):
+        self.name = kwargs.pop('keyword', None)
+        self.description = kwargs.pop('notes', None)
+        self.testcase_id = kwargs.pop('testcase_id', None)
+        super(KeywordFromAPIBuilder, self).__init__(*args, **kwargs)
 
-    def __init__(self, keyword_id=-1, notes=None, testcase_id=None, keyword=None, *args, **kwargs):
-        super(Keyword, self).__init__(*args, **kwargs)
-        self.notes = notes
-        self.testcase_id = int(testcase_id)
-        self._keyword = keyword
+        # Fix types
+        if self.testcase_id is not None:
+            self.testcase_id = int(self.testcase_id)
+
+    def build(self):
+        """Generate a new Keyword"""
+        # Call sanity checks of parent class
+        super(KeywordFromAPIBuilder, self).build()
+
+        # Sanity checks
+        assert self.name is not None, "No Keyword name defined"
+
+        return Keyword(self)
+
+
+class KeywordBuilder(TestlinkObjectBuilder,
+                     KeywordFromAPIBuilder):
+    """General Keyword Builder"""
+
+    def __init__(self, *args, **kwargs):
+        super(KeywordBuilder, self).__init__(*args, **kwargs)
+
+    def with_name(self, name):
+        """Set the name of the Keyword
+
+        :param str name: The name of the Keyword
+        :rtype: KeywordBuilder
+        """
+        self.name = name
+        return self
+
+    def with_description(self, description):
+        """Set the description of the Keyword
+
+        :param str description: The description of the Keyword
+        :rtype: KeywordBuilder
+        """
+        self.description = description
+        return self
+
+    def with_testcase_id(self, testcase_id):
+        """Set the a related testcase ID for the Keyword
+
+        :param int testcase_id: Internal ID of related TestCase
+        :rtype: KeywordBuilder
+
+        .. todo:: Needed?
+        """
+        self.testcase_id = testcase_id
+        return self
+
+
+class Keyword(TestlinkObject):
+    """Testlink Keyword
+
+    :ivar str name: Name of the Keyword
+    :ivar str description: Description of the Keyword
+    :ivar int testcase_id: Releated TestCase ID
+    """
+
+    def __init__(self, builder, *args, **kwargs):
+        super(Keyword, self).__init__(builder, *args, **kwargs)
+        self.__name = builder.name
+        self.__description = builder.description
+        self.__testcase_id = builder.testcase_id
 
     def __str__(self):
-        return str(self._keyword)
+        return self.__name
 
     def __eq__(self, other):
-        if isinstance(other, Keyword):
-            return self._keyword == other._keyword
-        elif isinstance(other, basestring):
-            return self._keyword == other
-        else:
-            return unicode(self._keyword) == unicode(other)
+        if isinstance(other, basestring):
+            return self.name == other
+        return super(Keyword, self).__eq__(other)
 
-    def __ne__(self, other):
-        return not self.__eq__(other)
+    @staticmethod
+    def builder(**api_data):
+        """Generate new KeywordBuilder
+
+        :param api_data: Raw API data
+        :rtype: KeywordBuilder
+        """
+        return KeywordBuilder(**api_data)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def testcase_id(self):
+        return self.__testcase_id
