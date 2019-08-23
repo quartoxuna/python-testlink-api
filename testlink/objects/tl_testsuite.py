@@ -5,9 +5,7 @@
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import normalize_list
 
-from testlink.objects.tl_testcase import TestCase
 from testlink.objects.tl_attachment import AttachmentMixin
 
 from testlink.exceptions import APIError
@@ -31,12 +29,12 @@ class TestSuiteFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """
 
     def __init__(self, *args, **kwargs):
+        self.name = kwargs.pop('name', None)
+        self.description = kwargs.pop('details', None)
+        self.level = kwargs.pop('level', None)
+        self.testsuite = kwargs.pop('parent_testsuite', None)
+        self.testproject = kwargs.pop('parent_testproject', None)
         super(TestSuiteFromAPIBuilder, self).__init__(*args, **kwargs)
-        self.name = kwargs.get('name', None)
-        self.description = kwargs.get('details', None)
-        self.level = kwargs.get('level', None)
-        self.testsuite = kwargs.get('parent_testsuite', None)
-        self.testproject = kwargs.get('parent_testproject', None)
 
         # Fix types
         if self.level is not None:
@@ -178,18 +176,19 @@ class TestSuite(AttachmentMixin, TestlinkObject):
             for nested in testsuite.testsuites:
                 yield nested
 
+    """
     def iterTestCase(self, name=None, **params):
-        """Iterates over TestCases specified by parameters
+        Iterates over TestCases specified by parameters
         @param name: The name of the wanted TestCase
         @type name: str
         @param params: Other params for TestCase
         @type params: dict
         @returns: Matching TestCases
         @rtype: generator
-        """
+
         # No simple API call possible, get all
-        response = self._api.getTestCasesForTestSuite(self.id, details='full', getkeywords=True)
-        cases = [TestCase(api=self._api, parent_testproject=self.getTestProject(), parent_testsuite=self, **case)
+        response = self.testlink.api.getTestCasesForTestSuite(self.id, details='full', getkeywords=True)
+        cases = [TestCase(api=self.testlink.api, parent_testproject=self.testproject, parent_testsuite=self, **case)
                  for case in response]
 
         # Filter by specified parameters
@@ -207,10 +206,10 @@ class TestSuite(AttachmentMixin, TestlinkObject):
                                 break
                         except AttributeError:
                             # Try as custom field
-                            ext_id = "%s-%s" % (tcase.getTestProject().prefix, tcase.external_id)
-                            cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,
+                            ext_id = "%s-%s" % (tcase.testproject.prefix, tcase.external_id)
+                            cf_val = self.testlink.api.getTestCaseCustomFieldDesignValue(ext_id,
                                                                                  tcase.version,
-                                                                                 tcase.getTestProject().id,
+                                                                                 tcase.testproject.id,
                                                                                  key)
                             if not unicode(cf_val) == unicode(value):
                                 tcase = None
@@ -229,12 +228,12 @@ class TestSuite(AttachmentMixin, TestlinkObject):
                 yield tcase
 
     def getTestCase(self, name=None, **params):
-        """Returns all TestCases specified by parameters
+        Returns all TestCases specified by parameters
         @param name: The name of the wanted TestCase
         @type name: str
         @param params: Other params for TestCase
         @type params: dict
         @returns: Matching TestCases
         @rtype: mixed
-        """
-        return normalize_list([c for c in self.iterTestCase(name, **params)])
+        return [c for c in self.iterTestCase(name, **params)]
+    """

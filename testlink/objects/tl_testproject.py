@@ -5,7 +5,6 @@
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import normalize_list
 
 from testlink.objects.tl_testsuite import TestSuite
 from testlink.objects.tl_testcase import TestCase
@@ -31,25 +30,25 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """
 
     def __init__(self, *args, **kwargs):
-        super(TestProjectFromAPIBuilder, self).__init__(*args, **kwargs)
-        self.name = kwargs.get('name', None)
-        self.prefix = kwargs.get('prefix', None)
-        self.description = kwargs.get('notes', None)
-        self.active = kwargs.get('active', None)
-        self.public = kwargs.get('is_public', None)
-        self.color = kwargs.get('color', None)
-        self.testcase_count = kwargs.get('tc_counter', None)
+        self.name = kwargs.pop('name', None)
+        self.prefix = kwargs.pop('prefix', None)
+        self.description = kwargs.pop('notes', None)
+        self.active = kwargs.pop('active', None)
+        self.public = kwargs.pop('is_public', None)
+        self.color = kwargs.pop('color', None)
+        self.testcase_count = kwargs.pop('tc_counter', None)
 
         self.requirement_feature = None
         self.priority_feature = None
         self.automation_feature = None
         self.inventory_feature = None
         if kwargs.get('opt', None):
-            options = kwargs.get('opt')
+            options = kwargs.pop('opt')
             self.requirement_feature = options['requirementsEnabled']
             self.priority_feature = options['testPriorityEnabled']
             self.automation_feature = options['automationEnabled']
             self.inventory_feature =  options['inventoryEnabled']
+        super(TestProjectFromAPIBuilder, self).__init__(*args, **kwargs)
 
         # Fix types
         if self.active is not None:
@@ -366,7 +365,7 @@ class TestProject(AttachmentMixin, TestlinkObject):
         # Check if simple API calls can be done
         if name and not _id:
             try:
-                response = self._api.getTestCaseIdByName(name, testprojectname=self.name)
+                response = self.testlink.api.getTestCaseIdByName(name, testprojectname=self.name)
                 # If we got more than one TestCase, ignore the name
                 if len(response) == 1:
                     _id = response[0]['id']
@@ -384,18 +383,18 @@ class TestProject(AttachmentMixin, TestlinkObject):
                 ext = "%s-%s" % (str(self.prefix), str(external_id))
             else:
                 ext = None
-            response = self._api.getTestCase(_id, ext, version)
+            response = self.testlink.api.getTestCase(_id, ext, version)
             # Server response is a list
             if len(response) == 1:
                 response = response[0]
 
-            yield TestCase(api=self._api, parent_testproject=self, **response)
+            yield TestCase(api=self.testlink.api, parent_testproject=self, **response)
         else:
             # Get all TestCases for the TestProject
             params["name"] = name
             params["external_id"] = external_id
             params["version"] = version
-            for suite in self.iterTestSuite():
+            for suite in self.testsuites:
                 for case in suite.iterTestCase(**params):
                     yield case
 
@@ -410,4 +409,4 @@ class TestProject(AttachmentMixin, TestlinkObject):
         @returns: Matching TestCases
         @rtype: mixed
         """
-        return normalize_list([c for c in self.iterTestCase(name, external_id, **params)])
+        return [c for c in self.iterTestCase(name, external_id, **params)]

@@ -9,11 +9,8 @@ from testlink.exceptions import APIError
 from testlink.enums import API_TYPE
 from testlink.enums import DUPLICATE_STRATEGY
 
-from testlink.objects.tl_object import normalize_list
-
 from testlink.objects.tl_testproject import TestProject
 from testlink.objects.tl_testsuite import TestSuite
-from testlink.objects.tl_testcase import TestCase
 
 
 class Testlink(object):
@@ -48,7 +45,7 @@ class Testlink(object):
         @param project: Project to create
         @type project: testlink.objects.tl_testproject.TestProject
         """
-        return self._api.createTestProject(name=project.name,
+        return self.api.createTestProject(name=project.name,
                                            prefix=project.prefix,
                                            notes=project.notes,
                                            active=project.active,
@@ -65,7 +62,7 @@ class Testlink(object):
         @param testproject: TestProject to add the Testplan to
         @type testproject: TestProject
         """
-        return self._api.createTestPlan(name=testplan.name,
+        return self.api.createTestPlan(name=testplan.name,
                                         notes=testplan.notes,
                                         active=testplan.active,
                                         public=testplan.public,
@@ -78,7 +75,7 @@ class Testlink(object):
         @param testplan: TestPlan to add the Build to
         @type testplan: TestPlan
         """
-        return self._api.createBuild(name=build.name, notes=build.notes, testplanid=testplan.id)
+        return self.api.createBuild(name=build.name, notes=build.notes, testplanid=testplan.id)
 
     def createPlatform(self, platform, testproject):
         """Creates a new Platform for the specified TestProject using the current Testlink instance.
@@ -87,7 +84,7 @@ class Testlink(object):
         @param testproject: TestProject to add the Platform to
         @type testproject: TestProject
         """
-        return self._api.createPlatform(platformname=platform.name,
+        return self.api.createPlatform(platformname=platform.name,
                                         notes=platform.notes,
                                         testprojectname=testproject.name)
 
@@ -113,7 +110,7 @@ class Testlink(object):
         if parent is not None:
             parent_id = parent.id
 
-        return self._api.createTestSuite(testsuitename=suite.name,
+        return self.api.createTestSuite(testsuitename=suite.name,
                                          details=suite.details,
                                          testprojectid=testproject.id,
                                          parentid=parent_id,
@@ -143,7 +140,7 @@ class Testlink(object):
 
         steps = [s.__dict__ for s in testcase.steps]
 
-        return self._api.createTestCase(testcasename=testcase.name,
+        return self.api.createTestCase(testcasename=testcase.name,
                                         testsuiteid=testsuite.id,
                                         testprojectid=testproject.id,
                                         authorlogin=authorlogin,
@@ -171,7 +168,7 @@ class Testlink(object):
         else:
             parent_id = None
 
-        return self._api.createRequirementSpecification(testprojectid=testproject.id,
+        return self.api.createRequirementSpecification(testprojectid=testproject.id,
                                                         parentid=parent_id,
                                                         docid=reqspec.doc_id,
                                                         title=reqspec.name,
@@ -189,7 +186,7 @@ class Testlink(object):
         @param reqspec: Parent Requirement Specification
         @type reqspec: RequirementSpecification
         """
-        return self._api.createRequirement(testprojectid=testproject.id,
+        return self.api.createRequirement(testprojectid=testproject.id,
                                            reqspecid=reqspec.id,
                                            docid=requirement.req_doc_id,
                                            title=requirement.name,
@@ -205,7 +202,7 @@ class Testlink(object):
         @param requirement: Parent Requirement
         @type requirement: Requirement
         """
-        return self._api.createRisk(requirementid=requirement.id,
+        return self.api.createRisk(requirementid=requirement.id,
                                     docid=risk.doc_id,
                                     title=risk.name,
                                     scope=risk.description,

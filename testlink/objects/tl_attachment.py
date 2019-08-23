@@ -9,8 +9,6 @@ from datetime import datetime
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import strptime
-from testlink.objects.tl_object import normalize_list
 
 
 class AttachmentFromAPIBuilder(TestlinkObjectFromAPIBuilder):
@@ -24,12 +22,12 @@ class AttachmentFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """
 
     def __init__(self, *args, **kwargs):
+        self.name = kwargs.pop('name', None)
+        self.description = kwargs.pop('title', None)
+        self.file_type = kwargs.pop('file_type', None)
+        self.created = kwargs.pop('date_added', None)
+        self.content = kwargs.pop('content', None)
         super(AttachmentFromAPIBuilder, self).__init__(*args, **kwargs)
-        self.name = kwargs.get('name', None)
-        self.description = kwargs.get('title', None)
-        self.file_type = kwargs.get('file_type', None)
-        self.created = kwargs.get('date_added', None)
-        self.content = kwargs.get('content', None)
 
         # Fix types
         if self.created is not None:

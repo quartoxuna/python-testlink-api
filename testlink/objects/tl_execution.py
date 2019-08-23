@@ -7,7 +7,6 @@
 import datetime
 
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import strptime
 
 from testlink.objects.tl_user import User
 from testlink.objects.tl_attachment import AttachmentMixin
@@ -57,7 +56,7 @@ class Execution(AttachmentMixin, TestlinkObject):
         self.notes = notes
         self.execution_type = int(execution_type)
         try:
-            self.execution_ts = strptime(str(execution_ts), TestlinkObject.DATETIME_FORMAT)
+            self.execution_ts = datetime.datetime.strptime(str(execution_ts), TestlinkObject.DATETIME_FORMAT)
         except ValueError:
             self.execution_ts = datetime.datetime.min
         self.tester_id = int(tester_id)
@@ -76,14 +75,14 @@ class Execution(AttachmentMixin, TestlinkObject):
         """Tester of this execution"""
         if self.__tester is None:
             try:
-                user = self._api.getUserByID(self.tester_id)
+                user = self.testlink.api.getUserByID(self.tester_id)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                self.__tester = User(api=self._api, **user)
+                self.__tester = User(api=self.testlink.api, **user)
             except NotSupported:
                 pass
         return self.__tester
 
     def delete(self):
         """Delete this execution"""
-        self._api.deleteExecution(self.id)
+        self.testlink.api.deleteExecution(self.id)

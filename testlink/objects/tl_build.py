@@ -23,16 +23,15 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """
 
     def __init__(self, *args, **kwargs):
+        self.name = kwargs.pop('name', None)
+        self.description = kwargs.pop('notes', None)
+        self.active = kwargs.pop('active', None)
+        self.public = kwargs.pop('is_public', None)
+        self.testplan = kwargs.pop('parent_testplan', None)
+        self.created = kwargs.pop('creation_ts', None)
+        self.released = kwargs.pop('release_date', None)
+        self.closed = kwargs.pop('closed_on_date', None)
         super(BuildFromAPIBuilder, self).__init__(*args, **kwargs)
-        self.name = kwargs.get('name', None)
-        self.description = kwargs.get('notes', None)
-        self.active = kwargs.get('active', None)
-        self.public = kwargs.get('is_public', None)
-        self.testplan = kwargs.get('parent_testplan', None)
-
-        self.created = kwargs.get('creation_ts', None)
-        self.released = kwargs.get('release_date', None)
-        self.closed = kwargs.get('closed_on_date', None)
 
         # Fix types
         if self.active is not None:
@@ -215,11 +214,3 @@ class Build(TestlinkObject):
     @property
     def testplan(self):
         return self.__parent_testplan
-
-    def getTestPlan(self):
-        """Returns associated TestPlan"""
-        return self._parent_testplan
-
-    def iterTestPlan(self):
-        """Returns associated TestPlan"""
-        yield self._parent_testplan

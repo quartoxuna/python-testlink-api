@@ -3,9 +3,6 @@
 
 """User Object"""
 
-# IMPORTS
-from testlink.objects.tl_object import normalize_list
-
 class User(object):
     """Testlink User representation"""
 

@@ -24,11 +24,11 @@ class PlatformFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """
 
     def __init__(self, *args, **kwargs):
+        self.name = kwargs.pop('name', None)
+        self.description = kwargs.pop('notes', None)
+        self.testproject = kwargs.pop('parent_testproject', None)
+        self.testplan = kwargs.pop('parent_testplan', None)
         super(PlatformFromAPIBuilder, self).__init__(*args, **kwargs)
-        self.name = kwargs.get('name', None)
-        self.description = kwargs.get('notes', None)
-        self.testproject = kwargs.get('parent_testproject', None)
-        self.testplan = kwargs.get('parent_testplan', None)
 
     def build(self):
         """Generate new Platform"""

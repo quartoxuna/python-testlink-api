@@ -1,39 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-# IMPORTS
-import time
-import datetime
+"""
+.. autoclass:: TestlinkObject
+   :members:
 
-__all__ = ["strptime", "TestlinkObject", "normalize_list"]
-
-
-# Backwards compatability methods
-def strptime(date_string, fmt):
-    date = time.strptime(date_string, fmt)
-    return datetime.datetime(*(date[0:6]))
-try:
-    strptime = datetime.datetime.strptime
-except AttributeError:
-    pass
-
-
-# Helper method
-def normalize_list(res):
-    """Normalizes a result list.
-    If the specified list is empty, return None.
-    If the specified list has only one element, return that element.
-    Else return the list as is.
-    @param res: Result list
-    @type res: list
-    @rtype: mixed
-    """
-    if len(res) == 0:
-        return None
-    elif len(res) == 1:
-        return res[0]
-    else:
-        return res
+.. autoclass:: TestlinkObjectBuilder
+   :members:
+"""
 
 
 class TestlinkObjectFromAPIBuilder(object):
@@ -42,11 +14,12 @@ class TestlinkObjectFromAPIBuilder(object):
     :ivar int _id: Internal Testlink ID of the object
     :ivar Testlink testlink: Parent Testlink instance
     """
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, *args, **kwargs):
-        super(TestlinkObjectFromAPIBuilder, self).__init__()
-        self.testlink_id = kwargs.get('id', None)
-        self.testlink = kwargs.get('parent_testlink', None)
+        self.testlink_id = kwargs.pop('id', None)
+        self.testlink = kwargs.pop('parent_testlink', None)
+        super(TestlinkObjectFromAPIBuilder, self).__init__(*args, **kwargs)
 
         # Fix types
         if self.testlink_id is not None:
@@ -63,9 +36,6 @@ class TestlinkObjectFromAPIBuilder(object):
 
 class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     """General TestlinkObject Builder"""
-
-    def __init__(self, *args, **kwargs):
-        super(TestlinkObjectBuilder, self).__init__(*args, **kwargs)
 
     def with_id(self, testlink_id):
         """Set the internal ID of the Testlink Object
@@ -97,7 +67,7 @@ class TestlinkObject(object):
     """Default timestamp format for Testlink Objects"""
 
     def __init__(self, builder, *args, **kwargs):
-        super(TestlinkObject, self).__init__()
+        super(TestlinkObject, self).__init__(*args, **kwargs)
         self.__testlink_id = builder.testlink_id
         self.__parent_testlink = builder.testlink
 
@@ -119,10 +89,19 @@ class TestlinkObject(object):
     def __eq__(self, other):
         return self.id == other.id
 
+    # pylint: disable=invalid-name
     @property
     def id(self):
+        """Internal Testlink ID
+
+        :rtype: int
+        """
         return self.__testlink_id
 
     @property
     def testlink(self):
+        """Parent Testlink instance
+
+        :rtype: Testlink
+        """
         return self.__parent_testlink

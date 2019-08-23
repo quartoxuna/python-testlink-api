@@ -7,7 +7,6 @@ from testlink.log import LOGGER
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import normalize_list
 
 from testlink.objects.tl_build import Build
 from testlink.objects.tl_platform import Platform
@@ -30,12 +29,12 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """
 
     def __init__(self, *args, **kwargs):
+        self.name = kwargs.pop('name', None)
+        self.description = kwargs.pop('notes', None)
+        self.active = kwargs.pop('active', None)
+        self.public = kwargs.pop('is_public', None)
+        self.testproject = kwargs.pop('parent_testproject', None)
         super(TestPlanFromAPIBuilder, self).__init__(*args, **kwargs)
-        self.name = kwargs.get('name', None)
-        self.description = kwargs.get('notes', None)
-        self.active = kwargs.get('active', None)
-        self.public = kwargs.get('is_public', None)
-        self.testproject = kwargs.get('parent_testproject', None)
 
         # Fix types
         if self.active is not None:
@@ -235,7 +234,7 @@ class TestPlan(TestlinkObject):
         # Get all available TestCases
         # Use all possible API params to speed up API call
         try:
-            response = self._api.getTestCasesForTestPlan(testprojectid=self.getTestProject().id,
+            response = self.testlink.api.getTestCasesForTestPlan(testprojectid=self.testproject.id,
                                                          testplanid=self.id,
                                                          testcaseid=_id,
                                                          buildid=buildid,
@@ -283,7 +282,7 @@ class TestPlan(TestlinkObject):
             del params['platform_id']
 
         # Initialise TestCase Objects
-        cases = [TestCase(api=self._api, parent_testproject=self.getTestProject(), **case) for case in testcases]
+        cases = [TestCase(api=self.testlink.api, parent_testproject=self.testproject, **case) for case in testcases]
 
         # Filter
         if len(params) > 0 or name:
@@ -302,10 +301,10 @@ class TestPlan(TestlinkObject):
                         except AttributeError:
                             # TestCase has no attribute key
                             # Try to treat key as the name of a custom field
-                            ext_id = "%s-%s" % (tcase.getTestProject().prefix, tcase.external_id)
-                            cf_val = self._api.getTestCaseCustomFieldDesignValue(ext_id,
+                            ext_id = "%s-%s" % (tcase.testproject.prefix, tcase.external_id)
+                            cf_val = self.testlink.api.getTestCaseCustomFieldDesignValue(ext_id,
                                                                                  tcase.version,
-                                                                                 tcase.getTestProject().id,
+                                                                                 tcase.testproject.id,
                                                                                  key)
                             if not unicode(cf_val) == unicode(value):
                                 # No match either, try next testcase
@@ -344,8 +343,8 @@ class TestPlan(TestlinkObject):
         @returns: Matching TestCases
         @rtype: mixed
         """
-        return normalize_list([c for c in self.iterTestCase(name, buildid, keywordid, keywords,
-                                                            executed, assigned_to, execution_type, **params)])
+        return [c for c in self.iterTestCase(name, buildid, keywordid, keywords,
+                                                            executed, assigned_to, execution_type, **params)]
 
     def assignTestCase(self, case, platform=None, execution_order=None, urgency=None):
         """Assigns the specified TestCase to the current TestPlan.
@@ -361,9 +360,9 @@ class TestPlan(TestlinkObject):
         """
         if not platform:
             platform = Platform(-1)
-        self._api.addTestCaseToTestPlan(self.getTestProject().id,
+        self.testlink.api.addTestCaseToTestPlan(self.testproject.id,
                                         self.id,
-                                        "%s-%s" % (self.getTestProject().prefix,
+                                        "%s-%s" % (self.testproject.prefix,
                                                    str(case.external_id)),
                                         case.version,
                                         platform.id,

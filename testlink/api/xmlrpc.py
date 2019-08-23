@@ -3,6 +3,8 @@ import socket
 import xmlrpclib
 import time
 
+from pkg_resources import parse_version as Version
+
 from testlink_api import TestlinkAPI
 from testlink_api import TestlinkAPIBuilder
 
@@ -477,7 +479,7 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         .. todo:: Update Return Value
         """
         arguments = {}
-        if (self._tl_version >= Version("1.9.14")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
+        if (self.version >= Version("1.9.14")):
             arguments['execduration'] = execduration
 
         return self.query("tl.reportTCResult",
@@ -523,7 +525,7 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                      "testcaseid": testcaseid,
                      "testcaseexternalid": testcaseexternalid}
 
-        if (self._tl_version >= Version("1.9.9")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
+        if (self.version >= Version("1.9.9")):
             arguments['platformid'] = platformid
             arguments['platformname'] = platformname
             arguments['buildid'] = buildid
@@ -848,7 +850,7 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         arguments = {"testsuiteid": testsuiteid,
                      "deep": deep,
                      "details": details}
-        if (self._tl_version >= Version("1.9.10")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
+        if (self.version >= Version("1.9.10")):
             arguments['getkeywords'] = getkeywords
         return self.query("tl.getTestCasesForTestSuite", devKey=devkey, **arguments)
 
@@ -890,7 +892,7 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
                      "executiontype": executiontype,
                      "getstepsinfo": getstepsinfo}
 
-        if (self._tl_version >= Version("1.9.4")) or TestlinkXMLRPCAPI.IGNORE_VERSION_CHECK:
+        if (self.version >= Version("1.9.4")):
             # Add 'details' attribute
             arguments['details'] = details
 

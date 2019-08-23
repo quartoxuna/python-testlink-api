@@ -4,8 +4,9 @@
 """TestCase Object"""
 
 # IMPORTS
+import datetime
+
 from testlink.objects.tl_object import TestlinkObject
-from testlink.objects.tl_object import strptime
 from testlink.objects.tl_step import Step
 from testlink.objects.tl_keyword import Keyword
 from testlink.objects.tl_execution import Execution
@@ -22,7 +23,7 @@ from testlink.enums import CUSTOM_FIELD_DETAILS as CUSTOM_FIELD_DETAILS
 from testlink.enums import TESTCASE_STATUS as TESTCASE_STATUS
 
 
-class TestCase(AttachmentMixin, TestlinkObject):
+class TestCase(TestlinkObject, AttachmentMixin):
     """Testlink TestCase representation"""
 
     __slots__ = ["tc_id", "external_id", "platform_id", "execution_status", "execution_notes", "priority",
@@ -200,7 +201,7 @@ class TestCase(AttachmentMixin, TestlinkObject):
         # Try to get creation ts
         if 'creation_ts' in kwargs:
             try:
-                self.creation_ts = strptime(kwargs['creation_ts'], TestlinkObject.DATETIME_FORMAT)
+                self.creation_ts = datetime.datetime.strptime(kwargs['creation_ts'], TestlinkObject.DATETIME_FORMAT)
             except ValueError:
                 # Cannot convert
                 self.creation_ts = None
@@ -219,7 +220,7 @@ class TestCase(AttachmentMixin, TestlinkObject):
         # Try to get modification ts
         if 'modification_ts' in kwargs:
             try:
-                self.modification_ts = strptime(kwargs['modification_ts'], TestlinkObject.DATETIME_FORMAT)
+                self.modification_ts = datetime.datetime.strptime(kwargs['modification_ts'], TestlinkObject.DATETIME_FORMAT)
             except ValueError:
                 # Cannot convert
                 self.modification_ts = None
@@ -236,11 +237,12 @@ class TestCase(AttachmentMixin, TestlinkObject):
             self.linked_by = int(kwargs['linked_by'])
         else:
             self.linked_by = None
+        self.__linker = None
 
         # Try to get linked_ts
         if 'linked_ts' in kwargs:
             try:
-                self.linked_ts = strptime(kwargs['linked_ts'], TestlinkObject.DATETIME_FORMAT)
+                self.linked_ts = datetime.datetime.strptime(kwargs['linked_ts'], TestlinkObject.DATETIME_FORMAT)
             except ValueError:
                 # Cannot convert
                 self.linked_ts = None
@@ -288,6 +290,7 @@ class TestCase(AttachmentMixin, TestlinkObject):
             self._keywords = None
 
         # Set common attributes
+        self.name = _name
         self.version = int(version)
         self.status = int(status) if str(status).isdigit() else None
         self.importance = int(importance)
@@ -343,10 +346,10 @@ class TestCase(AttachmentMixin, TestlinkObject):
         """Author of this testcase"""
         if (self.__author is None) and (self.author_id is not None):
             try:
-                user = self._api.getUserByID(self.author_id)
+                user = self.testlink.api.getUserByID(self.author_id)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                self.__author = User(api=self._api, **user)
+                self.__author = User(api=self.testlink.api, **user)
             except NotSupported:
                 pass
         return self.__author
@@ -356,10 +359,10 @@ class TestCase(AttachmentMixin, TestlinkObject):
         """Modifier of this testcase"""
         if (self.__modifier is None) and (self.modifier_id is not None):
             try:
-                user = self._api.getUserByID(self.modifier_id)
+                user = self.testlink.api.getUserByID(self.modifier_id)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                self.__modifier = User(api=self._api, **user)
+                self.__modifier = User(api=self.testlink.api, **user)
             except NotSupported:
                 pass
         return self.__modifier
@@ -369,10 +372,10 @@ class TestCase(AttachmentMixin, TestlinkObject):
         """Assignee of this testcase"""
         if (self.__assignee is None) and (self.__assignee_id is not None):
             try:
-                user = self._api.getUserByID(self.__assignee_id)
+                user = self.testlink.api.getUserByID(self.__assignee_id)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                self.__assignee = User(api=self._api, **user)
+                self.__assignee = User(api=self.testlink.api, **user)
             except NotSupported:
                 pass
         return self.__assignee
@@ -383,10 +386,10 @@ class TestCase(AttachmentMixin, TestlinkObject):
         # Do not cache
         if (self.__linker is None) and (self.linked_by is not None):
             try:
-                user = self._api.getUserByID(self.linked_by)
+                user = self.testlink.api.getUserByID(self.linked_by)
                 if isinstance(user, list) and len(user) == 1:
                     user = user[0]
-                self.__linker = User(api=self._api, **user)
+                self.__linker = User(api=self.testlink.api, **user)
             except NotSupported:
                 pass
         return self.__linker
@@ -450,11 +453,11 @@ class TestCase(AttachmentMixin, TestlinkObject):
                                buildname=None, bugs=False):
         """Return last execution result"""
         try:
-            resp = self._api.getLastExecutionResult(testplanid, self.tc_id, self.external_id, platformid,
+            resp = self.testlink.api.getLastExecutionResult(testplanid, self.tc_id, self.external_id, platformid,
                                                     platformname, buildid, buildname, bugs)
             if isinstance(resp, list) and len(resp) == 1:
                 resp = resp[0]
-            execution = Execution(api=self._api, **resp)
+            execution = Execution(api=self.testlink.api, **resp)
             if execution.id > 0:
                 return execution
         except APIError, ae:
@@ -467,12 +470,12 @@ class TestCase(AttachmentMixin, TestlinkObject):
     def getExecutions(self, testplanid, platformid=None, platformname=None, buildid=None, buildname=None, bugs=False):
         """Returns last executions"""
         try:
-            resp = self._api.getExecutions(testplanid, self.tc_id, self.external_id, platformid, platformname,
+            resp = self.testlink.api.getExecutions(testplanid, self.tc_id, self.external_id, platformid, platformname,
                                            buildid, buildname, bugs)
             if len(resp) == 0:
                 return []
             else:
-                return [Execution(api=self._api, **exc) for exc in resp.values()]
+                return [Execution(api=self.testlink.api, **exc) for exc in resp.values()]
         except APIError, ae:
             if ae.error_code == 3030:
                 # Testcase not linked to testplan
@@ -484,14 +487,14 @@ class TestCase(AttachmentMixin, TestlinkObject):
         """Deletes last execution"""
         # Update last execution
         last = self.getLastExecutionResult(testplanid)
-        self._api.deleteExecution(last.id)
+        self.testlink.api.deleteExecution(last.id)
 
     def reportResult(self, testplanid, buildid, status, notes=None, overwrite=False, execduration=None, customfields={}):
         """Reports TC result"""
         if len(customfields) == 0:
             customfields = None
 
-        response = self._api.reportTCResult(testplanid=testplanid,
+        response = self.testlink.api.reportTCResult(testplanid=testplanid,
                                             status=status,
                                             testcaseid=self.tc_id,
                                             testcaseexternalid=self.external_id,
@@ -521,7 +524,7 @@ class TestCase(AttachmentMixin, TestlinkObject):
         @rtype: mixed
         """
         if fieldname not in self.customfields.keys():
-            value = self._api.getTestCaseCustomFieldDesignValue(
+            value = self.testlink.api.getTestCaseCustomFieldDesignValue(
                 testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),
                 version=int(self.version),
                 testprojectid=self.getTestProject().id,
@@ -574,7 +577,7 @@ class TestCase(AttachmentMixin, TestlinkObject):
         if exec_duration is None:
             exec_duration = self.exec_duration
 
-        self._api.updateTestCase(
+        self.testlink.api.updateTestCase(
             testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),
             testcasename=testcasename,
             summary=summary,
@@ -593,7 +596,7 @@ class TestCase(AttachmentMixin, TestlinkObject):
         if requirements is None:
             requirements = self.requirements
 
-        return self._api.assignRequirements(
+        return self.testlink.api.assignRequirements(
             testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),
             testprojectid=self.getTestProject().id,
             requirements=requirements)
@@ -606,7 +609,7 @@ class TestCase(AttachmentMixin, TestlinkObject):
         if customfields is None:
             customfields = self.customfields
 
-        return self._api.updateTestCaseCustomFieldDesignValue(
+        return self.testlink.api.updateTestCaseCustomFieldDesignValue(
             testcaseexternalid="%s-%s" % (str(self.getTestProject().prefix), str(self.external_id)),
             version=int(self.version),
             testprojectid=self.getTestProject().id,
@@ -618,12 +621,12 @@ class TestCase(AttachmentMixin, TestlinkObject):
         @rtype: generator
         """
         # Get all attachments for this object
-        response = self._api.getTestCaseAttachments(self.tc_id, self.external_id)
+        response = self.testlink.api.getTestCaseAttachments(self.tc_id, self.external_id)
 
         # Check for empty result
         if len(response) == 0:
             return
-        attachments = [Attachment(api=self._api, **resp) for resp in response.values()]
+        attachments = [Attachment(api=self.testlink.api, **resp) for resp in response.values()]
 
         # Filter
         if len(params) > 0:

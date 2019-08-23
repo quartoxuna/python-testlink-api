@@ -34,7 +34,7 @@ class Keyword(TestlinkObject):
         elif isinstance(other, basestring):
             return self._keyword == other
         else:
-            return unicode(self.keyword) == unicode(other)
+            return unicode(self._keyword) == unicode(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)
