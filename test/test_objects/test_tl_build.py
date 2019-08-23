@@ -3,7 +3,7 @@
 # IMPORTS
 import datetime
 import unittest
-from mock import MagicMock
+import mock
 
 
 from testlink.objects.tl_build import BuildFromAPIBuilder
@@ -37,7 +37,7 @@ class BuildBuilderTests(unittest.TestCase):
 
     def test_from_testlink(self):
         """Test setter for parent Testlink instance"""
-        testlink = MagicMock()
+        testlink = mock.MagicMock()
         builder = Build.builder()
         self.assertEqual(builder, builder.from_testlink(testlink))
         self.assertEqual(builder.testlink, testlink)
@@ -105,7 +105,7 @@ class BuildBuilderTests(unittest.TestCase):
 
     def test_from_testplan(self):
         """Test setter for Build parent testplan"""
-        testplan = MagicMock()
+        testplan = mock.MagicMock()
         builder = Build.builder()
         self.assertEqual(builder, builder.from_testplan(testplan))
         self.assertEqual(builder.testplan, testplan)
@@ -115,8 +115,8 @@ class BuildTests(unittest.TestCase):
 
     def test_builder(self):
         """Test initialization with default builder"""
-        testlink = MagicMock()
-        testplan = MagicMock()
+        testlink = mock.MagicMock()
+        testplan = mock.MagicMock()
         creation_date = datetime.datetime(2019, 8, 19, 12, 34, 56)
         release_date = datetime.date(2019, 8, 18)
         closing_date = datetime.date(2019, 8, 26)
@@ -141,5 +141,27 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(build.created, creation_date)
         self.assertEqual(build.released, release_date)
         self.assertEqual(build.closed, closing_date)
+        self.assertEqual(build.testlink, testlink)
+        self.assertEqual(build.testplan, testplan)
+
+    def test_api_builder(self):
+        """Test intiialisation of default builer with raw API data"""
+        testlink = mock.MagicMock()
+        testplan = mock.MagicMock()
+        data = {'id': '123', 'name': "Example", 'notes': "Description", 'active': '1',
+                'is_public': '0', 'creation_ts': '2019-08-19 12:34:56',
+                'release_date': '2019-08-18', 'closed_on_date': '2019-08-26'}
+        build = Build.builder(**data)\
+                .from_testlink(testlink)\
+                .from_testplan(testplan)\
+                .build()
+        self.assertEqual(build.id, 123)
+        self.assertEqual(build.name, "Example")
+        self.assertEqual(build.description, "Description")
+        self.assertTrue(build.active)
+        self.assertFalse(build.public)
+        self.assertEqual(build.created, datetime.datetime(2019, 8, 19, 12, 34, 56))
+        self.assertEqual(build.released, datetime.date(2019, 8, 18))
+        self.assertEqual(build.closed, datetime.date(2019, 8, 26))
         self.assertEqual(build.testlink, testlink)
         self.assertEqual(build.testplan, testplan)
