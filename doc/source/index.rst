@@ -1,25 +1,13 @@
-.. Python-Testlink-API documentation master file, created by
-   sphinx-quickstart on Thu Feb 16 17:13:00 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Python-Testlink-API |version|
+python-testlink-api |version|
 =============================
 
-Contents:
-
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    objects
    api
    enums
    exceptions
 
-Indices and tables
-==================
-
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
-
