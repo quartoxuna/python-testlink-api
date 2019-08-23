@@ -40,7 +40,7 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     def with_id(self, testlink_id):
         """Set the internal ID of the Testlink Object
 
-        :param int type testlink_id: Internal Testlink ID
+        :param int testlink_id: Internal Testlink ID
         :rtype: TestlinkObjectBuilder
         """
         self.testlink_id = testlink_id

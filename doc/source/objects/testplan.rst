@@ -1,5 +1,5 @@
 Testplan
-===========
+========
 
 .. autoclass:: testlink.objects.tl_testplan.TestPlan
    :members:
