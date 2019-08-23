@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""TestPlan Object"""
-
 # IMPORTS
 from testlink.log import LOGGER
 
@@ -21,11 +19,11 @@ from testlink.exceptions import APIError
 class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """Testlink TestProject Builder for raw Testlink API data
 
-    :param str name: Name of the TestPlan
-    :param str description: Description of the TestPlan
-    :param bool active: Active status of the plan
-    :param bool public: Public status of the plan
-    :param TestProject testproject: Parent TestProject
+    :ivar str name: Name of the TestPlan
+    :ivar str description: Description of the TestPlan
+    :ivar bool active: Active status of the plan
+    :ivar bool public: Public status of the plan
+    :ivar TestProject testproject: Parent TestProject
 
     .. todo::
         Remove *parent_testproject* from API builder
@@ -68,41 +66,62 @@ class TestPlanBuilder(TestlinkObjectBuilder,
 
     def with_name(self, name):
         """Set the name of the TestPlan
-        :type name: str"""
+
+        :param str name: TestPlan name
+        :rtype: TestPlanBuilder
+        """
         self.name = name
         return self
 
     def with_description(self, description):
         """Set the description of the TestPlan
-        :type description: str"""
+
+        :param str description: TestPlan description
+        :rtype: TestPlanBuilder
+        """
         self.description = description
         return self
 
     def is_active(self, active=True):
         """Set the TestPlan to active
-        :type active: bool"""
+
+        :param bool active: TestPlan active status
+        :rtype: TestPlanBuilder
+        """
         self.active = active
         return self
 
     def is_not_active(self):
-        """Set the TestPlan to inactive"""
+        """Set the TestPlan to inactive
+
+        :rtype: TestPlanBuilder
+        """
         self.active = False
         return self
 
     def is_public(self, public=True):
         """Set the TestPlan to public
-        :type public: bool"""
+
+        :param bool public: TestPlan public status
+        :rtype: TestPlanBuilder
+        """
         self.public = public
         return self
 
     def is_not_public(self):
-        """Set the TestPlan to not public"""
+        """Set the TestPlan to not public
+
+        :rtype: TestPlanBuilder
+        """
         self.public = False
         return self
 
     def from_testproject(self, testproject):
         """Set the parent TestProject instance
-        :type testproject: TestProject"""
+
+        :param TestProject testproject: TestPlan parent TestProject
+        :rtype: TestPlanBuilder
+        """
         self.testproject = testproject
         return self
 
@@ -110,11 +129,14 @@ class TestPlanBuilder(TestlinkObjectBuilder,
 class TestPlan(TestlinkObject):
     """Testlink TestPlan
 
-    :param str name: Name of the TestPlan
-    :param str description: Description of the TestPlan
-    :param bool active: Status of the TestPlan
-    :param bool public: Visibility of the TestPlan
-    :param TestProject testproject: Parent TestProject instance
+    :ivar str name: Name of the TestPlan
+    :ivar str description: Description of the TestPlan
+    :ivar bool active: Status of the TestPlan
+    :ivar bool public: Visibility of the TestPlan
+    :ivar TestProject testproject: Parent TestProject instance
+
+    :ivar Iterator[Build]: TestPlan builds
+    :ivar Iteratir[Platform]: Testplan platforms
     """
 
     def __init__(self, builder, *args, **kwargs):
@@ -129,8 +151,13 @@ class TestPlan(TestlinkObject):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder(*args, **kwargs):
-        return TestPlanBuilder(*args, **kwargs)
+    def builder(**api_data):
+        """Generate a new TestPlanBuilder
+
+        :param api_data: Raw API data
+        :rtype: TestPlanBuilder
+        """
+        return TestPlanBuilder(**api_data)
 
     @property
     def name(self):
@@ -154,8 +181,6 @@ class TestPlan(TestlinkObject):
 
     @property
     def builds(self):
-        """Returns all builds for the current TestPlan
-        :rtype: Iterator[Build]"""
         for data in self.testlink.api.getBuildsForTestPlan(self.id):
             yield Build.builder(**data)\
                   .from_testlink(self.testlink)\
@@ -164,8 +189,6 @@ class TestPlan(TestlinkObject):
 
     @property
     def platforms(self):
-        """Returns all platforms for the current TestPlan
-        :rtype: Iterator[Platform]"""
         for data in self.testlink.api.getTestPlanPlatforms(self.id):
             yield Platform.builder(**data)\
                   .from_testlink(self.testlink)\

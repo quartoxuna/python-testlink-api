@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Build Object"""
-
 # IMPORTS
 from datetime import datetime
 
@@ -14,14 +12,14 @@ from testlink.objects.tl_object import TestlinkObject
 class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """Testlink Build Builder for raw Testlink API data
 
-    :param str name: Name of the Build
-    :param str description: Description of the Build
-    :param bool active: Active status of the build
-    :param bool public: Public status of the build
-    :param datetime.datetime created: Creation time of the Build
-    :param datetime.date released: Relase date of the Build
-    :param datetime.date closed: Closing date of the Build
-    :param TestPlan testplan: Parent TestPlan
+    :ivar str name: Name of the Build
+    :ivar str description: Description of the Build
+    :ivar bool active: Active status of the build
+    :ivar bool public: Public status of the build
+    :ivar datetime.datetime created: Creation time of the Build
+    :ivar datetime.date released: Relase date of the Build
+    :ivar datetime.date closed: Closing date of the Build
+    :ivar TestPlan testplan: Parent TestPlan
     """
 
     def __init__(self, *args, **kwargs):
@@ -72,59 +70,77 @@ class BuildBuilder(TestlinkObjectBuilder,
 
     def with_name(self, name):
         """Set the name of the Build
-        :type name: str"""
+
+        :param str name: Build name
+        """
         self.name = name
         return self
 
     def with_description(self, description):
         """Set the description of the Build
-        :type description: str"""
+
+        :param str description: Build description
+        """
         self.description = description
         return self
 
     def is_active(self, active=True):
         """Set the Build to active
-        :type active: bool"""
+
+        :param bool active: Build active status
+        """
         self.active = active
         return self
 
     def is_not_active(self):
-        """Set the Build to inactive"""
+        """Set the Build to inactive
+        """
         self.active = False
         return self
 
     def is_public(self, public=True):
         """Set the Build to public
-        :type public: bool"""
+
+        :param bool public: Build public status
+        """
         self.public = public
         return self
 
     def is_not_public(self):
-        """Set the Build to not public"""
+        """Set the Build to not public
+        """
         self.public = False
         return self
 
     def created_on(self, creation_date):
         """Set the creation date of the Build
-        :type creation_date: datetime.datetime"""
+
+        :param datetime.datetime creation_date: Build creation time
+        """
         self.created = creation_date
         return self
 
     def released_on(self, release_date):
         """Set the release date of the Build
-        :type release_date: datetime.datetime"""
+
+        :param datetime.date release_date: Build release date
+        """
         self.released = release_date
         return self
 
     def closed_on(self, closing_date):
         """Set the closing date of the Build
-        :type closing_date: datetime.datetime"""
+
+        :param datetime.date closing_date: Build closing date
+        """
         self.closed = closing_date
         return self
 
     def from_testplan(self, testplan):
         """Set the parent TestPlan of the Build
-        :type testplan: TestPlan"""
+
+        :param TestPlan testplan: Build parent TestPlan
+        """
         self.testplan = testplan
         return self
 
@@ -132,17 +148,18 @@ class BuildBuilder(TestlinkObjectBuilder,
 class Build(TestlinkObject):
     """Testlink Build
 
-    :param str name: Name of the Build
-    :param str description: Description of the Build
-    :param bool active: Status of the Build
-    :param bool public: Visibility of the Build
-    :param datetime.datetime created: Creation Time of the Build
-    :param datetime.datetime relased: Release Time of the Build
-    :param datetime.datetime closed: Closing Time of the Build
-    :param TestPlan testplan: Parent TestPlan instance
+    :ivar str name: Name of the Build
+    :ivar str description: Description of the Build
+    :ivar bool active: Status of the Build
+    :ivar bool public: Visibility of the Build
+    :ivar datetime.datetime created: Creation Time of the Build
+    :ivar datetime.datetime relased: Release Time of the Build
+    :ivar datetime.datetime closed: Closing Time of the Build
+    :ivar TestPlan testplan: Parent TestPlan instance
     """
 
     DATE_FORMAT = "%Y-%m-%d"
+    """Default timestamp format for dates"""
 
     def __init__(self, builder, *args, **kwargs):
         super(Build, self).__init__(builder, *args, **kwargs)
@@ -159,8 +176,13 @@ class Build(TestlinkObject):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder(*args, **kwargs):
-        return BuildBuilder(*args, **kwargs)
+    def builder(**api_data):
+        """Generate a new BuildBuilder
+
+        :param api_data: Raw API data
+        :rtype: BuildBuilder
+        """
+        return BuildBuilder(**api_data)
 
     @property
     def name(self):

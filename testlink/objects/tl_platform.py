@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Platform representation"""
-
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 from testlink.objects.tl_object import TestlinkObjectBuilder
@@ -12,10 +10,10 @@ from testlink.objects.tl_object import TestlinkObject
 class PlatformFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """Testlink Platform Builder for raw Testlink API data
 
-    :param str name: Name of the Platform
-    :param str description: Description of the Platform
-    :param TestProject testproject: Parent TestProject
-    :param TestPlan testplan: Parent TestPlan
+    :ivar str name: Name of the Platform
+    :ivar str description: Description of the Platform
+    :ivar TestProject testproject: Parent TestProject
+    :ivar TestPlan testplan: Parent TestPlan
 
     .. todo::
         Remove *parent_testproject* from API builder
@@ -53,25 +51,37 @@ class PlatformBuilder(TestlinkObjectBuilder,
 
     def with_name(self, name):
         """Set the name of the Platform
-        :type name: str"""
+
+        :param str name: Platform name
+        :rtype: PlatformBuilder
+        """
         self.name = name
         return self
 
     def with_description(self, description):
         """Set the description of the Platform
-        :type description: str"""
+
+        :param str description: Platform description
+        :rtype: PlatformBuilder
+        """
         self.description = description
         return self
 
     def from_testproject(self, testproject):
         """Set the parent TestProject for the Platform
-        :type testproject: TestProject"""
+
+        :param TestProject testproject: Platform parent TestProject
+        :rtype: PlatformBuilder
+        """
         self.testproject = testproject
         return self
 
     def from_testplan(self, testplan):
         """Set the parent TestPlan for the Platform
-        :type testplan: TestPlan"""
+
+        :param TestPlan testplan: Platform parent TestPlan
+        :rtype: PlatformBuilder
+        """
         self.testplan = testplan
         return self
 
@@ -79,10 +89,10 @@ class PlatformBuilder(TestlinkObjectBuilder,
 class Platform(TestlinkObject):
     """Testlink Platform
 
-    :param str name: Name of the Platform
-    :param str description: Description of the Platform
-    :param TestProject testproject: Parent Testproject
-    :param TestPlan testplan: Parent TestPlan
+    :ivar str name: Name of the Platform
+    :ivar str description: Description of the Platform
+    :ivar TestProject testproject: Parent Testproject
+    :ivar TestPlan testplan: Parent TestPlan
     """
 
     def __init__(self, builder, *args, **kwargs):
@@ -96,8 +106,13 @@ class Platform(TestlinkObject):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder(*args, **kwargs):
-        return PlatformBuilder(*args, **kwargs)
+    def builder(**api_data):
+        """Generate a new PlatformBuilder
+
+        :param api_data: Raw API data
+        :rtype: PlatformBuilder
+        """
+        return PlatformBuilder(**api_data)
 
     @property
     def name(self):

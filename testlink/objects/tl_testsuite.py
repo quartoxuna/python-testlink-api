@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""TestSuite Object"""
-
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 from testlink.objects.tl_object import TestlinkObjectBuilder
@@ -18,11 +16,11 @@ from testlink.exceptions import APIError
 class TestSuiteFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """Testlink TestSuite Builder for raw Testlink API data
 
-    :param str name: Name of the TestSuite
-    :param str description: Description of the TestSuite
-    :param int level: Level of the TestSuite
-    :param TestProject testproject: Parent TestProject
-    :param TestSuite testsuite: Parent testsuite
+    :ivar str name: Name of the TestSuite
+    :ivar str description: Description of the TestSuite
+    :ivar int level: Level of the TestSuite
+    :ivar TestProject testproject: Parent TestProject
+    :ivar TestSuite testsuite: Parent testsuite
 
     .. todo::
         Remove *parent_testsuite* from API builder
@@ -65,31 +63,46 @@ class TestSuiteBuilder(TestlinkObjectBuilder,
 
     def with_name(self, name):
         """Set the name of the TestSuite
-        :type name: str"""
+
+        :param str name: TestSuite name
+        :rtype: TestSuiteBuilder
+        """
         self.name = name
         return self
 
     def with_description(self, description):
         """Set the description of the TestSuite
-        :type description: str"""
+
+        :param str description: TestSuite description
+        :rtype: TestSuiteBuilder
+        """
         self.description = description
         return self
 
     def with_level(self, level):
         """Set the level of the TestSuite
-        :type level: int"""
+
+        :param int level: TestSuite level
+        :rtype: TestSuiteBuilder
+        """
         self.level = level
         return self
 
     def from_testproject(self, testproject):
         """Set the parent TestProject of the TestSuite
-        :type testproject: TestProject"""
+
+        :param TestProject testproject: TestSuite parent TestProject
+        :rtype: TestSuiteBuilder
+        """
         self.testproject = testproject
         return self
 
     def from_testsuite(self, testsuite):
         """Set the parent TestSuite of the current TestSuite
-        :type testsuite: TestSuite"""
+
+        :param TestSuite testsuite: TestSuite parent TestSuite
+        :rtype: TestSuiteBuilder
+        """
         self.testsuite = testsuite
         return self
 
@@ -97,12 +110,12 @@ class TestSuiteBuilder(TestlinkObjectBuilder,
 class TestSuite(AttachmentMixin, TestlinkObject):
     """Testlink TestSuite
 
-    :param str name: Name of the TestSuite
-    :param str description: Description of the TestSuite
-    :param int level: Level of the TestSuite
-    :param TestProject testproject: Parent TestProject
-    :param TestSuite testsuite: Parent TestSuite
-    :param Iterator[TestSuite] testsuites: Child TestSuites
+    :ivar str name: Name of the TestSuite
+    :ivar str description: Description of the TestSuite
+    :ivar int level: Level of the TestSuite
+    :ivar TestProject testproject: Parent TestProject
+    :ivar TestSuite testsuite: Parent TestSuite
+    :ivar Iterator[TestSuite] testsuites: Child TestSuites
     """
 
     def __init__(self, builder, *args, **kwargs):
@@ -120,8 +133,13 @@ class TestSuite(AttachmentMixin, TestlinkObject):
         return str(self)
 
     @staticmethod
-    def builder(*args, **kwargs):
-        return TestSuiteBuilder(*args, **kwargs)
+    def builder(**api_data):
+        """Generate a new TestSuiteBuilder
+
+        :param api_data: Raw API data
+        :rtype: TestSuiteBuilder
+        """
+        return TestSuiteBuilder(**api_data)
 
     @property
     def name(self):
@@ -145,8 +163,6 @@ class TestSuite(AttachmentMixin, TestlinkObject):
 
     @property
     def testsuites(self):
-        """Returns all TestSuites for the current TestSuite
-        :rtype: Iterator[TestSuite]"""
         # DFS - Deep-First Search
         # First, return all currently nested testsuites
         for data in self.testlink.api.getTestSuitesForTestSuite(self.id, self.testproject.id):

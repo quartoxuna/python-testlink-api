@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*.
 
-"""TestProject Object"""
-
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
 from testlink.objects.tl_object import TestlinkObjectBuilder
@@ -20,16 +18,16 @@ from testlink.exceptions import APIError
 class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
     """Testlink TestProject Builder for raw Testlink API data
 
-    :param str prefix: Prefix of the project
-    :param str description: Description of the project
-    :param bool active: Active status of the project
-    :param bool public: Public status of the project
-    :param str color: Color coding for the project
-    :param int testcase_count: Maximum external testcase ID of the project
-    :param bool requirement_feature: Status of requirement feature
-    :param bool priority_feature: Status of priority feature
-    :param bool automation_feature: Status of automation feature
-    :param bool inventory_feature: Status of inventory feature
+    :ivar str prefix: Prefix of the project
+    :ivar str description: Description of the project
+    :ivar bool active: Active status of the project
+    :ivar bool public: Public status of the project
+    :ivar str color: Color coding for the project
+    :ivar int testcase_count: Maximum external testcase ID of the project
+    :ivar bool requirement_feature: Status of requirement feature
+    :ivar bool priority_feature: Status of priority feature
+    :ivar bool automation_feature: Status of automation feature
+    :ivar bool inventory_feature: Status of inventory feature
     """
 
     def __init__(self, *args, **kwargs):
@@ -93,97 +91,147 @@ class TestProjectBuilder(TestlinkObjectBuilder,
 
     def with_name(self, name):
         """Set the name of the TestProject
-        :type name: str"""
+
+        :param str name: TestProject name
+        :rtype: TestProjectBuilder
+        """
         self.name = name
         return self
 
     def with_prefix(self, prefix):
         """Set the prefix of the TestProject
-        :type prefix: str"""
+
+        :param str prefix: TestProject prefix
+        :rtype: TestProjectBuilder
+        """
         self.prefix = prefix
         return self
 
     def with_description(self, description):
         """Set the description of the TestProject
-        :type description: str"""
+
+        :param str description: TestProject Description
+        :rtype: TestProjectBuilder
+        """
         self.description = description
         return self
 
     def is_active(self, active=True):
         """Set the TestProject status to active
-        :type active: bool"""
+
+        :param bool active: TestProject active status
+        :rtype: TestProjectBuilder
+        """
         self.active = active
         return self
 
     def is_not_active(self):
-        """Set the TestProject status to inactive"""
+        """Set the TestProject status to inactive
+
+        :rtype: TestProjectBuilder
+        """
         self.active = False
         return self
 
     def is_public(self, public=True):
         """Set the TestProject visibility to public
-        :type public: bool"""
+
+        :param bool public: TestProject public status
+        :rtype: TestProjectBuilder
+        """
         self.public = public
         return self
 
     def is_not_public(self):
-        """Set the TestProject visibility to not public"""
+        """Set the TestProject visibility to not public
+
+        :rtype: TestProjectBuilder
+        """
         self.public = False
         return self
 
     def with_color(self, color):
         """Set the color coding for the TestProject
-        :type color: str"""
+
+        :param color str: TestProject color code
+        """
         self.color = color
         return self
 
     def with_testcase_count(self, testcase_count):
         """Set the currently highest external testcase ID for the TestProject
-        :type testcase_count: int"""
+
+        :param int testcase_count: TestProject testcase count
+        :rtype: TestProjectBuilder
+        """
         self.testcase_count = testcase_count
         return self
 
     def with_requirement_feature(self, requirement_feature=True):
         """Set the status for the requirement feature of the TestProject
-        :type requirement_feature: bool"""
+
+        :param bool requirement_feature: TestProject requirement feature status
+        :rtype: TestProjectBuilder
+        """
         self.requirement_feature = requirement_feature
         return self
 
     def without_requirement_feature(self):
-        """Disables the requirement feature for the TestProject"""
+        """Disables the requirement feature for the TestProject
+
+        :rtype: TestProjectBuilder
+        """
         self.requirement_feature = False
         return self
 
     def with_priority_feature(self, priority_feature=True):
         """Set the status for the priority feature of the TestProject
-        :type priority_feature: bool"""
+
+        :param bool priority_feature: TestProject priority feature status
+        :rtype: TestProjectBuilder
+        """
         self.priority_feature = priority_feature
         return self
 
     def without_priority_feature(self):
-        """Disables the priority feature for the TestProject"""
+        """Disables the priority feature for the TestProject
+
+        :rtype: TestProjectBuilder
+        """
         self.priority_feature = False
         return self
 
     def with_automation_feature(self, automation_feature=True):
-        """Set the status for the automation feature of the TestProject
-        :type automation_feature: bool"""
+        """Set the status for the automation feature of the TestProjecta
+
+        :param bool automation_feature: TestProject automation feature status
+        :rtype: TestProjectBuilder
+        """
         self.automation_feature = automation_feature
         return self
 
     def without_automation_feature(self):
-        """Disables the automation feature for the TestProject"""
+        """Disables the automation feature for the TestProject
+
+        :rtype: TestProjectBuilder
+        """
         self.automation_feature = False
         return self
 
     def with_inventory_feature(self, inventory_feature=True):
         """Set the status for the inventory feature of the TestProject
-        :type inventory_feature: bool"""
+
+        :param bool inventory_feature: TestProject inventory feature status
+        :rtype: TestProjectBuilder
+        """
         self.inventory_feature = inventory_feature
         return self
 
     def without_inventory_feature(self):
-        """Disables the inventory feature for the TestProject"""
+        """Disables the inventory feature for the TestProject
+
+        :rtype: TestProjectBuilder
+        """
         self.inventory_feature = False
         return self
 
@@ -191,17 +239,20 @@ class TestProjectBuilder(TestlinkObjectBuilder,
 class TestProject(AttachmentMixin, TestlinkObject):
     """Testlink TestProject
 
-    :param str name: Name of the TestProject
-    :param str prefix: Prefix of the TestProject
-    :param str description: Description of the TestProject
-    :param bool active: Status of the TestProject
-    :param bool public: Visibility of the TestProject
-    :param str color: Color coding of the TestProject
-    :param int testcase_count: Currently highest external testcase ID within TestProject
-    :param bool requirement_feature: Status of the requirement feature for the TestProject
-    :param bool priority_feature: Status of the priority feature for the TestProject
-    :param bool automation_feature: Status of the automation feature for the TestProject
-    :param bool inventory_feature: Status of the inventory feature for the TestProject
+    :ivar str name: Name of the TestProject
+    :ivar str prefix: Prefix of the TestProject
+    :ivar str description: Description of the TestProject
+    :ivar bool active: Status of the TestProject
+    :ivar bool public: Visibility of the TestProject
+    :ivar str color: Color coding of the TestProject
+    :ivar int testcase_count: Currently highest external testcase ID within TestProject
+    :ivar bool requirement_feature: Status of the requirement feature for the TestProject
+    :ivar bool priority_feature: Status of the priority feature for the TestProject
+    :ivar bool automation_feature: Status of the automation feature for the TestProject
+    :ivar bool inventory_feature: Status of the inventory feature for the TestProject
+
+    :ivar Iterator[TestSuite] testsuites: TestSuite of the TestProject
+    :ivar Iterator[TestPlan] testplans: TestPlans of the TestProject
     """
 
     def __init__(self, builder, *args, **kwargs):
@@ -222,8 +273,13 @@ class TestProject(AttachmentMixin, TestlinkObject):
         return "{}: {}".format(self.__class__.__name__, self.name)
 
     @staticmethod
-    def builder(*args, **kwargs):
-        return TestProjectBuilder(*args, **kwargs)
+    def builder(**api_data):
+        """Generate new TestProjectBuilder
+
+        :param api_data: Raw API data
+        :rtype: TestProjectBuilder
+        """
+        return TestProjectBuilder(**api_data)
 
     @property
     def name(self):
@@ -271,8 +327,6 @@ class TestProject(AttachmentMixin, TestlinkObject):
 
     @property
     def testplans(self):
-        """Returns all Testplans for the current TestProject
-        :rtype: Iterator[TestPlan]"""
         for data in self.testlink.api.getProjectTestPlans(self.id):
             yield TestPlan.builder(**data)\
                   .from_testproject(self)\
@@ -281,8 +335,6 @@ class TestProject(AttachmentMixin, TestlinkObject):
 
     @property
     def testsuites(self):
-        """Returns all TestSuites for the current TestProject
-        :rtype: Iterator[TestSuite]"""
         # DFS - Deep-First Search
         # First, return all first level testsuite
         for data in self.testlink.api.getFirstLevelTestSuitesForTestProject(self.id):

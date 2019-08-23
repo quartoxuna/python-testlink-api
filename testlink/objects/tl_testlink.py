@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Testlink Object Wrapper"""
-
 # IMPORTS
 from testlink.log import LOGGER
 from testlink.api.testlink_api import TestlinkAPI
@@ -21,7 +19,8 @@ from testlink.objects.tl_testcase import TestCase
 class Testlink(object):
     """Testlink object
 
-    :param TestlinkAPI api: TestlinkAPI instance
+    :ivar TestlinkAPI api: TestlinkAPI instance
+    :ivar Iterator[TestProject]: Testlink TestProjects
     """
 
     def __init__(self, api):
@@ -39,8 +38,6 @@ class Testlink(object):
 
     @property
     def testprojects(self):
-        """Returns all TestProjects for the current Testlink instance
-        :rtype: Iterator[TestProject]"""
         for data in self.api.getProjects():
             yield TestProject.builder(**data)\
                   .from_testlink(self)\

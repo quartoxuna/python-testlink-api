@@ -9,8 +9,9 @@ Python-Testlink-API |version|
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
+   objects
    api
    enums
    exceptions

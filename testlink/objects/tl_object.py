@@ -39,8 +39,8 @@ def normalize_list(res):
 class TestlinkObjectFromAPIBuilder(object):
     """Testlink Object Builder for raw Testlink API data
 
-    :param int _id: Internal Testlink ID of the object
-    :param Testlink testlink: Parent Testlink instance
+    :ivar int _id: Internal Testlink ID of the object
+    :ivar Testlink testlink: Parent Testlink instance
     """
 
     def __init__(self, *args, **kwargs):
@@ -69,13 +69,19 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
 
     def with_id(self, testlink_id):
         """Set the internal ID of the Testlink Object
-        :type testlink_id: int"""
+
+        :param int type testlink_id: Internal Testlink ID
+        :rtype: TestlinkObjectBuilder
+        """
         self.testlink_id = testlink_id
         return self
 
     def from_testlink(self, testlink):
         """Set the parent Testlink instance
-        :type testlink: Testlink"""
+
+        :param Testlink testlink: Parent Testlink instance
+        :rtype: TestlinkObjectBuilder
+        """
         self.testlink = testlink
         return self
 
@@ -83,11 +89,12 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
 class TestlinkObject(object):
     """General Testlink Object
 
-    :param int id: Internal Testlink ID
-    :param Testlink testlink: Parent Testlink instance
+    :ivar int id: Internal Testlink ID
+    :ivar Testlink testlink: Parent Testlink instance
     """
 
     DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+    """Default timestamp format for Testlink Objects"""
 
     def __init__(self, builder, *args, **kwargs):
         super(TestlinkObject, self).__init__()
@@ -95,8 +102,13 @@ class TestlinkObject(object):
         self.__parent_testlink = builder.testlink
 
     @staticmethod
-    def builder():
-        return TestlinkObjectBuilder()
+    def builder(**api_data):
+        """Generate a new TestlinkObjectBuilder
+
+        :param api_data: Raw API data
+        :rtype: TestlinkObjectBuilder
+        """
+        return TestlinkObjectBuilder(**api_data)
 
     def __str__(self):
         return "{}: {}".format(self.__class__.__name__, self.id)
