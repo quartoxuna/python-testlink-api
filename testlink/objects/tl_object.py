@@ -59,8 +59,8 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
 class TestlinkObject(object):
     """General Testlink Object
 
-    :ivar int id: Internal Testlink ID
-    :ivar Testlink testlink: Parent Testlink instance
+    :arg int id: Internal Testlink ID
+    :arg Testlink testlink: Parent Testlink instance
     """
 
     DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
