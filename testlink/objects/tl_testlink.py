@@ -8,8 +8,8 @@ from testlink.log import LOGGER
 from testlink.api.testlink_api import TestlinkAPI
 from testlink.exceptions import APIError
 
-from testlink.enums import API_TYPE
-from testlink.enums import DUPLICATE_STRATEGY
+from testlink.enums import APIType
+from testlink.enums import DuplicateStrategy
 
 from testlink.objects.tl_object import normalize_list
 from testlink.objects.tl_testproject import TestProject
@@ -25,7 +25,7 @@ class Testlink(object):
     @type devkey: str
     """
 
-    def __init__(self, url, devkey, api=API_TYPE.XML_RPC):
+    def __init__(self, url, devkey, api=APIType.XML_RPC):
         """Initializes the Testlink Server object
         @param url: Testlink URL
         @type url: str

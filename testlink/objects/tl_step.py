@@ -6,7 +6,7 @@
 # IMPORTS
 from testlink.objects.tl_object import TestlinkObject
 
-from testlink.enums import EXECUTION_TYPE
+from testlink.enums import ExecutionType
 
 
 class Step(TestlinkObject):
@@ -24,7 +24,7 @@ class Step(TestlinkObject):
     @ivar results: Expected result of the step
     @type results: str
     """
-    def __init__(self, step_number=1, actions="", execution_type=EXECUTION_TYPE.MANUAL, active="0",
+    def __init__(self, step_number=1, actions="", execution_type=ExecutionType.MANUAL, active="0",
                  expected_results="", *args, **kwargs):
         super(Step, self).__init__(*args, **kwargs)
         self.step_number = int(step_number)

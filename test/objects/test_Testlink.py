@@ -13,7 +13,7 @@ import unittest
 import mock
 
 from testlink.api.xmlrpc import TestlinkXMLRPCAPI
-from testlink.enums import API_TYPE
+from testlink.enums import APIType
 from testlink.exceptions import APIError
 from testlink.objects import TestProject
 from testlink.objects import Testlink

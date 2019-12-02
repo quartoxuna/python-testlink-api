@@ -16,10 +16,10 @@ from testlink.objects.tl_user import User
 from testlink.exceptions import APIError
 from testlink.exceptions import NotSupported
 
-from testlink.enums import EXECUTION_TYPE as EXECUTION_TYPE
-from testlink.enums import IMPORTANCE_LEVEL as IMPORTANCE_LEVEL
-from testlink.enums import CUSTOM_FIELD_DETAILS as CUSTOM_FIELD_DETAILS
-from testlink.enums import TESTCASE_STATUS as TESTCASE_STATUS
+from testlink.enums import ExecutionType
+from testlink.enums import ImportanceLevel
+from testlink.enums import CustomFieldDetails
+from testlink.enums import TestCaseStatus
 
 
 class TestCase(TestlinkObject, IAttachmentGetter):
@@ -31,8 +31,8 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                  "summary", "active", "testsuite_id", "tester_id", "exec_duration", "_parent_testproject",
                  "customfields", "requirements", "__steps", "__preconditions", "linked_by", "linked_ts", "_keywords"]
 
-    def __init__(self, version=1, status=TESTCASE_STATUS.DRAFT, importance=IMPORTANCE_LEVEL.MEDIUM,
-                 execution_type=EXECUTION_TYPE.MANUAL, summary="", active=True, parent_testproject=None,
+    def __init__(self, version=1, status=TestCaseStatus.DRAFT, importance=ImportanceLevel.MEDIUM,
+                 execution_type=ExecutionType.MANUAL, summary="", active=True, parent_testproject=None,
                  parent_testsuite=None, customfields=None, requirements=None, tester_id=-1, *args, **kwargs):
         """Initialises a new TestCase with the specified parameters.
         @param name: The name of the TestCase
@@ -511,7 +511,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
             if execution.id == int(response['id']):
                 return execution
 
-    def getCustomFieldDesignValue(self, fieldname, details=CUSTOM_FIELD_DETAILS.VALUE_ONLY):
+    def getCustomFieldDesignValue(self, fieldname, details=CustomFieldDetails.VALUE_ONLY):
         """Returns the custom field design value for the specified custom field
         @param fieldname: The internal name of the custom field
         @type fieldname: str
@@ -528,7 +528,7 @@ class TestCase(TestlinkObject, IAttachmentGetter):
                 customfieldname=fieldname,
                 details=details)
             # If retrieved the value only, we can cache it
-            if value is not None and (details == CUSTOM_FIELD_DETAILS.VALUE_ONLY):
+            if value is not None and (details == CustomFieldDetails.VALUE_ONLY):
                 self.customfields[fieldname] = value
         return self.customfields.get(fieldname, None)
 

@@ -8,9 +8,9 @@ from testlink_api import TestlinkAPIBuilder
 
 from testlink.log import LOGGER
 
-from testlink.enums import IMPORTANCE_LEVEL
-from testlink.enums import EXECUTION_TYPE
-from testlink.enums import DUPLICATE_STRATEGY
+from testlink.enums import ImportanceLevel
+from testlink.enums import ExecutionType
+from testlink.enums import DuplicateStrategy
 
 from testlink.exceptions import APIError
 from testlink.exceptions import ConnectionError
@@ -547,7 +547,7 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         return self.query("tl.deleteExecution", devKey=devkey, executionid=executionid)
 
     def createTestSuite(self, testsuitename, testprojectid, details=None, parentid=None, order=None,
-                        checkduplicatedname=True, actiononduplicatedname=DUPLICATE_STRATEGY.BLOCK, devkey=None):
+                        checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK, devkey=None):
         """createTestSuite(testsuitename, testprojectid[, details][, parentid][, order][, checkduplicatedname=True][, actiononduplicatedname=testlink.enums.DUPLICATE_STRATEGY.BLOCK][, devkey])
 
         Creates a new TestSuite with the specified parameters.
@@ -634,8 +634,8 @@ class TestlinkXMLRPCAPI(TestlinkAPI):
         return self.query("tl.getTestSuitesForTestPlan", devKey=devkey, testplanid=planid)
 
     def createTestCase(self, testcasename, testsuiteid, testprojectid, authorlogin, summary, steps=None,
-                       preconditions=None, importance=IMPORTANCE_LEVEL.MEDIUM, executiontype=EXECUTION_TYPE.MANUAL,
-                       order=None, checkduplicatedname=True, actiononduplicatedname=DUPLICATE_STRATEGY.BLOCK,
+                       preconditions=None, importance=ImportanceLevel.MEDIUM, executiontype=ExecutionType.MANUAL,
+                       order=None, checkduplicatedname=True, actiononduplicatedname=DuplicateStrategy.BLOCK,
                        customfields=None, devkey=None):
         """createTestCase(testcasename, testsuiteid, testprojectid, authorlogin, summary[, steps][, preconditions][, importance=testlink.enums.IMPORTANCE_LEVEL.MEDIUM][, executiontype=testlink.enums.EXECUTION_TYPE.MANUAL][, order][, checkduplicatedname=True][, actiononduplicatedname=testlink.enums.DUPLICATE_STRATEGY.BLOCK][, customfields][, devkey])
 
