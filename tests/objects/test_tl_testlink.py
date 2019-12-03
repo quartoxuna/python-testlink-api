@@ -15,8 +15,8 @@ import mock
 from testlink.api.xmlrpc import TestlinkXMLRPCAPI
 from testlink.enums import APIType
 from testlink.exceptions import APIError
-from testlink.objects import TestProject
-from testlink.objects import Testlink
+from testlink.objects.tl_testproject import TestProject
+from testlink.objects.tl_testlink import Testlink
 
 
 def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
@@ -72,7 +72,7 @@ class TestlinkTests(unittest.TestCase):
         tl = Testlink(self.url, self.devkey)
         self.assertTrue(ref in str(tl))
 
-    @mock.patch('testlink.objects.Testlink.iterTestProject')
+    @mock.patch('testlink.objects.tl_testlink.Testlink.iterTestProject')
     def test_getTestProject(self, patched_iter_testproject):
         """'getTestProject'"""
         # Generate some test data
