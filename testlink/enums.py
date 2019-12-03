@@ -24,9 +24,9 @@ when using the objects provided by the wrapper.
 """
 
 # IMPORTS
-from enum import IntEnum
+import enum
 
-class APIType(IntEnum):
+class APIType(enum.Enum):
     """Type of Testlink API
 
     .. deprecated:: 0.52.0
@@ -34,30 +34,30 @@ class APIType(IntEnum):
     XML_RPC = 'XML-RPC'
     REST = 'REST'
 
-class CustomFieldDetails(Enum):
+class CustomFieldDetails(enum.Enum):
     VALUE_ONLY = 'value'
 
-class DuplicateStrategy(Enum):
+class DuplicateStrategy(enum.Enum):
     NEW_VERSION = 'create_new_version'
     GENERATE_NEW = 'generate_new'
     BLOCK = 'block'
 
-class ExecutionStatus(Enum):
+class ExecutionStatus(enum.Enum):
     NOT_RUN = 'n'
     PASSED = 'p'
     FAILED = 'f'
     BLOCKED = 'b'
 
-class ExecutionType(IntEnum):
+class ExecutionType(enum.IntEnum):
     MANUAL = 1
     AUTOMATIC = 2
 
-class ImportanceLevel(IntEnum):
+class ImportanceLevel(enum.IntEnum):
     LOW = 1
     MEDIUM = 2
     HIGH = 3
 
-class TestCaseStatus(IntEnum):
+class TestCaseStatus(enum.IntEnum):
     DRAFT = 1
     READY_FOR_REVIEW = 2
     REVIEW_IN_PROGRESS = 3
@@ -66,7 +66,7 @@ class TestCaseStatus(IntEnum):
     FUTURE = 6
     FINAL = 7
 
-class UrgencyLevel(IntEnum):
+class UrgencyLevel(enum.IntEnum):
     LOW = 1
     MEDIUM = 2
     HIGH = 3

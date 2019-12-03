@@ -13,7 +13,7 @@ from testlink.objects.tl_attachment import AttachmentMixin
 
 from testlink.exceptions import NotSupported
 
-from testlink.enums import EXECUTION_TYPE
+from testlink.enums import ExecutionType
 
 
 class Execution(AttachmentMixin, TestlinkObject):
@@ -44,7 +44,7 @@ class Execution(AttachmentMixin, TestlinkObject):
                  "notes", "execution_type", "execution_ts", "tester_id", "__tester", "duration")
 
     def __init__(self, testplan_id=-1, platform_id=-1, build_id=-1, tcversion_id=-1, tcversion_number=0,
-                 status='', notes="", execution_type=EXECUTION_TYPE.MANUAL, execution_ts=str(datetime.datetime.min),
+                 status='', notes="", execution_type=ExecutionType.MANUAL, execution_ts=str(datetime.datetime.min),
                  tester_id=-1, execution_duration=0.0, *args, **kwargs):
         super(Execution, self).__init__(*args, **kwargs)
         self.testplan_id = int(testplan_id)

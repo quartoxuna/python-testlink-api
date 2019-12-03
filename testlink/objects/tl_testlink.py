@@ -6,8 +6,8 @@ from testlink.log import LOGGER
 from testlink.api.testlink_api import TestlinkAPI
 from testlink.exceptions import APIError
 
-from testlink.enums import API_TYPE
-from testlink.enums import DUPLICATE_STRATEGY
+from testlink.enums import APIType
+from testlink.enums import DuplicateStrategy
 
 from testlink.objects.tl_testproject import TestProject
 from testlink.objects.tl_testsuite import TestSuite
