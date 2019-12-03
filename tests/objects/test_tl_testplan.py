@@ -3,29 +3,29 @@
 
 """
 @author: Kai Borowiak
-@summary: TestSuite for testlink.objects.TestTestSuite
+@summary: TestSuite for testlink.objects.TestPlan
 """
 
 # IMPORTS
 import random
 import string
 import unittest
-from testlink.objects.tl_testsuite import TestSuite
+from testlink.objects import tl_testplan
 
 
 def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
 
 
-class TestSuiteTests(unittest.TestCase):
-    """TestSuite Object Tests"""
+class TestPlanTests(unittest.TestCase):
+    """TestPlan Object Tests"""
 
     def __init__(self, *args, **kwargs):
-        super(TestSuiteTests, self).__init__(*args, **kwargs)
-        self._testMethodDoc = "TestSuite: " + self._testMethodDoc
+        super(TestPlanTests, self).__init__(*args, **kwargs)
+        self._testMethodDoc = "TestPlan: " + self._testMethodDoc
 
     def test__str__(self):
         """String representation"""
         name = randput()
-        obj = TestSuite(name=name)
+        obj = tl_testplan.TestPlan(name=name)
         _string = str(obj)
-        self.assertEqual(_string, "TestSuite: %s" % name)
+        self.assertEqual(_string, "TestPlan: %s" % name)

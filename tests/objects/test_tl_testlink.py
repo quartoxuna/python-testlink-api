@@ -12,11 +12,11 @@ import string
 import unittest
 import mock
 
-from testlink.api.xmlrpc import TestlinkXMLRPCAPI
+from testlink.api import xmlrpc
 from testlink.enums import APIType
 from testlink.exceptions import APIError
-from testlink.objects import TestProject
-from testlink.objects import Testlink
+from testlink.objects import tl_testproject
+from testlink.objects import tl_testlink
 
 
 def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
@@ -53,26 +53,26 @@ class TestlinkTests(unittest.TestCase):
 
     def test_API_TYPE(self):
         """Default API Type"""
-        tl = Testlink(self.url, self.devkey)
-        self.assertTrue(isinstance(tl._api, TestlinkXMLRPCAPI))
+        tl = tl_testlink.Testlink(self.url, self.devkey)
+        self.assertTrue(isinstance(tl._api, xmlrpc.TestlinkXMLRPCAPI))
 
     def test_devKeySetting(self):
         """DevKey Storage"""
-        tl = Testlink(self.url, self.devkey)
+        tl = tl_testlink.Testlink(self.url, self.devkey)
         self.assertEquals(tl._api.devkey, self.devkey)
 
     def test_getVersion(self):
         """Version String"""
-        tl = Testlink(self.url, self.devkey)
+        tl = tl_testlink.Testlink(self.url, self.devkey)
         self.assertEquals(tl.getVersion(), "1.0")
 
     def test_str(self):
         """String representation"""
         ref = "Testlink: TestlinkXMLRPCAPI 1.0 @"
-        tl = Testlink(self.url, self.devkey)
+        tl = tl_testlink.Testlink(self.url, self.devkey)
         self.assertTrue(ref in str(tl))
 
-    @mock.patch('testlink.objects.Testlink.iterTestProject')
+    @mock.patch('testlink.objects.tl_testlink.Testlink.iterTestProject')
     def test_getTestProject(self, patched_iter_testproject):
         """'getTestProject'"""
         # Generate some test data
@@ -81,7 +81,7 @@ class TestlinkTests(unittest.TestCase):
         return_value = randput()
 
         # Init Testlink
-        tl = Testlink(self.url, self.devkey)
+        tl = tl_testlink.Testlink(self.url, self.devkey)
 
         # Mock the eqivalent iterator
         patched_iter_testproject.return_value = generate(return_value)
@@ -101,7 +101,7 @@ class TestlinkTests(unittest.TestCase):
         test_data = [randict("name", "notes"), randict("name", "notes"), randict("name", "notes")]
 
         # Init Testlink
-        tl = Testlink(self.url, self.devkey)
+        tl = tl_testlink.Testlink(self.url, self.devkey)
 
         # Mock internal methods
         patched_get_projects.return_value = test_data
@@ -111,7 +111,7 @@ class TestlinkTests(unittest.TestCase):
         project = tl.iterTestProject(test_data[1]['name']).next()
         patched_get_testproject_by_name.assert_called_with(test_data[1]['name'])
         self.assertFalse(patched_get_projects.called)
-        self.assertTrue(isinstance(project, TestProject))
+        self.assertTrue(isinstance(project, tl_testproject.TestProject))
         self.assertEqual(project.name, test_data[1]['name'])
         self.assertEqual(project.notes, test_data[1]['notes'])
 
@@ -120,7 +120,7 @@ class TestlinkTests(unittest.TestCase):
     def test_iterTestProject_shortcut_no_result(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject' - Shortcut Empty Result"""
         # Init Testlink
-        tl = Testlink(self.url, self.devkey)
+        tl = tl_testlink.Testlink(self.url, self.devkey)
 
         # Mock internal methods
         patched_get_projects.return_value = ''
@@ -138,7 +138,7 @@ class TestlinkTests(unittest.TestCase):
         test_data = [randict("name", "notes"), randict("name", "notes"), randict("name", "notes")]
 
         # Init Testlink
-        tl = Testlink(self.url, self.devkey)
+        tl = tl_testlink.Testlink(self.url, self.devkey)
 
         # Check with no result
         project_iter = tl.iterTestProject()
@@ -151,7 +151,7 @@ class TestlinkTests(unittest.TestCase):
         project = tl.iterTestProject(**test_data[1]).next()
         patched_get_projects.assert_called_with()
         self.assertFalse(patched_get_testproject_by_name.called)
-        self.assertTrue(isinstance(project, TestProject))
+        self.assertTrue(isinstance(project, tl_testproject.TestProject))
         self.assertEqual(project.name, test_data[1]['name'])
         self.assertEqual(project.notes, test_data[1]['notes'])
 
@@ -160,7 +160,7 @@ class TestlinkTests(unittest.TestCase):
     def test_iterTestProject_no_result(self, patched_get_projects, patched_get_testproject_by_name):
         """'iterTestProject' - Empty Result"""
         # Init Testlink
-        tl = Testlink(self.url, self.devkey)
+        tl = tl_testlink.Testlink(self.url, self.devkey)
 
         # Mock internal methods
         patched_get_projects.return_value = ''
@@ -181,9 +181,8 @@ class CompatTests(unittest.TestCase):
     def test_datetime_conversion(self):
         """Datetime Backwards compatability Python 2.5<"""
         from datetime import datetime
-        from testlink.objects.tl_object import TestlinkObject
-        from testlink.objects.tl_object import strptime
+        from testlink.objects import tl_object
         date_string = "2000-12-23 12:34:45"
-        datetime_obj = datetime.strptime(date_string, TestlinkObject.DATETIME_FORMAT)
-        strptime_obj = strptime(date_string, TestlinkObject.DATETIME_FORMAT)
+        datetime_obj = datetime.strptime(date_string, tl_object.TestlinkObject.DATETIME_FORMAT)
+        strptime_obj = tl_object.strptime(date_string, tl_object.TestlinkObject.DATETIME_FORMAT)
         self.assertEquals(datetime_obj, strptime_obj)
