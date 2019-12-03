@@ -1,50 +1,31 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+import testlink.enums as enums
 
-"""
-@author: Kai Borowiak
-@summary: TestSuite for testlink.enums
-"""
+def test_ExecutionType():
+    assert enums.ExecutionType.MANUAL == 1
+    assert enums.ExecutionType.AUTOMATIC == 2
 
-# IMPORTS
-import unittest
+def test_ImportanceLevel():
+    assert enums.ImportanceLevel.HIGH == 3
+    assert enums.ImportanceLevel.MEDIUM == 2
+    assert enums.ImportanceLevel.LOW == 1
 
-from testlink.enums import ExecutionType
-from testlink.enums import ImportanceLevel
-from testlink.enums import DuplicateStrategy
-from testlink.enums import CustomFieldDetails
-from testlink.enums import APIType
-from testlink.enums import TestCaseStatus
+def test_DuplicateStrategy():
+    assert enums.DuplicateStrategy.NEW_VERSION.value == 'create_new_version'
+    assert enums.DuplicateStrategy.GENERATE_NEW.value == 'generate_new'
+    assert enums.DuplicateStrategy.BLOCK.value == 'block'
 
+def test_CustomFieldDetails():
+    assert enums.CustomFieldDetails.VALUE_ONLY.value == 'value'
 
-class EnumerationTests(unittest.TestCase):
-    """ Tests for Enums"""
-    def __init__(self, *args, **kwargs):
-        super(EnumerationTests, self).__init__(*args, **kwargs)
-        self._testMethodDoc = 'Enumeration: ' + self._testMethodDoc
+def test_APIType():
+    assert enums.APIType.XML_RPC.value == 'XML-RPC'
+    assert enums.APIType.REST.value == 'REST'
 
-    def test_enums(self):
-        """Enumerations"""
-        self.assertEqual(ExecutionType.MANUAL.value, 1)
-        self.assertEqual(ExecutionType.AUTOMATIC.value, 2)
-
-        self.assertEqual(ImportanceLevel.HIGH.value, 3)
-        self.assertEqual(ImportanceLevel.MEDIUM.value, 2)
-        self.assertEqual(ImportanceLevel.LOW.value, 1)
-
-        self.assertEqual(DuplicateStrategy.NEW_VERSION.value, 'create_new_version')
-        self.assertEqual(DuplicateStrategy.GENERATE_NEW.value, 'generate_new')
-        self.assertEqual(DuplicateStrategy.BLOCK.value, 'block')
-
-        self.assertEqual(CustomFieldDetails.VALUE_ONLY.value, 'value')
-
-        self.assertEqual(APIType.XML_RPC.value, 'XML-RPC')
-        self.assertEqual(APIType.REST.value, 'REST')
-
-        self.assertEqual(TestCaseStatus.DRAFT.value, 1)
-        self.assertEqual(TestCaseStatus.READY_FOR_REVIEW.value, 2)
-        self.assertEqual(TestCaseStatus.REVIEW_IN_PROGRESS.value, 3)
-        self.assertEqual(TestCaseStatus.REWORK.value, 4)
-        self.assertEqual(TestCaseStatus.OBSOLETE.value, 5)
-        self.assertEqual(TestCaseStatus.FUTURE.value, 6)
-        self.assertEqual(TestCaseStatus.FINAL.value, 7)
+def test_TestCaseStatus():
+    assert enums.TestCaseStatus.DRAFT == 1
+    assert enums.TestCaseStatus.READY_FOR_REVIEW == 2
+    assert enums.TestCaseStatus.REVIEW_IN_PROGRESS == 3
+    assert enums.TestCaseStatus.REWORK == 4
+    assert enums.TestCaseStatus.OBSOLETE == 5
+    assert enums.TestCaseStatus.FUTURE == 6
+    assert enums.TestCaseStatus.FINAL == 7
