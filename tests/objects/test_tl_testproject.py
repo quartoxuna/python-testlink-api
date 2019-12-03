@@ -10,7 +10,7 @@
 import random
 import string
 import unittest
-from testlink.objects.tl_testproject import TestProject
+from testlink.objects import tl_testproject
 
 
 def randput(length=10): return "".join([random.choice(string.letters) for _ in xrange(random.randint(1, length))])
@@ -26,6 +26,6 @@ class TestProjectTests(unittest.TestCase):
     def test__str__(self):
         """String representation"""
         name = randput()
-        obj = TestProject(name=name)
+        obj = tl_testproject.TestProject(name=name)
         _string = str(obj)
         self.assertEqual(_string, "%s" % name)
