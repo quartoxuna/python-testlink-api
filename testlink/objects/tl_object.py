@@ -53,7 +53,7 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     def build(self):
         """Generates a new TestlinkObject"""
         # Sanity checks
-        assert self.testlink_id is not None, "Invalid internal ID '{}'".format(self.testlink_id)
+        assert self.testlink_id is not None and self.testlink_id > 0, "Invalid internal ID '{}'".format(self.testlink_id)
         assert self.testlink is not None, "No parent Testlink instance defined"
 
         return TestlinkObject(self)
