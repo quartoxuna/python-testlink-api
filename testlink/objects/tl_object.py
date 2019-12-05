@@ -29,9 +29,6 @@ class TestlinkObjectFromAPIBuilder(object):
 class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     """General TestlinkObject Builder"""
 
-    def __init__(self, *args, **kwargs):
-        super(TestlinkObjectBuilder, self).__init__(*args, **kwargs)
-
     def with_id(self, testlink_id):
         """Set the internal ID of the Testlink Object
 
@@ -53,7 +50,8 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     def build(self):
         """Generates a new TestlinkObject"""
         # Sanity checks
-        assert self.testlink_id is not None and self.testlink_id > 0, "Invalid internal ID '{}'".format(self.testlink_id)
+        assert self.testlink_id is not None and self.testlink_id > 0,\
+            "Invalid internal ID '{}'".format(self.testlink_id)
         assert self.testlink is not None, "No parent Testlink instance defined"
 
         return TestlinkObject(self)
