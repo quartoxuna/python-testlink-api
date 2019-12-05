@@ -47,7 +47,7 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
             self.requirement_feature = options['requirementsEnabled']
             self.priority_feature = options['testPriorityEnabled']
             self.automation_feature = options['automationEnabled']
-            self.inventory_feature =  options['inventoryEnabled']
+            self.inventory_feature = options['inventoryEnabled']
         super(TestProjectFromAPIBuilder, self).__init__(*args, **kwargs)
 
         # Fix types
@@ -138,7 +138,7 @@ class TestProjectBuilder(TestlinkObjectBuilder,
     def with_color(self, color):
         """Set the color coding for the TestProject
 
-        :param color str: TestProject color code
+        :param str color: TestProject color code
         """
         self.color = color
         return self
@@ -230,7 +230,8 @@ class TestProjectBuilder(TestlinkObjectBuilder,
         assert self.prefix is not None, "No TestProject prefix defined"
         assert self.active is not None, "No TestProject active status defined"
         assert self.public is not None, "No TestProject public status defined"
-        assert self.testcase_count >= 0, "Invalid testcase count for TestProject: {}".format(self.testcase_count)
+        assert self.testcase_count >= 0,\
+            "Invalid testcase count for TestProject: {}".format(self.testcase_count)
 
         return TestProject(self)
 
