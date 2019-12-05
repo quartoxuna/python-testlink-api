@@ -33,11 +33,6 @@ class AttachmentFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         if self.created is not None:
             self.created = datetime.strptime(self.created, Attachment.DATETIME_FORMAT)
 
-    def build(self):
-        """Generate new Attachment"""
-        super(AttachmentFromAPIBuilder, self).build()
-        return Attachment(self)
-
 
 class AttachmentBuilder(TestlinkObjectBuilder,
                         AttachmentFromAPIBuilder):
@@ -75,6 +70,11 @@ class AttachmentBuilder(TestlinkObjectBuilder,
         :type content: str"""
         self.content = content
         return self
+
+    def build(self):
+        """Generate new Attachment"""
+        super(AttachmentBuilder, self).build()
+        return Attachment(self)
 
 
 class Attachment(TestlinkObject):

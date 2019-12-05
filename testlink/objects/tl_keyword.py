@@ -25,16 +25,6 @@ class KeywordFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         if self.testcase_id is not None:
             self.testcase_id = int(self.testcase_id)
 
-    def build(self):
-        """Generate a new Keyword"""
-        # Call sanity checks of parent class
-        super(KeywordFromAPIBuilder, self).build()
-
-        # Sanity checks
-        assert self.name is not None, "No Keyword name defined"
-
-        return Keyword(self)
-
 
 class KeywordBuilder(TestlinkObjectBuilder,
                      KeywordFromAPIBuilder):
@@ -71,6 +61,16 @@ class KeywordBuilder(TestlinkObjectBuilder,
         """
         self.testcase_id = testcase_id
         return self
+
+    def build(self):
+        """Generate a new Keyword"""
+        # Call sanity checks of parent class
+        super(KeywordBuilder, self).build()
+
+        # Sanity checks
+        assert self.name is not None, "No Keyword name defined"
+
+        return Keyword(self)
 
 
 class Keyword(TestlinkObject):

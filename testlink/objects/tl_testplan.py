@@ -42,19 +42,6 @@ class TestPlanFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         if self.public is not None:
             self.public = bool(int(self.public))
 
-    def build(self):
-        """Generate a new TestPlan"""
-        # Sanity checks
-        # Call Sanity checks of parent class
-        super(TestPlanFromAPIBuilder, self).build()
-
-        assert self.name is not None, "No TestPlan name defined"
-        assert self.active is not None, "No TestPlan active status defined"
-        assert self.public is not None, "No TestPlan public status defined"
-        assert self.testproject is not None, "No parent TestProject defined"
-
-        return TestPlan(self)
-
 
 class TestPlanBuilder(TestlinkObjectBuilder,
                       TestPlanFromAPIBuilder):
@@ -123,6 +110,19 @@ class TestPlanBuilder(TestlinkObjectBuilder,
         """
         self.testproject = testproject
         return self
+
+    def build(self):
+        """Generate a new TestPlan"""
+        # Sanity checks
+        # Call Sanity checks of parent class
+        super(TestPlanBuilder, self).build()
+
+        assert self.name is not None, "No TestPlan name defined"
+        assert self.active is not None, "No TestPlan active status defined"
+        assert self.public is not None, "No TestPlan public status defined"
+        assert self.testproject is not None, "No parent TestProject defined"
+
+        return TestPlan(self)
 
 
 class TestPlan(TestlinkObject):

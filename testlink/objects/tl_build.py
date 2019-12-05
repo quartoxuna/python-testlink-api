@@ -45,20 +45,6 @@ class BuildFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         if self.closed is not None:
             self.closed = datetime.strptime(self.closed, Build.DATE_FORMAT).date()
 
-    def build(self):
-        """Generate a new Build"""
-        # Call Sanity checks of parent class
-        super(BuildFromAPIBuilder, self).build()
-
-        # Sanity checks
-        assert self.name is not None, "No Build name defined"
-        assert self.active is not None, "No Build active status defined"
-        assert self.created is not None, "No Build creaton time defined"
-        assert self.public is not None, "No Build public status defined"
-        assert self.testplan is not None, "No parent TestPlan defined"
-
-        return Build(self)
-
 
 class BuildBuilder(TestlinkObjectBuilder,
                    BuildFromAPIBuilder):
@@ -142,6 +128,20 @@ class BuildBuilder(TestlinkObjectBuilder,
         """
         self.testplan = testplan
         return self
+
+    def build(self):
+        """Generate a new Build"""
+        # Call Sanity checks of parent class
+        super(BuildBuilder, self).build()
+
+        # Sanity checks
+        assert self.name is not None, "No Build name defined"
+        assert self.active is not None, "No Build active status defined"
+        assert self.created is not None, "No Build creaton time defined"
+        assert self.public is not None, "No Build public status defined"
+        assert self.testplan is not None, "No parent TestPlan defined"
+
+        return Build(self)
 
 
 class Build(TestlinkObject):

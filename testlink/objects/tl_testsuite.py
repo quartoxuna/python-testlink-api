@@ -40,17 +40,6 @@ class TestSuiteFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         if self.level is not None:
             self.level = int(self.level)
 
-    def build(self):
-        """Generate a new TestSuite"""
-        # Call Sanity checks of parent class
-        super(TestSuiteFromAPIBuilder, self).build()
-
-        # Sanity checks
-        assert self.name is not None, "No TestSuite name defined"
-        assert self.testproject is not None, "No parent TestProject defined"
-
-        return TestSuite(self)
-
 
 class TestSuiteBuilder(TestlinkObjectBuilder,
                        TestSuiteFromAPIBuilder):
@@ -103,6 +92,17 @@ class TestSuiteBuilder(TestlinkObjectBuilder,
         """
         self.testsuite = testsuite
         return self
+
+    def build(self):
+        """Generate a new TestSuite"""
+        # Call Sanity checks of parent class
+        super(TestSuiteBuilder, self).build()
+
+        # Sanity checks
+        assert self.name is not None, "No TestSuite name defined"
+        assert self.testproject is not None, "No parent TestProject defined"
+
+        return TestSuite(self)
 
 
 class TestSuite(AttachmentMixin, TestlinkObject):

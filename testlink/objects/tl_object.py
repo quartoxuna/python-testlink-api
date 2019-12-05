@@ -25,17 +25,12 @@ class TestlinkObjectFromAPIBuilder(object):
         if self.testlink_id is not None:
             self.testlink_id = int(self.testlink_id)
 
-    def build(self):
-        """Generates a new TestlinkObject"""
-        # Sanity checks
-        assert self.testlink_id is not None, "Invalid internal ID '{}'".format(self.testlink_id)
-        assert self.testlink is not None, "No parent Testlink instance defined"
-
-        return TestlinkObject(self)
-
 
 class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
     """General TestlinkObject Builder"""
+
+    def __init__(self, *args, **kwargs):
+        super(TestlinkObjectBuilder, self).__init__(*args, **kwargs)
 
     def with_id(self, testlink_id):
         """Set the internal ID of the Testlink Object
@@ -55,13 +50,17 @@ class TestlinkObjectBuilder(TestlinkObjectFromAPIBuilder):
         self.testlink = testlink
         return self
 
+    def build(self):
+        """Generates a new TestlinkObject"""
+        # Sanity checks
+        assert self.testlink_id is not None, "Invalid internal ID '{}'".format(self.testlink_id)
+        assert self.testlink is not None, "No parent Testlink instance defined"
+
+        return TestlinkObject(self)
+
 
 class TestlinkObject(object):
-    """General Testlink Object
-
-    :arg int id: Internal Testlink ID
-    :arg Testlink testlink: Parent Testlink instance
-    """
+    """General Testlink Object"""
 
     DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
     """Default timestamp format for Testlink Objects"""

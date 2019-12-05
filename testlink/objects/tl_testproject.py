@@ -66,20 +66,6 @@ class TestProjectFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         if self.testcase_count is not None:
             self.testcase_count = int(self.testcase_count)
 
-    def build(self):
-        """Generates a new TestProject"""
-        # Call Sanity checks of parent class
-        super(TestProjectFromAPIBuilder, self).build()
-
-        # Sanity checks
-        assert self.name is not None, "No TestProject name defined"
-        assert self.prefix is not None, "No TestProject prefix defined"
-        assert self.active is not None, "No TestProject active status defined"
-        assert self.public is not None, "No TestProject public status defined"
-        assert self.testcase_count >= 0, "Invalid testcase count for TestProject: {}".format(self.testcase_count)
-
-        return TestProject(self)
-
 
 class TestProjectBuilder(TestlinkObjectBuilder,
                          TestProjectFromAPIBuilder):
@@ -233,6 +219,20 @@ class TestProjectBuilder(TestlinkObjectBuilder,
         """
         self.inventory_feature = False
         return self
+
+    def build(self):
+        """Generates a new TestProject"""
+        # Call Sanity checks of parent class
+        super(TestProjectBuilder, self).build()
+
+        # Sanity checks
+        assert self.name is not None, "No TestProject name defined"
+        assert self.prefix is not None, "No TestProject prefix defined"
+        assert self.active is not None, "No TestProject active status defined"
+        assert self.public is not None, "No TestProject public status defined"
+        assert self.testcase_count >= 0, "Invalid testcase count for TestProject: {}".format(self.testcase_count)
+
+        return TestProject(self)
 
 
 class TestProject(AttachmentMixin, TestlinkObject):

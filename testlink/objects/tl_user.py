@@ -30,14 +30,6 @@ class UserFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         if self.active is not None:
             self.active = bool(int(self.active))
 
-    def build(self):
-        """Generates a new User"""
-        # Sanity checks
-        assert self.login is not None, "Invalid login defined"
-        assert self.active is not None, "Invalid active status defined"
-
-        return User(self)
-
 
 class UserBuilder(TestlinkObjectBuilder,
                   UserFromAPIBuilder):
@@ -99,6 +91,13 @@ class UserBuilder(TestlinkObjectBuilder,
         self.active = False
         return self
 
+    def build(self):
+        """Generates a new User"""
+        # Sanity checks
+        assert self.login is not None, "Invalid login defined"
+        assert self.active is not None, "Invalid active status defined"
+
+        return User(self)
 
 
 class User(TestlinkObject):

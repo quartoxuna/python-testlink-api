@@ -30,17 +30,6 @@ class PlatformFromAPIBuilder(TestlinkObjectFromAPIBuilder):
         self.testplan = kwargs.pop('parent_testplan', None)
         super(PlatformFromAPIBuilder, self).__init__(*args, **kwargs)
 
-    def build(self):
-        """Generate new Platform"""
-        # Call Sanity checks of parent class
-        super(PlatformFromAPIBuilder, self).build()
-
-        # Sanity checks
-        assert self.name is not None, "No Platform name defined"
-        assert self.testproject is not None; "No parent TestProject defined"
-
-        return Platform(self)
-
 
 class PlatformBuilder(TestlinkObjectBuilder,
                       PlatformFromAPIBuilder):
@@ -84,6 +73,17 @@ class PlatformBuilder(TestlinkObjectBuilder,
         """
         self.testplan = testplan
         return self
+
+    def build(self):
+        """Generate new Platform"""
+        # Call Sanity checks of parent class
+        super(PlatformBuilder, self).build()
+
+        # Sanity checks
+        assert self.name is not None, "No Platform name defined"
+        assert self.testproject is not None, "No parent TestProject defined"
+
+        return Platform(self)
 
 
 class Platform(TestlinkObject):
