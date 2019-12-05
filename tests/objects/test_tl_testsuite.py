@@ -137,9 +137,9 @@ class TestSuiteTests(unittest.TestCase):
         leveled_results = [
             # Children of 'TestSuite 0'
             [
-                {'id': '1', 'name': "TestSuite 1", 'details': "Description 1", 'level': '2'},
-                {'id': '2', 'name': "TestSuite 2", 'details': "Description 2", 'level': '2'},
-                {'id': '3', 'name': "TestSuite 3", 'details': "Description 3", 'level': '2'}
+                {'id': '11', 'name': "TestSuite 1", 'details': "Description 1", 'level': '2'},
+                {'id': '12', 'name': "TestSuite 2", 'details': "Description 2", 'level': '2'},
+                {'id': '13', 'name': "TestSuite 3", 'details': "Description 3", 'level': '2'}
             ],
 
             # Children of 'TestSuite 1'
@@ -147,13 +147,13 @@ class TestSuiteTests(unittest.TestCase):
 
             # Children of 'TestSuite 2'
             [
-                {'id': '21', 'name': "TestSuite 2.1", 'details': "Description 2.1", 'level': '3'},
-                {'id': '22', 'name': "TestSuite 2.2", 'details': "Description 2.2", 'level': '3'}
+                {'id': '121', 'name': "TestSuite 2.1", 'details': "Description 2.1", 'level': '3'},
+                {'id': '122', 'name': "TestSuite 2.2", 'details': "Description 2.2", 'level': '3'}
             ],
 
             # Children of 'TestSuite 2.1'
             [
-                {'id': '211', 'name': "TestSuite 2.1.1", 'details': "Description 2.1.1", 'level': '4'}
+                {'id': '1211', 'name': "TestSuite 2.1.1", 'details': "Description 2.1.1", 'level': '4'}
             ],
 
             # Children of 'TestSuite 2.1.1'
@@ -164,7 +164,7 @@ class TestSuiteTests(unittest.TestCase):
 
             # Children of 'TestSuite 3'
             [
-                {'id': '31', 'name': "TestSuite 3.1", 'details': "Description 3.1", 'level': '3'}
+                {'id': '131', 'name': "TestSuite 3.1", 'details': "Description 3.1", 'level': '3'}
             ],
 
             # Children of 'TestSuite 3.1'
@@ -185,7 +185,7 @@ class TestSuiteTests(unittest.TestCase):
 
         # Prepare current TestSuite
         testsuite_0 = TestSuite.builder()\
-                    .with_id(0)\
+                    .with_id(10)\
                     .from_testlink(testlink)\
                     .with_name("TestSuite 0")\
                     .with_description("Description 0")\
@@ -195,7 +195,7 @@ class TestSuiteTests(unittest.TestCase):
 
         # Generate expected results
         testsuite_1 = TestSuite.builder()\
-                      .with_id(1)\
+                      .with_id(11)\
                       .from_testlink(testlink)\
                       .with_name("TestSuite 1")\
                       .with_description("Description 1")\
@@ -204,7 +204,7 @@ class TestSuiteTests(unittest.TestCase):
                       .from_testsuite(testsuite_0)\
                       .build()
         testsuite_2 = TestSuite.builder()\
-                      .with_id(2)\
+                      .with_id(12)\
                       .from_testlink(testlink)\
                       .with_name("TestSuite 2")\
                       .with_description("Description 2")\
@@ -213,7 +213,7 @@ class TestSuiteTests(unittest.TestCase):
                       .from_testsuite(testsuite_0)\
                       .build()
         testsuite_2_1 = TestSuite.builder()\
-                        .with_id(21)\
+                        .with_id(121)\
                         .from_testlink(testlink)\
                         .with_name("TestSuite 2.1")\
                         .with_description("Description 2.1")\
@@ -222,7 +222,7 @@ class TestSuiteTests(unittest.TestCase):
                         .from_testsuite(testsuite_2)\
                         .build()
         testsuite_2_1_1 = TestSuite.builder()\
-                          .with_id(211)\
+                          .with_id(1211)\
                           .from_testlink(testlink)\
                           .with_name("TestSuite 2.1.1")\
                           .with_description("Description 2.1.1")\
@@ -231,7 +231,7 @@ class TestSuiteTests(unittest.TestCase):
                           .from_testsuite(testsuite_2_1)\
                           .build()
         testsuite_2_2 = TestSuite.builder()\
-                        .with_id(22)\
+                        .with_id(122)\
                         .from_testlink(testlink)\
                         .with_name("TestSuite 2.2")\
                         .with_description("Description 2.2")\
@@ -240,7 +240,7 @@ class TestSuiteTests(unittest.TestCase):
                         .from_testsuite(testsuite_2)\
                         .build()
         testsuite_3 = TestSuite.builder()\
-                      .with_id(3)\
+                      .with_id(13)\
                       .from_testlink(testlink)\
                       .with_name("TestSuite 3")\
                       .with_description("Description 3")\
@@ -249,7 +249,7 @@ class TestSuiteTests(unittest.TestCase):
                       .from_testsuite(testsuite_0)\
                       .build()
         testsuite_3_1 = TestSuite.builder()\
-                        .with_id(31)\
+                        .with_id(131)\
                         .from_testlink(testlink)\
                         .with_name("TestSuite 3.1")\
                         .with_description("Description 3.1")\
@@ -268,8 +268,9 @@ class TestSuiteTests(unittest.TestCase):
         ]
 
         # Check results
-        for i, testsuite in enumerate(testsuite_0.testsuites):
-            expected = expected_testsuites[i]
+        index = 0
+        for index, testsuite in enumerate(testsuite_0.testsuites):
+            expected = expected_testsuites[index]
             self.assertEqual(expected.id, testsuite.id)
             self.assertEqual(expected.name, testsuite.name)
             self.assertEqual(expected.description, testsuite.description)
@@ -279,7 +280,7 @@ class TestSuiteTests(unittest.TestCase):
             self.assertEqual(expected.testsuite, testsuite.testsuite)
 
         # Verify that amount of returned testsuites match
-        self.assertEqual(len(expected_testsuites), i+1)
+        self.assertEqual(len(expected_testsuites), index+1)
 
         # Verify that API method was called directly
         expected_calls = [
