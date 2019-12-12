@@ -1,88 +1,251 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Execution Object"""
-
 # IMPORTS
-import datetime
+from datetime import datetime
 
+from testlink.objects.tl_object import TestlinkObjectFromAPIBuilder
+from testlink.objects.tl_object import TestlinkObjectBuilder
 from testlink.objects.tl_object import TestlinkObject
 
-from testlink.objects.tl_user import User
-from testlink.objects.tl_attachment import AttachmentMixin
-
-from testlink.exceptions import NotSupported
-
+from testlink.enums import ExecutionStatus
 from testlink.enums import ExecutionType
 
 
-class Execution(AttachmentMixin, TestlinkObject):
-    """Testlink TestCase Execution representation
-    @ivar id: The internal ID of the Execution
-    @type id: int
-    @ivar testplan_id: The internal ID of the parent TestPlan
-    @type testplan_id: int
-    @ivar build_id: The internal ID of the parent Build
-    @type build_id: int
-    @ivar tcversion_id: The internal ID of the parent TestCase Version
-    @type tcversion_id: int
-    @ivar tcversion_number: The version of the parent TestCase
-    @type tcversion_number: int
-    @ivar status: The status of the Execution
-    @type status: str
-    @ivar notes: Notes of the Execution
-    @type notes: str
-    @ivar execution_type: Execution Type
-    @type execution_type: EXECUTION_TYPE
-    @ivar execution_ts: Timestamp of execution
-    @type execution_ts: str
-    @ivar tester_id: The internal ID of the tester
-    @type tester_id: int
+class ExecutionFromAPIBuilder(TestlinkObjectFromAPIBuilder):
+    """Testlink Execution Builder for raw Testlink API data
+
+    :ivar int testplan_id: Internal ID of parent TestPlan
+    :ivar int build_id: Internal ID of the parent Build
+    :ivar int platform_id: Internal ID of the parent Platform
+    :ivar int tcversion_id: Internal ID of the parent TestCaseVersion
+    :ivar int tcversion_number: Version Number of the TestCaseVersion
+    :ivar ExecutionStatus status: Status of the Execution
+    :ivar str notes: Notes of the Execution
+    :ivar ExecutionType execution_type: The type of the Execution
+    :ivar datetime.datetime execution_ts: The execution time
+    :ivar float duration: The duration of the Execution in minutes
+    :ivar int tester_id: The internal ID of the tester
     """
 
-    __slots__ = ("id", "testplan_id", "platform_id", "build_id", "tcversion_id", "tcversion_number", "status",
-                 "notes", "execution_type", "execution_ts", "tester_id", "__tester", "duration")
+    def __init__(self, *args, **kwargs):
+        self.testplan_id = kwargs.pop('testplan_id', None)
+        self.build_id = kwargs.pop('build_id', None)
+        self.platform_id = kwargs.pop('platform_id', None)
+        self.tcversion_id = kwargs.pop('tcversion_id', None)
+        self.tcversion_number = kwargs.pop('tcversion_number', None)
+        self.status = kwargs.pop('status', None)
+        self.notes = kwargs.pop('notes', None)
+        self.execution_type = kwargs.pop('execution_type', None)
+        self.execution_ts = kwargs.pop('execution_ts', None)
+        self.duration = kwargs.pop('duration', None)
+        self.tester_id = kwargs.pop('tester_id', None)
+        super(ExecutionFromAPIBuilder, self).__init__(*args, **kwargs)
 
-    def __init__(self, testplan_id=-1, platform_id=-1, build_id=-1, tcversion_id=-1, tcversion_number=0,
-                 status='', notes="", execution_type=ExecutionType.MANUAL, execution_ts=str(datetime.datetime.min),
-                 tester_id=-1, execution_duration=0.0, *args, **kwargs):
-        super(Execution, self).__init__(*args, **kwargs)
-        self.testplan_id = int(testplan_id)
-        self.platform_id = int(platform_id)
-        self.build_id = int(build_id)
-        self.tcversion_id = int(tcversion_id)
-        self.tcversion_number = int(tcversion_number)
+        # Fix types
+        if self.testplan_id:
+            self.testplan_id = int(self.testplan_id)
+        if self.build_id:
+            self.build_id = int(self.build_id)
+        if self.platform_id:
+            self.platform_id = int(self.platform_id)
+        if self.tcversion_id:
+            self.tcversion_id = int(self.tcversion_id)
+        if self.tcversion_number:
+            self.tcversion_number = int(self.tcversion_number)
+        if self.status:
+            self.status = ExecutionStatus(self.status)
+        if self.execution_type:
+            self.execution_type = ExecutionType(int(self.execution_type))
+        if self.execution_ts:
+            self.execution_ts = datetime.strptime(str(self.execution_ts), Execution.DATETIME_FORMAT)
+        if self.duration:
+            self.duration = float(self.duration)
+        if self.tester_id:
+            self.tester_id = int(self.tester_id)
+
+
+class ExecutionBuilder(TestlinkObjectBuilder,
+                       ExecutionFromAPIBuilder):
+    """General Execution Builder"""
+
+    def __init__(self, *args, **kwargs):
+        self.parent_testplan = kwargs.pop('testplan', None)
+        self.parent_build = kwargs.pop('build', None)
+        self.parent_platform = kwargs.pop('platform', None)
+        self.testcase = kwargs.pop('testcase', None)
+        self.tester = kwargs.pop('tester', None)
+        super(ExecutionBuilder, self).__init__(*args, **kwargs)
+
+    def from_testplan(self, testplan):
+        """Set the parent TestPlan for the Execution
+
+        :param TestPlan testplan: The TestPlan the Execution was made to
+        """
+        self.parent_testplan = testplan
+        self.testplan_id = testplan.id
+        return self
+
+    def from_build(self, build):
+        """Set the parent Build for the Execution
+
+        :param Build build: The Build the Execution was made to
+        """
+        self.parent_build = build
+        self.build_id = build.id
+        return self
+
+    def from_platform(self, platform):
+        """Set the parent Platform for the Execution
+
+        :param Platform platform: The Platform the Execution was made to
+        """
+        self.parent_platform = platform
+        self.platform_id = platform.id
+        return self
+
+    def from_testcase(self, testcase):
+        """Set the parent TestCase for the Execution
+
+        :param TestCase testcase: The TestCase the Execution was made to
+        """
+        self.testcase = testcase
+        self.tcversion_id = testcase.version.id
+        return self
+
+    def with_status(self, status):
+        """Set the status of the Execution
+
+        :param ExecutionStatus status: The status of the Execution
+        """
         self.status = status
+        return self
+
+    def with_notes(self, notes):
+        """Set the notes of the Execution
+
+        :param str notes: Notes of the Execution
+        """
         self.notes = notes
-        self.execution_type = int(execution_type)
-        try:
-            self.execution_ts = datetime.datetime.strptime(str(execution_ts), TestlinkObject.DATETIME_FORMAT)
-        except ValueError:
-            self.execution_ts = datetime.datetime.min
-        self.tester_id = int(tester_id)
-        self.__tester = None
-        try:
-            self.duration = float(execution_duration)
-        except ValueError:
-            self.duration = float(0.0)
+        return self
+
+    def with_execution_type(self, execution_type):
+        """Set the type of the Execution
+
+        :param ExecutionType execution_type: Type of the Execution
+        """
+        self.execution_type = execution_type
+        return self
+
+    def executed_on(self, execution_time):
+        """Set the time of the Execution
+
+        :param datetime.datetime execution_time: Time of Execution
+        """
+        self.execution_ts = execution_time
+        return self
+
+    def with_duration(self, duration):
+        """Set the duration of the Execution
+
+        :param float duration: The duration of the Execution in minutes
+        """
+        self.duration = duration
+        return self
+
+    def executed_by(self, tester):
+        """Set the tester of the Execution
+
+        :param User tester: Executing User
+        """
+        self.tester = tester
+        self.tester_id = tester.id
+        return self
+
+    def build(self):
+        """Generate a new Execution"""
+        # Call Sanity checks of parent class
+        super(ExecutionBuilder, self).build()
+
+        # Sanity checks
+
+        return Execution(self)
+
+
+class Execution(TestlinkObject):
+    """Testlink Execution
+
+    :ivar TestPlan testplan: The parent TestPlan
+    :ivar Build build: The parent Build
+    :ivar Platform platform: The parent Platform
+    :ivar TestCase testcase: The executed TestCase
+    :ivar ExecutionStatus status: The status of the Execution
+    :ivar str notes: Execution notes
+    :ivar datetime.datetime execution_ts: The time of the Execution
+    :ivar float duration: The duration of the Execution in minutes
+    :ivar User tester: The executing User
+    """
+
+    def __init__(self, builder, *args, **kwargs):
+        """Initializes a new Execution
+
+        :param ExecutionBuilder builder: Builder Object to retireve attributes from
+        """
+        super(Execution, self).__init__(builder, *args, **kwargs)
+        self.__testplan = builder.parent_testplan
+        self.__build = builder.parent_build
+        self.__platform = builder.parent_platform
+        self.__testcase = builder.testcase
+        self.__status = builder.status
+        self.__notes = builder.notes
+        self.__execution_ts = builder.execution_ts
+        self.__duration = builder.duration
+        self.__tester = builder.tester
 
     def __str__(self):
-        """String representaion"""
-        return "Execution (%d) [%s] %s" % (self.id, self.status, self.notes)
+        return "{}: {}".format(self.__class__.__name__, self.id)
+
+    @staticmethod
+    def builder(**api_data):
+        """Generate a new ExecutionBuilder
+
+        :param api_data: Raw API data
+        :rtype: ExecutionBuilder
+        """
+        return ExecutionBuilder(**api_data)
+
+    @property
+    def testplan(self):
+        return self.__testplan
+
+    @property
+    def build(self):
+        return self.__build
+
+    @property
+    def platform(self):
+        return self.__platform
+
+    @property
+    def testcase(self):
+        return self.__testcase
+
+    @property
+    def notes(self):
+        return self.__notes
+
+    @property
+    def status(self):
+        return self.__status
+
+    @property
+    def execution_ts(self):
+        return self.__execution_ts
+
+    @property
+    def duration(self):
+        return self.__duration
 
     @property
     def tester(self):
-        """Tester of this execution"""
-        if self.__tester is None:
-            try:
-                user = self.testlink.api.getUserByID(self.tester_id)
-                if isinstance(user, list) and len(user) == 1:
-                    user = user[0]
-                self.__tester = User(api=self.testlink.api, **user)
-            except NotSupported:
-                pass
         return self.__tester
-
-    def delete(self):
-        """Delete this execution"""
-        self.testlink.api.deleteExecution(self.id)
