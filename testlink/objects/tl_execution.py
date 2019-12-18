@@ -198,6 +198,7 @@ class Execution(TestlinkObject):
         self.__testcase = builder.testcase
         self.__status = builder.status
         self.__notes = builder.notes
+        self.__execution_type = builder.execution_type
         self.__execution_ts = builder.execution_ts
         self.__duration = builder.duration
         self.__tester = builder.tester
@@ -237,6 +238,10 @@ class Execution(TestlinkObject):
     @property
     def status(self):
         return self.__status
+
+    @property
+    def execution_type(self):
+        return self.__execution_type
 
     @property
     def execution_ts(self):
